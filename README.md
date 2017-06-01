@@ -1,8 +1,6 @@
 Digital Phase-locked-loop for Locking a Frequency Comb using a Red Pitaya
 ---------------------------
 
-This software runs on the Red Pitaya with a user interface written in Python that runs on your control PC.
-
 The firmware/software allows the use of this hardware to phaselock a frequency comb. More generally, together with the hardware, it provides a digital control box that can support a dual-channel phase-locked loop including the front-end IQ detection of the input rf signals. While this digital control box could therefore be used to phase lock other systems, the discussion below assumes the user is operating a frequency comb.
 
 
