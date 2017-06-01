@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="registers_read_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="registers_read_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="624266667fs"></ZoomStartTime>
+      <ZoomEndTime time="4394266668fs"></ZoomEndTime>
+      <Cursor1Time time="2587500000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="51" />
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/status_flags">
+      <obj_property name="ElementShortName">status_flags[31:0]</obj_property>
+      <obj_property name="ObjectShortName">status_flags[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/dither0_lockin_output">
+      <obj_property name="ElementShortName">dither0_lockin_output[63:0]</obj_property>
+      <obj_property name="ObjectShortName">dither0_lockin_output[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/dither1_lockin_output">
+      <obj_property name="ElementShortName">dither1_lockin_output[63:0]</obj_property>
+      <obj_property name="ObjectShortName">dither1_lockin_output[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/zdtc_samples_number_counter">
+      <obj_property name="ElementShortName">zdtc_samples_number_counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">zdtc_samples_number_counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/counter0_out">
+      <obj_property name="ElementShortName">counter0_out[63:0]</obj_property>
+      <obj_property name="ObjectShortName">counter0_out[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/counter1_out">
+      <obj_property name="ElementShortName">counter1_out[63:0]</obj_property>
+      <obj_property name="ObjectShortName">counter1_out[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/dac0_out">
+      <obj_property name="ElementShortName">dac0_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dac0_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/dac1_out">
+      <obj_property name="ElementShortName">dac1_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dac1_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/sys_addr">
+      <obj_property name="ElementShortName">sys_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/sys_wdata">
+      <obj_property name="ElementShortName">sys_wdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_wdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/sys_sel">
+      <obj_property name="ElementShortName">sys_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/sys_wen">
+      <obj_property name="ElementShortName">sys_wen</obj_property>
+      <obj_property name="ObjectShortName">sys_wen</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/sys_ren">
+      <obj_property name="ElementShortName">sys_ren</obj_property>
+      <obj_property name="ObjectShortName">sys_ren</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/sys_rdata">
+      <obj_property name="ElementShortName">sys_rdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_rdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/sys_err">
+      <obj_property name="ElementShortName">sys_err</obj_property>
+      <obj_property name="ObjectShortName">sys_err</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/sys_ack">
+      <obj_property name="ElementShortName">sys_ack</obj_property>
+      <obj_property name="ObjectShortName">sys_ack</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/registers_read_testbench/clk_period">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/status_flags">
+      <obj_property name="ElementShortName">status_flags[31:0]</obj_property>
+      <obj_property name="ObjectShortName">status_flags[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/dither0_lockin_output">
+      <obj_property name="ElementShortName">dither0_lockin_output[63:0]</obj_property>
+      <obj_property name="ObjectShortName">dither0_lockin_output[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/dither1_lockin_output">
+      <obj_property name="ElementShortName">dither1_lockin_output[63:0]</obj_property>
+      <obj_property name="ObjectShortName">dither1_lockin_output[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/zdtc_samples_number_counter">
+      <obj_property name="ElementShortName">zdtc_samples_number_counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">zdtc_samples_number_counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/counter0_out">
+      <obj_property name="ElementShortName">counter0_out[63:0]</obj_property>
+      <obj_property name="ObjectShortName">counter0_out[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/counter1_out">
+      <obj_property name="ElementShortName">counter1_out[63:0]</obj_property>
+      <obj_property name="ObjectShortName">counter1_out[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/DAC0_out">
+      <obj_property name="ElementShortName">DAC0_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC0_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/DAC1_out">
+      <obj_property name="ElementShortName">DAC1_out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC1_out[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/sys_addr">
+      <obj_property name="ElementShortName">sys_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_addr[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/sys_wdata">
+      <obj_property name="ElementShortName">sys_wdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_wdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/sys_sel">
+      <obj_property name="ElementShortName">sys_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/sys_wen">
+      <obj_property name="ElementShortName">sys_wen</obj_property>
+      <obj_property name="ObjectShortName">sys_wen</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/sys_ren">
+      <obj_property name="ElementShortName">sys_ren</obj_property>
+      <obj_property name="ObjectShortName">sys_ren</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/sys_rdata">
+      <obj_property name="ElementShortName">sys_rdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_rdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/sys_err">
+      <obj_property name="ElementShortName">sys_err</obj_property>
+      <obj_property name="ObjectShortName">sys_err</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/sys_ack">
+      <obj_property name="ElementShortName">sys_ack</obj_property>
+      <obj_property name="ObjectShortName">sys_ack</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/dither0_lockin_output_reg">
+      <obj_property name="ElementShortName">dither0_lockin_output_reg[63:0]</obj_property>
+      <obj_property name="ObjectShortName">dither0_lockin_output_reg[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/dither1_lockin_output_reg">
+      <obj_property name="ElementShortName">dither1_lockin_output_reg[63:0]</obj_property>
+      <obj_property name="ObjectShortName">dither1_lockin_output_reg[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/counter0_out_reg">
+      <obj_property name="ElementShortName">counter0_out_reg[63:0]</obj_property>
+      <obj_property name="ObjectShortName">counter0_out_reg[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/counter1_out_reg">
+      <obj_property name="ElementShortName">counter1_out_reg[63:0]</obj_property>
+      <obj_property name="ObjectShortName">counter1_out_reg[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/DAC0_out_reg">
+      <obj_property name="ElementShortName">DAC0_out_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC0_out_reg[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/DAC1_out_reg">
+      <obj_property name="ElementShortName">DAC1_out_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DAC1_out_reg[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/counter_for_throughput_test">
+      <obj_property name="ElementShortName">counter_for_throughput_test[31:0]</obj_property>
+      <obj_property name="ObjectShortName">counter_for_throughput_test[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/data_counter_for_throughput_test">
+      <obj_property name="ElementShortName">data_counter_for_throughput_test[31:0]</obj_property>
+      <obj_property name="ObjectShortName">data_counter_for_throughput_test[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/bWritesEnabled">
+      <obj_property name="ElementShortName">bWritesEnabled</obj_property>
+      <obj_property name="ObjectShortName">bWritesEnabled</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/fifo_srst">
+      <obj_property name="ElementShortName">fifo_srst</obj_property>
+      <obj_property name="ObjectShortName">fifo_srst</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/fifo_wr_en">
+      <obj_property name="ElementShortName">fifo_wr_en</obj_property>
+      <obj_property name="ObjectShortName">fifo_wr_en</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/fifo_rd_en">
+      <obj_property name="ElementShortName">fifo_rd_en</obj_property>
+      <obj_property name="ObjectShortName">fifo_rd_en</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/registers_read_testbench/registers_read_inst/fifo_prog_empty">
+      <obj_property name="ElementShortName">fifo_prog_empty</obj_property>
+      <obj_property name="ObjectShortName">fifo_prog_empty</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/fifo_dout">
+      <obj_property name="ElementShortName">fifo_dout[31:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_dout[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/fifo_data_count">
+      <obj_property name="ElementShortName">fifo_data_count[10:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_data_count[10:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/registers_read_testbench/registers_read_inst/fifo_data_count_max">
+      <obj_property name="ElementShortName">fifo_data_count_max[10:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_data_count_max[10:0]</obj_property>
+   </wvobject>
+</wave_config>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="n_times_clk_fir_wrapper_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="n_times_clk_fir_wrapper_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="497877627fs"></ZoomStartTime>
+      <ZoomEndTime time="671873803fs"></ZoomEndTime>
+      <Cursor1Time time="532500000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="22" />
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/clk_times_1">
+      <obj_property name="ElementShortName">clk_times_1</obj_property>
+      <obj_property name="ObjectShortName">clk_times_1</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/clk_times_n">
+      <obj_property name="ElementShortName">clk_times_n</obj_property>
+      <obj_property name="ObjectShortName">clk_times_n</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/data_in">
+      <obj_property name="ElementShortName">data_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/data_out">
+      <obj_property name="ElementShortName">data_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/clk_counter">
+      <obj_property name="ElementShortName">clk_counter[3:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_counter[3:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/clk_times_1">
+      <obj_property name="ElementShortName">clk_times_1</obj_property>
+      <obj_property name="ObjectShortName">clk_times_1</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/clk_times_N">
+      <obj_property name="ElementShortName">clk_times_N</obj_property>
+      <obj_property name="ObjectShortName">clk_times_N</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_in">
+      <obj_property name="ElementShortName">data_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_out">
+      <obj_property name="ElementShortName">data_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out[15:0]</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="AnalogYRangeType">ANALOG_YRANGETYPE_AUTO</obj_property>
+      <obj_property name="AnalogYRangeMin">0.000000</obj_property>
+      <obj_property name="AnalogYRRangeMax">0.000000</obj_property>
+      <obj_property name="AnalogInterpolation">ANALOG_INTERPOLATION_HOLD</obj_property>
+      <obj_property name="AnalogOffscale">ANALOG_OFFSCALE_HIDE</obj_property>
+      <obj_property name="AnalogHorizLine">0.000000</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/m_axis_data_tvalid">
+      <obj_property name="ElementShortName">m_axis_data_tvalid</obj_property>
+      <obj_property name="ObjectShortName">m_axis_data_tvalid</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/m_axis_data_tdata">
+      <obj_property name="ElementShortName">m_axis_data_tdata[15:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_data_tdata[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/flag_times_1">
+      <obj_property name="ElementShortName">flag_times_1</obj_property>
+      <obj_property name="ObjectShortName">flag_times_1</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/flag_times_N_d1">
+      <obj_property name="ElementShortName">flag_times_N_d1</obj_property>
+      <obj_property name="ObjectShortName">flag_times_N_d1</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_times_N_clk_enable">
+      <obj_property name="ElementShortName">data_times_N_clk_enable</obj_property>
+      <obj_property name="ObjectShortName">data_times_N_clk_enable</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_times_N">
+      <obj_property name="ElementShortName">data_times_N[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_times_N[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_times_N_clk_enable_reg">
+      <obj_property name="ElementShortName">data_times_N_clk_enable_reg</obj_property>
+      <obj_property name="ObjectShortName">data_times_N_clk_enable_reg</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_times_N_reg">
+      <obj_property name="ElementShortName">data_times_N_reg[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_times_N_reg[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_out_times_N">
+      <obj_property name="ElementShortName">data_out_times_N[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out_times_N[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_out_times_N_reg">
+      <obj_property name="ElementShortName">data_out_times_N_reg[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out_times_N_reg[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/data_out_times_1">
+      <obj_property name="ElementShortName">data_out_times_1[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_out_times_1[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/N_BITS_IN">
+      <obj_property name="ElementShortName">N_BITS_IN</obj_property>
+      <obj_property name="ObjectShortName">N_BITS_IN</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/n_times_clk_fir_wrapper_testbench/n_times_clk_fir_wrapper_inst/N_BITS_OUT">
+      <obj_property name="ElementShortName">N_BITS_OUT</obj_property>
+      <obj_property name="ObjectShortName">N_BITS_OUT</obj_property>
+   </wvobject>
+</wave_config>

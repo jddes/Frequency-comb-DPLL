@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="system_identification_vna_with_dither_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="system_identification_vna_with_dither_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="9864367561fs"></ZoomStartTime>
+      <ZoomEndTime time="12447641372fs"></ZoomEndTime>
+      <Cursor1Time time="12023264000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="51" />
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/number_of_cycles_integration">
+      <obj_property name="ElementShortName">number_of_cycles_integration[31:0]</obj_property>
+      <obj_property name="ObjectShortName">number_of_cycles_integration[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/first_modulation_frequency">
+      <obj_property name="ElementShortName">first_modulation_frequency[47:0]</obj_property>
+      <obj_property name="ObjectShortName">first_modulation_frequency[47:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_frequency_step">
+      <obj_property name="ElementShortName">modulation_frequency_step[47:0]</obj_property>
+      <obj_property name="ObjectShortName">modulation_frequency_step[47:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/number_of_frequencies">
+      <obj_property name="ElementShortName">number_of_frequencies[15:0]</obj_property>
+      <obj_property name="ObjectShortName">number_of_frequencies[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/output_gain">
+      <obj_property name="ElementShortName">output_gain[17:0]</obj_property>
+      <obj_property name="ObjectShortName">output_gain[17:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/trigger_identification">
+      <obj_property name="ElementShortName">trigger_identification</obj_property>
+      <obj_property name="ObjectShortName">trigger_identification</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/trigger_dither">
+      <obj_property name="ElementShortName">trigger_dither</obj_property>
+      <obj_property name="ObjectShortName">trigger_dither</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/stop">
+      <obj_property name="ElementShortName">stop</obj_property>
+      <obj_property name="ObjectShortName">stop</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/bSquareWave">
+      <obj_property name="ElementShortName">bSquareWave</obj_property>
+      <obj_property name="ObjectShortName">bSquareWave</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/data_in">
+      <obj_property name="ElementShortName">data_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_output">
+      <obj_property name="ElementShortName">modulation_output[15:0]</obj_property>
+      <obj_property name="ObjectShortName">modulation_output[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/integrator_real_output">
+      <obj_property name="ElementShortName">integrator_real_output[63:0]</obj_property>
+      <obj_property name="ObjectShortName">integrator_real_output[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/integrator_imag_output">
+      <obj_property name="ElementShortName">integrator_imag_output[63:0]</obj_property>
+      <obj_property name="ObjectShortName">integrator_imag_output[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/integrator_accumulated_samples">
+      <obj_property name="ElementShortName">integrator_accumulated_samples[31:0]</obj_property>
+      <obj_property name="ObjectShortName">integrator_accumulated_samples[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/integrator_clk_output_enable">
+      <obj_property name="ElementShortName">integrator_clk_output_enable</obj_property>
+      <obj_property name="ObjectShortName">integrator_clk_output_enable</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/dither_sync_I">
+      <obj_property name="ElementShortName">dither_sync_I</obj_property>
+      <obj_property name="ObjectShortName">dither_sync_I</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/dither_sync_Q">
+      <obj_property name="ElementShortName">dither_sync_Q</obj_property>
+      <obj_property name="ObjectShortName">dither_sync_Q</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/debug_current_state">
+      <obj_property name="ElementShortName">debug_current_state[7:0]</obj_property>
+      <obj_property name="ObjectShortName">debug_current_state[7:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/lo_dds_m_axis_data_tdata">
+      <obj_property name="ElementShortName">lo_dds_m_axis_data_tdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">lo_dds_m_axis_data_tdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/disable_modulation_output">
+      <obj_property name="ElementShortName">disable_modulation_output</obj_property>
+      <obj_property name="ObjectShortName">disable_modulation_output</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/current_modulation_frequency">
+      <obj_property name="ElementShortName">current_modulation_frequency[47:0]</obj_property>
+      <obj_property name="ObjectShortName">current_modulation_frequency[47:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/current_modulation_phase">
+      <obj_property name="ElementShortName">current_modulation_phase[47:0]</obj_property>
+      <obj_property name="ObjectShortName">current_modulation_phase[47:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/last_modulation_phase">
+      <obj_property name="ElementShortName">last_modulation_phase[47:0]</obj_property>
+      <obj_property name="ObjectShortName">last_modulation_phase[47:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_phase_zerocrossing">
+      <obj_property name="ElementShortName">modulation_phase_zerocrossing</obj_property>
+      <obj_property name="ObjectShortName">modulation_phase_zerocrossing</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_phase_zerocrossing_srl">
+      <obj_property name="ElementShortName">modulation_phase_zerocrossing_srl[4:0]</obj_property>
+      <obj_property name="ObjectShortName">modulation_phase_zerocrossing_srl[4:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/DDS_cosine">
+      <obj_property name="ElementShortName">DDS_cosine[15:0]</obj_property>
+      <obj_property name="ObjectShortName">DDS_cosine[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/DDS_sine">
+      <obj_property name="ElementShortName">DDS_sine[15:0]</obj_property>
+      <obj_property name="ObjectShortName">DDS_sine[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_output_post_mult">
+      <obj_property name="ElementShortName">modulation_output_post_mult[15:0]</obj_property>
+      <obj_property name="ObjectShortName">modulation_output_post_mult[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_output_internal">
+      <obj_property name="ElementShortName">modulation_output_internal[15:0]</obj_property>
+      <obj_property name="ObjectShortName">modulation_output_internal[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/dither_sync_I_srl">
+      <obj_property name="ElementShortName">dither_sync_I_srl[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dither_sync_I_srl[2:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/dither_sync_Q_srl">
+      <obj_property name="ElementShortName">dither_sync_Q_srl[2:0]</obj_property>
+      <obj_property name="ObjectShortName">dither_sync_Q_srl[2:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/dither_sync_I_internal">
+      <obj_property name="ElementShortName">dither_sync_I_internal</obj_property>
+      <obj_property name="ObjectShortName">dither_sync_I_internal</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/dither_sync_Q_internal">
+      <obj_property name="ElementShortName">dither_sync_Q_internal</obj_property>
+      <obj_property name="ObjectShortName">dither_sync_Q_internal</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/macc_clear">
+      <obj_property name="ElementShortName">macc_clear</obj_property>
+      <obj_property name="ObjectShortName">macc_clear</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/real_accumulator_wide">
+      <obj_property name="ElementShortName">real_accumulator_wide[63:0]</obj_property>
+      <obj_property name="ObjectShortName">real_accumulator_wide[63:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="WaveformStyle">STYLE_ANALOG</obj_property>
+      <obj_property name="CellHeight">100</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/imag_accumulator_wide">
+      <obj_property name="ElementShortName">imag_accumulator_wide[63:0]</obj_property>
+      <obj_property name="ObjectShortName">imag_accumulator_wide[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/real_accumulator_register">
+      <obj_property name="ElementShortName">real_accumulator_register[63:0]</obj_property>
+      <obj_property name="ObjectShortName">real_accumulator_register[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/imag_accumulator_register">
+      <obj_property name="ElementShortName">imag_accumulator_register[63:0]</obj_property>
+      <obj_property name="ObjectShortName">imag_accumulator_register[63:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/samples_accumulator_register">
+      <obj_property name="ElementShortName">samples_accumulator_register[31:0]</obj_property>
+      <obj_property name="ObjectShortName">samples_accumulator_register[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/integrator_clk_output_enable_register">
+      <obj_property name="ElementShortName">integrator_clk_output_enable_register</obj_property>
+      <obj_property name="ObjectShortName">integrator_clk_output_enable_register</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/actual_integration_time_counter">
+      <obj_property name="ElementShortName">actual_integration_time_counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">actual_integration_time_counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/macc_clear_srl">
+      <obj_property name="ElementShortName">macc_clear_srl[2:0]</obj_property>
+      <obj_property name="ObjectShortName">macc_clear_srl[2:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/FSM_state">
+      <obj_property name="ElementShortName">FSM_state</obj_property>
+      <obj_property name="ObjectShortName">FSM_state</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/fsm_wait_counter">
+      <obj_property name="ElementShortName">fsm_wait_counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">fsm_wait_counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/trigger_identification_last">
+      <obj_property name="ElementShortName">trigger_identification_last</obj_property>
+      <obj_property name="ObjectShortName">trigger_identification_last</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/modulation_frequency_index">
+      <obj_property name="ElementShortName">modulation_frequency_index[15:0]</obj_property>
+      <obj_property name="ObjectShortName">modulation_frequency_index[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/INPUT_WIDTH">
+      <obj_property name="ElementShortName">INPUT_WIDTH</obj_property>
+      <obj_property name="ObjectShortName">INPUT_WIDTH</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/FREQUENCY_WIDTH">
+      <obj_property name="ElementShortName">FREQUENCY_WIDTH</obj_property>
+      <obj_property name="ObjectShortName">FREQUENCY_WIDTH</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/system_identification_vna_with_dither_testbench/uut/system_identification_vna_inst/MODULATION_OUTPUT_WIDTH">
+      <obj_property name="ElementShortName">MODULATION_OUTPUT_WIDTH</obj_property>
+      <obj_property name="ObjectShortName">MODULATION_OUTPUT_WIDTH</obj_property>
+   </wvobject>
+</wave_config>

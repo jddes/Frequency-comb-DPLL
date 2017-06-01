@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="ram_data_logger_testbench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="ram_data_logger_testbench" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="301000000001fs"></ZoomEndTime>
+      <Cursor1Time time="108547500000fs"></Cursor1Time>
+   </zoom_setting>
+   <WVObjectSize size="27" />
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/data_in">
+      <obj_property name="ElementShortName">data_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/data_in_clk_enable">
+      <obj_property name="ElementShortName">data_in_clk_enable</obj_property>
+      <obj_property name="ObjectShortName">data_in_clk_enable</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/start_write">
+      <obj_property name="ElementShortName">start_write</obj_property>
+      <obj_property name="ObjectShortName">start_write</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/sys_addr">
+      <obj_property name="ElementShortName">sys_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/sys_wdata">
+      <obj_property name="ElementShortName">sys_wdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_wdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/sys_sel">
+      <obj_property name="ElementShortName">sys_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_sel[3:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/sys_wen">
+      <obj_property name="ElementShortName">sys_wen</obj_property>
+      <obj_property name="ObjectShortName">sys_wen</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/sys_ren">
+      <obj_property name="ElementShortName">sys_ren</obj_property>
+      <obj_property name="ObjectShortName">sys_ren</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/sys_rdata">
+      <obj_property name="ElementShortName">sys_rdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_rdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/sys_err">
+      <obj_property name="ElementShortName">sys_err</obj_property>
+      <obj_property name="ObjectShortName">sys_err</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/sys_ack">
+      <obj_property name="ElementShortName">sys_ack</obj_property>
+      <obj_property name="ObjectShortName">sys_ack</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/wait_counter">
+      <obj_property name="ElementShortName">wait_counter[15:0]</obj_property>
+      <obj_property name="ObjectShortName">wait_counter[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/ram_data_logger_testbench/clk_period">
+      <obj_property name="ElementShortName">clk_period</obj_property>
+      <obj_property name="ObjectShortName">clk_period</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/sys_rdata">
+      <obj_property name="ElementShortName">sys_rdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sys_rdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/sys_err">
+      <obj_property name="ElementShortName">sys_err</obj_property>
+      <obj_property name="ObjectShortName">sys_err</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/sys_ack">
+      <obj_property name="ElementShortName">sys_ack</obj_property>
+      <obj_property name="ObjectShortName">sys_ack</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="other" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/FSM_state">
+      <obj_property name="ElementShortName">FSM_state</obj_property>
+      <obj_property name="ObjectShortName">FSM_state</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/bWriting">
+      <obj_property name="ElementShortName">bWriting</obj_property>
+      <obj_property name="ObjectShortName">bWriting</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/write_enable">
+      <obj_property name="ElementShortName">write_enable</obj_property>
+      <obj_property name="ObjectShortName">write_enable</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/write_address">
+      <obj_property name="ElementShortName">write_address[10:0]</obj_property>
+      <obj_property name="ObjectShortName">write_address[10:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/write_data">
+      <obj_property name="ElementShortName">write_data[15:0]</obj_property>
+      <obj_property name="ObjectShortName">write_data[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/read_enable">
+      <obj_property name="ElementShortName">read_enable</obj_property>
+      <obj_property name="ObjectShortName">read_enable</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/read_address">
+      <obj_property name="ElementShortName">read_address[10:0]</obj_property>
+      <obj_property name="ObjectShortName">read_address[10:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/read_data">
+      <obj_property name="ElementShortName">read_data[15:0]</obj_property>
+      <obj_property name="ObjectShortName">read_data[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/sys_ren_d1">
+      <obj_property name="ElementShortName">sys_ren_d1</obj_property>
+      <obj_property name="ObjectShortName">sys_ren_d1</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/ram_data_logger_testbench/ram_data_logger_inst/data_valid">
+      <obj_property name="ElementShortName">data_valid</obj_property>
+      <obj_property name="ObjectShortName">data_valid</obj_property>
+   </wvobject>
+</wave_config>
