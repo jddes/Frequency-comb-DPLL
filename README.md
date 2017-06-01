@@ -10,8 +10,7 @@ The firmware/software allows the use of this hardware to phaselock a frequency c
 Getting started
 ---------------------------
 1. Download the required files from the "Releases section" (https://github.com/jddes/Frequency-comb-DPLL/releases/latest):
-	a. The full source code repository to have access to the Python GUI
-	b. The SD card image for the Red Pitaya (red_pitaya_dpll_2017-05-31.zip)
+	a. The full source code repository to have access to the Python GUI, and b. The SD card image for the Red Pitaya (red_pitaya_dpll_2017-05-31.zip)
 2. Read and follow the "Instructions and operation manual for RedPitaya DPLL.pdf" file.
 
 
