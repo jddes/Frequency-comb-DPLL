@@ -11,6 +11,10 @@ Getting started
 	a. The full source code repository to have access to the Python GUI, and b. The SD card image for the Red Pitaya (red_pitaya_dpll_2017-05-31.zip)
 2. Read and follow the "Instructions and operation manual for RedPitaya DPLL.pdf" file.
 
+Software versions
+---------------------------
+Required Python distribution is WinPython-64bit-2.7.10.3.
+The FPGA Vivado project was compiled in Vivado 2015.4.
 
 
 Additional information
