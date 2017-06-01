@@ -1,4 +1,4 @@
-Digital Phase-locked-loop software for Locking a Frequency Comb using a Red Pitaya
+Digital Phase-locked-loop for Locking a Frequency Comb using a Red Pitaya
 ---------------------------
 
 This software runs on the Red Pitaya with a user interface written in Python that runs on your control PC.
