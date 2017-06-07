@@ -1284,7 +1284,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         
         # X and Y limits for the plot:
         self.qlbl_xlims = Qt.QLabel('Xmin, Xmax')
-        self.qedit_xlims = Qt.QLineEdit('500, 5e6')
+        self.qedit_xlims = Qt.QLineEdit('3e3, 5e6')
         self.qedit_xlims.setMaximumWidth(60)
         self.qlbl_ylims = Qt.QLabel('Ymin, Ymax')
         self.qedit_ylims = Qt.QLineEdit('-100, -30')
@@ -1296,38 +1296,40 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.qedit_spc_averaging.setMaximumWidth(60)
 
         # Create the frequency domain plot for the DDC0
-        self.qplt_DDC0_spc = Qwt.QwtPlot()
+        self.qplt_DDC0_spc = pg.PlotWidget()
         self.qplt_DDC0_spc.setTitle('Freq noise PSD')
-        self.qplt_DDC0_spc.setCanvasBackground(Qt.Qt.white)
-        self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
-        self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, -60, 60)
+        #self.qplt_DDC0_spc.setCanvasBackground(Qt.Qt.white)
+        #self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        self.qplt_DDC0_spc.getPlotItem().setLogMode(x=True)
+        self.qplt_DDC0_spc.setYRange(-60, 60)
         
-        self.qplt_DDC0_spc.enableAxis(Qwt.QwtPlot.yRight)
-        self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.xBottom, 'Frequency [Hz]')
-        self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yLeft, 'PSD [dB Hz^2/Hz]')
-        self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yRight, 'Phase [rad]')
+        #self.qplt_DDC0_spc.enableAxis(Qwt.QwtPlot.yRight)
+        self.qplt_DDC0_spc.setLabel('bottom', 'Frequency [Hz]')
+        self.qplt_DDC0_spc.setLabel('left', 'PSD [dB Hz^2/Hz]')
+        #self.qplt_DDC0_spc.setLabel('right', 'Phase [rad]')
         
-        plot_grid = Qwt.QwtPlotGrid()
-        plot_grid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
-        plot_grid.attach(self.qplt_DDC0_spc)
+        self.qplt_DDC0_spc.showGrid(x=True, y=True)
+        #plot_grid = Qwt.QwtPlotGrid()
+        #plot_grid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
+        #plot_grid.attach(self.qplt_DDC0_spc)
         
         # Create the curve in the plot
-        self.curve_DDC0_spc = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_DDC0_spc.attach(self.qplt_DDC0_spc)
+        self.curve_DDC0_spc = self.qplt_DDC0_spc.getPlotItem().plot(title='Phase noise PSD', pen='b')
+        #self.curve_DDC0_spc.attach(self.qplt_DDC0_spc)
         self.curve_DDC0_spc.setPen(Qt.QPen(Qt.Qt.blue))
         
-        self.curve_DDC0_spc_amplitude_noise = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_DDC0_spc_amplitude_noise.attach(self.qplt_DDC0_spc)
+        self.curve_DDC0_spc_amplitude_noise = self.qplt_DDC0_spc.getPlotItem().plot(pen='r')
+        #self.curve_DDC0_spc_amplitude_noise.attach(self.qplt_DDC0_spc)
         self.curve_DDC0_spc_amplitude_noise.setPen(Qt.QPen(Qt.Qt.red))
         
-        self.curve_DDC0_cumul_phase = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_DDC0_cumul_phase.attach(self.qplt_DDC0_spc)
+        self.curve_DDC0_cumul_phase = self.qplt_DDC0_spc.getPlotItem().plot(pen='k')
+        #self.curve_DDC0_cumul_phase.attach(self.qplt_DDC0_spc)
         self.curve_DDC0_cumul_phase.setPen(Qt.QPen(Qt.Qt.black))
-        self.curve_DDC0_cumul_phase.setYAxis(Qwt.QwtPlot.yRight)
+        # self.curve_DDC0_cumul_phase.setYAxis(Qwt.QwtPlot.yRight)
         
-        self.curve_DDC0_spc_avg = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_DDC0_spc_avg.attach(self.qplt_DDC0_spc)
-        self.curve_DDC0_spc_avg.setPen(Qt.QPen(Qt.Qt.darkGreen))
+        self.curve_DDC0_spc_avg = self.qplt_DDC0_spc.getPlotItem().plot(pen='g')
+        #self.curve_DDC0_spc_avg.attach(self.qplt_DDC0_spc)
+        #self.curve_DDC0_spc_avg.setPen(Qt.QPen(Qt.Qt.darkGreen))
             
 
 
@@ -1894,14 +1896,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 else:
                     self.curve_DDC0_spc_avg.setVisible(False)
                 self.qplt_DDC0_spc.setTitle('Freq noise PSD')
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yLeft, 'PSD [dB Hz^2/Hz]')
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, y_limits[0], y_limits[1])
+                self.qplt_DDC0_spc.setLabel('left', 'PSD [dB Hz^2/Hz]')
+                self.qplt_DDC0_spc.setYRange(y_limits[0], y_limits[1])
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[1], frequency_axis[last_index_shown])
-
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, f_limits[0], f_limits[1])
-                
-                self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.xBottom, 'Frequency [Hz]')
+                self.qplt_DDC0_spc.getPlotItem().setLogMode(x=True)
+                self.qplt_DDC0_spc.setXRange(np.log10(f_limits[0]), np.log10(f_limits[1]))
+                # self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+                self.qplt_DDC0_spc.setLabel('bottom', 'Frequency [Hz]')
                 self.curve_DDC0_cumul_phase.setVisible(False)
             elif self.qcombo_ddc_plot.currentIndex() == 1:
                 # Compute the phase noise time-domain standard deviation:
@@ -1913,12 +1914,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                     self.curve_DDC0_spc_avg.setVisible(True)
                 else:
                     self.curve_DDC0_spc_avg.setVisible(False)
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, f_limits[0], f_limits[1])
+                self.qplt_DDC0_spc.setXRange(f_limits[0], f_limits[1])
                 self.qplt_DDC0_spc.setTitle('Phase noise PSD, std dev = %.2f radrms' % phasenoise_stddev)
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yLeft, 'PSD [dBc/Hz]')
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, y_limits[0], y_limits[1])
-                self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+                self.qplt_DDC0_spc.setLabel('left', 'PSD [dBc/Hz]')
+                self.qplt_DDC0_spc.setYRange(y_limits[0], y_limits[1])
+                #self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+                self.qplt_DDC0_spc.getPlotItem().setLogMode(x=True)
                 
+                self.qplt_DDC0_spc.setXRange(np.log10(f_limits[0]), np.log10(f_limits[1]))
+                self.qplt_DDC0_spc.setLabel('bottom', 'Frequency [Hz]')
+
                 # Display the cumulative integral of the phase noise:
                 # Select desired frequency range:
                 try:
@@ -1944,11 +1949,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 self.curve_DDC0_cumul_phase.setData(frequency_axis_integral, np.sqrt(cumul_int))
                 self.curve_DDC0_cumul_phase.setVisible(True)
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[1], frequency_axis[last_index_shown])
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, f_limits[0], f_limits[1])
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.xBottom, 'Frequency [Hz]')
+
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yRight, 0, 2*2*np.pi)
                 
-#                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yRight, 'PSD [dBc/Hz]')
+#                self.qplt_DDC0_spc.setLabel(Qwt.QwtPlot.yRight, 'PSD [dBc/Hz]')
                 
              
             elif self.qcombo_ddc_plot.currentIndex() == 2:
@@ -1960,12 +1964,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 self.curve_DDC0_spc_avg.setVisible(False)
                 self.curve_DDC0_cumul_phase.setVisible(False)
                 self.qplt_DDC0_spc.setTitle('Instantaneous frequency error, std dev = %.1f kHz' % (np.std(inst_freq_decimated)/1e3))
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yLeft, 'Freq [Hz]')
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.xBottom, 'Time [s]')
+                self.qplt_DDC0_spc.setLabel('left', 'Freq [Hz]')
+                self.qplt_DDC0_spc.setLabel('bottom', 'Time [s]')
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, -self.sl.fs/2, self.sl.fs/2)
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, np.min(inst_freq), np.max(inst_freq))
-                self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLinearScaleEngine())
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+                self.qplt_DDC0_spc.setYRange(np.min(inst_freq), np.max(inst_freq))
+                #self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLinearScaleEngine())
+                self.qplt_DDC0_spc.getPlotItem().setLogMode(x=False)
+                self.qplt_DDC0_spc.setXRange(time_axis[0], time_axis[-1])
                  
             elif self.qcombo_ddc_plot.currentIndex() == 3:
                 # Display the time-domain instantaneous phase output by the DDC block (computed by integrating the frequency), mostly for debugging:
@@ -1982,12 +1987,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 self.curve_DDC0_spc_avg.setVisible(False)
                 self.curve_DDC0_cumul_phase.setVisible(False)
                 self.qplt_DDC0_spc.setTitle('Instantaneous phase error, std dev = %.2f radrms' % phasenoise_stddev)
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.yLeft, 'Phase [rad]')
-                self.qplt_DDC0_spc.setAxisTitle(Qwt.QwtPlot.xBottom, 'Time [s]')
+                self.qplt_DDC0_spc.setLabel('left', 'Phase [rad]')
+                self.qplt_DDC0_spc.setLabel('bottom', 'Time [s]')
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, -self.sl.fs/2, self.sl.fs/2)
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, np.min(inst_phase), np.max(inst_phase))
-                self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLinearScaleEngine())
-                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+                self.qplt_DDC0_spc.setYRange(np.min(inst_phase), np.max(inst_phase))
+                #self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLinearScaleEngine())
+                self.qplt_DDC0_spc.getPlotItem().setLogMode(x=False)
+                self.qplt_DDC0_spc.setXRange(time_axis[0], time_axis[-1])
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yLeft, -3.14, 3.14)
 #                print "debug warning: phase noise plot scaled to +/- pi"
              
@@ -2128,13 +2134,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             if self.bDisplayTiming == True:
                 print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
             start_time = time.clock()
-            
-#            spc = np.fft.fft(np.zeros(1e5))
-            
-#            if self.bDisplayTiming == True:
-#                print('Elapsed time (FFT2) = %f' % (time.clock()-start_time))
-#            start_time = time.clock()
-            
+                        
             spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2/4)
             spc = 10*np.log10(spc + 1e-12)
             
