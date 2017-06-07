@@ -19,9 +19,9 @@ import errno
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 from LoopFiltersUI import LoopFiltersUI
 from DisplayVNAWindow import DisplayVNAWindow
-from LoopFiltersUI_DAC1_and_DAC2 import LoopFiltersUI_DAC1_and_DAC2
+#from LoopFiltersUI_DAC1_and_DAC2 import LoopFiltersUI_DAC1_and_DAC2
 from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
-from DisplayCrashMonitorWindow import DisplayCrashMonitorWindow
+#from DisplayCrashMonitorWindow import DisplayCrashMonitorWindow
 #from ILX_laser_control import ILX_laser_control
 #from PyDAQmx_single_1 import NIDAQ_USB
 #from NIUSB_DAQ import Instrument
@@ -1101,34 +1101,43 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
         # Create the baseband IQ plot:
-        self.qplt_IQ = Qwt.QwtPlot()
-        self.qplt_IQ.move(50, 50)
-        self.qplt_IQ.resize(200, 200)
-        self.qplt_IQ.setMinimumSize(100, 100)
-        self.qplt_IQ.setMaximumSize(150, 150)
+        #self.qplt_IQ = Qwt.QwtPlot()
+        self.qplt_IQ = pg.PlotWidget()
+        #self.qplt_IQ.move(50, 50)
+        #self.qplt_IQ.resize(200, 200)
+        self.qplt_IQ.setMinimumSize(50, 50)
+        self.qplt_IQ.setMaximumSize(200, 200)
+        self.qplt_IQ.setFixedSize(100, 100)
 #        self.qplt_IQ.setsetHeightForWidth(True)
-#        qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Preferred, Qt.QSizePolicy.Preferred)
+        # qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Preferred, Qt.QSizePolicy.Preferred)
         qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Fixed, Qt.QSizePolicy.Fixed)
-#        qPolicy.setHeightForWidth(True)
+        # qPolicy.setHeightForWidth(True)
         self.qplt_IQ.setSizePolicy(qPolicy)
         
-#        self.qplt_IQ.setSizePolicy(Qt.QSizePolicy.setHeightForWidth(True))
+       # self.qplt_IQ.setSizePolicy(Qt.QSizePolicy.setHeightForWidth(True))
         
 #        print(self.qplt_IQ.sizeHint())
-        self.qplt_IQ.setTitle('Baseband IQ')
-        self.qplt_IQ.setCanvasBackground(Qt.Qt.white)
-        self.qplt_IQ.enableAxis(Qwt.QwtPlot.yLeft, False)
-        self.qplt_IQ.enableAxis(Qwt.QwtPlot.xBottom, False)
+        #self.qplt_IQ.setTitle('', fill=None)
+        # self.qplt_IQ.setTitle('Baseband IQ')
+
+        #self.qplt_IQ.setCanvasBackground(Qt.Qt.white)
+        #self.qplt_IQ.enableAxis(Qwt.QwtPlot.yLeft, False)
+        #self.qplt_IQ.enableAxis(Qwt.QwtPlot.xBottom, False)
+        self.qplt_IQ.hideAxis('left')
+        self.qplt_IQ.hideAxis('bottom')
+
+        self.lblplt_IQ_title = Qt.QLabel('Baseband IQ:')
         
         # Create the curves in the plot
-        self.curve_IQ = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_IQ.attach(self.qplt_IQ)
-        self.curve_IQ.setPen(Qt.QPen(Qt.Qt.NoPen))
-        self.curve_IQ.setSymbol(Qwt.QwtSymbol(Qwt.QwtSymbol.Ellipse,
-                                    Qt.QBrush(Qt.Qt.blue),
-                                    Qt.QPen(Qt.Qt.blue),
-                                    Qt.QSize(3, 3)))
-        self.curve_IQ.setRenderHint(Qwt.QwtPlotItem.RenderAntialiased);
+        self.curve_IQ = self.qplt_IQ.getPlotItem().plot(pen = None, symbol = 'o', symbolPen=None, symbolSize=3, symbolBrush='b')
+        # self.curve_IQ = Qwt.QwtPlotCurve('Spectrum')
+        # self.curve_IQ.attach(self.qplt_IQ)
+        # self.curve_IQ.setPen(Qt.QPen(Qt.Qt.NoPen))
+        # self.curve_IQ.setSymbol(Qwt.QwtSymbol(Qwt.QwtSymbol.Ellipse,
+        #                             Qt.QBrush(Qt.Qt.blue),
+        #                             Qt.QPen(Qt.Qt.blue),
+        #                             Qt.QSize(3, 3)))
+        # self.curve_IQ.setRenderHint(Qwt.QwtPlotItem.RenderAntialiased);
         
         # Create the frequency domain plot:
         # self.qplt_spc = Qwt.QwtPlot()
@@ -1185,7 +1194,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         grid.setRowStretch(1, 1)
 
         # The plots:
-        grid.addWidget(self.qplt_IQ,                0, 2+N_dac_controls, 2, 2)
+        qhoriz = Qt.QHBoxLayout()
+        qhoriz.addWidget(self.lblplt_IQ_title)
+        qhoriz.addWidget(self.qplt_IQ)
+        qhoriz.addStretch(1)
+        
+        grid.addLayout(qhoriz,                      0, 2+N_dac_controls, 2, 2)
+
+        #grid.addWidget(self.qplt_IQ,                0, 2+N_dac_controls, 2, 2)
         grid.addWidget(self.plt_spc,                0, 4+N_dac_controls, 5, 1)        
         grid.setColumnStretch(4+N_dac_controls, 1)
 #        
@@ -2261,10 +2277,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
             self.curve_IQ.setData(np.real(complex_baseband), np.imag(complex_baseband))
             
-            self.qplt_IQ.setAxisScale(Qwt.QwtPlot.xBottom, -1.5*mean_amplitude, 1.5*mean_amplitude)
-            self.qplt_IQ.setAxisScale(Qwt.QwtPlot.yLeft, -1.5*mean_amplitude, 1.5*mean_amplitude)
+            self.qplt_IQ.setXRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
+            self.qplt_IQ.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
             # Refresh the display:
-            self.qplt_IQ.replot()
+            # self.qplt_IQ.replot()
             
             if self.bDisplayTiming == True:
                 print('Elapsed time (Display IQ) = %f' % (time.clock()-start_time))

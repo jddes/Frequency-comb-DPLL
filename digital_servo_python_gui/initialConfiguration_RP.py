@@ -104,7 +104,8 @@ class initialConfiguration(QtGui.QDialog):
 
         self.qradio_usefromlist = Qt.QRadioButton('Use listed')
         self.qradio_usefromtextbox = Qt.QRadioButton('Use manual entry')
-        self.qradio_usefromtextbox.setChecked(True)
+        self.qradio_usefromtextbox.setChecked(False)
+        self.qradio_usefromlist.setChecked(True)
 
         self.qlabel_manual_entry = Qt.QLabel('Manual IP entry')
         self.qedit_manual_entry = Qt.QLineEdit('')

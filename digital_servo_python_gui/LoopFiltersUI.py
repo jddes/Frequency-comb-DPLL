@@ -14,6 +14,9 @@ import traceback
 
 from user_friendly_QLineEdit import user_friendly_QLineEdit
 
+# stuff for Python 3 port
+import pyqtgraph as pg
+
 class LoopFiltersUI(Qt.QWidget):
     
     MINIMUM_GAIN_DISPLAY = 10**(-120/20)
@@ -56,54 +59,59 @@ class LoopFiltersUI(Qt.QWidget):
 #        print('initUI()')
         
         # First create the plot:
-        self.qplot_tf = Qwt.QwtPlot()
+        self.qplot_tf = pg.PlotWidget()
 #        self.qplot_tf.enableAxis(Qwt.QwtPlot.xBottom, False)
 #        self.qplot_tf.enableAxis(Qwt.QwtPlot.yLeft, False)
         self.qplot_tf.setMinimumHeight(100)
-        self.qplot_tf.setCanvasBackground(Qt.Qt.white)
-        self.qplot_tf.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        #self.qplot_tf.setCanvasBackground(Qt.Qt.white)
+        #self.qplot_tf.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        self.qplot_tf.getPlotItem().setLogMode(x=True)
+
+
         #self.qplot_tf.setTitle('Loop filter #%d' % self.filter_number)
         
         qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
 #        qPolicy.setHeightForWidth(True)
         self.qplot_tf.setSizePolicy(qPolicy)
         
-        self.curve_0dB = Qwt.QwtPlotCurve()
+        self.curve_0dB = self.qplot_tf.getPlotItem().plot()
         #FEATURE        
         #self.curve_0dB.attach(self.qplot_tf)
         pen = Qt.QPen(Qt.Qt.DashLine)
         pen.setColor(Qt.Qt.black)
         self.curve_0dB.setPen(pen)
         
-        self.curve_kp = Qwt.QwtPlotCurve()
-        self.curve_kp.attach(self.qplot_tf)
+        self.curve_kp = self.qplot_tf.getPlotItem().plot()
+        #self.curve_kp.attach(self.qplot_tf)
         self.curve_kp.setPen(Qt.QPen(Qt.Qt.black))
         
-        self.curve_fi = Qwt.QwtPlotCurve()
-        self.curve_fi.attach(self.qplot_tf)
+        self.curve_fi = self.qplot_tf.getPlotItem().plot()
+        #self.curve_fi.attach(self.qplot_tf)
         self.curve_fi.setPen(Qt.QPen(Qt.Qt.black))
         
-        self.curve_fii = Qwt.QwtPlotCurve()
-        self.curve_fii.attach(self.qplot_tf)
+        self.curve_fii = self.qplot_tf.getPlotItem().plot()
+        #self.curve_fii.attach(self.qplot_tf)
         self.curve_fii.setPen(Qt.QPen(Qt.Qt.black))
         
-        self.curve_fd = Qwt.QwtPlotCurve()
-        self.curve_fd.attach(self.qplot_tf)
-        self.curve_fd.setPen(Qt.QPen(Qt.Qt.black))
+        # self.curve_fd = self.qplot_tf.getPlotItem().plot()
+        #self.curve_fd.attach(self.qplot_tf)
+        # self.curve_fd.setPen(Qt.QPen(Qt.Qt.black))
         
-        self.curve_fdf = Qwt.QwtPlotCurve()
-        self.curve_fdf.attach(self.qplot_tf)
-        pen2 = Qt.QPen(Qt.Qt.DashLine)
-        pen2.setColor(Qt.Qt.black)
-        self.curve_fdf.setPen(pen2)
+        # self.curve_fdf = self.qplot_tf.getPlotItem().plot()
+        #self.curve_fdf.attach(self.qplot_tf)
+        # pen2 = Qt.QPen(Qt.Qt.DashLine)
+        # pen2.setColor(Qt.Qt.black)
+        #self.curve_fdf.setPen(pen2)
         
-        self.curve_composite = Qwt.QwtPlotCurve()
-        self.curve_composite.attach(self.qplot_tf)
-        self.curve_composite.setPen(Qt.QPen(Qt.Qt.red))
+        self.curve_composite = self.qplot_tf.getPlotItem().plot()
+        #self.curve_composite.attach(self.qplot_tf)
+        self.curve_composite.setPen(pg.mkPen('r'))
         
-        self.curve_actual = Qwt.QwtPlotCurve()
-        self.curve_actual.attach(self.qplot_tf)
-        self.curve_actual.setPen(Qt.QPen(Qt.Qt.blue, 2))
+        # self.curve_actual = self.qplot_tf.getPlotItem().plot(fillLevel=-140, fillBrush='b')
+        self.curve_actual = self.qplot_tf.getPlotItem().plot()
+        #self.curve_actual.attach(self.qplot_tf)
+        #self.curve_actual.setPen(Qt.QPen(Qt.Qt.blue, 2))
+        self.curve_actual.setPen(pg.mkPen('b', width=2))
         
 #        self.curve_0dB.setPen(self.qplot_tf)
         
@@ -337,9 +345,9 @@ class LoopFiltersUI(Qt.QWidget):
             
         # TODO: make this changeable from the UI:
         try:
-            fmin = 1.0
+            fmin = 10.0
         except:
-            fmin = 1.0
+            fmin = 10.0
         try:
             fmax = 10e6
         except:
@@ -698,7 +706,7 @@ class LoopFiltersUI(Qt.QWidget):
                 # fi relative to kp dB crossing
                 gain_array = 10**(kp/20) * f_array/fd
 #        print(20*np.log10(gain_array))
-        self.curve_fd.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
+        # self.curve_fd.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
         
         # Draw the D gain curve:
         if self.qchk_bKpCrossing.isChecked() == False:
@@ -708,18 +716,21 @@ class LoopFiltersUI(Qt.QWidget):
             # fi relative to kp dB crossing
             gain_array = 10**(kp/20) * fdf/fd + 0*f_array
 #        print(20*np.log10(gain_array))
-        self.curve_fdf.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
+        # self.curve_fdf.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
 
 
         f_array = np.logspace(np.log10(fmin), np.log10(fmax), 100)
         actual_gain_array = np.abs(self.pll.get_current_transfer_function(f_array, self.sl.fs) * self.kc)
         self.curve_actual.setData(f_array, 20*np.log10(actual_gain_array + self.MINIMUM_GAIN_DISPLAY))
 
+        print('LoopFiltersUI: setting X range: %f, %f' % (fmin, fmax))
+        print('LoopFiltersUI: setting Y range: %f, %f' % (gain_min, gain_max))
+        #self.qplot_tf.setXRange(np.log10(fmin), np.log10(fmax))
+        self.qplot_tf.setYRange(gain_min, gain_max)
+
+
         
-        self.qplot_tf.setAxisScale(Qwt.QwtPlot.xBottom, fmin, fmax)
-        self.qplot_tf.setAxisScale(Qwt.QwtPlot.yLeft, gain_min, gain_max)
-        
-        self.qplot_tf.replot()
+        #self.qplot_tf.replot()
         
 #        print('LoopFiltersUI::updateGraph(): Exiting')
         

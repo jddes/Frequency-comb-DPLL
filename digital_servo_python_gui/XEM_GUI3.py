@@ -8,39 +8,24 @@ import sys
 from PyQt4 import QtGui, Qt, QtCore
 import numpy as np
 
-#from win32gui import SetWindowPos
-#import win32con
-
-#import winsound
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
 #from FreqErrorWindow import FreqErrorWindow
 from FreqErrorWindowWithTempControlV2 import FreqErrorWindowWithTempControlV2
 #from DisplayPhaseResponseWindow import DisplayPhaseResponseWindow
-from DisplayVNAWindow import DisplayVNAWindow
 from initialConfiguration_RP import initialConfiguration
 from SLLSystemParameters import SLLSystemParameters
 from SLLConfigurationWindow import SLLConfigurationWindow
 
-from DisplayTransferFunctionWindow import DisplayTransferFunctionWindow
 from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
 
 from DisplayDividerAndResidualsStreamingSettingsWindow import DisplayDividerAndResidualsStreamingSettingsWindow
-from DFr_timing_module_settings import DFr_timing_module_settings
 
 import time
 
-import socket
 
 
-
-
-
-#import gc
-
-import allowSetForegroundWindow # This is a workaround to make our window show on top on Windows 7:
-#import os   # used by allowSetForegroundWindow()
 
 
 def main():
@@ -135,13 +120,12 @@ def main():
     
     ###########################################################################
     # Start the User Interface
-    allowSetForegroundWindow.allowSetForegroundWindow()
     
     # Start Qt:
     app = QtGui.QApplication(sys.argv)
     
     
-    strBroadcastAddress = '192.168.0.255'
+    strBroadcastAddress = '192.168.2.255'
     strFPGAFirmware=r'red_pitaya_top.bit'
     strCPUFirmware=u'monitor-tcp'
     initial_config = initialConfiguration(sl.dev, devices_data, strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
