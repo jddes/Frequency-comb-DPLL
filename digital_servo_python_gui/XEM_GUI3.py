@@ -8,10 +8,10 @@ import sys
 from PyQt4 import QtGui, Qt, QtCore
 import numpy as np
 
-from win32gui import SetWindowPos
-import win32con
+#from win32gui import SetWindowPos
+#import win32con
 
-import winsound
+#import winsound
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
@@ -32,6 +32,10 @@ from DFr_timing_module_settings import DFr_timing_module_settings
 import time
 
 import socket
+
+
+
+
 
 #import gc
 

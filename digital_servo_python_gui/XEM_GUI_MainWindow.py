@@ -32,6 +32,9 @@ import matplotlib.pyplot as plt
 import traceback
 
 
+# stuff for Python 3 port
+import pyqtgraph as pg
+
 def smooth(x,window_len=11,window='hanning'):
     """smooth the data using a window with requested size.
     
@@ -1090,7 +1093,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.qcombo_adc_plot.addItems(['ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
         
-        
+        # Set a few global PyQtGraph settings before creating plots:
+        pg.setConfigOption('leftButtonPan', False)
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
+        pg.setConfigOption('antialias', True)
+
+
         # Create the baseband IQ plot:
         self.qplt_IQ = Qwt.QwtPlot()
         self.qplt_IQ.move(50, 50)
@@ -1122,22 +1131,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.curve_IQ.setRenderHint(Qwt.QwtPlotItem.RenderAntialiased);
         
         # Create the frequency domain plot:
-        self.qplt_spc = Qwt.QwtPlot()
-        self.qplt_spc.setTitle('Spectrum')
-        self.qplt_spc.setCanvasBackground(Qt.Qt.white)
+        # self.qplt_spc = Qwt.QwtPlot()
+        # self.qplt_spc.setTitle('Spectrum')
+        # self.qplt_spc.setCanvasBackground(Qt.Qt.white)
+        self.plt_spc = pg.PlotWidget()
         
-        # Create the curve in the plot
-        self.curve_spc = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_spc.attach(self.qplt_spc)
-        self.curve_spc.setPen(Qt.QPen(Qt.Qt.blue))
-        self.curve_filter = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_filter.attach(self.qplt_spc)
-        self.curve_filter.setPen(Qt.QPen(Qt.Qt.red))
         
-        self.curve_divided = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_divided.attach(self.qplt_spc)
-        self.curve_divided.setPen(Qt.QPen(Qt.Qt.black))
-        
+        # Create the curves in the plot
+        # self.curve_spc = Qwt.QwtPlotCurve('Spectrum')
+        # self.curve_spc.attach(self.qplt_spc)
+        # self.curve_spc.setPen(Qt.QPen(Qt.Qt.blue))
+        # self.curve_filter = Qwt.QwtPlotCurve('Spectrum')
+        # self.curve_filter.attach(self.qplt_spc)
+        # self.curve_filter.setPen(Qt.QPen(Qt.Qt.red))
+        self.curve_spc = self.plt_spc.getPlotItem().plot(title='Spectrum', pen='b')
+        self.curve_filter = self.plt_spc.getPlotItem().plot(pen='r')
         
         # Put all the widgets into a grid layout
         grid = QtGui.QGridLayout()
@@ -1178,7 +1186,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
         # The plots:
         grid.addWidget(self.qplt_IQ,                0, 2+N_dac_controls, 2, 2)
-        grid.addWidget(self.qplt_spc,               0, 4+N_dac_controls, 5, 1)        
+        grid.addWidget(self.plt_spc,                0, 4+N_dac_controls, 5, 1)        
         grid.setColumnStretch(4+N_dac_controls, 1)
 #        
         # The controls below the IQ plot:
@@ -2026,28 +2034,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         
             
         try:
-            # Read from ADC0
+            # Read from selected source
             setup_func_dict[currentSelector](N_points)
             self.sl.trigger_write()
             self.sl.wait_for_write()
             (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
-            # print "len(samples_out) = %d" % (len(samples_out))
-            # print(samples_out[0:10])
-            # ref_exp0 = 1 + 0*1j
 
-#            print("{0:08b}".format(samples_out[0]))
             max_abs = np.max(np.abs(samples_out))
-#            print('count max = %s, Voltage = %f V' % (max_abs, self.sl.convertADCCountsToVolts(0, max_abs)))
             
             samples_out = samples_out.astype(dtype=np.float)/2**15
-            # # hack to fake the display for now:
-            # ref_exp0 = 1 + 0*1j
-            # samples_out = np.random.randn(len(samples_out))
-            # print(samples_out[0:5])
             self.raw_adc_samples = samples_out
-            
-            #print('currentSelector = %d' % currentSelector)
-            #print('ref_exp0 = %f, %f' % (np.real(ref_exp0), np.imag(ref_exp0)))
                 
         except:
             # ADC read failed.
@@ -2071,33 +2067,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.qadc0_scale.setValue(max_abs_in_bits)
         self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
         
-#            # Put the data into the time domain Qwt plot:
-#            self.qplt.x = np.linspace(1, len(samples_out), len(samples_out))
-#            self.qplt.y = samples_out
-#            self.curve1.setData(self.qplt.x, self.qplt.y)
-#            # Refresh the display:
-#            self.qplt.replot()
-
         
         # Compute the baseband IQ data and the spectrum:
         # Read the reference frequency, should contain a negative frequency (encoded as a frequency above Nyquist) if the VCO sign is positive
         if self.selected_ADC == 0:
             f_reference = self.sl.get_ddc0_ref_freq()
-            f_reference = ((f_reference+self.sl.fs/2) % self.sl.fs)-self.sl.fs/2  # The modulo converts a frequency above Nyquist to the matching negative frequency
         elif self.selected_ADC == 1:
             f_reference = self.sl.get_ddc1_ref_freq()
-            f_reference = ((f_reference+self.sl.fs/2) % self.sl.fs)-self.sl.fs/2  # The modulo converts a frequency above Nyquist to the matching negative frequency
+        f_reference = ((f_reference+self.sl.fs/2) % self.sl.fs)-self.sl.fs/2  # The modulo converts a frequency above Nyquist to the matching negative frequency
             
-#        try:
-#            f_reference = float(self.qedit_ref_freq.text())
-#        except:
-#            f_reference = 5e6
-#        # We need to add the sign:
-#        if self.qsign_positive.isChecked():
-#            f_reference =-f_reference
-            
-#            f_reference = float(self.qedit_ref_freq.text())
-            
+        # Compute the window function used to display the spectrum:
         N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
         frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*self.sl.fs, N_fft)
         window_function = np.blackman(len(samples_out))
@@ -2112,18 +2091,22 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         else:
             self.qlabel_rawdata_rbw.setText('RBW: %.0f Hz; Points:' % (round(window_NEB)))
             
-        if self.qcombo_adc_plottype.currentIndex() == 0:
+
+
+        if self.qcombo_adc_plottype.currentIndex() == 0:    # Display Spectrum
+
             if self.bDisplayTiming == True:
                 print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
             start_time = time.clock()
             
-            # Compute the spectrum of the raw data:
+            # Apply window function to the data:
             samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
             
             if self.bDisplayTiming == True:
                 print('Elapsed time (pre-FFT2) = %f' % (time.clock()-start_time))
             start_time = time.clock()
             
+            # Compute the spectrum of the raw data:
             spc = np.fft.fft(samples_out_windowed, N_fft)
             
             if self.bDisplayTiming == True:
@@ -2146,14 +2129,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             
             # Update the graph data:
             self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
-            self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
-            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-            self.qplt_spc.setTitle('Spectrum')
+            self.plt_spc.setXRange(frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
+            self.plt_spc.setYRange(-120, 0)
+            #self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
+            #self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
+            self.plt_spc.setTitle('Spectrum')
         elif self.qcombo_adc_plottype.currentIndex() == 1:
             # Display time-domain plot instead
             # Convert ADC counts to voltage
             samples_out = samples_out*2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1)
-            time_axis = np.linspace(0, len(samples_out)-1, len(samples_out)-1)/self.sl.fs
+            time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
             
             self.curve_spc.setData(time_axis, samples_out)
 #            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
@@ -2163,16 +2148,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             valmin = np.min(samples_out)
             valmax = np.max(samples_out)
             
-#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, (valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
-            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, (valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
-            self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+            # self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, (valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
+            # self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+
+            self.plt_spc.setYRange((valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
+            self.plt_spc.setXRange(time_axis[0], time_axis[-1])
             
-            self.qplt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
+            self.plt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
             
 
-        
-        # Generate a copy of the reference complex exponential used in the FPGA:
+        # If we are handling ADC0 or ADC1 data (as opposed to DAC data)
         if currentSelector == 0 or currentSelector == 1:
+
+
             if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
                 print('displayADC(): Invalid complex exponential. Probably because of the USB bug.')
                 return
@@ -2199,7 +2187,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             
             
             if self.qcombo_adc_plottype.currentIndex() == 2:
-                
                 # show phase error as a function of time
                 
                 # To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
@@ -2207,7 +2194,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 phi = np.unwrap(np.angle(complex_basebandr))
                 phi_std = np.std(phi)
                 # Set axis
-                time_axis = np.linspace(0, len(complex_baseband)-1, len(complex_baseband)-1)/self.sl.fs
+                time_axis = np.linspace(0, len(complex_baseband)-1, len(complex_baseband))/self.sl.fs
                 
                 self.curve_spc.setData(time_axis, phi-phi[0])
     #            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
@@ -2217,10 +2204,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 valmin = np.min(phi)-phi[0]
                 valmax = np.max(phi)-phi[0]
                 
-                self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, valmin, valmax)
-                self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+                # self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, valmin, valmax)
+                # self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+
+                self.plt_spc.setYRange(valmin, valmax)
+                self.plt_spc.setXRange(time_axis[0], time_axis[-1])
             
-                self.qplt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
+                self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
             
        
             if self.qcombo_adc_plottype.currentIndex() == 3:
@@ -2229,7 +2219,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
                 complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
                 # Set axis
-                time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr)-1)/self.sl.fs
+                time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
                 
                 self.curve_spc.setData(time_axis, np.real(complex_basebandr))
                 self.curve_filter.setData(time_axis, np.imag(complex_basebandr))
@@ -2239,10 +2229,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
                 valmax1 = np.mean(np.abs(complex_basebandr))
                 
-                self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -1.5*valmax1, 1.5*valmax1)
-                self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+                self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
+                self.plt_spc.setXRange(time_axis[0], time_axis[-1])
             
-                self.qplt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
+                self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
                 
             if self.qcombo_adc_plottype.currentIndex() == 4:
                 
@@ -2252,7 +2242,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # Sync the phase to be equal to 0 at t=0:
                 complex_basebandr = complex_basebandr * np.conj(complex_basebandr[0])/np.abs(complex_basebandr[0])
                 # Set axis
-                time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr)-1)/self.sl.fs
+                time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
                 
                 self.curve_spc.setData(time_axis, np.real(complex_basebandr))
                 self.curve_filter.setData(time_axis, np.imag(complex_basebandr))
@@ -2262,10 +2252,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
                 valmax1 = np.mean(np.abs(complex_basebandr))
                 
-                self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -1.5*valmax1, 1.5*valmax1)
-                self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+                self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
+                self.plt_spc.setXRange(time_axis[0], time_axis[-1])
             
-                self.qplt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
+                self.plt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
             
             
             complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
@@ -2344,11 +2334,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         
 
         
-        # Refresh the display:
-        self.qplt_spc.replot()
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (self.qplt_spc.replot()) = %f' % (time.clock()-start_time))
+            print('Elapsed time (self.plt_spc.replot()) = %f' % (time.clock()-start_time))
         start_time = time.clock()
         
 #        self.bDisplayTiming = False
