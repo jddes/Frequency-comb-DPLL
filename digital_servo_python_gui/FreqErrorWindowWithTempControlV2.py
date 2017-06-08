@@ -10,8 +10,7 @@ from PyQt4 import QtGui, Qt
 import PyQt4.Qwt5 as Qwt
 import numpy as np
 import math
-from scipy.signal import lfilter
-from scipy.signal import decimate
+
 
 import os
 import errno
@@ -20,10 +19,13 @@ import sys
 
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 
-# To communication with the temperature controller process
+# To communicate with the temperature controller process
 import AsyncSocketComms
 
 import weakref
+
+# stuff for Python 3 port
+import pyqtgraph as pg
 
 
 class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
@@ -148,45 +150,45 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.qgroupbox_freq.setAutoFillBackground(True)
 
         # Add a QwtPlot to the UI:
-        self.qplt_freq = Qwt.QwtPlot()
+        #self.qplt_freq = Qwt.QwtPlot()
+        self.qplt_freq = pg.PlotWidget()
         self.qplt_freq.setTitle('Lock #%d Frequency error' % (self.output_number))
-        self.qplt_freq.setCanvasBackground(Qt.Qt.white)
+        #self.qplt_freq.setCanvasBackground(Qt.Qt.white)
         
-        plotgrid = Qwt.QwtPlotGrid()
-        plotgrid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
-        plotgrid.setMinPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
-        plotgrid.attach(self.qplt_freq);
+        # plotgrid = Qwt.QwtPlotGrid()
+        # plotgrid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
+        # plotgrid.setMinPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
+        # plotgrid.attach(self.qplt_freq);
+        self.qplt_freq.showGrid(x=True, y=True)
         
         # Add another QwtPlot to the UI:
-        self.qplt_dac = Qwt.QwtPlot()
+        self.qplt_dac = pg.PlotWidget()
         self.qplt_dac.setTitle('Lock #%d DAC outputs' % (self.output_number))
-        self.qplt_dac.setCanvasBackground(Qt.Qt.white)
-        self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
+        #self.qplt_dac.setCanvasBackground(Qt.Qt.white)
+        self.qplt_dac.setYRange(0, 1)
         
-        plotgrid = Qwt.QwtPlotGrid()
-        plotgrid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
-        plotgrid.setMinPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
-        plotgrid.attach(self.qplt_dac);
+        # plotgrid = Qwt.QwtPlotGrid()
+        # plotgrid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
+        # plotgrid.setMinPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine));
+        # plotgrid.attach(self.qplt_dac);
+        self.qplt_dac.showGrid(x=True, y=True)
         
         # Create the curve in the plot
-        self.curve_freq_error = Qwt.QwtPlotCurve('Spectrum')
-        self.curve_freq_error.attach(self.qplt_freq)
-        self.curve_freq_error.setPen(Qt.QPen(Qt.Qt.blue))
+        self.curve_freq_error = self.qplt_freq.getPlotItem().plot(pen='b')
+        #self.curve_freq_error.attach(self.qplt_freq)
+        #self.curve_freq_error.setPen(Qt.QPen(Qt.Qt.blue))
         
         # Create the curve in the plot
         if self.output_number == 0:
-            self.curve_dac0 = Qwt.QwtPlotCurve('DAC')
-            self.curve_dac0.attach(self.qplt_dac)
-            self.curve_dac0.setPen(Qt.QPen(Qt.Qt.blue))
+            self.curve_dac0 = self.qplt_dac.getPlotItem().plot(pen='b')
+            #self.curve_dac0.attach(self.qplt_dac)
+            #self.curve_dac0.setPen(Qt.QPen(Qt.Qt.blue))
             
         if self.output_number == 1:
-            self.curve_dac1 = Qwt.QwtPlotCurve('DAC')
-            self.curve_dac1.attach(self.qplt_dac)
-            self.curve_dac1.setPen(Qt.QPen(Qt.Qt.blue))
+            self.curve_dac1 = self.qplt_dac.getPlotItem().plot(pen='b')
+            #self.curve_dac1.attach(self.qplt_dac)
+            #self.curve_dac1.setPen(Qt.QPen(Qt.Qt.blue))
             
-            self.curve_dac2 = Qwt.QwtPlotCurve('DAC')
-            self.curve_dac2.attach(self.qplt_dac)
-            self.curve_dac2.setPen(Qt.QPen(Qt.Qt.red))
         
         # Create widgets to specify buffer length and clear buffer:
         self.qbtn_reset = Qt.QPushButton('Clear display')
@@ -578,7 +580,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.curve_freq_error.setData(self.time_history_counters[self.bValid_counters] - self.time_history_counters[len(self.time_history_counters)-1], self.freq_history[self.bValid_counters])            
                 self.qplt_freq.setTitle('%s Lock Freq error, mean = %.6f Hz, std = %.3f mHz' % (channelName, np.mean(self.freq_history[self.bValid_counters]), 1e3*np.std(self.freq_history[self.bValid_counters])))
                 if self.qchk_fullscale_freq.isChecked():
-                    self.qplt_freq.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    #self.qplt_freq.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
                     try:
                         ymin = float(self.qedit_ymin.text())
                         ymax = float(self.qedit_ymax.text())
@@ -586,11 +588,13 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                         ymin = -25e6
                         ymax = 25e6
                         
-                    self.qplt_freq.setAxisScale(Qwt.QwtPlot.yLeft, ymin, ymax)
+                    #self.qplt_freq.setAxisScale(Qwt.QwtPlot.yLeft, ymin, ymax)
+                    self.qplt_freq.setYRange(ymin, ymax)
                 else:
-                    self.qplt_freq.setAxisAutoScale(Qwt.QwtPlot.yLeft)
+                    #self.qplt_freq.setAxisAutoScale(Qwt.QwtPlot.yLeft)
+                    self.qplt_freq.enableAutoRange(y=True)
                     
-                self.qplt_freq.replot()
+                #self.qplt_freq.replot()
                 
                 # Update graph:
                 if self.output_number == 0:
@@ -599,16 +603,18 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     
                 if self.output_number == 1:
                     self.curve_dac1.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC1_history[self.bValid_dacs])            
-                    self.curve_dac2.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC2_history[self.bValid_dacs])            
+                    #self.curve_dac2.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC2_history[self.bValid_dacs])            
                     self.qplt_dac.setTitle('%s Lock DAC outputs, last raw codes = %f, %f' % (channelName, self.DAC1_history[-1], self.DAC2_history[-1]))
                 
                 if self.qchk_fullscale_dac.isChecked():
-                    self.qplt_dac.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
-                    self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
+                    #self.qplt_dac.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    self.qplt_dac.setYRange(0, 1)
+                    #self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
                 else:
-                    self.qplt_dac.setAxisAutoScale(Qwt.QwtPlot.yLeft)
+                    self.qplt_dac.enableAutoRange(y=True)
+                    #self.qplt_dac.setAxisAutoScale(Qwt.QwtPlot.yLeft)
                     
-                self.qplt_dac.replot()
+                #self.qplt_dac.replot()
             
         except:
             print('Exception occured parsing counter data. disabling further updates.')

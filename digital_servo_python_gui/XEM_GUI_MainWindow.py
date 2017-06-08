@@ -1234,7 +1234,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 if k == 0 or k == 1:
     #                print('XEM_GUI_MainWindow(): About to call LoopFiltersUI()')
                     self.qloop_filters[k] = LoopFiltersUI(self.sl, k, self.sl.pll[k], bDisplayLockChkBox=False)
-    
+
+                    
                     hbox.addWidget(self.qloop_filters[k])
                     self.qloop_filters[k].show()
                 
@@ -1307,6 +1308,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.qplt_DDC0_spc.setLabel('bottom', 'Frequency [Hz]')
         self.qplt_DDC0_spc.setLabel('left', 'PSD [dB Hz^2/Hz]')
         #self.qplt_DDC0_spc.setLabel('right', 'Phase [rad]')
+
+        # create the right-side axis:
+        p1 = self.qplt_DDC0_spc.getPlotItem()
+        self.qplt_DDC0_spc_right_viewbox = pg.ViewBox()
+        #self.qplt_DDC0_spc_right_viewbox.setLogMode(x=True)
+        p1.showAxis('right')
+        p1.scene().addItem(self.qplt_DDC0_spc_right_viewbox)
+        p1.getAxis('right').linkToView(self.qplt_DDC0_spc_right_viewbox)
+        self.qplt_DDC0_spc_right_viewbox.setXLink(p1)
+        p1.getAxis('right').setLabel('Phase [rad]')
+
+        self.updatePhaseNoiseViews()
+        p1.vb.sigResized.connect(self.updatePhaseNoiseViews)
+
         
         self.qplt_DDC0_spc.showGrid(x=True, y=True)
         #plot_grid = Qwt.QwtPlotGrid()
@@ -1322,9 +1337,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         #self.curve_DDC0_spc_amplitude_noise.attach(self.qplt_DDC0_spc)
         self.curve_DDC0_spc_amplitude_noise.setPen(Qt.QPen(Qt.Qt.red))
         
-        self.curve_DDC0_cumul_phase = self.qplt_DDC0_spc.getPlotItem().plot(pen='k')
+
+        #self.curve_DDC0_cumul_phase = pg.PlotCurveItem(pen='g')
+        self.curve_DDC0_cumul_phase = pg.PlotDataItem(pen='k')
+        self.curve_DDC0_cumul_phase.setLogMode(True, False)
+        self.qplt_DDC0_spc_right_viewbox.addItem(self.curve_DDC0_cumul_phase)
+
+        #self.curve_DDC0_cumul_phase = self.qplt_DDC0_spc_right_viewbox.getPlotItem().plot(pen='k')
         #self.curve_DDC0_cumul_phase.attach(self.qplt_DDC0_spc)
-        self.curve_DDC0_cumul_phase.setPen(Qt.QPen(Qt.Qt.black))
+        #self.curve_DDC0_cumul_phase.setPen(Qt.QPen(Qt.Qt.black))
         # self.curve_DDC0_cumul_phase.setYAxis(Qwt.QwtPlot.yRight)
         
         self.curve_DDC0_spc_avg = self.qplt_DDC0_spc.getPlotItem().plot(pen='g')
@@ -1393,6 +1414,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def resizeEvent(self, event):
 #        print('resizeEvent')
 #        print(self.geometry())
+
+    ## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)
+    def updatePhaseNoiseViews(self):
+        ## view has resized; update auxiliary views to match
+        p1 = self.qplt_DDC0_spc.getPlotItem()
+
+        self.qplt_DDC0_spc_right_viewbox.setGeometry(p1.vb.sceneBoundingRect())
+        
+        ## need to re-update linked axes since this was called
+        ## incorrectly while views had different shapes.
+        ## (probably this should be handled in ViewBox.resizeEvent)
+        self.qplt_DDC0_spc_right_viewbox.linkedViewChanged(p1.vb, self.qplt_DDC0_spc_right_viewbox.XAxis)
+
+
         
     def loadParameters(self, bTriggerEvents = True):
         print('loadParameters()')
@@ -1921,7 +1956,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 #self.qplt_DDC0_spc.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
                 self.qplt_DDC0_spc.getPlotItem().setLogMode(x=True)
                 
-                self.qplt_DDC0_spc.setXRange(np.log10(f_limits[0]), np.log10(f_limits[1]))
+                self.qplt_DDC0_spc.setXRange(np.log10(f_limits[0]), np.log10(f_limits[1]*5./6.0))   # the scaling is because the widget doesn't seem to use the exact values that we pass...
                 self.qplt_DDC0_spc.setLabel('bottom', 'Frequency [Hz]')
 
                 # Display the cumulative integral of the phase noise:
@@ -1948,11 +1983,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # Show results
                 self.curve_DDC0_cumul_phase.setData(frequency_axis_integral, np.sqrt(cumul_int))
                 self.curve_DDC0_cumul_phase.setVisible(True)
+                #self.qplt_DDC0_spc_right_viewbox.setYRange(0, 2*2*np.pi)
+                #self.qplt_DDC0_spc_right_viewbox.setXRange(0, 2*2*np.pi)
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[1], frequency_axis[last_index_shown])
 
 #                self.qplt_DDC0_spc.setAxisScale(Qwt.QwtPlot.yRight, 0, 2*2*np.pi)
-                
-#                self.qplt_DDC0_spc.setLabel(Qwt.QwtPlot.yRight, 'PSD [dBc/Hz]')
                 
              
             elif self.qcombo_ddc_plot.currentIndex() == 2:

@@ -63,6 +63,7 @@ class LoopFiltersUI(Qt.QWidget):
 #        self.qplot_tf.enableAxis(Qwt.QwtPlot.xBottom, False)
 #        self.qplot_tf.enableAxis(Qwt.QwtPlot.yLeft, False)
         self.qplot_tf.setMinimumHeight(100)
+        self.qplot_tf.setMinimumWidth(100)
         #self.qplot_tf.setCanvasBackground(Qt.Qt.white)
         #self.qplot_tf.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
         self.qplot_tf.getPlotItem().setLogMode(x=True)
@@ -70,8 +71,9 @@ class LoopFiltersUI(Qt.QWidget):
 
         #self.qplot_tf.setTitle('Loop filter #%d' % self.filter_number)
         
-        qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
-#        qPolicy.setHeightForWidth(True)
+        #qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
+        #qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
+        qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.Ignored, Qt.QSizePolicy.Ignored)
         self.qplot_tf.setSizePolicy(qPolicy)
         
         self.curve_0dB = self.qplot_tf.getPlotItem().plot()
@@ -204,56 +206,65 @@ class LoopFiltersUI(Qt.QWidget):
         self.qslider_fii.valueChanged.connect(self.fiiSliderEvent)
         self.qslider_fd.valueChanged.connect(self.fdSliderEvent)
         self.qslider_fdf.valueChanged.connect(self.fdfSliderEvent)
+
+
+        # Every control for the proportional gain goes into an hbox:
+        
+        vbox = Qt.QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addWidget(self.qchk_kp)
+
+
         
         # Put everything in a grid layout:
         grid = Qt.QGridLayout()
+
+
+        grid.addLayout(vbox,                    0, 0, 2, 2)
+        grid.addWidget(self.qslider_kp,         0, 2, 3, 1)
+
+        grid.addWidget(self.qplot_tf,           0, 3, 7, 1)
+        grid.setColumnStretch(3, 1)
+        grid.setRowStretch(6, 1)
+
+
         
-        #grid.addWidget(self.qplot_tf,           0, 3, 4, 3)
-#        grid.setRowStretch(0, 1)
-        #grid.setColumnStretch(4, 1)
-        grid.addWidget(self.qplot_tf,           0, 6, 8, 3)
-        grid.setColumnStretch(6, 1)
-        
-        #FEATURE
-        #grid.addWidget(self.qchk_lock,          0, 0, 1, 2)
-        grid.addWidget(Qt.QLabel(''),           1, 0, 1, 2)   # spacer below the lock checkbox
-        # grid.setRowStretch(1, 1)
-        
-        grid.addWidget(self.qlabel_kp,          3, 0)
-        grid.addWidget(self.qlabel_fi,          4, 0)
-        grid.addWidget(self.qlabel_fii,         5, 0)
+        grid.addWidget(self.qlabel_kp,          2, 0)
+        grid.addWidget(self.qlabel_fi,          3, 0)
+        grid.addWidget(self.qlabel_fii,         4, 0)
         # grid.addWidget(self.qlabel_fd,          6, 0)
         # grid.addWidget(self.qlabel_fdf,         7, 0)
         
-        grid.addWidget(self.qedit_kp,           3, 1, 1, 2)
-        grid.addWidget(self.qedit_fi,           4, 1, 1, 2)
-        grid.addWidget(self.qedit_fii,          5, 1, 1, 2)
-        # grid.addWidget(self.qedit_fd,           6, 1, 1, 2)
-        # grid.addWidget(self.qedit_fdf,          7, 1, 1, 2)
+        grid.addWidget(self.qedit_kp,           2, 1, 1, 1)
+        grid.addWidget(self.qedit_fi,           3, 1, 1, 1)
+        grid.addWidget(self.qedit_fii,          4, 1, 1, 1)
         
-        grid.addWidget(self.qchk_bKpCrossing,   8, 0, 1, 3)
-        # grid.addWidget(self.qchk_lockSlider,   8, 3, 1, 3)
+        grid.addWidget(self.qchk_bKpCrossing,   5, 0, 1, 3)
         
         
-        grid.addWidget(self.qslider_kp,         0, 2, 3, 1)
-        grid.addWidget(self.qlabel_spacerv,     0, 2, 1, 1)
         
-        grid.addWidget(self.qchk_kp,            2, 0, 1, 2)
+        
+        #grid.addWidget(self.qchk_kp,            2, 0, 1, 2)
         # grid.addWidget(self.qchk_kd,            2, 0, 1, 2)
-        grid.addWidget(self.qlabel_spacerh,     4, 3, 1, 1)
+        #grid.addWidget(self.qlabel_spacerh,     4, 3, 1, 1)
         
-        grid.addWidget(self.qslider_fi,         4, 3, 1, 1)
-        grid.addWidget(self.qslider_fii,        5, 3, 1, 1)
+        grid.addWidget(self.qslider_fi,         3, 2, 1, 1)
+        grid.addWidget(self.qslider_fii,        4, 2, 1, 1)
         # grid.addWidget(self.qslider_fd,         6, 3, 1, 1)
         # grid.addWidget(self.qslider_fdf,        7, 3, 1, 1)
-        grid.addWidget(self.qlabel_spacerh2,    4, 5, 1, 1)
-        
+        #grid.addWidget(self.qlabel_spacerh2,    4, 5, 1, 1)
+
         self.setLayout(grid)
+        
+        # hbox = Qt.QHBoxLayout()
+        # hbox.addLayout(grid)
+        # hbox.addWidget(self.qplot_tf)
+        # hbox.setColumnStretch(1, 1)
+        # self.setLayout(hbox)
 
         
-        qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.MinimumExpanding)
-#        qPolicy.setHeightForWidth(True)
-        self.setSizePolicy(qPolicy)
+        #qPolicy = Qt.QSizePolicy(Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.MinimumExpanding)
+        #self.setSizePolicy(qPolicy)
         
     def loadParameters(self, sp):
 #        print('loadParameters(): Entering')
