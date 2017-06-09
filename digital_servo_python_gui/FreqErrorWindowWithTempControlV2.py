@@ -3,11 +3,12 @@ XEM6010 Phase-lock box GUI, frequency counter display, interfaces to the dual-mo
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import sys
 import time
-from PyQt4 import QtGui, Qt
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import QtGui, Qt
+#import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
 

@@ -4,7 +4,8 @@ Created on Wed Dec 04 20:48:43 2013
 
 @author: JD
 """
-from PyQt4 import QtGui, Qt
+from __future__ import print_function
+from PyQt5 import QtGui, Qt
 import numpy as np
 import sys
 

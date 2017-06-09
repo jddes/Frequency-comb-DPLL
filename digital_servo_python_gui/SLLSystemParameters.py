@@ -4,6 +4,7 @@ Created on Fri Dec 13 16:24:57 2013
 
 @author: jnd
 """
+from __future__ import print_function
 
 # This class implements a thin wrapper around the ElementTree/Element classes, which does XML parsing/writing.
 # This allows us change the implementation if we want, without having to rewrite the UI code.
@@ -47,7 +48,7 @@ class SLLSystemParameters():
             self.tree = ET.parse(strFilename)
             self.root = self.tree.getroot()
         except IOError:
-            print "IOError when trying to parse configuration file %s. using default values" % (strFilename)
+            print("IOError when trying to parse configuration file %s. using default values" % (strFilename))
             self.loadDefaults()
         return
     

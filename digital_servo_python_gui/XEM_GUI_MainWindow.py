@@ -3,9 +3,10 @@ XEM6010 Phase-lock box GUI, displays diagnostics on the raw signal, phase noise 
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 import time
-from PyQt4 import QtGui, Qt
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import QtGui, Qt
+#import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
 from scipy.signal import lfilter
@@ -68,10 +69,10 @@ def smooth(x,window_len=11,window='hanning'):
     """
 
     if x.ndim != 1:
-        raise ValueError, "smooth only accepts 1 dimension arrays."
+        raise ValueError("smooth only accepts 1 dimension arrays.")
 
     if x.size < window_len:
-        raise ValueError, "Input vector needs to be bigger than window size."
+        raise ValueError("Input vector needs to be bigger than window size.")
 
 
     if window_len<3:
@@ -79,7 +80,7 @@ def smooth(x,window_len=11,window='hanning'):
 
 
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
 
     s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
@@ -165,7 +166,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # Update the display:                
                 current_output_in_volts = self.sl.convertDACCountsToVolts(k, counts_offset)
                 current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
-#                self.qthermo_dac_current[k].setValue(current_output_in_volts)
                 self.qlabel_dac_offset_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))                
 
     def setVCOGain_event(self):
@@ -982,12 +982,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.qlabel_adc_fill = Qt.QLabel('ADC fill\n[bits]')
         self.qlabel_adc_fill.setAlignment(Qt.Qt.AlignHCenter)
         
-        self.qadc0_scale = Qwt.QwtThermo()
-        self.qadc0_scale.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
-        self.qadc0_scale.setRange(0, 16)
-        self.qadc0_scale.setScale(0, 16)
-        self.qadc0_scale.setValue(0)
-        self.qadc0_scale.setFillColor(Qt.Qt.blue)
+        #self.qadc0_scale = Qwt.QwtThermo()
+        #self.qadc0_scale.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
+        #self.qadc0_scale.setRange(0, 16)
+        #self.qadc0_scale.setScale(0, 16)
+        #self.qadc0_scale.setValue(0)
+        #self.qadc0_scale.setFillColor(Qt.Qt.blue)
         
         self.qlabel_adc_fill_value = Qt.QLabel('10 bits')
         self.qlabel_adc_fill_value.setAlignment(Qt.Qt.AlignHCenter)
@@ -996,12 +996,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         self.qlabel_baseband_snr = Qt.QLabel('SNR\n[dB]')
         self.qlabel_baseband_snr.setAlignment(Qt.Qt.AlignHCenter)       
         
-        self.qthermo_baseband_snr = Qwt.QwtThermo()
-        self.qthermo_baseband_snr.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
-        self.qthermo_baseband_snr.setRange(0, 50)
-        self.qthermo_baseband_snr.setScale(0, 50)
-        self.qthermo_baseband_snr.setValue(0)
-        self.qthermo_baseband_snr.setFillColor(Qt.Qt.blue)
+        #self.qthermo_baseband_snr = Qwt.QwtThermo()
+        #self.qthermo_baseband_snr.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
+        #self.qthermo_baseband_snr.setRange(0, 50)
+        #self.qthermo_baseband_snr.setScale(0, 50)
+        #self.qthermo_baseband_snr.setValue(0)
+        #self.qthermo_baseband_snr.setFillColor(Qt.Qt.blue)
         
         self.qlabel_baseband_snr_value = Qt.QLabel('20 dB')
         self.qlabel_baseband_snr_value.setAlignment(Qt.Qt.AlignHCenter)
@@ -1023,7 +1023,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         # Create the widgets which shows the current dac output and sets the output offset:
         self.qlabel_dac_current = {}
         self.qlabel_dac_current_value = {}
-        self.qthermo_dac_current = {}
+        #self.qthermo_dac_current = {}
         self.qlabel_dac_offset = {}
         self.q_dac_offset = {}
         self.qlabel_dac_offset_value = {}
@@ -1047,12 +1047,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 self.qlabel_dac_current[k] = Qt.QLabel('Output\nDAC %d [V]' % k)
                 self.qlabel_dac_current[k].setAlignment(Qt.Qt.AlignHCenter)
                 
-                self.qthermo_dac_current[k] = Qwt.QwtThermo()
-                self.qthermo_dac_current[k].setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
-                self.qthermo_dac_current[k].setRange(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
-                self.qthermo_dac_current[k].setScale(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
-                self.qthermo_dac_current[k].setValue(0)
-                self.qthermo_dac_current[k].setFillBrush(Qt.QBrush(Qt.QColor(0, 186, 52)))
+                #self.qthermo_dac_current[k] = Qwt.QwtThermo()
+                #self.qthermo_dac_current[k].setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
+                #self.qthermo_dac_current[k].setRange(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
+                #self.qthermo_dac_current[k].setScale(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
+                #self.qthermo_dac_current[k].setValue(0)
+                #self.qthermo_dac_current[k].setFillBrush(Qt.QBrush(Qt.QColor(0, 186, 52)))
                 
                 
                 self.qlabel_dac_offset[k] = Qt.QLabel('Offset\nDAC %d [V]' % k)
@@ -1160,10 +1160,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         grid = QtGui.QGridLayout()
         grid.setSpacing(5)
         grid.addWidget(self.qlabel_adc_fill,        0, 0)
-        grid.addWidget(self.qadc0_scale,            1, 0, 3, 1)
+        #grid.addWidget(self.qadc0_scale,            1, 0, 3, 1)
         grid.addWidget(self.qlabel_adc_fill_value,  4, 0, 1, 1)
         grid.addWidget(self.qlabel_baseband_snr,    0, 1)
-        grid.addWidget(self.qthermo_baseband_snr,   1, 1, 3, 1)
+        #grid.addWidget(self.qthermo_baseband_snr,   1, 1, 3, 1)
         grid.addWidget(self.qlabel_baseband_snr_value,  4, 1, 1, 1)
 #        grid.addWidget(self.qlabel_ddc0_error,      0, 2)
 #        grid.addWidget(self.qddc0_error_scale,      1, 2, 4, 1)
@@ -1174,7 +1174,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         for k in range(3):
             if self.output_controls[k] == True:
                 grid.addWidget(self.qlabel_dac_current[k],     0, 2+N_dac_controls)
-                grid.addWidget(self.qthermo_dac_current[k],    1, 2+N_dac_controls, 3, 1)
+                #grid.addWidget(self.qthermo_dac_current[k],    1, 2+N_dac_controls, 3, 1)
                 grid.addWidget(self.qlabel_dac_current_value[k],4, 2+N_dac_controls, 1, 1)
                 grid.addWidget(self.qlabel_dac_offset[k],      0, 3+N_dac_controls)
                 grid.addWidget(self.q_dac_offset[k],           1, 3+N_dac_controls, 3, 1)
@@ -1778,7 +1778,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 # For the USB bug, compute the mean from the last points     
                 current_output_in_volts = self.sl.convertDACCountsToVolts(k, np.mean(samples_out[128:256]))
                 current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
-                self.qthermo_dac_current[k].setValue(current_output_in_volts)
+                #self.qthermo_dac_current[k].setValue(current_output_in_volts)
                 self.qlabel_dac_current_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
                 
                 elapsed_time = time.clock() - start_time
@@ -2121,7 +2121,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             max_abs = 1 # to prevent passing a 0 value to the log function, which throws an exception
         max_abs_in_bits = np.log2(max_abs*2**16)
         
-        self.qadc0_scale.setValue(max_abs_in_bits)
+        #self.qadc0_scale.setValue(max_abs_in_bits)
         self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
         
         
@@ -2233,7 +2233,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             # we put a simple first-order IIR filter:
             filter_alpha = np.exp(-1./10.)
             self.filtered_baseband_snr = filter_alpha * self.filtered_baseband_snr + (1-filter_alpha)*baseband_snr
-            self.qthermo_baseband_snr.setValue(baseband_snr)
+            #self.qthermo_baseband_snr.setValue(baseband_snr)
             self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
             
             
@@ -2377,12 +2377,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         else:
             # The signal is from DAC0 or DAC1:
             # Not sure what to put in the baseband IQ plot.  For now we put nothing
-            self.qthermo_baseband_snr.setValue(0)
+            #self.qthermo_baseband_snr.setValue(0)
 #                empty_array = np.array(0)
 #                self.curve_IQ.setData(empty_array, empty_array)
 #                self.curve_DDC0_spc_amplitude_noise.setData(empty_array, empty_array)
 #                self.curve_filter.setData(empty_array, empty_array)
-        
+            pass
 
         
         

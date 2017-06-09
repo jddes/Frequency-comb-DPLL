@@ -4,6 +4,7 @@ Created on Tue Feb 18 13:03:46 2014
 
 @author: jnd
 """
+from __future__ import print_function
 
 import socket
 import select

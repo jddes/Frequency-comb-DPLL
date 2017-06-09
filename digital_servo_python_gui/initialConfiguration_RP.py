@@ -4,9 +4,10 @@ Created on Fri Aug 26 00:26:50 2016
 
 @author: JD
 """
+from __future__ import print_function
 
 import sys
-from PyQt4 import QtGui, Qt
+from PyQt5 import QtGui, Qt
 #import numpy as np
 import UDPRedPitayaDiscovery
 
@@ -188,6 +189,7 @@ class initialConfiguration(QtGui.QDialog):
     def MAC_to_display_string(self, strMAC, strIP):
         # build the string that we will display to the user in the combo box:
         strDisplay = ''
+        print('MAC_to_display_string: %s, %s' % (strMAC, strIP))
 
         try:
             box_name = self.devices_data[strMAC.replace(':', '')]['name']
@@ -207,15 +209,13 @@ class initialConfiguration(QtGui.QDialog):
     def timerEvent(self, e):
         # check if there are any answers to the broadcast packet
         (strIP, strMAC) = self.udp_discovery.check_answers()
-#        print (strIP, strMAC)
-        
+
         # iterate over answers
         while (strIP is not None):
             
-            
-            
             # build the string that we will display to the user in the combo box:
             strDisplay = self.MAC_to_display_string(strMAC, strIP)
+            
             self.strSerialList.append((strIP, strMAC))
             self.qcombo_serial.addItem(strDisplay)
 #            print self.qcombo_serial.sizeAdjustPolicy()
@@ -243,7 +243,7 @@ class initialConfiguration(QtGui.QDialog):
                 
             except KeyError:
                 # nothing bad happened, we probably simply had an empty list
-                print "Error: no selected RedPitaya."
+                print("Error: no selected RedPitaya.")
                 pass
         else:
             # use manual entry IP address
@@ -263,7 +263,7 @@ class initialConfiguration(QtGui.QDialog):
 
         self.readSelectedFPGA()
         if not self.strSelectedIP:
-            print "Error: no selected RedPitaya."
+            print("Error: no selected RedPitaya.")
             
 
         # connect to the selected RedPitaya.
@@ -276,7 +276,7 @@ class initialConfiguration(QtGui.QDialog):
     def programFPGAClicked(self):
         self.readSelectedFPGA()
         if not self.strSelectedIP:
-            print "Error: no selected RedPitaya."
+            print("Error: no selected RedPitaya.")
             return
 
         # connect to the selected RedPitaya, send new bitfile, then send programming command to the shell:
@@ -295,7 +295,7 @@ class initialConfiguration(QtGui.QDialog):
     def programCPUClicked(self):
         self.readSelectedFPGA()
         if not self.strSelectedIP:
-            print "Error: no selected RedPitaya."
+            print("Error: no selected RedPitaya.")
             return
 
         # connect to the selected RedPitaya

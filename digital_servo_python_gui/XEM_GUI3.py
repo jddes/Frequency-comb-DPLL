@@ -4,8 +4,9 @@ XEM6010 Phase-lock box main GUI script,
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 import sys
-from PyQt4 import QtGui, Qt, QtCore
+from PyQt5 import QtGui, Qt, QtCore
 import numpy as np
 
 
@@ -86,7 +87,7 @@ def main():
 #        sl.dev.write_file_on_remote(strFilenameLocal=r'D:\Projets_Xilinx\RedPitaya\fpga\project\redpitaya.runs\impl_1\red_pitaya_top.bit', strFilenameRemote='/opt/red_pitaya_top.bit')
         pass
     except:
-        print "warning, could not update fpga bitfile"
+        print("warning, could not update fpga bitfile")
         pass
     # program FPGA with new bitfile:
 #    sl.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
@@ -125,14 +126,14 @@ def main():
     app = QtGui.QApplication(sys.argv)
     
     
-    strBroadcastAddress = '192.168.2.255'
+    strBroadcastAddress = '192.168.0.255'
     strFPGAFirmware=r'red_pitaya_top.bit'
     strCPUFirmware=u'monitor-tcp'
     initial_config = initialConfiguration(sl.dev, devices_data, strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
     
 #    def __init__(self, dev, devices_data={}, strBroadcastAddress="192.168.2.255", strFPGAFirmware='', strCPUFirmware=''):
     
-
+    
     
     
 #    # this will remove minimized status 
@@ -189,7 +190,7 @@ def main():
         print('Loaded configuration from %s' % custom_config_file)
     except KeyError:
         custom_config_file = ''
-        print 'Warning: Could not find config file "%s" for FPGA serial: %s, loading default values' % (custom_config_file, initial_config.strSelectedSerial)
+        print('Warning: Could not find config file "%s" for FPGA serial: %s, loading default values' % (custom_config_file, initial_config.strSelectedSerial))
         sp.loadDefaults()
         
     sp.loadDefaults()

@@ -3,11 +3,12 @@ XEM6010 Phase-lock box GUI, Transfer function display window
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import sys
 import time
-from PyQt4 import QtGui, Qt
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import QtGui, Qt
+#import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
 from scipy.signal import lfilter
@@ -84,7 +85,7 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         return
 
     def loadAndApplyCalibration(self, transfer_function, frequency_axis):
-        print "applying calibration"
+        print("applying calibration")
         # load data files, the calibration data was measured in two consecutive runs
 #        data_highfreq = np.loadtxt(u'transfer_functions\\09_21_2016_14_40_32_no_004_cal_thru.txt', skiprows=1)
 #        data_lowfreq = np.loadtxt(u'transfer_functions\\09_21_2016_14_44_34_no_006_cal_thru.txt', skiprows=1)
@@ -356,9 +357,9 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
             sign = -1
 
         # add looping over many curves...
-        print "updateGraph: %d curves in list." % (len(self.curve_mag_list))
+        print("updateGraph: %d curves in list." % (len(self.curve_mag_list)))
         for kCurve in range(len(self.curve_mag_list)):
-            print "updateGraph: curve %d of %d." % (kCurve, len(self.curve_mag_list))
+            print("updateGraph: curve %d of %d." % (kCurve, len(self.curve_mag_list)))
             
 
 
@@ -401,23 +402,23 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
                     load_admittance = 1/load_impedance
                     unknown_admittance = load_admittance-1/Zinput
                     unknown_impedance = 1/unknown_admittance
-                    print load_admittance[0]
-                    print load_impedance[0]
-                    print unknown_admittance[0]
-                    print unknown_impedance[0]
+                    print(load_admittance[0])
+                    print(load_impedance[0])
+                    print(unknown_admittance[0])
+                    print(unknown_impedance[0])
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], np.abs(unknown_impedance))
                     self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
                     self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
                     self.curve_phase_list[kCurve].setData(self.frequency_axis_list[kCurve], np.angle(sign*(unknown_impedance)))
                     
-                    print kCurve
-                    print len(self.curve_mag_list)-1
+                    print(kCurve)
+                    print(len(self.curve_mag_list)-1)
                     if kCurve == len(self.curve_mag_list)-1:
                         strNotes = ''
                         for kFreq in range(len(self.frequency_axis_list[kCurve])):
                             strNotes += '%.2e Hz: Z = %.2e + j*%.2e\n' % (self.frequency_axis_list[kCurve][kFreq], np.real(unknown_impedance[kFreq]), np.imag(unknown_impedance[kFreq]))
                         self.qedit_comment.setText(strNotes)
-                        print strNotes
+                        print(strNotes)
                         
                 elif self.qcombo_units.currentIndex() == 6:
                     # 'Ohms, Shunt DUT, high-Z probe + Series source impedance'
@@ -441,7 +442,7 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
                             strNotes += '%.2e Hz: Z = %.2e + j*%.2e\n' % (self.frequency_axis_list[kCurve][kFreq], np.real(load_impedance[kFreq]), np.imag(load_impedance[kFreq]))
                         self.qedit_comment.setText(strNotes)
                 
-            print "update curve complete."
+            print("update curve complete.")
 
         self.qplt_phase.setAxisTitle(Qwt.QwtPlot.yLeft, 'Phase [rad]')
         self.qplt_mag.replot()

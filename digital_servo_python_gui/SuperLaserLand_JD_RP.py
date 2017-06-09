@@ -5,6 +5,7 @@ by JD Deschenes, October 2013
 Modified January 2016 to interface with the Red Pitaya port of the phase-lock box
 
 """
+from __future__ import print_function
 
 # import ok       # used to talk to the FPGA board
 import time     # used for time.sleep()
@@ -32,8 +33,8 @@ class SuperLaserLand_JD_RP:
     
     ddc0_frequency_in_hz = 25e6
     ddc1_frequency_in_hz = 25e6
-    ddc0_frequency_in_int = long(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
-    ddc1_frequency_in_int = long(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
+    ddc0_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
+    ddc1_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
     ADC0_gain = 1
     ADC1_gain = 1
     DAC0_gain = 1
@@ -369,7 +370,7 @@ class SuperLaserLand_JD_RP:
         if self.bVerbose == True:
             print('SetWireInValue_wrapper')
 
-        print "SetWireInValue_wrapper: () ?? Need to trace what this is..."
+        print("SetWireInValue_wrapper: () ?? Need to trace what this is...")
             
         self.dev.SetWireInValue(A, B)
         
@@ -564,8 +565,8 @@ class SuperLaserLand_JD_RP:
 #        self.number_of_frequencies = int(np.floor(self.number_of_frequencies/8)*8)    # Must be a multiple of eight to keep the data on DDR2 burst boundaries
         
         self.modulation_frequency_step_in_hz = (self.last_modulation_frequency_in_hz-self.first_modulation_frequency_in_hz)/self.number_of_frequencies;
-        self.first_modulation_frequency = long(2**48 * self.first_modulation_frequency_in_hz/self.fs)
-        self.modulation_frequency_step = long(2**48 * self.modulation_frequency_step_in_hz/self.fs)
+        self.first_modulation_frequency = int(2**48 * self.first_modulation_frequency_in_hz/self.fs)
+        self.modulation_frequency_step = int(2**48 * self.modulation_frequency_step_in_hz/self.fs)
         
         self.number_of_cycles_integration = self.compute_integration_time_for_syst_ident(self.System_settling_time, self.first_modulation_frequency_in_hz)
         
@@ -687,7 +688,7 @@ class SuperLaserLand_JD_RP:
         data_buffer = self.dev.read_Zynq_buffer_int16(0, self.Num_samples_read)
 
         if Num_bytes_read != len(data_buffer):
-            print 'Error: did not receive the expected number of bytes. expected: %d, Received: %d' % (Num_bytes_read, len(data_buffer))
+            print('Error: did not receive the expected number of bytes. expected: %d, Received: %d' % (Num_bytes_read, len(data_buffer)))
 
         # convert to numpy array
         data_buffer = np.fromstring(data_buffer, dtype=np.uint8)
@@ -878,7 +879,7 @@ class SuperLaserLand_JD_RP:
         if self.bCommunicationLogging == True:
             self.log_file.write('read_zero_deadtime_freq_counter()\n')
 
-        print "todo: read_zero_deadtime_freq_counter"
+        print("todo: read_zero_deadtime_freq_counter")
         return (0, 0, 0, 0, 0)
 
         
@@ -969,7 +970,7 @@ class SuperLaserLand_JD_RP:
         if self.bCommunicationLogging == True:
             self.log_file.write('read_raw_bytes_from_pipe()\n')
 
-        print "read_raw_bytes_from_pipe: currently unimplemented (needs to switch to memory-mapped registers)"
+        print("read_raw_bytes_from_pipe: currently unimplemented (needs to switch to memory-mapped registers)")
         return None
         
         # Read data from pipe:
@@ -1184,7 +1185,7 @@ class SuperLaserLand_JD_RP:
             self.number_of_frequencies = actual_number_of_frequencies
             
         vna_raw_data = np.reshape(data_buffer[0:(self.number_of_frequencies)*bytes_per_frequency_vna], (self.number_of_frequencies, bytes_per_frequency_vna))    # note that this gives number_of_frequencies samples
-        print vna_raw_data
+        print(vna_raw_data)
         
         vna_real = vna_raw_data[:, 0:8]
         vna_imag = vna_raw_data[:, 8:16]
@@ -1362,7 +1363,7 @@ class SuperLaserLand_JD_RP:
         if self.bCommunicationLogging == True:
             self.log_file.write('set_ddc0_ref_freq()\n')
         
-        self.ddc0_frequency_in_int = long(round(2**48 * frequency_in_hz/self.fs))
+        self.ddc0_frequency_in_int = int(round(2**48 * frequency_in_hz/self.fs))
         self.ddc0_frequency_in_int = self.ddc0_frequency_in_int % (1 << 48) # modulo 2**48
         self.ddc0_frequency_in_hz = self.ddc0_frequency_in_int/2.**48 * self.fs
         frequency_in_int_bits15_to_0 = self.ddc0_frequency_in_int & 0xFFFF
@@ -1391,7 +1392,7 @@ class SuperLaserLand_JD_RP:
             
         if self.bCommunicationLogging == True:
             self.log_file.write('set_ddc1_ref_freq()\n')
-        self.ddc1_frequency_in_int = long(round(2**48 * frequency_in_hz/self.fs))
+        self.ddc1_frequency_in_int = int(round(2**48 * frequency_in_hz/self.fs))
         self.ddc1_frequency_in_int = self.ddc1_frequency_in_int % (1 << 48) # modulo 2**48
         self.ddc1_frequency_in_hz = self.ddc1_frequency_in_int/2.**48 * self.fs
         frequency_in_int_bits15_to_0 = self.ddc1_frequency_in_int & 0xFFFF
@@ -1535,7 +1536,7 @@ class SuperLaserLand_JD_RP:
         
         if DAC_number == 0:
             return_value = (float(voltage)/self.DAC0_gain * (2.**15.-1))
-            print 'convertDACVoltsToCounts: voltage = %f, DAC0_gain = %f, return_value = %f' % (voltage, self.DAC0_gain, return_value)
+            print('convertDACVoltsToCounts: voltage = %f, DAC0_gain = %f, return_value = %f' % (voltage, self.DAC0_gain, return_value))
         elif DAC_number == 1:
             return_value = (float(voltage)/self.DAC1_gain * (2.**15.-1))
         elif DAC_number == 2:
@@ -1882,7 +1883,7 @@ class SuperLaserLand_JD_RP:
 
     def frontend_DDC_processing(self, samples, ref_exp0, input_number):
         if self.bVerbose == True:
-            print 'frontend_DDC_processing, len(samples) = %d, samples[0] = %d' % (len(samples), samples[0])
+            print('frontend_DDC_processing, len(samples) = %d, samples[0] = %d' % (len(samples), samples[0]))
             
         # The signal is from ADC0 or ADC1
         if input_number == 0:
@@ -2174,7 +2175,7 @@ class SuperLaserLand_JD_RP:
         if self.bCommunicationLogging == True:
             self.log_file.write('read_dual_mode_counter()\n')
 
-        print "todo: read_dual_mode_counter"
+        print("todo: read_dual_mode_counter")
 
         return (None, None, None, None, None)
         
@@ -2308,7 +2309,7 @@ class SuperLaserLand_JD_RP:
 #        print('freq_counter_samples = %d, sign_weight = %d' % (freq_counter_samples, freq_counter_samples_signbit_value))
         # this doesn't work if freq_counter_samples is an array (if we are recording more than one sample at a time)
         # but we have to use this because numpy doesn't support long integers
-        freq_counter_samples = long(freq_counter_samples) - long(freq_counter_samples_signbit_value)
+        freq_counter_samples = int(freq_counter_samples) - int(freq_counter_samples_signbit_value)
         
         return freq_counter_samples
         
@@ -2330,7 +2331,7 @@ class SuperLaserLand_JD_RP:
         if self.bCommunicationLogging == True:
             self.log_file.write('read_residuals_streaming()\n')
 
-        print "todo: read_residuals_streaming"
+        print("todo: read_residuals_streaming")
 
         return (None, None)
         

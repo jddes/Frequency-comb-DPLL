@@ -22,4 +22,6 @@ class TCP_client:
 		self.sock.setblocking(1)
 		self.sock.connect(('192.168.2.8', 5000))
 
-	def send_packet()
+	def send_packet():
+		pass
+		

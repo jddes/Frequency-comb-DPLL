@@ -4,6 +4,7 @@ XEM6010 Phase-lock box communication interface,
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import ok       # used to talk to the FPGA board
 import time     # used for time.sleep()
@@ -34,8 +35,8 @@ class SuperLaserLand_JD2:
     
     ddc0_frequency_in_hz = 25e6
     ddc1_frequency_in_hz = 25e6
-    ddc0_frequency_in_int = long(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
-    ddc1_frequency_in_int = long(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
+    ddc0_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
+    ddc1_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
     ADC0_gain = 1
     ADC1_gain = 1
     DAC0_gain = 1
@@ -673,8 +674,8 @@ class SuperLaserLand_JD2:
 #        self.number_of_frequencies = int(np.floor(self.number_of_frequencies/8)*8)    # Must be a multiple of eight to keep the data on DDR2 burst boundaries
         
         self.modulation_frequency_step_in_hz = (self.last_modulation_frequency_in_hz-self.first_modulation_frequency_in_hz)/self.number_of_frequencies;
-        self.first_modulation_frequency = long(2**48 * self.first_modulation_frequency_in_hz/self.fs)
-        self.modulation_frequency_step = long(2**48 * self.modulation_frequency_step_in_hz/self.fs)
+        self.first_modulation_frequency = int(2**48 * self.first_modulation_frequency_in_hz/self.fs)
+        self.modulation_frequency_step = int(2**48 * self.modulation_frequency_step_in_hz/self.fs)
         
         # There are four constraints on this value:
         # First of all, the output rate of the block depends on this value so it has to be kept under some limit (one block of data every ~20 clock cycles)
@@ -1619,7 +1620,7 @@ class SuperLaserLand_JD2:
         if self.bCommunicationLogging == True:
             self.log_file.write('set_ddc0_ref_freq()\n')
         
-        self.ddc0_frequency_in_int = long(round(2**48 * frequency_in_hz/self.fs))
+        self.ddc0_frequency_in_int = int(round(2**48 * frequency_in_hz/self.fs))
         self.ddc0_frequency_in_int = self.ddc0_frequency_in_int % (1 << 48) # modulo 2**48
         self.ddc0_frequency_in_hz = self.ddc0_frequency_in_int/2.**48 * self.fs
         frequency_in_int_bits15_to_0 = self.ddc0_frequency_in_int & 0xFFFF
@@ -1648,7 +1649,7 @@ class SuperLaserLand_JD2:
             
         if self.bCommunicationLogging == True:
             self.log_file.write('set_ddc1_ref_freq()\n')
-        self.ddc1_frequency_in_int = long(round(2**48 * frequency_in_hz/self.fs))
+        self.ddc1_frequency_in_int = int(round(2**48 * frequency_in_hz/self.fs))
         self.ddc1_frequency_in_int = self.ddc1_frequency_in_int % (1 << 48) # modulo 2**48
         self.ddc1_frequency_in_hz = self.ddc1_frequency_in_int/2.**48 * self.fs
         frequency_in_int_bits15_to_0 = self.ddc1_frequency_in_int & 0xFFFF

@@ -3,10 +3,10 @@ XEM6010 Phase-lock box GUI, Dither settings controls
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import time
-from PyQt4 import QtGui, Qt
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import QtGui, Qt
 import numpy as np
 
 import weakref

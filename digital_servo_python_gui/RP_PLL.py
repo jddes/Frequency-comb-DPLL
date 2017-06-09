@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import socket
 import struct
 import traceback    # for print_stack, for debugging purposes: traceback.print_stack()
@@ -113,7 +114,7 @@ class RP_PLL_device():
         if data_buffer is None:
             return 0
         if len(data_buffer) != 4:
-            print "read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer))
+            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
@@ -125,7 +126,7 @@ class RP_PLL_device():
         if data_buffer is None:
             return 0
         if len(data_buffer) != 4:
-            print "read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer))
+            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
         register_value_as_tuple = struct.unpack('i', data_buffer)
         return register_value_as_tuple[0]
 
@@ -162,7 +163,7 @@ class RP_PLL_device():
         address_uint32 = 0    # currently unused
         if number_of_points > self.MAX_SAMPLES_READ_BUFFER:
             number_of_points = self.MAX_SAMPLES_READ_BUFFER
-            print "number of points clamped to %d." % number_of_points
+            print("number of points clamped to %d." % number_of_points)
             #traceback.print_stack()
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR+address_uint32, number_of_points)    # last value is reserved
 #        print "read_Zynq_buffer_int16: before sendall()"
@@ -297,14 +298,14 @@ def main2():
 #if 1:
     rp = RP_PLL_device()
     rp.OpenTCPConnection("192.168.2.12")
-    print "hi"
+    print("hi")
     
 #    rp.write_file_on_remote(strFilenameLocal='d:\\test_file.bin', strFilenameRemote='/opt/test_file.bin')
     
 
     
     time.sleep(3)
-    print "quitting"
+    print("quitting")
     return
     
     
@@ -356,9 +357,9 @@ def main2():
     data_buffer = rp.read_Zynq_buffer_int16(address_uint32, number_of_points)
 #   print("after recvall")
     data_np = np.fromstring(data_buffer, dtype=np.int16)
-    print data_np
+    print(data_np)
     for k in range(10):
-        print '%d:\t%s' % (k, hex((data_np[k])&0xFFFF))
+        print('%d:\t%s' % (k, hex((data_np[k])&0xFFFF)))
 #    print hex(data_np[7])
 #    print hex(data_np[7])
 #    print hex(data_np[7])

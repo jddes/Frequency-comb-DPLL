@@ -5,8 +5,9 @@ Created on Wed Dec 04 20:48:43 2013
 Description: Provides a graphical user interface (GUI) for setting the loop filters parameters of the PII^2 filter implemented in the XEM6010 module.
 @author: JD Deschenes
 """
-from PyQt4 import QtGui, Qt, QtCore
-import PyQt4.Qwt5 as Qwt
+from __future__ import print_function
+from PyQt5 import QtGui, Qt, QtCore
+#import PyQt5.Qwt5 as Qwt
 import numpy as np
 import weakref
 

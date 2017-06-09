@@ -3,6 +3,7 @@ XEM6010 Phase-lock box communication interface, PLL sub-module
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import numpy as np
     

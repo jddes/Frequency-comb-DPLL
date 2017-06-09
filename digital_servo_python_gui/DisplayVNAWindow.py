@@ -3,10 +3,11 @@ XEM6010 Phase-lock box GUI, VNA (Vector Network Analyzer) controls
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import time
-from PyQt4 import QtGui, Qt
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import QtGui, Qt
+#import PyQt5.Qwt5 as Qwt
 import numpy as np
 
 
@@ -97,12 +98,12 @@ class DisplayVNAWindow(QtGui.QWidget):
         ## Read out the results from the FPGA:
         try:
             (transfer_function_complex, frequency_axis) = self.sl.read_VNA_samples_from_DDR2()
-            print 'len(transfer_function_complex) = %d, len(frequency_axis) = %d' % (len(transfer_function_complex), len(frequency_axis))
-            print np.real(transfer_function_complex)
-            print np.imag(transfer_function_complex)
+            print('len(transfer_function_complex) = %d, len(frequency_axis) = %d' % (len(transfer_function_complex), len(frequency_axis)))
+            print(np.real(transfer_function_complex))
+            print(np.imag(transfer_function_complex))
         except:
             self.sl.bDDR2InUse = False
-            print "Exception reading VNA samples from DDR2"
+            print("Exception reading VNA samples from DDR2")
             raise
             
         # Signal to other functions that they can use the DDR2 logger
