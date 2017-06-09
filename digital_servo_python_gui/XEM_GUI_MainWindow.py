@@ -1331,11 +1331,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         # Create the curve in the plot
         self.curve_DDC0_spc = self.qplt_DDC0_spc.getPlotItem().plot(title='Phase noise PSD', pen='b')
         #self.curve_DDC0_spc.attach(self.qplt_DDC0_spc)
-        self.curve_DDC0_spc.setPen(Qt.QPen(Qt.Qt.blue))
+        #self.curve_DDC0_spc.setPen(Qt.QPen(Qt.Qt.blue))
         
         self.curve_DDC0_spc_amplitude_noise = self.qplt_DDC0_spc.getPlotItem().plot(pen='r')
         #self.curve_DDC0_spc_amplitude_noise.attach(self.qplt_DDC0_spc)
-        self.curve_DDC0_spc_amplitude_noise.setPen(Qt.QPen(Qt.Qt.red))
+        #self.curve_DDC0_spc_amplitude_noise.setPen(Qt.QPen(Qt.Qt.red))
         
 
         #self.curve_DDC0_cumul_phase = pg.PlotCurveItem(pen='g')

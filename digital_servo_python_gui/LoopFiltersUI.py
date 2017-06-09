@@ -80,21 +80,23 @@ class LoopFiltersUI(Qt.QWidget):
         self.curve_0dB = self.qplot_tf.getPlotItem().plot()
         #FEATURE        
         #self.curve_0dB.attach(self.qplot_tf)
-        pen = Qt.QPen(Qt.Qt.DashLine)
-        pen.setColor(Qt.Qt.black)
+        #pen = Qt.QPen(Qt.Qt.DashLine)
+        #pen.setColor(Qt.Qt.black)
+        #pen.setBrush(QtGui.QBrush(QtCore.Qt.NoBrush))
+        pen = pg.mkPen(color='k', dash=[4, 2])
         self.curve_0dB.setPen(pen)
         
-        self.curve_kp = self.qplot_tf.getPlotItem().plot()
+        self.curve_kp = self.qplot_tf.getPlotItem().plot(pen='k')
         #self.curve_kp.attach(self.qplot_tf)
-        self.curve_kp.setPen(Qt.QPen(Qt.Qt.black))
+        #self.curve_kp.setPen(Qt.QPen(Qt.Qt.black))
         
-        self.curve_fi = self.qplot_tf.getPlotItem().plot()
+        self.curve_fi = self.qplot_tf.getPlotItem().plot(pen='k')
         #self.curve_fi.attach(self.qplot_tf)
-        self.curve_fi.setPen(Qt.QPen(Qt.Qt.black))
+        #self.curve_fi.setPen(Qt.QPen(Qt.Qt.black))
         
-        self.curve_fii = self.qplot_tf.getPlotItem().plot()
+        self.curve_fii = self.qplot_tf.getPlotItem().plot(pen='k')
         #self.curve_fii.attach(self.qplot_tf)
-        self.curve_fii.setPen(Qt.QPen(Qt.Qt.black))
+        #self.curve_fii.setPen(Qt.QPen(Qt.Qt.black))
         
         # self.curve_fd = self.qplot_tf.getPlotItem().plot()
         #self.curve_fd.attach(self.qplot_tf)

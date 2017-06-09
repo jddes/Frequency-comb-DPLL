@@ -189,7 +189,7 @@ class initialConfiguration(QtGui.QDialog):
     def MAC_to_display_string(self, strMAC, strIP):
         # build the string that we will display to the user in the combo box:
         strDisplay = ''
-        print('MAC_to_display_string: %s, %s' % (strMAC, strIP))
+        #print('MAC_to_display_string: %s, %s' % (strMAC, strIP))
 
         try:
             box_name = self.devices_data[strMAC.replace(':', '')]['name']
