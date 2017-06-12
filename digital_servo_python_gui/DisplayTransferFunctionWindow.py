@@ -19,6 +19,9 @@ import copy
 import os
 import errno
 
+# stuff for Python 3 port
+import pyqtgraph as pg
+
 class DisplayTransferFunctionWindow(QtGui.QWidget):
 
         
@@ -32,12 +35,17 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         self.transfer_function_list = []
 
         self.window_number = window_number
+        #print('DisplayTransferFunctionWindow: before initUI')
         self.initUI()
+        #print('DisplayTransferFunctionWindow:after initUI')
 
     def addCurve(self, frequency_axis, transfer_function, vertical_units):
+        #print('DisplayTransferFunctionWindow:addCurve()')
 
         transfer_function_uncalibrated = copy.copy(transfer_function) * (10**((-5.06--6.+0.16)/20.))  # adjustment based on low-frequency RedPitaya's transfer function
+        #print('DisplayTransferFunctionWindow:addCurve(): 2')
         self.writeOutputFile(transfer_function_uncalibrated, frequency_axis, vertical_units, bCalibrated=False) # we always save the uncalibrated TF regardless of whether we apply cal or not
+        #print('DisplayTransferFunctionWindow:addCurve(): 3')
         
         # Load and apply calibration data based on the measurement of the Red Pitaya's transfer function:
         if vertical_units == 'V/V':
@@ -48,37 +56,49 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         else:
             self.transfer_function_list.append(transfer_function_uncalibrated)
 
-
+        #print('DisplayTransferFunctionWindow:addCurve(): 4')
         self.vertical_units_list.append(copy.copy(vertical_units))
         self.frequency_axis_list.append(copy.copy(frequency_axis))
 
         # create a new curve object in both magnitude and phase plots:
         # magnitude plot
-        #TODO: add color cycling according to matlab's color scheme.
+        # we use color cycling according to matlab's color scheme.
         current_color_as_list = self.colors_order[(len(self.transfer_function_list)-1) % len(self.colors_order)]
         R_value = current_color_as_list[0]
         G_value = current_color_as_list[1]
         B_value = current_color_as_list[2]
-
         current_color = Qt.QColor(R_value, G_value, B_value)
-        self.curve_mag_list.append(Qwt.QwtPlotCurve('qplt_freq'))
-        self.curve_mag_list[-1].attach(self.qplt_mag)
-        self.curve_mag_list[-1].setPen(Qt.QPen(current_color))
-        self.curve_mag_list[-1].setSymbol(Qwt.QwtSymbol(Qwt.QwtSymbol.Ellipse,
-                                    Qt.QBrush(current_color),
-                                    Qt.QPen(current_color),
-                                    Qt.QSize(3, 3)))
-        self.curve_mag_list[-1].setRenderHint(Qwt.QwtPlotItem.RenderAntialiased);
+        #print('DisplayTransferFunctionWindow:addCurve(): 5')
+
+        #self.curve_mag_list.append(Qwt.QwtPlotCurve('qplt_freq'))
+        #self.curve_mag_list[-1].attach(self.qplt_mag)
+        #print('DisplayTransferFunctionWindow:addCurve() before first plot')
+        try:
+            #self.curve_mag_list.append(self.qplt_mag.getPlotItem().plot(pen=pg.mkPen(color=(R_value, G_value, B_value))))
+            self.curve_mag_list.append(self.qplt_mag.getPlotItem().plot(pen=current_color, symbol = 'o', symbolPen=None, symbolSize=3, symbolBrush=current_color))
+        except:
+            print("addCurve exception:", sys.exc_info()[0])
+
+        #print('DisplayTransferFunctionWindow:addCurve() before first setPen')
+        #self.curve_mag_list[-1].setPen(Qt.QPen(current_color))
+        # self.curve_mag_list[-1].setSymbol(Qwt.QwtSymbol(Qwt.QwtSymbol.Ellipse,
+        #                             Qt.QBrush(current_color),
+        #                             Qt.QPen(current_color),
+        #                             Qt.QSize(3, 3)))
+
 
         # Create the curve in the phase plot
-        self.curve_phase_list.append(Qwt.QwtPlotCurve('qplt_freq'))
-        self.curve_phase_list[-1].attach(self.qplt_phase)
-        self.curve_phase_list[-1].setPen(Qt.QPen(current_color))
-        self.curve_phase_list[-1].setSymbol(Qwt.QwtSymbol(Qwt.QwtSymbol.Ellipse,
-                                    Qt.QBrush(current_color),
-                                    Qt.QPen(current_color),
-                                    Qt.QSize(3, 3)))
-        self.curve_phase_list[-1].setRenderHint(Qwt.QwtPlotItem.RenderAntialiased);
+        #self.curve_phase_list.append(Qwt.QwtPlotCurve('qplt_freq'))
+        #self.curve_phase_list[-1].attach(self.qplt_phase)
+        #print('DisplayTransferFunctionWindow:addCurve() before 2nd plot')
+        #self.curve_phase_list.append(self.qplt_phase.getPlotItem().plot())
+        self.curve_phase_list.append(self.qplt_phase.getPlotItem().plot(pen=current_color, symbol = 'o', symbolPen=None, symbolSize=3, symbolBrush=current_color))
+        #self.curve_phase_list[-1] = self.qplt_phase.getPlotItem().plot()
+        #self.curve_phase_list[-1].setPen(Qt.QPen(current_color))
+        # self.curve_phase_list[-1].setSymbol(Qwt.QwtSymbol(Qwt.QwtSymbol.Ellipse,
+        #                             Qt.QBrush(current_color),
+        #                             Qt.QPen(current_color),
+        #                             Qt.QSize(3, 3)))
         
 
         self.updateGraph()
@@ -116,23 +136,35 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         
         
         # Create the subdirectory if it doesn't exist:
+        #print('DisplayTransferFunctionWindow:writeOutputFile(): 1')
         self.make_sure_path_exists('transfer_functions')
+        #print('DisplayTransferFunctionWindow:writeOutputFile(): 2')
 
         # Open file for output
         self.strNameTemplate = time.strftime("transfer_functions\%m_%d_%Y_%H_%M_%S")
+        #print('DisplayTransferFunctionWindow:writeOutputFile(): 3')
         if bCalibrated:
             strCurrentName1 = self.strNameTemplate + ('_no_%03d_with_cal.txt' % (self.window_number))
         else:
             strCurrentName1 = self.strNameTemplate + ('_no_%03d.txt' % (self.window_number))
         
-        
+        #print('DisplayTransferFunctionWindow:writeOutputFile(): 4')
+
         DAT = np.array([frequency_axis, np.real(transfer_function), np.imag(transfer_function)])
-        with open(strCurrentName1, 'w') as f_handle:
+        #print('DisplayTransferFunctionWindow:writeOutputFile(): 5')
+        with open(strCurrentName1, 'wb') as f_handle:
             # Write header for the file:
-            f_handle.write('Frequency [Hz]\tReal_part [%s]\tImag_part [%s]\n' % (vertical_units, vertical_units))
+            #print('DisplayTransferFunctionWindow:writeOutputFile(): 6')
+            f_handle.write(('Frequency [Hz]\tReal_part [%s]\tImag_part [%s]\n' % (vertical_units, vertical_units)).encode('ascii'))
+            #print('DisplayTransferFunctionWindow:writeOutputFile(): 7')
             # write actual data:
-            np.savetxt(f_handle,np.column_stack(DAT), delimiter='\t')
-        
+            try:
+                np.savetxt(f_handle,np.column_stack(DAT), delimiter='\t')
+            except:
+                print("Exception when calling savetxt:")
+                print("Unexpected error:", sys.exc_info()[0])
+                #raise
+        #print('DisplayTransferFunctionWindow:writeOutputFile(): 8')
 #        f_handle = open(strCurrentName1, 'w')
 #        np.savetxt(f_handle,np.column_stack(DAT))
 #        f_handle.close()
@@ -144,34 +176,41 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
     def initUI(self):
 
         # Add a first QwtPlot to the UI:
-        self.qplt_mag = Qwt.QwtPlot()
+        #self.qplt_mag = Qwt.QwtPlot()
+        self.qplt_mag = pg.PlotWidget()
         self.qplt_mag.setTitle('Magnitude response')
-        self.qplt_mag.setCanvasBackground(Qt.Qt.white)
-        self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        #self.qplt_mag.setCanvasBackground(Qt.Qt.white)
+        #self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        self.qplt_mag.getPlotItem().setLogMode(x=True)
+        #print('DisplayTransferFunctionWindow: initUI(): first plot widget created')
         
-        plot_grid = Qwt.QwtPlotGrid()
-        plot_grid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
-        plot_grid.attach(self.qplt_mag)
+        # plot_grid = Qwt.QwtPlotGrid()
+        # plot_grid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
+        # plot_grid.attach(self.qplt_mag)
+        self.qplt_mag.showGrid(x=True, y=True)
         
         self.colors_order = [
-[  0.0000e+000,   114.0000e+000,   189.0000e+000],
-[217.0000e+000,    83.0000e+000,    25.0000e+000],
-[237.0000e+000,   177.0000e+000,    32.0000e+000],
-[126.0000e+000,    47.0000e+000,   142.0000e+000],
-[119.0000e+000,   172.0000e+000,    48.0000e+000],
-[ 77.0000e+000,   190.0000e+000,   238.0000e+000],
-[162.0000e+000,    20.0000e+000,    47.0000e+000],]
+[  0,   114,   189],
+[217,    83,    25],
+[237,   177,    32],
+[126,    47,   142],
+[119,   172,    48],
+[ 77,   190,   238],
+[162,    20,    47],]
         
         # Add a second QwtPlot to the UI:
         
-        self.qplt_phase = Qwt.QwtPlot()
+        self.qplt_phase = pg.PlotWidget()
         self.qplt_phase.setTitle('Phase response')
-        self.qplt_phase.setCanvasBackground(Qt.Qt.white)
-        self.qplt_phase.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        #self.qplt_phase.setCanvasBackground(Qt.Qt.white)
+        #self.qplt_phase.setAxisScaleEngine(Qwt.QwtPlot.xBottom, Qwt.QwtLog10ScaleEngine())
+        self.qplt_phase.getPlotItem().setLogMode(x=True)
+        #print('DisplayTransferFunctionWindow: initUI(): 2nd plot widget created')
         
-        plot_grid = Qwt.QwtPlotGrid()
-        plot_grid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
-        plot_grid.attach(self.qplt_phase)
+        # plot_grid = Qwt.QwtPlotGrid()
+        # plot_grid.setMajPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
+        # plot_grid.attach(self.qplt_phase)
+        self.qplt_phase.showGrid(x=True, y=True)
         
         # create the lists to hold the curve objects as they get added to the plots:
         self.curve_mag_list = []
@@ -277,33 +316,33 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         grid.addWidget(self.qedit_SeriesImpedance , 1, 1)
         
         
-        grid.addWidget(self.qchk_display_model    , 2, 1)
+        # grid.addWidget(self.qchk_display_model    , 2, 1)
         
         
-        grid.addWidget(self.qradio_signp          , 3, 0)
-        grid.addWidget(self.qradio_signn          , 3, 1)
+        # grid.addWidget(self.qradio_signp          , 3, 0)
+        # grid.addWidget(self.qradio_signn          , 3, 1)
         
-        grid.addWidget(self.qlabel_k              , 4, 0)
-        grid.addWidget(self.qedit_k               , 4, 1)
-        grid.addWidget(self.qlabel_f1             , 5, 0)
-        grid.addWidget(self.qedit_f1              , 5, 1)
-        grid.addWidget(self.qlabel_f0             , 6, 0)
-        grid.addWidget(self.qedit_f0              , 6, 1)
+        # grid.addWidget(self.qlabel_k              , 4, 0)
+        # grid.addWidget(self.qedit_k               , 4, 1)
+        # grid.addWidget(self.qlabel_f1             , 5, 0)
+        # grid.addWidget(self.qedit_f1              , 5, 1)
+        # grid.addWidget(self.qlabel_f0             , 6, 0)
+        # grid.addWidget(self.qedit_f0              , 6, 1)
 
-        grid.addWidget(self.qlabel_zeta           , 7, 0)
-        grid.addWidget(self.qedit_zeta            , 7, 1)
+        # grid.addWidget(self.qlabel_zeta           , 7, 0)
+        # grid.addWidget(self.qedit_zeta            , 7, 1)
         
-        grid.addWidget(self.qlabel_T              , 8, 0)
-        grid.addWidget(self.qedit_T               , 8, 1)
+        # grid.addWidget(self.qlabel_T              , 8, 0)
+        # grid.addWidget(self.qedit_T               , 8, 1)
         
-        grid.addWidget(self.qchk_controller       , 9, 0, 1, 2)        
+        # grid.addWidget(self.qchk_controller       , 9, 0, 1, 2)        
         
-        grid.addWidget(self.qlabel_pgain          , 10, 0)
-        grid.addWidget(self.qedit_pgain           , 10, 1)
+        # grid.addWidget(self.qlabel_pgain          , 10, 0)
+        # grid.addWidget(self.qedit_pgain           , 10, 1)
         
-        grid.addWidget(self.qlabel_icorner        , 12, 0)
-        grid.addWidget(self.qedit_icorner         , 12, 1)
-        grid.addWidget(self.qchk_DDCFilter        , 13, 0, 1, 2)
+        # grid.addWidget(self.qlabel_icorner        , 12, 0)
+        # grid.addWidget(self.qedit_icorner         , 12, 1)
+        # grid.addWidget(self.qchk_DDCFilter        , 13, 0, 1, 2)
         
         grid.addWidget(self.qedit_comment         , 14, 0, 1, 2)
         grid.setRowStretch(15, 0)
@@ -361,37 +400,46 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         for kCurve in range(len(self.curve_mag_list)):
             print("updateGraph: curve %d of %d." % (kCurve, len(self.curve_mag_list)))
             
-
-
             self.curve_phase_list[kCurve].setData(self.frequency_axis_list[kCurve], np.angle(sign*(self.transfer_function_list[kCurve])))  # phase graph is usually just the phase of the transfer function, except for a few scalings
             
             if bGraphIndBs == True:
                 self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], 20*np.log10(np.abs(self.transfer_function_list[kCurve])))
-                self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'dB[(%s)^2]' % self.vertical_units_list[kCurve])
-                self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                print("updateGraph: data set")
+                # self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'dB[(%s)^2]' % self.vertical_units_list[kCurve])
+                # self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                self.qplt_mag.setLabel('left', 'dB[(%s)^2]' % self.vertical_units_list[kCurve])
+                self.qplt_mag.getPlotItem().setLogMode(y=False)
             else:
                 if self.qcombo_units.currentIndex() == 2:
                     # Linear real part
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], (np.real(self.transfer_function_list[kCurve])))
-                    self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, '%s' % self.vertical_units_list[kCurve])
-                    self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    # self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, '%s' % self.vertical_units_list[kCurve])
+                    # self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    self.qplt_mag.setLabel('left', '%s' % self.vertical_units_list[kCurve])
+                    self.qplt_mag.getPlotItem().setLogMode(y=False)
                 elif self.qcombo_units.currentIndex() == 3:
                     # Linear imag part
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], (np.imag(self.transfer_function_list[kCurve])))
-                    self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, '%s' % self.vertical_units_list[kCurve])
-                    self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    # self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, '%s' % self.vertical_units_list[kCurve])
+                    # self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    self.qplt_mag.setLabel('left', '%s' % self.vertical_units_list[kCurve])
+                    self.qplt_mag.getPlotItem().setLogMode(y=False)
                 elif self.qcombo_units.currentIndex() == 1:
                     # linear magnitude and phase
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], (np.abs(self.transfer_function_list[kCurve])))
-                    self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, '%s' % self.vertical_units_list[kCurve])
-                    self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    # self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, '%s' % self.vertical_units_list[kCurve])
+                    # self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                    self.qplt_mag.setLabel('left', '%s' % self.vertical_units_list[kCurve])
+                    self.qplt_mag.getPlotItem().setLogMode(y=False)
                 elif self.qcombo_units.currentIndex() == 4:
                     # 'Ohms, 50*Vin/Vout'
                     Zsource = 50
                     test_impedance = (Zsource/(self.transfer_function_list[kCurve]))
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], np.abs(test_impedance))
-                    self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
-                    self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
+                    # self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
+                    # self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
+                    self.qplt_mag.setLabel('left', 'Ohms')
+                    self.qplt_mag.getPlotItem().setLogMode(y=True)
                     self.curve_phase_list[kCurve].setData(self.frequency_axis_list[kCurve], np.angle(-sign*(test_impedance)))
                 elif self.qcombo_units.currentIndex() == 5:
                     # 'Ohms, shunt DUT'])
@@ -407,8 +455,10 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
                     print(unknown_admittance[0])
                     print(unknown_impedance[0])
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], np.abs(unknown_impedance))
-                    self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
-                    self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
+                    # self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
+                    # self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
+                    self.qplt_mag.setLabel('left', 'Ohms')
+                    self.qplt_mag.getPlotItem().setLogMode(y=True)
                     self.curve_phase_list[kCurve].setData(self.frequency_axis_list[kCurve], np.angle(sign*(unknown_impedance)))
                     
                     print(kCurve)
@@ -431,9 +481,12 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
     #                load_impedance = (Zsource*(10.*self.transfer_function_list[kCurve]/(1-10.*self.transfer_function_list[kCurve])))
                     load_impedance = (-Zsource*(10.*self.transfer_function_list[kCurve]/(10.*self.transfer_function_list[kCurve]-1.)))
                     self.curve_mag_list[kCurve].setData(self.frequency_axis_list[kCurve], np.abs(load_impedance))
-                    self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
-                    
-                    self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
+                    #self.qplt_mag.setAxisTitle(Qwt.QwtPlot.yLeft, 'Ohms')
+                    self.qplt_mag.setLabel('left', 'Ohms')
+                    self.qplt_mag.getPlotItem().setLogMode(y=True)
+
+                    #self.qplt_mag.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
+
                     self.curve_phase_list[kCurve].setData(self.frequency_axis_list[kCurve], np.angle(sign*(load_impedance)))
                     
                     if kCurve == len(self.curve_mag_list)-1:
@@ -444,9 +497,10 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
                 
             print("update curve complete.")
 
-        self.qplt_phase.setAxisTitle(Qwt.QwtPlot.yLeft, 'Phase [rad]')
-        self.qplt_mag.replot()
-        self.qplt_phase.replot()
+        #self.qplt_phase.setAxisTitle(Qwt.QwtPlot.yLeft, 'Phase [rad]')
+        self.qplt_phase.setLabel('left', 'Phase [rad]')
+        #self.qplt_mag.replot()
+        #self.qplt_phase.replot()
         
     # From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
     def make_sure_path_exists(self, path):

@@ -6,7 +6,7 @@ by JD Deschenes, October 2013
 """
 from __future__ import print_function
 import sys
-from PyQt5 import QtGui, Qt, QtCore
+from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import numpy as np
 
 
@@ -123,7 +123,9 @@ def main():
     # Start the User Interface
     
     # Start Qt:
-    app = QtGui.QApplication(sys.argv)
+    app = QtCore.QCoreApplication.instance()
+    if app is None:
+        app = QtWidgets.QApplication(sys.argv)
     
     
     strBroadcastAddress = '192.168.0.255'
@@ -387,7 +389,11 @@ def main():
 
     
     # Enter main event loop
-    app.exec_()
+    #app.exec_()
+    try:
+        app.exec_()
+    except:
+        print("XEM_GUI3.py: Exception during app.exec_()")
     
 
 if __name__ == '__main__':

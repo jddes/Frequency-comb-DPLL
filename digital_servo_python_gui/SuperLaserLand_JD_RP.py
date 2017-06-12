@@ -891,7 +891,7 @@ class SuperLaserLand_JD_RP:
 #        print('(status_flags & 0x1) = %d' % (status_flags & 0x1))
         
         Num_samples = 10 # We can read at most 10 samples at a time
-        bytes_per_sample = 64/8
+        bytes_per_sample = int(64/8)
         Num_bytes_read = Num_samples * bytes_per_sample
                 
         if output_number == 0:
@@ -1174,7 +1174,7 @@ class SuperLaserLand_JD_RP:
         # INTEGRATION_TIME_BITS15_TO_0
         # INTEGRATION_TIME_BITS31_TO_16
         # Thus each tested frequency will produce 2*64+32 bits (16 bytes).
-        bytes_per_frequency_vna = (2*64+32)/8;
+        bytes_per_frequency_vna = int((2*64+32)/8);
         #repr_vna_all = np.reshape(rep, (-1, bytes_per_frequency_vna))    # note that this gives number_of_frequencies samples
         print('self.number_of_frequencies = %d' % (self.number_of_frequencies))
         print('bytes_per_frequency_vna = %d' % (bytes_per_frequency_vna))
@@ -2001,7 +2001,7 @@ class SuperLaserLand_JD_RP:
 #        print('flags: output0_has_data = %d, output1_has_data = %d' % (output0_has_data, output1_has_data))
         
         Num_samples = 1 # We can read at most 1 samples at a time
-        bytes_per_sample = 64/8
+        bytes_per_sample = int(64/8)
         Num_bytes_read = Num_samples * bytes_per_sample
                 
         if output_number == 0:
@@ -2168,121 +2168,6 @@ class SuperLaserLand_JD_RP:
         elif output_number == 1:
             return (freq_counter1_sample, time_axis, dac0_samples, dac1_samples, dac2_samples)
         
-    def read_dual_mode_counter_legacy(self, output_number):
-        if self.bVerbose == True:
-            print('read_dual_mode_counter')
-            
-        if self.bCommunicationLogging == True:
-            self.log_file.write('read_dual_mode_counter()\n')
-
-        print("todo: read_dual_mode_counter")
-
-        return (None, None, None, None, None)
-        
-        # First: Fetch any data sitting in the FPGA FIFOs: (for any of the three pipes: freq counter0, freq counter1, or slow dac monitor)
-        (output0_has_data, output1_has_data, PipeA1FifoEmpty, crash_monitor_has_data) = self.readStatusFlags()
-        # output0_has_data and output1_has_data should always activate together:
-#        assert (output0_has_data == output1_has_data), 'Error, output0_has_data != output1_has_data'
-        if (output0_has_data != output1_has_data):
-            print('Warning! output0_has_data != output1_has_data')
-        
-        Num_samples = 1 # We can read at most 1 samples at a time
-        bytes_per_sample = 64/8
-        Num_bytes_read = Num_samples * bytes_per_sample
-        
-        if output0_has_data and output1_has_data:
-            raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_ZERO_DEADTIME_COUNTER0, Num_bytes_read)
-            # Convert the raw bytes to a 64-bits signed integer:
-            freq_counter0_sample = self.convert_raw_bytes_to_64bits_signed(raw_bytes)
-            # Put the result into a numpy array, for consistency:
-            freq_counter0_sample = np.array([freq_counter0_sample])
-            # Scale the counter in Hz:
-            freq_counter0_sample = self.scaleCounterReadingsIntoHz(freq_counter0_sample)
-            
-            # Do the same thing, but for the freq counter 1:
-            raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_ZERO_DEADTIME_COUNTER1, Num_bytes_read)
-            freq_counter1_sample = self.convert_raw_bytes_to_64bits_signed(raw_bytes)
-            freq_counter1_sample = np.array([freq_counter1_sample])
-            freq_counter1_sample = self.scaleCounterReadingsIntoHz(freq_counter1_sample)
-            
-            # If the counter0 has data, this also means that the slow dac monitor has data (10 samples):
-            Num_samples = 10 # We can read at most 10 samples at a time
-            bytes_per_sample = 64/8
-            Num_bytes_read = Num_samples * bytes_per_sample
-            raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_DACS_MONITORING, Num_bytes_read)
-            # Convert the raw bytes to a 64-bits signed integer:
-            dac_monitor_samples = self.convert_raw_bytes_to_64bits_unsigned(raw_bytes)
-            # Parse the dac monitor samples:
-            N_bits = 16
-            dac0_samples = (dac_monitor_samples    ) & ((1<<N_bits)-1)
-            dac1_samples = (dac_monitor_samples>>16) & ((1<<N_bits)-1)
-            N_bits = 20
-            dac2_samples = (dac_monitor_samples>>32) & ((1<<N_bits)-1)
-            N_bits = 12
-            time_counter_samples = (dac_monitor_samples>>48) & ((1<<N_bits)-1)
-#            print('bin(dac1 unsigned) = %s' % bin(dac1_samples[0]))
-#            print('type1 = %s' % str(type(dac1_samples)))
-            # Convert to signed numbers:
-            N_bits = 16
-            dac0_samples = (dac0_samples.astype(np.int64) & ((1<<(N_bits-1))-1)) - (dac0_samples & (1<<(N_bits-1)))
-            dac1_samples = (dac1_samples.astype(np.int64) & ((1<<(N_bits-1))-1)) - (dac1_samples & (1<<(N_bits-1)))
-            N_bits = 20
-            dac2_samples = (dac2_samples.astype(np.int64) & ((1<<(N_bits-1))-1)) - (dac2_samples & (1<<(N_bits-1)))
-            # Time samples are unsigned
-            
-            # Put all the data we have just read into three different local fifos:
-            # There's most certainly a better way to do this but for these data rates it probably doesn't matter anyway.
-#            print('type1 = %s' % str(type(dac0_samples)))
-#            print('type2 = %s' % str(type(self.dac0_fifo)))
-#            print('shape1 = %s' % str(dac0_samples.shape))
-#            print('shape2 = %s' % str(self.dac0_fifo.shape))
-#            print('type1 = %s' % str(type(freq_counter0_sample)))
-#            print('shape1 = %s' % str(freq_counter0_sample.shape))
-            
-            self.counter0_fifo = np.concatenate((self.counter0_fifo, freq_counter0_sample))
-            self.counter1_fifo = np.concatenate((self.counter1_fifo, freq_counter1_sample))
-            self.dac0_fifo = np.concatenate((self.dac0_fifo, dac0_samples))
-            self.dac1_fifo = np.concatenate((self.dac1_fifo, dac1_samples))
-            self.dac2_fifo = np.concatenate((self.dac2_fifo, dac2_samples))
-            self.time_counter_fifo = np.concatenate((self.time_counter_fifo, time_counter_samples))
-            
-#            print('type2 = %s' % str(type(dac1_samples)))
-#            print('bin(dac1 signed) = %s' % bin(int(dac1_samples[0])))
-#            print('mean(dac0_samples) = %f, mean(dac1_samples) = %f, mean(dac2_samples) = %f' % (np.mean(dac0_samples), np.mean(dac1_samples), np.mean(dac2_samples)))
-
-            
-            
-
-        # Output assignments
-        counter_output = None
-        DAC0_output = None
-        DAC1_output = None
-        DAC2_output = None
-        time_axis = None
-#        print('lens = %d, %d, %d, %d, %d' % (len(self.counter0_fifo), len(self.counter1_fifo), len(self.dac0_fifo), len(self.dac1_fifo), len(self.dac2_fifo)))
-        # Check if there is data in the local fifo:
-        if output_number == 0:
-            # We output data for counter 0 and dac 0 and flush the fifos:
-            if len(self.counter0_fifo) > 0:
-                counter_output = self.counter0_fifo
-                self.counter0_fifo = np.array([])
-            if len(self.dac0_fifo) > 0:
-                DAC0_output = self.dac0_fifo
-                self.dac0_fifo = np.array([])
-
-        if output_number == 1:
-            # We output data for counter 1, dac1 and dac2 and flush the fifos:
-            if len(self.counter1_fifo) > 0:
-                counter_output = self.counter1_fifo
-                self.counter1_fifo = np.array([])
-            if len(self.dac1_fifo) > 0:
-                DAC1_output = self.dac1_fifo
-                self.dac1_fifo = np.array([])
-            if len(self.dac2_fifo) > 0:
-                DAC2_output = self.dac2_fifo
-                self.dac2_fifo = np.array([])
-                
-        return (counter_output, time_axis, DAC0_output, DAC1_output, DAC2_output)
         
     def convert_raw_bytes_to_64bits_signed(self, raw_bytes):
         if self.bVerbose == True:
@@ -2340,7 +2225,7 @@ class SuperLaserLand_JD_RP:
 #        print('flags: residuals0_fifo_has_data = %d, residuals1_fifo_has_data = %d' % (residuals0_fifo_has_data, residuals1_fifo_has_data))
         
         Num_samples = 1000 # We can read at most 2000 samples at a time
-        bytes_per_sample = 32/8
+        bytes_per_sample = int(32/8)
         Num_bytes_read = Num_samples * bytes_per_sample
 
         # The two fifos should always have data or not at the same time.

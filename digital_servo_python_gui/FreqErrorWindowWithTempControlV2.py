@@ -47,12 +47,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.xem_gui_mainwindow = None
         
         self.port_number = port_number
-        print('before openTCPConnection')
+        #print('before openTCPConnection')
         self.openTCPConnection()
-        print('after openTCPConnection')
+        #print('after openTCPConnection')
         if self.client is None:
-            print('here')
-            print('Error: no connection to temp control')
+            print('Warning: no connection to temp control')
             
         self.last_update_freq = time.clock()
         self.initUI()
