@@ -97,13 +97,22 @@ class RP_PLL_device():
 
     def write_Zynq_register_uint32(self, address_uint32, data_uint32):
 #        print "write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32)
+        if address_uint32 % 4:
+            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
+            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
+            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
+            return
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_uint32) & 0xFFFFFFFF)
         self.sock.sendall(packet_to_send)
 
     def write_Zynq_register_int32(self, address_uint32, data_int32):
 #        print "write_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
-        
-        packet_to_send = struct.pack('=IIi', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, data_int32)
+        if address_uint32 % 4:
+            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
+            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
+            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
+            return
+        packet_to_send = struct.pack('=IIi', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_int32) & 0xFFFFFFFF)
         self.sock.sendall(packet_to_send)
 
     def read_Zynq_register_uint32(self, address_uint32):
