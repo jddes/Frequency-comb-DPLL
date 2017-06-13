@@ -28,7 +28,7 @@ from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
 #from NIUSB_DAQ import Instrument
 from user_friendly_QLineEdit import user_friendly_QLineEdit
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 import traceback
 
