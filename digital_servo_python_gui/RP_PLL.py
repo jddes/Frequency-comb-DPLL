@@ -7,7 +7,7 @@ import traceback    # for print_stack, for debugging purposes: traceback.print_s
 import time
 
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 class socket_placeholder():
     def __init__(self):
