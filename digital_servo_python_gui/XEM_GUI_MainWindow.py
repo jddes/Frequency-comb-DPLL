@@ -618,70 +618,81 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 
         
         else:   # bLock = False
-            if not self.bFirstTimeLockCheckBoxClicked:
-                # We are doing a locked->unlocked transition
-                # 1. Smoothly ramp the manual dac offsets to where the lock has decided to sit:
-                # This is to prevent any violent step on the actuator when we turn off the lock:
-                # It also prevents mode changes (the laser should stay fairly close to when it was locked.
-                if self.selected_ADC == 0:
-                    # Go and measure the current DAC DC value:
-                    N_points = 10e3
-                    self.sl.setup_DAC0_write(N_points)
-                    self.sl.trigger_write()
-                    self.sl.wait_for_write()
-                    (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
-#                    print(np.mean(samples_out))
-                    current_dac_offset_in_counts = np.mean(samples_out)
-                    kDAC = 0
+            if not self.sl.output_vco[self.selected_ADC]:
+
+
+                if not self.bFirstTimeLockCheckBoxClicked:
+                    # We are doing a locked->unlocked transition
+                    # 1. Smoothly ramp the manual dac offsets to where the lock has decided to sit:
+                    # This is to prevent any violent step on the actuator when we turn off the lock:
+                    # It also prevents mode changes (the laser should stay fairly close to when it was locked.
+                    if self.selected_ADC == 0:
+                        # Go and measure the current DAC DC value:
+                        N_points = 10e3
+                        self.sl.setup_DAC0_write(N_points)
+                        self.sl.trigger_write()
+                        self.sl.wait_for_write()
+                        (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+    #                    print(np.mean(samples_out))
+                        current_dac_offset_in_counts = np.mean(samples_out)
+                        kDAC = 0
+                        
+                        
+                    elif self.selected_ADC == 1:
+                        N_points = 10e3
+                        self.sl.setup_DAC1_write(N_points)
+                        self.sl.trigger_write()
+                        self.sl.wait_for_write()
+                        (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+    #                    print(np.mean(samples_out))
+                        current_dac_offset_in_counts = np.mean(samples_out)*2**4 # The DAC is actually 20 bits, but only the 16 MSBs are sent to the DDR2 logger, which amounts to dividing the DAC counts by 2**4
+                        kDAC = 1
+                        
+                    # Read the current manual offset value:
+                    current_manual_offset_in_slider_units = float(self.q_dac_offset[kDAC].value())
+                    # Convert the DAC DC offset to the slider units:
+                    current_dac_offset_in_slider_units = float(current_dac_offset_in_counts - self.sl.DACs_limit_low[kDAC])/float(self.sl.DACs_limit_high[kDAC] - self.sl.DACs_limit_low[kDAC])*1e6
                     
+                    # Set up a ramp with 20 steps:
+                    desired_ramp = np.linspace(current_manual_offset_in_slider_units, current_dac_offset_in_slider_units, 20)
+                    print('ramping from %d to %d in slider units' % (current_manual_offset_in_slider_units, current_dac_offset_in_slider_units))
                     
-                elif self.selected_ADC == 1:
-                    N_points = 10e3
-                    self.sl.setup_DAC1_write(N_points)
-                    self.sl.trigger_write()
-                    self.sl.wait_for_write()
-                    (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
-#                    print(np.mean(samples_out))
-                    current_dac_offset_in_counts = np.mean(samples_out)*2**4 # The DAC is actually 20 bits, but only the 16 MSBs are sent to the DDR2 logger, which amounts to dividing the DAC counts by 2**4
-                    kDAC = 1
-                    
-                # Read the current manual offset value:
-                current_manual_offset_in_slider_units = float(self.q_dac_offset[kDAC].value())
-                # Convert the DAC DC offset to the slider units:
-                current_dac_offset_in_slider_units = float(current_dac_offset_in_counts - self.sl.DACs_limit_low[kDAC])/float(self.sl.DACs_limit_high[kDAC] - self.sl.DACs_limit_low[kDAC])*1e6
+                    Total_ramp_time = 0.1
+                    for k2 in range(len(desired_ramp)):
+    #                    print('set slider to %d' % desired_ramp[k2])
+                        self.q_dac_offset[kDAC].setValue(desired_ramp[k2])
+                        self.setDACOffset_event()
+                        time.sleep(float(Total_ramp_time)/len(desired_ramp))
                 
-                # Set up a ramp with 20 steps:
-                desired_ramp = np.linspace(current_manual_offset_in_slider_units, current_dac_offset_in_slider_units, 20)
-                print('ramping from %d to %d in slider units' % (current_manual_offset_in_slider_units, current_dac_offset_in_slider_units))
-                
-                Total_ramp_time = 0.1
-                for k2 in range(len(desired_ramp)):
-#                    print('set slider to %d' % desired_ramp[k2])
-                    self.q_dac_offset[kDAC].setValue(desired_ramp[k2])
-                    self.setDACOffset_event()
-                    time.sleep(float(Total_ramp_time)/len(desired_ramp))
-            
+                    # 2. turn the lock off
+                    if self.selected_ADC == 0:
+                        self.qloop_filters[0].qchk_lock.setChecked(False)
+                        self.qloop_filters[0].updateGraph()
+        #                self
+        #                self.updateGraph
+                    elif self.selected_ADC == 1:
+                        self.qloop_filters[1].qchk_lock.setChecked(False)
+                        self.qloop_filters[1].updateGraph()
+
+                        # LEGACY procedure for the NIST lockbox with two DACs on the 2nd PLL channel:
+                        # # There is a different procedure for turning the lock on on the optical loop:
+                        # # first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
+                        # # and switch to the DAC1 PLL + DAC2 second integrator.
+                        # self.qloop_filters[1].qradio_mode_off.setChecked(True)
+                        # self.qloop_filters[1].qradio_mode_slow.setChecked(False)
+                        # self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+                        # self.qloop_filters[1].qradio_mode_both.setChecked(False)
+                        # self.qloop_filters[1].updateSettings()
+                    
+            else:
+                # if the VCO is activated, we don't want to try to estimate the output offset, we just turn off the lock directly
                 # 2. turn the lock off
                 if self.selected_ADC == 0:
                     self.qloop_filters[0].qchk_lock.setChecked(False)
                     self.qloop_filters[0].updateGraph()
-    #                self
-    #                self.updateGraph
                 elif self.selected_ADC == 1:
                     self.qloop_filters[1].qchk_lock.setChecked(False)
                     self.qloop_filters[1].updateGraph()
-
-                    # LEGACY procedure for the NIST lockbox with two DACs on the 2nd PLL channel:
-                    # # There is a different procedure for turning the lock on on the optical loop:
-                    # # first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
-                    # # and switch to the DAC1 PLL + DAC2 second integrator.
-                    # self.qloop_filters[1].qradio_mode_off.setChecked(True)
-                    # self.qloop_filters[1].qradio_mode_slow.setChecked(False)
-                    # self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-                    # self.qloop_filters[1].qradio_mode_both.setChecked(False)
-                    # self.qloop_filters[1].updateSettings()
-                
-                
         
             # 3. Turn the dither on if the dither mode is automatic:
             if self.selected_ADC == 0:
@@ -2288,6 +2299,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
                 # Set axis
                 time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
+
                 
                 self.curve_spc.setData(time_axis, np.real(complex_basebandr))
                 self.curve_filter.setData(time_axis, np.imag(complex_basebandr))

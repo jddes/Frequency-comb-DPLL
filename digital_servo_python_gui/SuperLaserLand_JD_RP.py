@@ -43,6 +43,8 @@ class SuperLaserLand_JD_RP:
     DACs_limit_high = [2**15-1, 2**15-1, 0]
     DACs_offset = [2**14, 2**14, -2**18]
 
+
+    output_vco = [0, 0, 0]
     
     # Default gate time in samples for the frequency counter:
     N_CYCLES_GATE_TIME = 125e6
@@ -88,9 +90,6 @@ class SuperLaserLand_JD_RP:
     ENDPOINT_EXTERNAL_FIFO_RESET                        = 0x5
     ENDPOINT_CMD_TRIG                                   = 0x40
     
-    # Outputs from the FPGA:
-    ENDPOINT_CMD_DATAOUT_M25P32_CONFIG                  = 0x20
-    ENDPOINT_CMD_DATAOUT_AD9783                         = 0x21
     # # LEGACY, Opal-Kelly-style "endpoints":
     # ENDPOINT_STATUS_FLAGS_OUT = 0x25
     # # Outputs from the dither0 lock-in:
@@ -117,6 +116,10 @@ class SuperLaserLand_JD_RP:
     BUS_ADDR_ZERO_DEADTIME_COUNTER1_MSBS                = 0x00034
     BUS_ADDR_DAC0_CURRENT                               = 0x00035
     BUS_ADDR_DAC1_CURRENT                               = 0x00036
+    
+    # This mux adds a VCO before the DACs 
+    BUS_ADDR_vco_outputA_mux                            = (5 << 20) + 0x00000
+    BUS_ADDR_vco_outputB_mux                            = (5 << 20) + 0x00004
     
     
     PIPE_ADDRESS_DDR2_LOGGER                            = 0xA1
@@ -146,11 +149,7 @@ class SuperLaserLand_JD_RP:
     # Addresses for the internal 'cmd' register bus:
     ###########################################################################
     
-    
-    
-    # Addresses 0x20XX and 0x21XX are reserved for the AD9783 (16-bit DAC) module.
-    BUS_ADDR_AD9783_GET                                 = 0x2000
-    BUS_ADDR_AD9783_SET                                 = 0x2100
+
     # Addresses for the system identification VNA:
     BUS_ADDR_number_of_cycles_integration               = 0x5000
     BUS_ADDR_first_modulation_frequency_lsbs            = 0x5001
@@ -263,6 +262,11 @@ class SuperLaserLand_JD_RP:
     # PRBS generator setting (output is ORed with the programmable clk divider, which both run on the 2x clock (200 MHz)).
     BUS_ADDR_prbs_settings                              = 0x8600
     BUS_ADDR_prbs_size                                  = 0x8601
+
+    # mux to select which signal goes in pll2 : the output of the DEMOD1, PLL1 or DEMOD2
+    BUS_ADDR_mux_pll2                                   = 0x9000
+
+
     ############################################################
     
     ############################################################
@@ -2351,18 +2355,44 @@ class SuperLaserLand_JD_RP:
         print('set_ddc_filter_select_register: ANGLE_SELECT %d' % register_value)
         
         
-    def set_adc_clock_phase_shift_value(self, adc_clk_phase_shift):
+    # This mux adds a VCO before the DACs 
+    # register_value = 0 means no VCO
+    # register_value = 1 means use VCO
+    def set_output_mux(self,DAC,register_value):
         if self.bVerbose == True:
-            print('set_adc_clock_phase_shift_value')
+            print('set_output_mux')
+        if DAC == 0:        
+            self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_outputA_mux, register_value)
+        elif DAC == 1:
+            self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_outputB_mux, register_value)
+        self.output_vco[DAC] = register_value
 
-        return
-            
-        
-    def set_LTC2195_spi_register(self, address, register_value):
+    # This mux selects the source of the error signal to the loop filter of channel 2.
+    # This makes it possible to select:
+    # register_value = 0: the output of DDC2 (the normal, 2 independent channels operation)
+    # register_value = 1: the output of DDC1 (allows two different loop filter settings being applied to the same error signal)
+    # register_value = 2: the output of the channel 1's loop filter, to allow locking the same beat note with two actuators
+    def set_mux_pll2(self, register_value):
         if self.bVerbose == True:
-            print('set_LTC2195_spi_register')
-            
-        return
+            print('set_mux_pll2')
+        self.send_bus_cmd_16bits(self.BUS_ADDR_mux_pll2, register_value)
         
+    # scales the output tone produced by the VCO right before the ADC.
+    # amplitude = [0 to 1]
+    # amplitude = 1 means 1 V peak of output, or 2 Vpeak-peak.
+    def set_internal_VCO_amplitude(self, DAC, amplitude):
+        addr_vco_amplitude = 0x0000
+        if self.bVerbose == True:
+            print('set_internal_VCO_amplitude')
+
+        if DAC == 0:
+            addr_vco = 2
+        elif DAC == 1:
+            addr_vco = 4
+        address_uint32 = (addr_vco << 20) + addr_vco_amplitude
+        vco_amplitude = round(amplitude*(2**15-1)) #15 bits, because amplitude is signed
+        self.dev.write_Zynq_register_uint32(address_uint32, vco_amplitude)
+        
+
 # end class definition
 

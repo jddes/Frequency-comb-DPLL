@@ -210,8 +210,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.qchk_triangular.clicked.connect(self.chkTriangular_checked)
         
         # Controls for the vertical scale of the frequency graph:
-        self.qedit_ymin = Qt.QLineEdit('-25e6')
-        self.qedit_ymax = Qt.QLineEdit('25e6')
+        print(type(self.sl.fs))
+        print(self.sl.fs)
+        self.qedit_ymin = Qt.QLineEdit('%f' % (-self.sl.fs/4.))
+        self.qedit_ymax = Qt.QLineEdit('%f' % (self.sl.fs/4.))
 
         
         self.qchk_phd_in_the_loop = Qt.QCheckBox('PhD-in-the-loop')

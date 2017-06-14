@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-XEM6010 Phase-lock box main GUI script,
+Phase-lock box main GUI script,
 by JD Deschenes, October 2013
+---
+-- Ported to Red Pitaya platform - JDD 2017
 
 """
 from __future__ import print_function
@@ -22,6 +24,8 @@ from SLLConfigurationWindow import SLLConfigurationWindow
 from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
 
 from DisplayDividerAndResidualsStreamingSettingsWindow import DisplayDividerAndResidualsStreamingSettingsWindow
+
+from ConfigurationRPSettingsUI import ConfigRPSettingsUI
 
 import time
 
@@ -299,20 +303,25 @@ def main():
     
     # Dither windows, this code could be moved to another class/file to help with clutter:
     dither_widget0 = DisplayDitherSettingsWindow(sl, 0, modulation_frequency_in_hz='1e3', output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
-    dither_widget1 = DisplayDitherSettingsWindow(sl, 1, modulation_frequency_in_hz='5e3' , output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
-    dither_widget2 = DisplayDitherSettingsWindow(sl, 2, modulation_frequency_in_hz='110' , output_amplitude='1e-4', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
+    dither_widget1 = DisplayDitherSettingsWindow(sl, 1, modulation_frequency_in_hz='5.1e3' , output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
+    #dither_widget2 = DisplayDitherSettingsWindow(sl, 2, modulation_frequency_in_hz='110' , output_amplitude='1e-4', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
+
+    RP_Settings = ConfigRPSettingsUI(sl, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand, bUpdateFPGA = bSendToFPGA)
     
     settings_window = Qt.QWidget()
     settings_window.setObjectName('MainWindow')
     settings_window.setStyleSheet(custom_style_sheet)
-    vbox = Qt.QVBoxLayout()
-    vbox.addWidget(dither_widget0)
-    vbox.addWidget(dither_widget1)
-    vbox.addWidget(dither_widget2)
-    vbox.addStretch(1)
+    vbox1 = Qt.QVBoxLayout()
+    vbox1.addWidget(dither_widget0)
+    vbox1.addWidget(dither_widget1)
+    #vbox1.addWidget(dither_widget2)
+    vbox1.addStretch(1)
+    vbox2 = Qt.QVBoxLayout()
+    vbox2.addWidget(RP_Settings)
+    vbox2.addWidget(divider_settings_window)
     hbox = Qt.QHBoxLayout()
-    hbox.addLayout(vbox)
-    hbox.addWidget(divider_settings_window)
+    hbox.addLayout(vbox1)
+    hbox.addLayout(vbox2)
     hbox.addStretch(1)
     settings_window.setLayout(hbox)
     settings_window.setWindowTitle(custom_shorthand + ': Dither controls')
