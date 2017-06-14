@@ -54,7 +54,7 @@ def main():
     devices_data['002632f03d5b'] = {'color': '#1CC981',
                         'name': 'RP Comb 2',
                         'shorthand': 'RPC 2',
-                        'config file': 'system_parameters_RP_C3.xml',
+                        'config file': 'system_parameters_RP_C2.xml',
                         #'port': 60002
                         }
     
@@ -190,12 +190,20 @@ def main():
         custom_config_file = devices_data[initial_config.strSelectedSerial]['config file']
         sp.loadFromFile(custom_config_file)
         print('Loaded configuration from %s' % custom_config_file)
-    except KeyError:
+    except (KeyError, IOError):
+        strFileDefaultConfig = 'system_parameters_RP_Default.xml'
+        print('Warning: Could not parse config file "%s" for FPGA serial: %s, loading values from file %s' % (custom_config_file, initial_config.strSelectedSerial, strFileDefaultConfig))
         custom_config_file = ''
-        print('Warning: Could not find config file "%s" for FPGA serial: %s, loading default values' % (custom_config_file, initial_config.strSelectedSerial))
-        sp.loadDefaults()
+        try:
+            sp.loadFromFile(strFileDefaultConfig)
+            print('Loaded configuration from %s' % strFileDefaultConfig)
+        except (KeyError, IOError):
+            
+            print('Warning: Could not parse config file "%s" for FPGA serial: %s, falling back on script-defined defaults' % (strFileDefaultConfig, initial_config.strSelectedSerial))
+            sp.loadDefaults()
         
-    sp.loadDefaults()
+        
+    # sp.loadDefaults()
     # sp.saveToFile('system_parameters_current.xml')
     
     bSendToFPGA = bTriggerEvents
@@ -286,8 +294,8 @@ def main():
     #counters_window.setGeometry(993, 40, 800, 1010)
     #counters_window.setGeometry(0, 0, 750, 1000)
     #    counters_window.resize(600, 1080-100+30)
-    counters_window.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(985, 10))
-    counters_window.show()
+    #counters_window.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(985, 10))
+    #counters_window.show()
     
     # Dither windows, this code could be moved to another class/file to help with clutter:
     dither_widget0 = DisplayDitherSettingsWindow(sl, 0, modulation_frequency_in_hz='1e3', output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
@@ -308,7 +316,7 @@ def main():
     hbox.addStretch(1)
     settings_window.setLayout(hbox)
     settings_window.setWindowTitle(custom_shorthand + ': Dither controls')
-    settings_window.show()
+    #settings_window.show()
     
 #    ###########################################################################
 #    # For testing out the transfer function window:
@@ -358,7 +366,8 @@ def main():
     # divider_settings_window.setContentsMargins(0, 0, 0, 0)
     # divider_settings_window.layout().setContentsMargins(0, 0, 0, 0)
     
-    tabs.setMaximumSize(1920,1080-100+30)
+    #tabs.setMaximumSize(1920,1080-100+30)
+    
     # main_windows.setMaximumSize(600,600)
     # xem_gui_mainwindow.setMaximumSize(600,600)
     # xem_gui_mainwindow2.setMaximumSize(600,600)

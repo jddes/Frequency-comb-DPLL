@@ -501,7 +501,7 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 #        self.resize(800, 600)
         self.center()
         self.setWindowTitle(self.custom_shorthand + ': Peripherals settings')    
-        self.show()
+        #self.show()
         
 
         

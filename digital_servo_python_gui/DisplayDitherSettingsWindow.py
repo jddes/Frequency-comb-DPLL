@@ -177,7 +177,7 @@ class DisplayDitherSettingsWindow(QtGui.QWidget):
 #        self.resize(800, 600)
         self.center()
         self.setWindowTitle('Dither #%d control' % self.output_number)    
-        self.show()
+        #self.show()
         
 
         

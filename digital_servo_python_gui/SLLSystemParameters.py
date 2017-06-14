@@ -18,11 +18,11 @@ class SLLSystemParameters():
     
     def __init__(self):
 
-        self.loadDefaults()
+        self.populateDefaults()
 
         return
         
-    def loadDefaults(self):
+    def populateDefaults(self):
         # Create the tree structure:
         self.root = ET.Element('SuperLaserLandPLL_settings')
         self.tree = ET.ElementTree(self.root)
@@ -44,13 +44,17 @@ class SLLSystemParameters():
         self.root.append(ET.Element('Main_window_settings', refresh_delay='500', N_samples_adc='1.75e3', N_samples_ddc='1e6', Integration_limit='5e6'))
         
     def loadFromFile(self, strFilename):
-        try:
-            self.tree = ET.parse(strFilename)
-            self.root = self.tree.getroot()
-        except IOError:
-            print("IOError when trying to parse configuration file %s. using default values" % (strFilename))
-            self.loadDefaults()
-        return
+        self.tree = ET.parse(strFilename)
+        self.root = self.tree.getroot()
+
+        # we used to do error checking at this level, but now it is implemented one layer higher in the hierarchy (currently in XEM_GUI3.py)
+        # try:
+            # self.tree = ET.parse(strFilename)
+            # self.root = self.tree.getroot()
+        # except IOError:
+        #     print("IOError when trying to parse configuration file %s. using default values" % (strFilename))
+        #     self.populateDefaults()
+        # return
     
     def saveToFile(self, strFilename):
         self.tree.write(strFilename)

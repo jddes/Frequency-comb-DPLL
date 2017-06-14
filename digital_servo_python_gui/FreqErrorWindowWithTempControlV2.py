@@ -304,7 +304,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # self.resize(800, 480)
         self.center()
         self.setWindowTitle(self.strTitle)    
-        self.show()
+        #self.show()
         
     def center(self):
         
