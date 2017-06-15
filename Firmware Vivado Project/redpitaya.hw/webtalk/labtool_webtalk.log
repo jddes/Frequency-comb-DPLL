@@ -1,8 +1,0 @@
-
-****** Webtalk v2015.4 (64-bit)
-  **** SW Build 1412921 on Wed Nov 18 09:44:32 MST 2015
-  **** IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
-    ** Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
-
-source /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.hw/webtalk/labtool_webtalk.tcl -notrace
-INFO: [Common 17-206] Exiting Webtalk at Sat Aug 13 01:16:09 2016...

@@ -98,11 +98,12 @@ class LoopFiltersUI(Qt.QWidget):
         #self.curve_fii.attach(self.qplot_tf)
         #self.curve_fii.setPen(Qt.QPen(Qt.Qt.black))
         
+        self.curve_fd = self.qplot_tf.getPlotItem().plot(pen='k')
         # self.curve_fd = self.qplot_tf.getPlotItem().plot()
         #self.curve_fd.attach(self.qplot_tf)
         # self.curve_fd.setPen(Qt.QPen(Qt.Qt.black))
         
-        # self.curve_fdf = self.qplot_tf.getPlotItem().plot()
+        self.curve_fdf = self.qplot_tf.getPlotItem().plot(pen='k')
         #self.curve_fdf.attach(self.qplot_tf)
         # pen2 = Qt.QPen(Qt.Qt.DashLine)
         # pen2.setColor(Qt.Qt.black)
@@ -216,6 +217,7 @@ class LoopFiltersUI(Qt.QWidget):
         vbox = Qt.QVBoxLayout()
         vbox.addStretch(1)
         vbox.addWidget(self.qchk_kp)
+        vbox.addWidget(self.qchk_kd)
 
 
         
@@ -226,35 +228,36 @@ class LoopFiltersUI(Qt.QWidget):
         grid.addLayout(vbox,                    0, 0, 2, 2)
         grid.addWidget(self.qslider_kp,         0, 2, 3, 1)
 
-        grid.addWidget(self.qplot_tf,           0, 3, 7, 1)
+        grid.addWidget(self.qplot_tf,           0, 3, 9, 1)
         grid.setColumnStretch(3, 1)
-        grid.setRowStretch(6, 1)
+        grid.setRowStretch(8, 1)
 
 
         
         grid.addWidget(self.qlabel_kp,          2, 0)
         grid.addWidget(self.qlabel_fi,          3, 0)
         grid.addWidget(self.qlabel_fii,         4, 0)
-        # grid.addWidget(self.qlabel_fd,          6, 0)
-        # grid.addWidget(self.qlabel_fdf,         7, 0)
+        grid.addWidget(self.qlabel_fd,          5, 0)
+        grid.addWidget(self.qlabel_fdf,         6, 0)
         
         grid.addWidget(self.qedit_kp,           2, 1, 1, 1)
         grid.addWidget(self.qedit_fi,           3, 1, 1, 1)
         grid.addWidget(self.qedit_fii,          4, 1, 1, 1)
+        grid.addWidget(self.qedit_fd,           5, 1, 1, 1)
+        grid.addWidget(self.qedit_fdf,          6, 1, 1, 1)
+
         
-        grid.addWidget(self.qchk_bKpCrossing,   5, 0, 1, 3)
+
+
+        
+        grid.addWidget(self.qchk_bKpCrossing,   7, 0, 1, 3)
         
         
-        
-        
-        #grid.addWidget(self.qchk_kp,            2, 0, 1, 2)
-        # grid.addWidget(self.qchk_kd,            2, 0, 1, 2)
-        #grid.addWidget(self.qlabel_spacerh,     4, 3, 1, 1)
         
         grid.addWidget(self.qslider_fi,         3, 2, 1, 1)
         grid.addWidget(self.qslider_fii,        4, 2, 1, 1)
-        # grid.addWidget(self.qslider_fd,         6, 3, 1, 1)
-        # grid.addWidget(self.qslider_fdf,        7, 3, 1, 1)
+        grid.addWidget(self.qslider_fd,         5, 2, 1, 1)
+        grid.addWidget(self.qslider_fdf,        6, 2, 1, 1)
         #grid.addWidget(self.qlabel_spacerh2,    4, 5, 1, 1)
 
         self.setLayout(grid)
@@ -720,7 +723,7 @@ class LoopFiltersUI(Qt.QWidget):
                 # fi relative to kp dB crossing
                 gain_array = 10**(kp/20) * f_array/fd
 #        print(20*np.log10(gain_array))
-        # self.curve_fd.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
+        self.curve_fd.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
         
         # Draw the D gain curve:
         if self.qchk_bKpCrossing.isChecked() == False:
@@ -730,7 +733,7 @@ class LoopFiltersUI(Qt.QWidget):
             # fi relative to kp dB crossing
             gain_array = 10**(kp/20) * fdf/fd + 0*f_array
 #        print(20*np.log10(gain_array))
-        # self.curve_fdf.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
+        self.curve_fdf.setData(f_array, 20*np.log10(gain_array + self.MINIMUM_GAIN_DISPLAY))
 
 
         f_array = np.logspace(np.log10(fmin), np.log10(fmax), 100)

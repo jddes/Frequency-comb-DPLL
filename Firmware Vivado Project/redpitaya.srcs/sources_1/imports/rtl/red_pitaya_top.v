@@ -505,20 +505,21 @@ ram_data_logger ram_data_logger_i (
 //  Internal VCO channel a
 wire signed [16-1:0] vco0_cosine_out;
 wire signed [16-1:0] vco0_sine_out;
-
 reg  signed [48-1:0] vco0_frequency;
 
 always @(posedge adc_clk)
 begin
-  // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
-  // log2(3e8/(125e6/2^48 * 2^15/1))
-  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
-  //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
-  // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
-  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
-  vco0_frequency <= ($signed(DACout0)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
-  // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
-  //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
+    // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
+    // log2(3e8/(125e6/2^48 * 2^15/1))
+    // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+    //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
+    
+    // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+    // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+    vco0_frequency <= ($signed(DACout0)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
+    
+    // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
+    //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
 end
 
 internal_vco internal_vco_0 (
@@ -549,20 +550,21 @@ internal_vco internal_vco_0 (
 //  Internal VCO channel b
 wire signed [16-1:0] vco1_cosine_out;
 wire signed [16-1:0] vco1_sine_out;
-
 reg  signed [48-1:0] vco1_frequency;
 
 always @(posedge adc_clk)
 begin
-  // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
-  // log2(3e8/(125e6/2^48 * 2^15/1))
-  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
-  //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
-  // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
-  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
-  vco1_frequency <= ($signed(DACout1)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
-  // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
-  //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
+    // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
+    // log2(3e8/(125e6/2^48 * 2^15/1))
+    // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+    //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
+    
+    // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+    // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+    vco1_frequency <= ($signed(DACout1)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
+    
+    // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
+    //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
 end
 
 internal_vco internal_vco_1 (

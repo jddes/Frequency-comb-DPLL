@@ -290,55 +290,55 @@ begin
 	-- Differentiator with filter branch
 	----------------------------------------------------------------
    
- --   process (clk) is
- --   begin
- --       if rising_edge(clk) then
- --           d_in_filt <= std_logic_vector(shift_left(resize(signed(data_in), d_in_filt'length), 3));
- --       end if;
- --   end process;
+    process (clk) is
+    begin
+        if rising_edge(clk) then
+            d_in_filt <= std_logic_vector(shift_left(resize(signed(data_in), d_in_filt'length), 3));
+        end if;
+    end process;
         
         
- --   IIR_LPF_inst : entity work.IIR_LPF
- --   generic map (
- --       N_DATA => d_in_filt'length
- --   ) port map (
- --       clk      => clk,
- --       coef     => coef_d_filter,
- --       data_in  => d_in_filt,
- --       data_out => d_out_filt
- --   );
+    IIR_LPF_inst : entity work.IIR_LPF
+    generic map (
+        N_DATA => d_in_filt'length
+    ) port map (
+        clk      => clk,
+        coef     => coef_d_filter,
+        data_in  => d_in_filt,
+        data_out => d_out_filt
+    );
     
- --   process (clk) is
- --   begin
- --       if rising_edge(clk) then
- --           d_out_filt_dly <= d_out_filt;
- --           data_diff <= std_logic_vector(signed(d_out_filt) - signed(d_out_filt_dly));
- --       end if;
- --   end process;
+    process (clk) is
+    begin
+        if rising_edge(clk) then
+            d_out_filt_dly <= d_out_filt;
+            data_diff <= std_logic_vector(signed(d_out_filt) - signed(d_out_filt_dly));
+        end if;
+    end process;
     
- --   pll_wide_mult_d : pll_32x32_mult_ii
- --   port map (
- --       clk  => clk,
- --       a    => data_diff,
- --       b    => gain_d,
- --       sclr => synchronous_clear,
- --       p    => d_mult_output
- --   );
+    pll_wide_mult_d : pll_32x32_mult_ii
+    port map (
+        clk  => clk,
+        a    => data_diff,
+        b    => gain_d,
+        sclr => synchronous_clear,
+        p    => d_mult_output
+    );
     	
-	---- Division by 2^N_DIVIDE_D and saturation for D branch, adds 1 cycle of delay:
- --   d_saturation_inst: entity work.resize_with_saturation
- --   GENERIC MAP (
- --       N_INPUT  => d_mult_output'length-N_DIVIDE_D-18-3,
- --       N_OUTPUT => d_out'length
- --   )
- --   PORT MAP (
- --       clk => clk,
- --       synchronous_clear => synchronous_clear,
- --       data_in           => d_mult_output(d_mult_output'length-1 downto N_DIVIDE_D+18+3),
- --       railed_positive   => d_railed_positive,
- --       railed_negative   => d_railed_negative,
- --       data_out          => d_out
- --   );
+	-- Division by 2^N_DIVIDE_D and saturation for D branch, adds 1 cycle of delay:
+    d_saturation_inst: entity work.resize_with_saturation
+    GENERIC MAP (
+        N_INPUT  => d_mult_output'length-N_DIVIDE_D-18-3,
+        N_OUTPUT => d_out'length
+    )
+    PORT MAP (
+        clk => clk,
+        synchronous_clear => synchronous_clear,
+        data_in           => d_mult_output(d_mult_output'length-1 downto N_DIVIDE_D+18+3),
+        railed_positive   => d_railed_positive,
+        railed_negative   => d_railed_negative,
+        data_out          => d_out
+    );
     
     
     
@@ -350,17 +350,18 @@ begin
 	-- Output_sum was expanded a little bit to never overflow (we're summing three inputs that are already saturated to the output range and so we need only 2 extra bits to handle the full result
 	-- This assumes that all three inputs have been properly saturated beforehand
 	with synchronous_clear select
-		--output_sum <=	resize(signed(p_out),			N_OUTPUT+2) + 
-		--				resize(signed(i_out),			N_OUTPUT+2) + 
-		--				resize(signed(ii_out),			N_OUTPUT+2) + 
-		--				resize(signed(d_out),			N_OUTPUT+2) when '0',
-		--				(others => '0') 							when others;
-
 		-- JDD 12-08-2016: disabled D branch to try to make it fit into the smallest Zynq (Red Pitaya)
+		-- JDD 15-06-2017: re-enabled D branch since there was enough DSP slices
 		output_sum <=	resize(signed(p_out),			N_OUTPUT+2) + 
 						resize(signed(i_out),			N_OUTPUT+2) + 
-						resize(signed(ii_out),			N_OUTPUT+2) when '0',
+						resize(signed(ii_out),			N_OUTPUT+2) + 
+						resize(signed(d_out),			N_OUTPUT+2) when '0',
 						(others => '0') 							when others;
+
+		--output_sum <=	resize(signed(p_out),			N_OUTPUT+2) + 
+		--				resize(signed(i_out),			N_OUTPUT+2) + 
+		--				resize(signed(ii_out),			N_OUTPUT+2) when '0',
+		--				(others => '0') 							when others;
 						
 	-- Saturation for output sum, adds 1 cycle of delay:
    out_saturation_inst: entity work.resize_with_saturation

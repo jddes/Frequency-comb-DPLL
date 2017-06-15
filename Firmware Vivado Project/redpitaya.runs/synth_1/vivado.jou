@@ -2,11 +2,11 @@
 # Vivado v2015.4 (64-bit)
 # SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
 # IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
-# Start of session at: Wed Jun 14 18:59:44 2017
-# Process ID: 112
-# Current directory: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1
+# Start of session at: Thu Jun 15 11:41:41 2017
+# Process ID: 25900
+# Current directory: D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.runs/synth_1
 # Command line: vivado.exe -log red_pitaya_top.vds -mode batch -messageDb vivado.pb -notrace -source red_pitaya_top.tcl
-# Log file: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/red_pitaya_top.vds
-# Journal file: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1\vivado.jou
+# Log file: D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.runs/synth_1/red_pitaya_top.vds
+# Journal file: D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.runs/synth_1\vivado.jou
 #-----------------------------------------------------------
 source red_pitaya_top.tcl -notrace

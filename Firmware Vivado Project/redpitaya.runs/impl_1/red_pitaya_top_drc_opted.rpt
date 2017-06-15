@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Thu Jun 15 01:53:44 2017
-| Host         : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
+| Date         : Thu Jun 15 11:47:09 2017
+| Host         : 0381-JDD running 64-bit major release  (build 9200)
 | Command      : report_drc
 ------------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ Table of Contents
       Design limits: <entire design considered>
            Ruledeck: default
              Max violations: <unlimited>
-             Violations found: 108
+             Violations found: 118
 
 2. REPORT DETAILS
 -----------------
@@ -86,20 +86,30 @@ Related violations: <none>
 
 DPIP-1#9 Warning
 Input pipelining  
-DSP internal_vco_0/ARG input internal_vco_0/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP dpll_wrapper_inst/PLL0_loop_filters/IIR_LPF_inst/data_out_wide_reg input dpll_wrapper_inst/PLL0_loop_filters/IIR_LPF_inst/data_out_wide_reg/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#10 Warning
 Input pipelining  
-DSP internal_vco_0/ARG input internal_vco_0/ARG/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP dpll_wrapper_inst/PLL1_loop_filters/IIR_LPF_inst/data_out_wide_reg input dpll_wrapper_inst/PLL1_loop_filters/IIR_LPF_inst/data_out_wide_reg/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#11 Warning
 Input pipelining  
-DSP internal_vco_1/ARG input internal_vco_1/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP internal_vco_0/ARG input internal_vco_0/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#12 Warning
+Input pipelining  
+DSP internal_vco_0/ARG input internal_vco_0/ARG/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#13 Warning
+Input pipelining  
+DSP internal_vco_1/ARG input internal_vco_1/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-1#14 Warning
 Input pipelining  
 DSP internal_vco_1/ARG input internal_vco_1/ARG/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
@@ -126,6 +136,16 @@ Related violations: <none>
 
 DPOP-2#1 Warning
 MREG Output pipelining  
+DSP dpll_wrapper_inst/PLL0_loop_filters/IIR_LPF_inst/data_out_wide_reg multiplier stage dpll_wrapper_inst/PLL0_loop_filters/IIR_LPF_inst/data_out_wide_reg/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#2 Warning
+MREG Output pipelining  
+DSP dpll_wrapper_inst/PLL1_loop_filters/IIR_LPF_inst/data_out_wide_reg multiplier stage dpll_wrapper_inst/PLL1_loop_filters/IIR_LPF_inst/data_out_wide_reg/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+DPOP-2#3 Warning
+MREG Output pipelining  
 DSP dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg multiplier stage dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
 Related violations: <none>
 
@@ -138,196 +158,196 @@ XDCH-2#1 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[10]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#2 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[11]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#3 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[12]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#4 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[13]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#5 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[14]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#6 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[15]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#7 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[2]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#8 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[3]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#9 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[4]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#10 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[5]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#11 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[6]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#12 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[7]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#13 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[8]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#14 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_a_i[9]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_a_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 210)
 Related violations: <none>
 
 XDCH-2#15 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[10]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#16 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[11]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#17 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[12]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#18 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[13]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#19 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[14]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#20 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[15]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#21 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[2]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#22 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[3]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#23 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[4]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#24 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[5]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#25 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[6]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#26 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[7]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#27 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[8]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 XDCH-2#28 Warning
 Same min and max delay values on IO port  
 The same input delay of 3.400 ns has been defined on port 'adc_dat_b_i[9]' relative to clock adc_clk for both max and min. Make sure this reflects the design intent.
 set_input_delay -clock adc_clk 3.400 [get_ports {adc_dat_b_i[*]}]
-D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
+D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc (Line: 211)
 Related violations: <none>
 
 AVAL-4#1 Advisory
@@ -532,65 +552,95 @@ Related violations: <none>
 
 AVAL-4#41 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#42 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#43 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[1].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#44 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#45 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[1].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#46 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#47 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#48 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[1].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[1].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#49 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#50 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#51 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[1].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#52 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
-internal_vco_0/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
 
 AVAL-4#53 Advisory
+enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
+dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+AVAL-4#54 Advisory
+enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
+dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[1].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+AVAL-4#55 Advisory
+enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
+dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+AVAL-4#56 Advisory
+enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
+dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+AVAL-4#57 Advisory
+enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
+dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+AVAL-4#58 Advisory
+enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
+internal_vco_0/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+Related violations: <none>
+
+AVAL-4#59 Advisory
 enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND  
 internal_vco_1/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 Related violations: <none>
