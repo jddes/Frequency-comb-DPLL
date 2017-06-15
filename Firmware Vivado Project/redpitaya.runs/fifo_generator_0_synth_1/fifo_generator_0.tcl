@@ -9,13 +9,14 @@ create_project -in_memory -part xc7z010clg400-1
 set_param project.compositeFile.enableAutoGeneration 0
 set_param synth.vivado.isSynthRun true
 set_msg_config -source 4 -id {IP_Flow 19-2162} -severity warning -new_severity info
-set_property webtalk.parent_dir /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.cache/wt [current_project]
-set_property parent.project_path /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.xpr [current_project]
+set_property webtalk.parent_dir {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.cache/wt} [current_project]
+set_property parent.project_path {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr} [current_project]
 set_property default_lib work [current_project]
 set_property target_language Verilog [current_project]
 set_property vhdl_version vhdl_2k [current_fileset]
-read_ip /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.xci
-set_property is_locked true [get_files /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.xci]
+read_ip {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.xci}}
+set_property used_in_implementation false [get_files -all {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.dcp}}]
+set_property is_locked true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.xci}}]
 
 read_xdc dont_touch.xdc
 set_property used_in_implementation false [get_files dont_touch.xdc]
@@ -24,40 +25,40 @@ rename_ref -prefix_all fifo_generator_0_
 write_checkpoint -noxdef fifo_generator_0.dcp
 catch { report_utilization -file fifo_generator_0_utilization_synth.rpt -pb fifo_generator_0_utilization_synth.pb }
 if { [catch {
-  file copy -force /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.dcp
+  file copy -force {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp} {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0.dcp}
 } _RESULT ] } { 
   send_msg_id runtcl-3 error "ERROR: Unable to successfully create or copy the sub-design checkpoint file."
   error "ERROR: Unable to successfully create or copy the sub-design checkpoint file."
 }
 if { [catch {
-  write_verilog -force -mode synth_stub /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.v
+  write_verilog -force -mode synth_stub {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.v}
 } _RESULT ] } { 
   puts "CRITICAL WARNING: Unable to successfully create a Verilog synthesis stub for the sub-design. This may lead to errors in top level synthesis of the design. Error reported: $_RESULT"
 }
 if { [catch {
-  write_vhdl -force -mode synth_stub /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.vhdl
+  write_vhdl -force -mode synth_stub {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.vhdl}
 } _RESULT ] } { 
   puts "CRITICAL WARNING: Unable to successfully create a VHDL synthesis stub for the sub-design. This may lead to errors in top level synthesis of the design. Error reported: $_RESULT"
 }
 if { [catch {
-  write_verilog -force -mode funcsim /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_sim_netlist.v
+  write_verilog -force -mode funcsim {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_sim_netlist.v}
 } _RESULT ] } { 
   puts "CRITICAL WARNING: Unable to successfully create the Verilog functional simulation sub-design file. Post-Synthesis Functional Simulation with this file may not be possible or may give incorrect results. Error reported: $_RESULT"
 }
 if { [catch {
-  write_vhdl -force -mode funcsim /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_sim_netlist.vhdl
+  write_vhdl -force -mode funcsim {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_sim_netlist.vhdl}
 } _RESULT ] } { 
   puts "CRITICAL WARNING: Unable to successfully create the VHDL functional simulation sub-design file. Post-Synthesis Functional Simulation with this file may not be possible or may give incorrect results. Error reported: $_RESULT"
 }
 
-if {[file isdir /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.ip_user_files/ip/fifo_generator_0]} {
+if {[file isdir {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.ip_user_files/ip/fifo_generator_0}]} {
   catch { 
-    file copy -force /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.v /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.ip_user_files/ip/fifo_generator_0
+    file copy -force {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.v}} {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.ip_user_files/ip/fifo_generator_0}
   }
 }
 
-if {[file isdir /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.ip_user_files/ip/fifo_generator_0]} {
+if {[file isdir {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.ip_user_files/ip/fifo_generator_0}]} {
   catch { 
-    file copy -force /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.vhdl /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.ip_user_files/ip/fifo_generator_0
+    file copy -force {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_stub.vhdl}} {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.ip_user_files/ip/fifo_generator_0}
   }
 }

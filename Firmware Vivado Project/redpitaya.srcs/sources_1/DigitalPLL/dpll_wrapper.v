@@ -626,13 +626,15 @@ parallel_bus_register_counter_mode (
 // Direct-digital converter (brings a signal to baseband, low-pass filters it, and outputs the phase and frequency) for ADC 1
 ///////////////////////////////////////////////////////////////////////////////
 //wire      [11:0]  boxcar_filter_size = 12'd20;    // Filter with a notch at 5 MHz: 100MHz/5MHz = 20 samples
-wire        [47:0]  reference_frequency1, nominal_reference_frequency1, new_reference_frequency1;
-wire        [80-1:0]    dfr_phase_modulus, dfr_phase_adjust, delta_fr;
-wire                    goto_new_freq_at_next_zerocrossing, force_nominal_freq;
-wire        [9:0]       wrapped_phase1;     // phi/(2*pi) * 2**10
-wire        [9:0]       inst_frequency1;        // diff(phi)/(2*pi) * 2**10
-wire [10-1+12:0]    inst_frequency1_filtered;       // this is the output of a boxcar filter on the inst_frequency signal, before sending to the DDR2 logger
-wire [10-1+2:0] inst_frequency1_filtered_small; // overall filter gain is only equal to its length (4) so we don't really need all the bits
+wire       [47:0]  reference_frequency1, nominal_reference_frequency1, new_reference_frequency1;
+wire     [80-1:0]  dfr_phase_modulus, dfr_phase_adjust, delta_fr;
+wire               goto_new_freq_at_next_zerocrossing, force_nominal_freq;
+wire        [9:0]  wrapped_phase1;     // phi/(2*pi) * 2**10
+wire        [9:0]  inst_frequency1;        // diff(phi)/(2*pi) * 2**10 //now output from the mux that select between DDC1_output, inst_frequency0 or pll0_output
+wire  [10-1+12:0]  inst_frequency1_filtered;       // this is the output of a boxcar filter on the inst_frequency signal, before sending to the DDR2 logger
+wire   [10-1+2:0]  inst_frequency1_filtered_small; // overall filter gain is only equal to its length (4) so we don't really need all the bits
+
+wire        [10-1:0]    DDC1_output;            // diff(phi)/(2*pi) * 2**10
 
 
    parallel_bus_register_64_bits_or_less # (
@@ -672,8 +674,38 @@ DDC_wideband_filters DDC1_inst (
      // Output
     .amplitude(), 
     .wrapped_phase(wrapped_phase1), 
-    .inst_frequency(inst_frequency1)
+    .inst_frequency(DDC1_output) //we changed the output name from inst_frequency1 to DDC1_output to be able to select the input of the Loop Filter with a multiplexer
     );
+
+
+
+
+wire [2-1:0] loop_filter_1_mux_selector;
+// Registers which controls the multiplexer:
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(2),
+    .REGISTER_DEFAULT_VALUE(0),
+    .ADDRESS(16'h9000)
+)
+parallel_bus_register_mux_pll1  (
+ .clk                           (clk1                       ), 
+ .bus_strobe                    (cmd_trig                   ), 
+ .bus_address                   (cmd_addr                   ), 
+ .bus_data                      ({cmd_data2in, cmd_data1in} ), 
+ .register_output               (loop_filter_1_mux_selector ), 
+ .update_flag                   (                           )
+);
+
+multiplexer_3to1 loop_filters_1_mux (
+ .clk                               (clk1                       ),
+ .selector_mux                      (loop_filter_1_mux_selector ),
+ .in0_mux                           (DDC1_output                ), 
+ .in1_mux                           (inst_frequency0            ),
+ .in2_mux                           (pll0_output >> 5           ), //pll0_output is 15 bits and in2_mux is 10 bits
+ .out_mux                           (inst_frequency1            )
+);
+
+
      
 ///////////////////////////////////////////////////////////////////////////////
 // Counts the frequency with no dead-time using a short bandlimiting filter  + an integrate and dump.

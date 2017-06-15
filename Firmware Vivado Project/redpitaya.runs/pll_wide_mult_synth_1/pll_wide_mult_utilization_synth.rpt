@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------
-| Tool Version : Vivado v.2015.4 (lin64) Build 1412921 Wed Nov 18 09:44:32 MST 2015
-| Date         : Sat Aug 13 02:05:27 2016
-| Host         : jd-VirtualBox running 64-bit Ubuntu 14.04.3 LTS
+| Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
+| Date         : Wed Jun 14 18:57:35 2017
+| Host         : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 | Command      : report_utilization -file pll_wide_mult_utilization_synth.rpt -pb pll_wide_mult_utilization_synth.pb
 | Design       : pll_wide_mult
 | Device       : 7z010clg400-1

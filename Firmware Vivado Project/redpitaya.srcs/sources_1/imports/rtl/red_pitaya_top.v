@@ -231,17 +231,15 @@ assign ps_sys_ack   = |(sys_cs & sys_ack);
 
 // channel 0 is DPLL
 // channel 1 is BRAM-based data logger
-// channel 2 is VCO
-
-// assign sys_rdata[2*32+:32] = 32'h0; 
-// assign sys_err  [2       ] =  1'b0;
-// assign sys_ack  [2       ] =  1'b1;
-
+// channel 2 is VCO for DACa
 // channel 3 is "Housekeeping"
+// channel 4 is VCO for DACb
+// channel 5 is output multiplexer
 
-assign sys_rdata[5*32+:32] = 32'h0; 
-assign sys_err  [5       ] =  1'b0;
-assign sys_ack  [5       ] =  1'b1;
+
+// assign sys_rdata[5*32+:32] = 32'h0; 
+// assign sys_err  [5       ] =  1'b0;
+// assign sys_ack  [5       ] =  1'b1;
 
 assign sys_rdata[6*32+:32] = 32'h0; 
 assign sys_err  [6       ] =  1'b0;
@@ -412,8 +410,8 @@ wire LoggerIsWriting;
 
 assign ADCraw0 = {adc_a, 2'b0};
 assign ADCraw1 = {adc_b, 2'b0};
-assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
-assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
+// assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
+// assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
 
 wire dpll_rst = 1'b0; // I don't know if we can use the RedPitaya's reset because I don't know if it is clock-synchronous or not. In any case, it does not matter because we have the sys_bus driven resets.
 
@@ -503,46 +501,93 @@ ram_data_logger ram_data_logger_i (
   );
 
 
-// //---------------------------------------------------------------------------------
-// //  Internal VCO for testing purposes:
-// wire signed [16-1:0] vco_cosine_out;
-// wire signed [16-1:0] vco_sine_out;
+//---------------------------------------------------------------------------------
+//  Internal VCO channel a
+wire signed [16-1:0] vco0_cosine_out;
+wire signed [16-1:0] vco0_sine_out;
 
-// reg  signed [48-1:0] vco_frequency;
+reg  signed [48-1:0] vco0_frequency;
 
-// always @(posedge adc_clk)
-// begin
-//  // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
-//  // log2(3e8/(125e6/2^48 * 2^15/1))
-//  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
-//  vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
-//  // this value is equal to dec2bin(11e6/125e6 * 2^48, 48) (MATLAB)
-//  //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
-// end
+always @(posedge adc_clk)
+begin
+  // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
+  // log2(3e8/(125e6/2^48 * 2^15/1))
+  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+  //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
+  // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+  vco0_frequency <= ($signed(DACout0)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
+  // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
+  //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
+end
 
-// internal_vco internal_vco_i (
+internal_vco internal_vco_0 (
 
-//  .clk             (  adc_clk                    ),
+ .clk             (  adc_clk                    ),
 
-//  // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
-//  .frequency       (  vco_frequency              ),
+ // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
+ .frequency       (  vco0_frequency              ),
 
-//   // System bus, address starts at 0x4X20_0000
-//  .sys_addr        (  sys_addr                   ),  // address
-//  .sys_wdata       (  sys_wdata                  ),  // write data
-//  .sys_sel         (  sys_sel                    ),  // write byte select
-//  .sys_wen         (  sys_wen[2]                 ),  // write enable
-//  .sys_ren         (  sys_ren[2]                 ),  // read enable
-//  .sys_rdata       (  sys_rdata[ 2*32+31: 2*32]  ),  // read data
-//  .sys_err         (  sys_err[2]                 ),  // error indicator
-//  .sys_ack         (  sys_ack[2]                 ),  // acknowledge signal
+  // System bus, address starts at 0x4X20_0000
+ .sys_addr        (  sys_addr                   ),  // address
+ .sys_wdata       (  sys_wdata                  ),  // write data
+ .sys_sel         (  sys_sel                    ),  // write byte select
+ .sys_wen         (  sys_wen[2]                 ),  // write enable
+ .sys_ren         (  sys_ren[2]                 ),  // read enable
+ .sys_rdata       (  sys_rdata[ 2*32+31: 2*32]  ),  // read data
+ .sys_err         (  sys_err[2]                 ),  // error indicator
+ .sys_ack         (  sys_ack[2]                 ),  // acknowledge signal
 
 
-//  .cosine_out      (  vco_cosine_out             ),
-//  .sine_out        (  vco_sine_out               )
+ .cosine_out      (  vco0_cosine_out             ),
+ .sine_out        (  vco0_sine_out               )
 
-//  );
-// assign dac_b = vco_cosine_out[16-1:2];
+ );
+//assign dac_b = vco0_cosine_out[16-1:2];
+
+//---------------------------------------------------------------------------------
+//  Internal VCO channel b
+wire signed [16-1:0] vco1_cosine_out;
+wire signed [16-1:0] vco1_sine_out;
+
+reg  signed [48-1:0] vco1_frequency;
+
+always @(posedge adc_clk)
+begin
+  // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
+  // log2(3e8/(125e6/2^48 * 2^15/1))
+  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+  //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
+  // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+  vco1_frequency <= ($signed(DACout1)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
+  // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
+  //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
+end
+
+internal_vco internal_vco_1 (
+
+ .clk             (  adc_clk                    ),
+
+ // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
+ .frequency       (  vco1_frequency              ),
+
+  // System bus, address starts at 0x4X20_0000
+ .sys_addr        (  sys_addr                   ),  // address
+ .sys_wdata       (  sys_wdata                  ),  // write data
+ .sys_sel         (  sys_sel                    ),  // write byte select
+ .sys_wen         (  sys_wen[4]                 ),  // write enable
+ .sys_ren         (  sys_ren[4]                 ),  // read enable
+ .sys_rdata       (  sys_rdata[ 4*32+31: 4*32]  ),  // read data
+ .sys_err         (  sys_err[4]                 ),  // error indicator
+ .sys_ack         (  sys_ack[4]                 ),  // acknowledge signal
+
+
+ .cosine_out      (  vco1_cosine_out             ),
+ .sine_out        (  vco1_sine_out               )
+
+ );
+//assign dac_b = vco0_cosine_out[16-1:2];
 
 //---------------------------------------------------------------------------------
 //  House Keeping
@@ -577,9 +622,53 @@ red_pitaya_hk i_hk (
   .sys_ack         (  sys_ack[3]                 )   // acknowledge signal
 );
 
+// always @(posedge adc_clk) begin
+//   if (adc_rstn == 1'b0) begin
+//     led_counter <= 26'h0;
+//   end
+//   else begin
+//     led_counter <= led_counter + 26'h1;
+//   end
+// end
+
+
+// assign exp_n_out = {3'b0,sys_ack[2],sys_ack[2], sys_ack[0], sys_wen[0], led_counter[25]};
+// assign exp_n_dir = {8'b11111111};
+
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
 
+// ---------------------------------------------------------------------------------
+// output mux (select between different configurations)
+// Channel 5
+
+wire signed [14-1:0] signal_mux0;
+wire signed [14-1:0] signal_mux1;
+
+output_multiplexer muxDAC (
+  // system signals
+  .clk             (  adc_clk                    ),  // clock
+//  .rstn_i          (  adc_rstn                   ),  // reset - active low
+
+   // System bus
+  .sys_addr        (  sys_addr                   ),  // address
+  .sys_wdata       (  sys_wdata                  ),  // write data
+  .sys_sel         (  sys_sel                    ),  // write byte select
+  .sys_wen         (  sys_wen[5]                 ),  // write enable
+  .sys_ren         (  sys_ren[5]                 ),  // read enable
+  .sys_rdata       (  sys_rdata[ 5*32+31: 5*32]  ),  // read data
+  .sys_err         (  sys_err[5]                 ),  // error indicator
+  .sys_ack         (  sys_ack[5]                 ),  // acknowledge signal
+  .in0_0_mux       (  DACout0[16-1:2]            ),  // 
+  .in1_0_mux       (  vco0_cosine_out[16-1:2]     ),  //
+  .out_0_mux       (  signal_mux0                ),
+  .in0_1_mux       (  DACout1[16-1:2]            ),  // 
+  .in1_1_mux       (  vco1_cosine_out[16-1:2]     ),  //
+  .out_1_mux       (  signal_mux1                )
+);
+
+assign dac_a = signal_mux0;
+assign dac_b = signal_mux1;
 
 
 // ---------------------------------------------------------------------------------
