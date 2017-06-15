@@ -11,108 +11,112 @@
 source red_pitaya_top.tcl -notrace
 Design is defaulting to srcset: sources_1
 Design is defaulting to constrset: constrs_1
-WARNING: [filemgmt 56-147] Overwrite of existing file isn't enabled.  Please specify -force to overwrite file  [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp]
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/LO_DDS_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp' for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/CORDIC_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_I'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_Q'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_I'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_Q'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_i_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_ii_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp' for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp' for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/system_identification_outputgain_mult_synth_1/system_identification_outputgain_mult.dcp' for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-INFO: [Project 1-454] Reading design checkpoint 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp' for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst'
-INFO: [Netlist 29-17] Analyzing 1672 Unisim elements for replacement
+WARNING: [filemgmt 56-147] Overwrite of existing file isn't enabled.  Please specify -force to overwrite file  [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp]
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/LO_DDS_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp' for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp' for cell 'internal_vco_1/LO_DDS_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp' for cell 'internal_vco_0/LO_DDS_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/CORDIC_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_I'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_Q'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_I'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_Q'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_i_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_ii_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp' for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp' for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp' for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/system_identification_outputgain_mult_synth_1/system_identification_outputgain_mult.dcp' for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp' for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+INFO: [Project 1-454] Reading design checkpoint 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp' for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst'
+INFO: [Netlist 29-17] Analyzing 1692 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-479] Netlist was created with Vivado 2015.4
 INFO: [Device 21-403] Loading part xc7z010clg400-1
 INFO: [Project 1-570] Preparing netlist for logic optimization
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc] for cell 'i_ps/system_i/system_i/processing_system7/inst'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc] for cell 'i_ps/system_i/system_i/processing_system7/inst'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/system_xadc_0.xdc] for cell 'i_ps/system_i/system_i/xadc/inst'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/system_xadc_0.xdc] for cell 'i_ps/system_i/system_i/xadc/inst'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
-Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0/fifo_generator_0.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst/U0'
-Finished Parsing XDC File [d:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0/fifo_generator_0.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst/U0'
-Parsing XDC File [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc]
-WARNING: [Vivado 12-180] No cells matched 'i_ams/XADC_inst'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:125]
-CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:125]
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc] for cell 'i_ps/system_i/system_i/processing_system7/inst'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc] for cell 'i_ps/system_i/system_i/processing_system7/inst'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/system_xadc_0.xdc] for cell 'i_ps/system_i/system_i/xadc/inst'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/system_xadc_0.xdc] for cell 'i_ps/system_i/system_i/xadc/inst'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_v7_2_5/constraints/fir_compiler_v7_2.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0/fifo_generator_0.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst/U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0/fifo_generator_0.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst/U0'
+Parsing XDC File [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc]
+WARNING: [Vivado 12-180] No cells matched 'i_ams/XADC_inst'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:125]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:125]
 Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
-INFO: [Timing 38-35] Done setting XDC timing constraints. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
-INFO: [Timing 38-2] Deriving generated clocks [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
-WARNING: [Vivado 12-627] No clocks matched 'dac_clk_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
-get_clocks: Time (s): cpu = 00:00:20 ; elapsed = 00:00:19 . Memory (MB): peak = 1040.590 ; gain = 478.117
-CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks dac_clk_out]'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
+INFO: [Timing 38-35] Done setting XDC timing constraints. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
+INFO: [Timing 38-2] Deriving generated clocks [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
+WARNING: [Vivado 12-627] No clocks matched 'dac_clk_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
+get_clocks: Time (s): cpu = 00:00:14 ; elapsed = 00:00:16 . Memory (MB): peak = 1051.891 ; gain = 483.066
+CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks dac_clk_out]'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:215]
 Resolution: Check if the specified object(s) exists in the current design. If it does, ensure that the correct design hierarchy was specified for the object. If you are working with clocks, make sure create_clock was used to create the clock object before it is referenced.
-WARNING: [Vivado 12-627] No clocks matched 'ser_clk_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:216]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:216]
-CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks ser_clk_out]'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:216]
+WARNING: [Vivado 12-627] No clocks matched 'ser_clk_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:216]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:216]
+CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks ser_clk_out]'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:216]
 Resolution: Check if the specified object(s) exists in the current design. If it does, ensure that the correct design hierarchy was specified for the object. If you are working with clocks, make sure create_clock was used to create the clock object before it is referenced.
-WARNING: [Vivado 12-627] No clocks matched 'dac_2clk_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:217]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:217]
-CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks dac_2clk_out]'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:217]
+WARNING: [Vivado 12-627] No clocks matched 'dac_2clk_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:217]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:217]
+CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks dac_2clk_out]'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:217]
 Resolution: Check if the specified object(s) exists in the current design. If it does, ensure that the correct design hierarchy was specified for the object. If you are working with clocks, make sure create_clock was used to create the clock object before it is referenced.
-WARNING: [Vivado 12-627] No clocks matched 'par_clk'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:219]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:219]
-CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks par_clk]'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:219]
+WARNING: [Vivado 12-627] No clocks matched 'par_clk'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:219]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:219]
+CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-to [get_clocks par_clk]'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:219]
 Resolution: Check if the specified object(s) exists in the current design. If it does, ensure that the correct design hierarchy was specified for the object. If you are working with clocks, make sure create_clock was used to create the clock object before it is referenced.
-WARNING: [Vivado 12-627] No clocks matched 'dac_clk_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
-WARNING: [Vivado 12-627] No clocks matched 'dac_2clk_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
-CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-from [get_clocks dac_clk_out]'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
+WARNING: [Vivado 12-627] No clocks matched 'dac_clk_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
+WARNING: [Vivado 12-627] No clocks matched 'dac_2clk_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
+CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-from [get_clocks dac_clk_out]'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:220]
 Resolution: Check if the specified object(s) exists in the current design. If it does, ensure that the correct design hierarchy was specified for the object. If you are working with clocks, make sure create_clock was used to create the clock object before it is referenced.
-WARNING: [Vivado 12-627] No clocks matched 'dac_clk_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
-WARNING: [Vivado 12-627] No clocks matched 'dac_2ph_out'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
-INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
-CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-from [get_clocks dac_clk_out]'. [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
+WARNING: [Vivado 12-627] No clocks matched 'dac_clk_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
+WARNING: [Vivado 12-627] No clocks matched 'dac_2ph_out'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
+INFO: [Vivado 12-626] No clocks found. Please use 'create_clock' or 'create_generated_clock' command to create clocks. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
+CRITICAL WARNING: [Vivado 12-1387] No valid object(s) found for set_false_path constraint with option '-from [get_clocks dac_clk_out]'. [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc:221]
 Resolution: Check if the specified object(s) exists in the current design. If it does, ensure that the correct design hierarchy was specified for the object. If you are working with clocks, make sure create_clock was used to create the clock object before it is referenced.
-Finished Parsing XDC File [D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc]
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/LO_DDS/LO_DDS.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/system_identification_outputgain_mult_synth_1/system_identification_outputgain_mult.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
-INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp'
+Finished Parsing XDC File [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc]
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/.Xil/Vivado-7564-/LO_DDS/LO_DDS.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/angle_CORDIC_synth_1/angle_CORDIC.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/system_identification_outputgain_mult_synth_1/system_identification_outputgain_mult.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp'
+INFO: [Project 1-538] Using original IP XDC constraints instead of the XDC constraints in dcp 'D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp'
 INFO: [Opt 31-140] Inserted 4 IBUFs to IO ports without IO buffers.
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
 INFO: [Project 1-111] Unisim Transformation Summary:
@@ -120,7 +124,7 @@ INFO: [Project 1-111] Unisim Transformation Summary:
   IOBUF => IOBUF (IBUF, OBUFT): 16 instances
   RAM32M => RAM32M (RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMS32, RAMS32): 52 instances
 
-link_design: Time (s): cpu = 00:00:41 ; elapsed = 00:00:48 . Memory (MB): peak = 1041.469 ; gain = 830.234
+link_design: Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1051.891 ; gain = 840.949
 Command: opt_design
 Attempting to get a license for feature 'Implementation' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z010'
@@ -131,78 +135,76 @@ INFO: [DRC 23-27] Running DRC with 2 threads
 INFO: [Project 1-461] DRC finished with 0 Errors
 INFO: [Project 1-462] Please refer to the DRC report (report_drc) for more information.
 
-Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.597 . Memory (MB): peak = 1041.469 ; gain = 0.000
+Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.639 . Memory (MB): peak = 1051.891 ; gain = 0.000
 INFO: [Timing 38-35] Done setting XDC timing constraints.
 
 Starting Logic Optimization Task
-Implement Debug Cores | Checksum: 11fbc7774
+Implement Debug Cores | Checksum: 1b2faa5c1
 
 Phase 1 Retarget
 INFO: [Opt 31-138] Pushed 1 inverter(s) to 1 load pin(s).
 INFO: [Opt 31-274] Optimized connectivity to 4 cascaded BUFGCE cells
 INFO: [Opt 31-49] Retargeted 0 cell(s).
-Phase 1 Retarget | Checksum: 230711dd4
+Phase 1 Retarget | Checksum: 18fc2514d
 
-Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 1041.469 ; gain = 0.000
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:03 . Memory (MB): peak = 1051.891 ; gain = 0.000
 
 Phase 2 Constant Propagation
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-INFO: [Opt 31-10] Eliminated 300 cells.
-Phase 2 Constant Propagation | Checksum: 1474530bb
+INFO: [Opt 31-10] Eliminated 460 cells.
+Phase 2 Constant Propagation | Checksum: 139ff2064
 
-Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 1041.469 ; gain = 0.000
+Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 1051.891 ; gain = 0.000
 
 Phase 3 Sweep
-INFO: [Opt 31-12] Eliminated 7001 unconnected nets.
+INFO: [Opt 31-12] Eliminated 7363 unconnected nets.
 INFO: [Opt 31-140] Inserted 4 IBUFs to IO ports without IO buffers.
-INFO: [Opt 31-11] Eliminated 2278 unconnected cells.
-Phase 3 Sweep | Checksum: 1bcf11a13
+INFO: [Opt 31-11] Eliminated 2908 unconnected cells.
+Phase 3 Sweep | Checksum: eb283278
 
-Time (s): cpu = 00:00:16 ; elapsed = 00:00:16 . Memory (MB): peak = 1041.469 ; gain = 0.000
+Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1051.891 ; gain = 0.000
 
 Starting Connectivity Check Task
 
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.077 . Memory (MB): peak = 1041.469 ; gain = 0.000
-Ending Logic Optimization Task | Checksum: 1bcf11a13
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.060 . Memory (MB): peak = 1051.891 ; gain = 0.000
+Ending Logic Optimization Task | Checksum: eb283278
 
-Time (s): cpu = 00:00:16 ; elapsed = 00:00:16 . Memory (MB): peak = 1041.469 ; gain = 0.000
+Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 1051.891 ; gain = 0.000
 
 Starting Power Optimization Task
 INFO: [Pwropt 34-132] Skipping clock gating for clocks with a period < 2.00 ns.
 INFO: [Power 33-23] Power model is not available for i_DNA
 INFO: [Timing 38-35] Done setting XDC timing constraints.
+Running Vector-less Activity Propagation...
 INFO: [Pwropt 34-9] Applying IDT optimizations ...
 INFO: [Pwropt 34-10] Applying ODC optimizations ...
-Running Vector-less Activity Propagation...
 
 Finished Running Vector-less Activity Propagation
 
 
 Starting PowerOpt Patch Enables Task
-INFO: [Pwropt 34-162] WRITE_MODE attribute of 2 BRAM(s) out of a total of 44 has been updated to save power. Run report_power_opt to get a complete listing of the BRAMs updated.
+INFO: [Pwropt 34-162] WRITE_MODE attribute of 2 BRAM(s) out of a total of 60 has been updated to save power. Run report_power_opt to get a complete listing of the BRAMs updated.
 INFO: [Pwropt 34-201] Structural ODC has moved 0 WE to EN ports
-Number of BRAM Ports augmented: 2 newly gated: 0 Total Ports: 88
+Number of BRAM Ports augmented: 2 newly gated: 16 Total Ports: 120
 Number of Flops added for Enable Generation: 5
 
-Ending PowerOpt Patch Enables Task | Checksum: 114dadb25
+Ending PowerOpt Patch Enables Task | Checksum: eced9c12
 
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.134 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Ending Power Optimization Task | Checksum: 114dadb25
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.137 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Ending Power Optimization Task | Checksum: eced9c12
 
-Time (s): cpu = 00:00:24 ; elapsed = 00:00:14 . Memory (MB): peak = 1291.773 ; gain = 250.305
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:11 . Memory (MB): peak = 1372.980 ; gain = 321.090
 INFO: [Common 17-83] Releasing license: Implementation
-81 Infos, 10 Warnings, 7 Critical Warnings and 0 Errors encountered.
+85 Infos, 10 Warnings, 7 Critical Warnings and 0 Errors encountered.
 opt_design completed successfully
-opt_design: Time (s): cpu = 00:00:45 ; elapsed = 00:00:43 . Memory (MB): peak = 1291.773 ; gain = 250.305
+opt_design: Time (s): cpu = 00:00:34 ; elapsed = 00:00:28 . Memory (MB): peak = 1372.980 ; gain = 321.090
 Writing placer database...
 Writing XDEF routing.
 Writing XDEF routing logical nets.
 Writing XDEF routing special nets.
-Write XDEF Complete: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.239 . Memory (MB): peak = 1291.773 ; gain = 0.000
-WARNING: [Runs 36-115] Could not delete directory 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/.Xil/Vivado-18212-/dcp'.
-write_checkpoint: Time (s): cpu = 00:00:10 ; elapsed = 00:00:06 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Write XDEF Complete: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.185 . Memory (MB): peak = 1372.980 ; gain = 0.000
 INFO: [DRC 23-27] Running DRC with 2 threads
-INFO: [Coretcl 2-168] The results of DRC are in file D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/red_pitaya_top_drc_opted.rpt.
+INFO: [Coretcl 2-168] The results of DRC are in file D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/red_pitaya_top_drc_opted.rpt.
 Command: place_design
 Attempting to get a license for feature 'Implementation' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z010'
@@ -218,17 +220,17 @@ Starting Placer Task
 INFO: [Place 30-611] Multithreading enabled for place_design using a maximum of 2 CPUs
 
 Phase 1 Placer Initialization
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.075 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.057 . Memory (MB): peak = 1372.980 ; gain = 0.000
 INFO: [Timing 38-35] Done setting XDC timing constraints.
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.060 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.051 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 1.1 IO Placement/ Clock Placement/ Build Placer Device
 
 Phase 1.1.1 Pre-Place Cells
 Phase 1.1.1 Pre-Place Cells | Checksum: ecf3f3a6
 
-Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:03 . Memory (MB): peak = 1372.980 ; gain = 0.000
 WARNING: [Place 30-12] An IO Bus FIXED_IO_mio with more than one IO standard is found. Components associated with this bus are: 
 	FIXED_IO_mio[53] of IOStandard LVCMOS25
 	FIXED_IO_mio[52] of IOStandard LVCMOS25
@@ -289,215 +291,214 @@ INFO: [Timing 38-35] Done setting XDC timing constraints.
 Phase 1.1.2 IO and Clk Clean Up
 Phase 1.1.2 IO and Clk Clean Up | Checksum: ecf3f3a6
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:00:14 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 1.1.3 Implementation Feasibility check On IDelay
 Phase 1.1.3 Implementation Feasibility check On IDelay | Checksum: ecf3f3a6
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:00:14 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 1.1.4 Commit IO Placement
 Phase 1.1.4 Commit IO Placement | Checksum: c2f5d6b2
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:00:14 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 1.1 IO Placement/ Clock Placement/ Build Placer Device | Checksum: 182145544
+Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 1.1 IO Placement/ Clock Placement/ Build Placer Device | Checksum: d8f5eb4d
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:00:14 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:11 ; elapsed = 00:00:11 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 1.2 Build Placer Netlist Model
 
 Phase 1.2.1 Place Init Design
 
 Phase 1.2.1.1 Init Lut Pin Assignment
-Phase 1.2.1.1 Init Lut Pin Assignment | Checksum: 152ecc51d
+Phase 1.2.1.1 Init Lut Pin Assignment | Checksum: 166b07910
 
-Time (s): cpu = 00:00:16 ; elapsed = 00:00:15 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 1.2.1 Place Init Design | Checksum: 11c1162ff
+Time (s): cpu = 00:00:12 ; elapsed = 00:00:12 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 1.2.1 Place Init Design | Checksum: cde3a23b
 
-Time (s): cpu = 00:00:26 ; elapsed = 00:00:22 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 1.2 Build Placer Netlist Model | Checksum: 11c1162ff
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:17 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 1.2 Build Placer Netlist Model | Checksum: cde3a23b
 
-Time (s): cpu = 00:00:26 ; elapsed = 00:00:22 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:17 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 1.3 Constrain Clocks/Macros
 
 Phase 1.3.1 Constrain Global/Regional Clocks
-Phase 1.3.1 Constrain Global/Regional Clocks | Checksum: 11c1162ff
+Phase 1.3.1 Constrain Global/Regional Clocks | Checksum: cde3a23b
 
-Time (s): cpu = 00:00:26 ; elapsed = 00:00:22 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 1.3 Constrain Clocks/Macros | Checksum: 11c1162ff
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:17 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 1.3 Constrain Clocks/Macros | Checksum: cde3a23b
 
-Time (s): cpu = 00:00:26 ; elapsed = 00:00:22 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 1 Placer Initialization | Checksum: 11c1162ff
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:17 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 1 Placer Initialization | Checksum: cde3a23b
 
-Time (s): cpu = 00:00:26 ; elapsed = 00:00:22 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:17 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 2 Global Placement
-Phase 2 Global Placement | Checksum: 129970832
+Phase 2 Global Placement | Checksum: 1b0b0fb39
 
-Time (s): cpu = 00:00:52 ; elapsed = 00:00:38 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:37 ; elapsed = 00:00:28 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3 Detail Placement
 
 Phase 3.1 Commit Multi Column Macros
-Phase 3.1 Commit Multi Column Macros | Checksum: 129970832
+Phase 3.1 Commit Multi Column Macros | Checksum: 1b0b0fb39
 
-Time (s): cpu = 00:00:52 ; elapsed = 00:00:38 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:37 ; elapsed = 00:00:28 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.2 Commit Most Macros & LUTRAMs
-Phase 3.2 Commit Most Macros & LUTRAMs | Checksum: 103a8a5b5
+Phase 3.2 Commit Most Macros & LUTRAMs | Checksum: e5123ae5
 
-Time (s): cpu = 00:01:01 ; elapsed = 00:00:45 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:44 ; elapsed = 00:00:33 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.3 Area Swap Optimization
-Phase 3.3 Area Swap Optimization | Checksum: fed0fba1
+Phase 3.3 Area Swap Optimization | Checksum: e72e22e4
 
-Time (s): cpu = 00:01:01 ; elapsed = 00:00:45 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:44 ; elapsed = 00:00:33 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.4 updateClock Trees: DP
-Phase 3.4 updateClock Trees: DP | Checksum: fed0fba1
+Phase 3.4 updateClock Trees: DP | Checksum: e72e22e4
 
-Time (s): cpu = 00:01:02 ; elapsed = 00:00:45 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:44 ; elapsed = 00:00:33 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.5 Timing Path Optimizer
-Phase 3.5 Timing Path Optimizer | Checksum: 159e9c729
+Phase 3.5 Timing Path Optimizer | Checksum: caf89732
 
-Time (s): cpu = 00:01:04 ; elapsed = 00:00:46 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:45 ; elapsed = 00:00:34 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.6 Fast Optimization
-Phase 3.6 Fast Optimization | Checksum: a1c39d89
+Phase 3.6 Fast Optimization | Checksum: af6a4295
 
-Time (s): cpu = 00:01:04 ; elapsed = 00:00:46 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:46 ; elapsed = 00:00:34 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.7 Small Shape Detail Placement
 
 Phase 3.7.1 Commit Small Macros and Core Logic
 
 Phase 3.7.1.1 Commit Slice Clusters
-Phase 3.7.1.1 Commit Slice Clusters | Checksum: 12545e3b7
+Phase 3.7.1.1 Commit Slice Clusters | Checksum: bf4ce853
 
-Time (s): cpu = 00:01:09 ; elapsed = 00:00:51 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 3.7.1 Commit Small Macros and Core Logic | Checksum: 12545e3b7
+Time (s): cpu = 00:00:49 ; elapsed = 00:00:37 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 3.7.1 Commit Small Macros and Core Logic | Checksum: bf4ce853
 
-Time (s): cpu = 00:01:09 ; elapsed = 00:00:51 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:49 ; elapsed = 00:00:38 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.7.2 Clock Restriction Legalization for Leaf Columns
-Phase 3.7.2 Clock Restriction Legalization for Leaf Columns | Checksum: 12545e3b7
+Phase 3.7.2 Clock Restriction Legalization for Leaf Columns | Checksum: bf4ce853
 
-Time (s): cpu = 00:01:09 ; elapsed = 00:00:51 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:50 ; elapsed = 00:00:38 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.7.3 Clock Restriction Legalization for Non-Clock Pins
-Phase 3.7.3 Clock Restriction Legalization for Non-Clock Pins | Checksum: 12545e3b7
+Phase 3.7.3 Clock Restriction Legalization for Non-Clock Pins | Checksum: bf4ce853
 
-Time (s): cpu = 00:01:10 ; elapsed = 00:00:52 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 3.7 Small Shape Detail Placement | Checksum: 12545e3b7
+Time (s): cpu = 00:00:50 ; elapsed = 00:00:38 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 3.7 Small Shape Detail Placement | Checksum: bf4ce853
 
-Time (s): cpu = 00:01:10 ; elapsed = 00:00:52 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:50 ; elapsed = 00:00:38 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3.8 Re-assign LUT pins
-Phase 3.8 Re-assign LUT pins | Checksum: 151a8f30b
+Phase 3.8 Re-assign LUT pins | Checksum: 925f7bb1
 
-Time (s): cpu = 00:01:11 ; elapsed = 00:00:53 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 3 Detail Placement | Checksum: 151a8f30b
+Time (s): cpu = 00:00:51 ; elapsed = 00:00:39 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 3 Detail Placement | Checksum: 925f7bb1
 
-Time (s): cpu = 00:01:11 ; elapsed = 00:00:53 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:51 ; elapsed = 00:00:39 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4 Post Placement Optimization and Clean-Up
 
 Phase 4.1 Post Commit Optimization
 
 Phase 4.1.1 callUpdateTimingBeforePCO
-Phase 4.1.1 callUpdateTimingBeforePCO | Checksum: 1c3b04c4e
+Phase 4.1.1 callUpdateTimingBeforePCO | Checksum: 86c19a4f
 
-Time (s): cpu = 00:01:18 ; elapsed = 00:00:57 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:55 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.1.2 updateClock Trees: PCOPT
-Phase 4.1.2 updateClock Trees: PCOPT | Checksum: 1c3b04c4e
+Phase 4.1.2 updateClock Trees: PCOPT | Checksum: 86c19a4f
 
-Time (s): cpu = 00:01:18 ; elapsed = 00:00:57 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:55 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.1.3 Post Placement Optimization
 
 Phase 4.1.3.1 PCOPT Shape updates
 
 Phase 4.1.3.1.1 removeOptionalFFsFromShapes
-Phase 4.1.3.1.1 removeOptionalFFsFromShapes | Checksum: 1c3b04c4e
+Phase 4.1.3.1.1 removeOptionalFFsFromShapes | Checksum: 86c19a4f
 
-Time (s): cpu = 00:01:18 ; elapsed = 00:00:57 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:56 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.1.3.1.2 deleteLutnmShapes
 
 Phase 4.1.3.1.2.1 deleteShapes
-Phase 4.1.3.1.2.1 deleteShapes | Checksum: 2673fbb0d
+Phase 4.1.3.1.2.1 deleteShapes | Checksum: 1af1894d1
 
-Time (s): cpu = 00:01:18 ; elapsed = 00:00:57 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.1.3.1.2 deleteLutnmShapes | Checksum: 2673fbb0d
+Time (s): cpu = 00:00:56 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.1.3.1.2 deleteLutnmShapes | Checksum: 1af1894d1
 
-Time (s): cpu = 00:01:19 ; elapsed = 00:00:58 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.1.3.1 PCOPT Shape updates | Checksum: 2673fbb0d
+Time (s): cpu = 00:00:56 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.1.3.1 PCOPT Shape updates | Checksum: 1af1894d1
 
-Time (s): cpu = 00:01:19 ; elapsed = 00:00:58 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:56 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.1.3.2 Post Placement Timing Optimization
 
 Phase 4.1.3.2.1 Restore Best Placement
-Phase 4.1.3.2.1 Restore Best Placement | Checksum: 27db0d94e
+Phase 4.1.3.2.1 Restore Best Placement | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:36 ; elapsed = 00:01:17 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Place 30-746] Post Placement Timing Summary WNS=0.122. For the most accurate timing information please run report_timing.
-Phase 4.1.3.2 Post Placement Timing Optimization | Checksum: 27db0d94e
+Time (s): cpu = 00:01:04 ; elapsed = 00:00:51 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Place 30-746] Post Placement Timing Summary WNS=0.227. For the most accurate timing information please run report_timing.
+Phase 4.1.3.2 Post Placement Timing Optimization | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:37 ; elapsed = 00:01:17 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.1.3 Post Placement Optimization | Checksum: 27db0d94e
+Time (s): cpu = 00:01:05 ; elapsed = 00:00:51 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.1.3 Post Placement Optimization | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:37 ; elapsed = 00:01:18 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.1 Post Commit Optimization | Checksum: 27db0d94e
+Time (s): cpu = 00:01:05 ; elapsed = 00:00:51 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.1 Post Commit Optimization | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:37 ; elapsed = 00:01:18 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:05 ; elapsed = 00:00:52 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.2 Sweep Clock Roots: Post-Placement
-Phase 4.2 Sweep Clock Roots: Post-Placement | Checksum: 27db0d94e
+Phase 4.2 Sweep Clock Roots: Post-Placement | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:38 ; elapsed = 00:01:19 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:05 ; elapsed = 00:00:52 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.3 Post Placement Cleanup
-Phase 4.3 Post Placement Cleanup | Checksum: 27db0d94e
+Phase 4.3 Post Placement Cleanup | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:38 ; elapsed = 00:01:19 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:05 ; elapsed = 00:00:52 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.4 Placer Reporting
 
 Phase 4.4.1 Restore STA
-Phase 4.4.1 Restore STA | Checksum: 27db0d94e
+Phase 4.4.1 Restore STA | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:38 ; elapsed = 00:01:19 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.4 Placer Reporting | Checksum: 27db0d94e
+Time (s): cpu = 00:01:05 ; elapsed = 00:00:52 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.4 Placer Reporting | Checksum: 22e14dafd
 
-Time (s): cpu = 00:01:38 ; elapsed = 00:01:20 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:52 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.5 Final Placement Cleanup
-Phase 4.5 Final Placement Cleanup | Checksum: 1ee2aabe9
+Phase 4.5 Final Placement Cleanup | Checksum: 17095b2a4
 
-Time (s): cpu = 00:01:39 ; elapsed = 00:01:20 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4 Post Placement Optimization and Clean-Up | Checksum: 1ee2aabe9
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:53 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4 Post Placement Optimization and Clean-Up | Checksum: 17095b2a4
 
-Time (s): cpu = 00:01:39 ; elapsed = 00:01:20 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Ending Placer Task | Checksum: 1366772d6
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:53 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Ending Placer Task | Checksum: b71db932
 
-Time (s): cpu = 00:01:39 ; elapsed = 00:01:20 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:53 . Memory (MB): peak = 1372.980 ; gain = 0.000
 INFO: [Common 17-83] Releasing license: Implementation
-96 Infos, 12 Warnings, 7 Critical Warnings and 0 Errors encountered.
+100 Infos, 11 Warnings, 7 Critical Warnings and 0 Errors encountered.
 place_design completed successfully
-place_design: Time (s): cpu = 00:01:44 ; elapsed = 00:01:33 . Memory (MB): peak = 1291.773 ; gain = 0.000
+place_design: Time (s): cpu = 00:01:08 ; elapsed = 00:00:57 . Memory (MB): peak = 1372.980 ; gain = 0.000
 Writing placer database...
 Writing XDEF routing.
 Writing XDEF routing logical nets.
 Writing XDEF routing special nets.
-Write XDEF Complete: Time (s): cpu = 00:00:17 ; elapsed = 00:00:08 . Memory (MB): peak = 1291.773 ; gain = 0.000
-write_checkpoint: Time (s): cpu = 00:00:19 ; elapsed = 00:00:11 . Memory (MB): peak = 1291.773 ; gain = 0.000
-report_io: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.279 . Memory (MB): peak = 1291.773 ; gain = 0.000
-report_utilization: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.517 . Memory (MB): peak = 1291.773 ; gain = 0.000
-report_control_sets: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.123 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Write XDEF Complete: Time (s): cpu = 00:00:08 ; elapsed = 00:00:03 . Memory (MB): peak = 1372.980 ; gain = 0.000
+report_io: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.113 . Memory (MB): peak = 1372.980 ; gain = 0.000
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.155 . Memory (MB): peak = 1372.980 ; gain = 0.000
+report_control_sets: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.045 . Memory (MB): peak = 1372.980 ; gain = 0.000
 Command: route_design
 Attempting to get a license for feature 'Implementation' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z010'
@@ -510,138 +511,142 @@ INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more in
 
 Starting Routing Task
 INFO: [Route 35-254] Multithreading enabled for route_design using a maximum of 2 CPUs
-Checksum: PlaceDB: f6cbc4bb ConstDB: 0 ShapeSum: 3f9bae1b RouteDB: 0
+Checksum: PlaceDB: 7b445a72 ConstDB: 0 ShapeSum: 3bd95ec0 RouteDB: 0
 
 Phase 1 Build RT Design
-Phase 1 Build RT Design | Checksum: 1022a38dd
+Phase 1 Build RT Design | Checksum: 743550e1
 
-Time (s): cpu = 00:00:35 ; elapsed = 00:00:28 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:20 ; elapsed = 00:00:16 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 2 Router Initialization
 
 Phase 2.1 Create Timer
-Phase 2.1 Create Timer | Checksum: 1022a38dd
+Phase 2.1 Create Timer | Checksum: 743550e1
 
-Time (s): cpu = 00:00:36 ; elapsed = 00:00:29 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:20 ; elapsed = 00:00:16 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 2.2 Pre Route Cleanup
-Phase 2.2 Pre Route Cleanup | Checksum: 1022a38dd
+Phase 2.2 Pre Route Cleanup | Checksum: 743550e1
 
-Time (s): cpu = 00:00:36 ; elapsed = 00:00:30 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:21 ; elapsed = 00:00:16 . Memory (MB): peak = 1372.980 ; gain = 0.000
  Number of Nodes with overlaps = 0
 
 Phase 2.3 Update Timing
-Phase 2.3 Update Timing | Checksum: 1e935f7cf
+Phase 2.3 Update Timing | Checksum: e6325096
 
-Time (s): cpu = 00:00:52 ; elapsed = 00:00:40 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.106  | TNS=0.000  | WHS=-0.319 | THS=-367.366|
+Time (s): cpu = 00:00:29 ; elapsed = 00:00:22 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.195  | TNS=0.000  | WHS=-0.358 | THS=-332.155|
 
-Phase 2 Router Initialization | Checksum: 28303e9e0
+Phase 2 Router Initialization | Checksum: 16827b83c
 
-Time (s): cpu = 00:01:00 ; elapsed = 00:00:45 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:33 ; elapsed = 00:00:24 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 3 Initial Routing
-Phase 3 Initial Routing | Checksum: 23aee5111
+Phase 3 Initial Routing | Checksum: 17837624a
 
-Time (s): cpu = 00:01:07 ; elapsed = 00:00:49 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:39 ; elapsed = 00:00:27 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4 Rip-up And Reroute
 
 Phase 4.1 Global Iteration 0
- Number of Nodes with overlaps = 1083
- Number of Nodes with overlaps = 243
- Number of Nodes with overlaps = 52
- Number of Nodes with overlaps = 16
- Number of Nodes with overlaps = 2
+ Number of Nodes with overlaps = 1130
+ Number of Nodes with overlaps = 266
+ Number of Nodes with overlaps = 66
+ Number of Nodes with overlaps = 4
+ Number of Nodes with overlaps = 1
  Number of Nodes with overlaps = 0
 
 Phase 4.1.1 Update Timing
-Phase 4.1.1 Update Timing | Checksum: 113e22e09
+Phase 4.1.1 Update Timing | Checksum: 152546c28
 
-Time (s): cpu = 00:01:25 ; elapsed = 00:01:00 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.036  | TNS=0.000  | WHS=N/A    | THS=N/A    |
+Time (s): cpu = 00:00:54 ; elapsed = 00:00:35 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.100 | TNS=-0.100 | WHS=N/A    | THS=N/A    |
 
 
 Phase 4.1.2 GlobIterForTiming
 
 Phase 4.1.2.1 Update Timing
-Phase 4.1.2.1 Update Timing | Checksum: 1666f5813
+Phase 4.1.2.1 Update Timing | Checksum: 16e321847
 
-Time (s): cpu = 00:01:26 ; elapsed = 00:01:00 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:54 ; elapsed = 00:00:36 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.1.2.2 Fast Budgeting
-Phase 4.1.2.2 Fast Budgeting | Checksum: 16cd9296a
+Phase 4.1.2.2 Fast Budgeting | Checksum: 1dd763389
 
-Time (s): cpu = 00:01:28 ; elapsed = 00:01:02 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.1.2 GlobIterForTiming | Checksum: 1ad35de29
+Time (s): cpu = 00:00:55 ; elapsed = 00:00:37 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.1.2 GlobIterForTiming | Checksum: 168dcdaf6
 
-Time (s): cpu = 00:01:28 ; elapsed = 00:01:02 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4.1 Global Iteration 0 | Checksum: 1ad35de29
+Time (s): cpu = 00:00:56 ; elapsed = 00:00:37 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4.1 Global Iteration 0 | Checksum: 168dcdaf6
 
-Time (s): cpu = 00:01:28 ; elapsed = 00:01:02 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:56 ; elapsed = 00:00:37 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 4.2 Global Iteration 1
- Number of Nodes with overlaps = 84
- Number of Nodes with overlaps = 37
+ Number of Nodes with overlaps = 124
  Number of Nodes with overlaps = 26
- Number of Nodes with overlaps = 2
- Number of Nodes with overlaps = 2
+ Number of Nodes with overlaps = 7
+ Number of Nodes with overlaps = 6
  Number of Nodes with overlaps = 3
- Number of Nodes with overlaps = 1
  Number of Nodes with overlaps = 0
 
 Phase 4.2.1 Update Timing
-Phase 4.2.1 Update Timing | Checksum: 1e8f604f0
+Phase 4.2.1 Update Timing | Checksum: b960f6fc
 
-Time (s): cpu = 00:01:37 ; elapsed = 00:01:09 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.036  | TNS=0.000  | WHS=N/A    | THS=N/A    |
+Time (s): cpu = 00:00:59 ; elapsed = 00:00:40 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.116 | TNS=-0.116 | WHS=N/A    | THS=N/A    |
 
-Phase 4.2 Global Iteration 1 | Checksum: f955e0a7
+Phase 4.2 Global Iteration 1 | Checksum: 1ed16f960
 
-Time (s): cpu = 00:01:37 ; elapsed = 00:01:09 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 4 Rip-up And Reroute | Checksum: f955e0a7
+Time (s): cpu = 00:00:59 ; elapsed = 00:00:40 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 4 Rip-up And Reroute | Checksum: 1ed16f960
 
-Time (s): cpu = 00:01:37 ; elapsed = 00:01:09 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:00:59 ; elapsed = 00:00:40 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 5 Delay and Skew Optimization
 
 Phase 5.1 Delay CleanUp
 
 Phase 5.1.1 Update Timing
-Phase 5.1.1 Update Timing | Checksum: 1b34b3b89
+Phase 5.1.1 Update Timing | Checksum: 214b95569
 
-Time (s): cpu = 00:01:40 ; elapsed = 00:01:11 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.130  | TNS=0.000  | WHS=N/A    | THS=N/A    |
+Time (s): cpu = 00:01:01 ; elapsed = 00:00:41 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.025  | TNS=0.000  | WHS=N/A    | THS=N/A    |
 
-Phase 5.1 Delay CleanUp | Checksum: 1b34b3b89
+ Number of Nodes with overlaps = 0
+Phase 5.1 Delay CleanUp | Checksum: 1829ed213
 
-Time (s): cpu = 00:01:40 ; elapsed = 00:01:11 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:01 ; elapsed = 00:00:41 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 5.2 Clock Skew Optimization
-Phase 5.2 Clock Skew Optimization | Checksum: 1b34b3b89
+Phase 5.2 Clock Skew Optimization | Checksum: 1829ed213
 
-Time (s): cpu = 00:01:40 ; elapsed = 00:01:11 . Memory (MB): peak = 1291.773 ; gain = 0.000
-Phase 5 Delay and Skew Optimization | Checksum: 1b34b3b89
+Time (s): cpu = 00:01:01 ; elapsed = 00:00:41 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 5 Delay and Skew Optimization | Checksum: 1829ed213
 
-Time (s): cpu = 00:01:40 ; elapsed = 00:01:11 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:01 ; elapsed = 00:00:41 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 6 Post Hold Fix
 
 Phase 6.1 Update Timing
-Phase 6.1 Update Timing | Checksum: 15eacd637
+Phase 6.1 Update Timing | Checksum: 1202d754e
 
-Time (s): cpu = 00:01:43 ; elapsed = 00:01:13 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.130  | TNS=0.000  | WHS=-2.165 | THS=-58.898|
+Time (s): cpu = 00:01:02 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.029  | TNS=0.000  | WHS=-2.165 | THS=-58.898|
 
-Phase 6 Post Hold Fix | Checksum: 1c3e25ebf
 
-Time (s): cpu = 00:01:43 ; elapsed = 00:01:13 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Phase 6.2 Lut RouteThru Assignment for hold
+Phase 6.2 Lut RouteThru Assignment for hold | Checksum: 1ac4506ba
+
+Time (s): cpu = 00:01:03 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
+Phase 6 Post Hold Fix | Checksum: 1ac4506ba
+
+Time (s): cpu = 00:01:03 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 7 Route finalize
 
 Router Utilization Summary
-  Global Vertical Routing Utilization    = 9.20763 %
-  Global Horizontal Routing Utilization  = 10.5595 %
+  Global Vertical Routing Utilization    = 10.9046 %
+  Global Horizontal Routing Utilization  = 12.0361 %
   Routable Net Status*
   *Does not include unroutable nets such as driverless and loadless.
   Run report_route_status for detailed report.
@@ -650,64 +655,63 @@ Router Utilization Summary
   Number of Partially Routed Nets     = 0
   Number of Node Overlaps             = 0
 
-Phase 7 Route finalize | Checksum: 2248bab31
+Phase 7 Route finalize | Checksum: 1263c6edc
 
-Time (s): cpu = 00:01:43 ; elapsed = 00:01:13 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:03 ; elapsed = 00:00:42 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 8 Verifying routed nets
 
  Verification completed successfully
-Phase 8 Verifying routed nets | Checksum: 2248bab31
+Phase 8 Verifying routed nets | Checksum: 1263c6edc
 
-Time (s): cpu = 00:01:43 ; elapsed = 00:01:13 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:03 ; elapsed = 00:00:43 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 9 Depositing Routes
-Phase 9 Depositing Routes | Checksum: 1333b10e3
+Phase 9 Depositing Routes | Checksum: 1431a18b0
 
-Time (s): cpu = 00:01:45 ; elapsed = 00:01:15 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:04 ; elapsed = 00:00:44 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Phase 10 Post Router Timing
 
 Phase 10.1 Update Timing
-Phase 10.1 Update Timing | Checksum: ed4fa124
+Phase 10.1 Update Timing | Checksum: 1b5fc8bd1
 
-Time (s): cpu = 00:01:48 ; elapsed = 00:01:16 . Memory (MB): peak = 1291.773 ; gain = 0.000
-INFO: [Route 35-57] Estimated Timing Summary | WNS=0.130  | TNS=0.000  | WHS=-2.165 | THS=-58.898|
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:45 . Memory (MB): peak = 1372.980 ; gain = 0.000
+INFO: [Route 35-57] Estimated Timing Summary | WNS=0.029  | TNS=0.000  | WHS=-2.165 | THS=-58.898|
 
 WARNING: [Route 35-328] Router estimated timing not met.
 Resolution: For a complete and accurate timing signoff, report_timing_summary must be run after route_design. Alternatively, route_design can be run with the -timing_summary option to enable a complete timing signoff at the end of route_design.
-Phase 10 Post Router Timing | Checksum: ed4fa124
+Phase 10 Post Router Timing | Checksum: 1b5fc8bd1
 
-Time (s): cpu = 00:01:48 ; elapsed = 00:01:17 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:45 . Memory (MB): peak = 1372.980 ; gain = 0.000
 WARNING: [Route 35-426] Router was unable to fix hold violation on unroutable pins. The router cannot add routing detours to improve hold time because the pins are part of one or more of the following unroutable types: partition pins, fixed routes and intra-site connections.
 Resolution: Run report_timing_summary to analyze the hold violations.
 INFO: [Route 35-16] Router Completed Successfully
 
-Time (s): cpu = 00:01:48 ; elapsed = 00:01:17 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Time (s): cpu = 00:01:06 ; elapsed = 00:00:45 . Memory (MB): peak = 1372.980 ; gain = 0.000
 
 Routing Is Done.
 INFO: [Common 17-83] Releasing license: Implementation
-109 Infos, 15 Warnings, 7 Critical Warnings and 0 Errors encountered.
+113 Infos, 14 Warnings, 7 Critical Warnings and 0 Errors encountered.
 route_design completed successfully
-route_design: Time (s): cpu = 00:01:53 ; elapsed = 00:01:30 . Memory (MB): peak = 1291.773 ; gain = 0.000
+route_design: Time (s): cpu = 00:01:08 ; elapsed = 00:00:51 . Memory (MB): peak = 1372.980 ; gain = 0.000
 Writing placer database...
 Writing XDEF routing.
 Writing XDEF routing logical nets.
 Writing XDEF routing special nets.
-Write XDEF Complete: Time (s): cpu = 00:00:16 ; elapsed = 00:00:06 . Memory (MB): peak = 1291.773 ; gain = 0.000
-write_checkpoint: Time (s): cpu = 00:00:17 ; elapsed = 00:00:08 . Memory (MB): peak = 1291.773 ; gain = 0.000
+Write XDEF Complete: Time (s): cpu = 00:00:08 ; elapsed = 00:00:03 . Memory (MB): peak = 1372.980 ; gain = 0.000
+write_checkpoint: Time (s): cpu = 00:00:10 ; elapsed = 00:00:05 . Memory (MB): peak = 1372.980 ; gain = 0.000
 INFO: [DRC 23-27] Running DRC with 2 threads
-INFO: [Coretcl 2-168] The results of DRC are in file D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/red_pitaya_top_drc_routed.rpt.
-report_drc: Time (s): cpu = 00:00:13 ; elapsed = 00:00:08 . Memory (MB): peak = 1291.773 ; gain = 0.000
+INFO: [Coretcl 2-168] The results of DRC are in file D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1/red_pitaya_top_drc_routed.rpt.
 INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -1, Delay Type: min_max.
 INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
 CRITICAL WARNING: [Timing 38-282] The design failed to meet the timing requirements. Please see the timing summary report for details on the timing violations.
-report_timing_summary: Time (s): cpu = 00:00:19 ; elapsed = 00:00:11 . Memory (MB): peak = 1291.773 ; gain = 0.000
+report_timing_summary: Time (s): cpu = 00:00:09 ; elapsed = 00:00:05 . Memory (MB): peak = 1372.980 ; gain = 0.000
 INFO: [Power 33-23] Power model is not available for i_DNA
 Running Vector-less Activity Propagation...
 
 Finished Running Vector-less Activity Propagation
-report_power: Time (s): cpu = 00:00:11 ; elapsed = 00:00:09 . Memory (MB): peak = 1291.773 ; gain = 0.000
+report_power: Time (s): cpu = 00:00:07 ; elapsed = 00:00:05 . Memory (MB): peak = 1372.980 ; gain = 0.000
 Attempting to get a license for feature 'Implementation' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xc7z010'
 Running DRC as a precondition to command write_bitstream
@@ -724,6 +728,10 @@ WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP dpll_wrapper
 WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg input dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg input dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg input dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP internal_vco_0/ARG input internal_vco_0/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP internal_vco_0/ARG input internal_vco_0/ARG/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP internal_vco_1/ARG input internal_vco_1/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+WARNING: [DRC 23-20] Rule violation (DPIP-1) Input pipelining - DSP internal_vco_1/ARG input internal_vco_1/ARG/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 WARNING: [DRC 23-20] Rule violation (DPOP-1) PREG Output pipelining - DSP dpll_wrapper_inst/DDC0_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg output dpll_wrapper_inst/DDC0_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
 WARNING: [DRC 23-20] Rule violation (DPOP-1) PREG Output pipelining - DSP dpll_wrapper_inst/DDC0_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg output dpll_wrapper_inst/DDC0_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
 WARNING: [DRC 23-20] Rule violation (DPOP-1) PREG Output pipelining - DSP dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg output dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
@@ -781,10 +789,14 @@ INFO: [DRC 23-20] Rule violation (AVAL-4) enum_USE_DPORT_FALSE_enum_DREG_ADREG_0
 INFO: [DRC 23-20] Rule violation (AVAL-4) enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[0].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 INFO: [DRC 23-20] Rule violation (AVAL-4) enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p/U0/i_mult/gDSP.gDSP_only.iDSP/use_prim.appDSP48[0].bppDSP48[1].use_dsp.use_dsp48e1.iDSP48E1: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 INFO: [DRC 23-20] Rule violation (AVAL-4) enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+INFO: [DRC 23-20] Rule violation (AVAL-4) enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - internal_vco_0/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+INFO: [DRC 23-20] Rule violation (AVAL-4) enum_USE_DPORT_FALSE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - internal_vco_1/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the D port (USE_DPORT = FALSE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 INFO: [DRC 23-20] Rule violation (AVAL-5) enum_USE_MULT_NONE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - dpll_wrapper_inst/DDC0_inst/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the Multiplier (USE_MULT = NONE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 INFO: [DRC 23-20] Rule violation (AVAL-5) enum_USE_MULT_NONE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - dpll_wrapper_inst/DDC1_inst/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the Multiplier (USE_MULT = NONE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
 INFO: [DRC 23-20] Rule violation (AVAL-5) enum_USE_MULT_NONE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the Multiplier (USE_MULT = NONE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
-INFO: [Vivado 12-3199] DRC finished with 0 Errors, 18 Warnings, 54 Advisories
+INFO: [DRC 23-20] Rule violation (AVAL-5) enum_USE_MULT_NONE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - internal_vco_0/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the Multiplier (USE_MULT = NONE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+INFO: [DRC 23-20] Rule violation (AVAL-5) enum_USE_MULT_NONE_enum_DREG_ADREG_0_connects_CED_CEAD_RSTD_GND - internal_vco_1/LO_DDS_inst/U0/i_synth/i_dds/I_PHASEGEN.i_conventional_accum.i_accum/i_dsp48.i_struct.i_single_channel.I_DSP/I_VX5_6.I_DSP: DSP48E1 is not using the Multiplier (USE_MULT = NONE). For improved power characteristics, set DREG and ADREG to '1', tie CED, CEAD, and RSTD to logic '0'.
+INFO: [Vivado 12-3199] DRC finished with 0 Errors, 22 Warnings, 58 Advisories
 INFO: [Vivado 12-3200] Please refer to the DRC report (report_drc) for more information.
 Loading data files...
 Loading site data...
@@ -794,8 +806,6 @@ Creating bitmap...
 Creating bitstream...
 Writing bitstream ./red_pitaya_top.bit...
 INFO: [Vivado 12-1842] Bitgen Completed Successfully.
-INFO: [Project 1-118] WebTalk data collection is enabled (User setting is ON. Install Setting is ON.).
-INFO: [Common 17-186] 'D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1/usage_statistics_webtalk.xml' has been successfully sent to Xilinx on Tue May 23 22:11:03 2017. For additional details about this file, please refer to the WebTalk help file at D:/Xilinx/Vivado/2015.4/doc/webtalk_introduction.html.
 INFO: [Common 17-83] Releasing license: Implementation
-write_bitstream: Time (s): cpu = 00:00:45 ; elapsed = 00:00:53 . Memory (MB): peak = 1592.043 ; gain = 300.270
-INFO: [Common 17-206] Exiting Vivado at Tue May 23 22:11:04 2017...
+write_bitstream: Time (s): cpu = 00:00:28 ; elapsed = 00:00:28 . Memory (MB): peak = 1600.707 ; gain = 227.727
+INFO: [Common 17-206] Exiting Vivado at Thu Jun 15 01:56:27 2017...

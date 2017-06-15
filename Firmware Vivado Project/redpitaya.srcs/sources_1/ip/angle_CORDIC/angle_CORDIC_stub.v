@@ -1,10 +1,10 @@
 // Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
-// Tool Version: Vivado v.2015.4 (lin64) Build 1412921 Wed Nov 18 09:44:32 MST 2015
-// Date        : Sat Aug 13 02:03:16 2016
-// Host        : jd-VirtualBox running 64-bit Ubuntu 14.04.3 LTS
-// Command     : write_verilog -force -mode synth_stub
-//               /media/sf_D/Projects/RedPitaya/fpga/project/redpitaya.srcs/sources_1/ip/angle_CORDIC/angle_CORDIC_stub.v
+// Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
+// Date        : Wed Jun 14 18:59:18 2017
+// Host        : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
+// Command     : write_verilog -force -mode synth_stub {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado
+//               Project/redpitaya.srcs/sources_1/ip/angle_CORDIC/angle_CORDIC_stub.v}
 // Design      : angle_CORDIC
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7z010clg400-1
