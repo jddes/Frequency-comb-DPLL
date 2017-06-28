@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Thu Jun 15 11:48:45 2017
-| Host         : 0381-JDD running 64-bit major release  (build 9200)
+| Date         : Wed Jun 28 17:35:35 2017
+| Host         : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 | Command      : report_io -file red_pitaya_top_io_placed.rpt
 | Design       : red_pitaya_top
 | Device       : xc7z010

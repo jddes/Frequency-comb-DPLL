@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Thu Jun 15 11:45:23 2017
-| Host         : 0381-JDD running 64-bit major release  (build 9200)
+| Date         : Wed Jun 28 17:33:14 2017
+| Host         : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 | Command      : report_utilization -file red_pitaya_top_utilization_synth.rpt -pb red_pitaya_top_utilization_synth.pb
 | Design       : red_pitaya_top
 | Device       : 7z010clg400-1
@@ -30,13 +30,13 @@ Table of Contents
 +----------------------------+------+-------+-----------+-------+
 |          Site Type         | Used | Fixed | Available | Util% |
 +----------------------------+------+-------+-----------+-------+
-| Slice LUTs*                | 6959 |     0 |     17600 | 39.54 |
-|   LUT as Logic             | 6668 |     0 |     17600 | 37.89 |
+| Slice LUTs*                | 6960 |     0 |     17600 | 39.55 |
+|   LUT as Logic             | 6669 |     0 |     17600 | 37.89 |
 |   LUT as Memory            |  291 |     0 |      6000 |  4.85 |
 |     LUT as Distributed RAM |  208 |     0 |           |       |
 |     LUT as Shift Register  |   83 |     0 |           |       |
-| Slice Registers            | 7970 |     0 |     35200 | 22.64 |
-|   Register as Flip Flop    | 7970 |     0 |     35200 | 22.64 |
+| Slice Registers            | 7922 |     0 |     35200 | 22.51 |
+|   Register as Flip Flop    | 7922 |     0 |     35200 | 22.51 |
 |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
 | F7 Muxes                   |    0 |     0 |      8800 |  0.00 |
 | F8 Muxes                   |    0 |     0 |      4400 |  0.00 |
@@ -59,7 +59,7 @@ Table of Contents
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
 | 314   |          Yes |         Set |            - |
-| 7656  |          Yes |       Reset |            - |
+| 7608  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -83,8 +83,8 @@ Table of Contents
 +----------------+------+-------+-----------+-------+
 |    Site Type   | Used | Fixed | Available | Util% |
 +----------------+------+-------+-----------+-------+
-| DSPs           |    8 |     0 |        80 | 10.00 |
-|   DSP48E1 only |    8 |       |           |       |
+| DSPs           |    7 |     0 |        80 |  8.75 |
+|   DSP48E1 only |    7 |       |           |       |
 +----------------+------+-------+-----------+-------+
 
 
@@ -151,14 +151,14 @@ Table of Contents
 +-----------+------+----------------------+
 |  Ref Name | Used |  Functional Category |
 +-----------+------+----------------------+
-| FDRE      | 7656 |         Flop & Latch |
-| LUT2      | 2817 |                  LUT |
-| LUT3      | 1758 |                  LUT |
-| LUT1      | 1485 |                  LUT |
+| FDRE      | 7608 |         Flop & Latch |
+| LUT2      | 2814 |                  LUT |
+| LUT3      | 1727 |                  LUT |
+| LUT1      | 1483 |                  LUT |
 | CARRY4    | 1007 |           CarryLogic |
-| LUT6      |  977 |                  LUT |
-| LUT4      |  839 |                  LUT |
-| LUT5      |  672 |                  LUT |
+| LUT6      |  938 |                  LUT |
+| LUT4      |  909 |                  LUT |
+| LUT5      |  689 |                  LUT |
 | FDSE      |  314 |         Flop & Latch |
 | RAMD32    |  312 |   Distributed Memory |
 | BIBUF     |  130 |                   IO |
@@ -171,7 +171,7 @@ Table of Contents
 | RAMB36E1  |   18 |         Block Memory |
 | ODDR      |   18 |                   IO |
 | BUFG      |   14 |                Clock |
-| DSP48E1   |    8 |     Block Arithmetic |
+| DSP48E1   |    7 |     Block Arithmetic |
 | XADC      |    1 |               Others |
 | PS7       |    1 | Specialized Resource |
 | PLLE2_ADV |    1 |                Clock |
@@ -187,9 +187,9 @@ Table of Contents
 |                Ref Name               | Used |
 +---------------------------------------+------+
 | pll_32x32_mult_ii                     |    6 |
-| LO_DDS                                |    5 |
 | input_multiplier                      |    4 |
 | fir_compiler_minimumphase_N_times_clk |    4 |
+| LO_DDS                                |    4 |
 | pll_wide_mult                         |    2 |
 | angle_CORDIC                          |    2 |
 | system_identification_outputgain_mult |    1 |

@@ -117,9 +117,9 @@ class SuperLaserLand_JD_RP:
     BUS_ADDR_DAC0_CURRENT                               = 0x00035
     BUS_ADDR_DAC1_CURRENT                               = 0x00036
     
-    # This mux adds a VCO before the DACs 
-    BUS_ADDR_vco_outputA_mux                            = (5 << 20) + 0x00000
-    BUS_ADDR_vco_outputB_mux                            = (5 << 20) + 0x00004
+    # This mux connect the VCO to the selected DAC 
+    BUS_ADDR_vco_mux                                    = (5 << 20) + 0x00000
+    
     
     
     PIPE_ADDRESS_DDR2_LOGGER                            = 0xA1
@@ -2380,18 +2380,21 @@ class SuperLaserLand_JD_RP:
     # scales the output tone produced by the VCO right before the ADC.
     # amplitude = [0 to 1]
     # amplitude = 1 means 1 V peak of output, or 2 Vpeak-peak.
-    def set_internal_VCO_amplitude(self, DAC, amplitude):
+    def set_internal_VCO_amplitude(self, amplitude):
+        addr_vco = 2
         addr_vco_amplitude = 0x0000
         if self.bVerbose == True:
             print('set_internal_VCO_amplitude')
-
-        if DAC == 0:
-            addr_vco = 2
-        elif DAC == 1:
-            addr_vco = 4
         address_uint32 = (addr_vco << 20) + addr_vco_amplitude
         vco_amplitude = round(amplitude*(2**15-1)) #15 bits, because amplitude is signed
         self.dev.write_Zynq_register_uint32(address_uint32, vco_amplitude)
+
+    #This mux selects the source of the VCO frequency and the output DAC to which the VCO is connected
+    # register_value = 0 : the VCO is not connected (normal operation)
+    # register_value = 1 : the VCO is connected to the DACa
+    # register_value = 2 : the VCO is connected to the DACb
+    def set_mux_vco(self, data):
+        self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_mux, data)
         
 
 # end class definition

@@ -1,5 +1,5 @@
-set_property SRC_FILE_INFO {cfile:{d:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc} rfile:../../../redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc id:1 order:EARLY scoped_inst:i_ps/system_i/system_i/processing_system7/inst} [current_design]
-set_property SRC_FILE_INFO {cfile:{D:/Repo/Frequency-comb-DPLL - Python 3/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc} rfile:../../../redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc id:2} [current_design]
+set_property SRC_FILE_INFO {cfile:{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc} rfile:../../../redpitaya.srcs/sources_1/bd/system/ip/system_processing_system7_0/system_processing_system7_0.xdc id:1 order:EARLY scoped_inst:i_ps/system_i/system_i/processing_system7/inst} [current_design]
+set_property SRC_FILE_INFO {cfile:{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc} rfile:../../../redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc id:2} [current_design]
 set_property src_info {type:SCOPED_XDC file:1 line:21 export:INPUT save:INPUT read:READ} [current_design]
 set_input_jitter clk_fpga_3 0.15
 set_property src_info {type:SCOPED_XDC file:1 line:24 export:INPUT save:INPUT read:READ} [current_design]

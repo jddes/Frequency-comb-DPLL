@@ -1,7 +1,7 @@
 -- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
--- Date        : Wed Jun 14 18:59:42 2017
+-- Date        : Wed Jun 28 16:51:49 2017
 -- Host        : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode funcsim {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado
 --               Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_sim_netlist.vhdl}
