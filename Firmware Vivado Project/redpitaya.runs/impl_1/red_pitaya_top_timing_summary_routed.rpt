@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Wed Jun 28 17:36:58 2017
+| Date         : Thu Jun 29 11:36:39 2017
 | Host         : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 | Command      : report_timing_summary -warn_on_violation -max_paths 10 -file red_pitaya_top_timing_summary_routed.rpt -rpx red_pitaya_top_timing_summary_routed.rpx
 | Design       : red_pitaya_top
@@ -162,7 +162,7 @@ Clock                 WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total End
 -----                 -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
 adc_clk                                                                                                                                                             2.000        0.000                       0                     1  
   clk_fb                                                                                                                                                            6.751        0.000                       0                     2  
-  pll_adc_clk           0.265        0.000                      0                23784        0.053        0.000                      0                23784        2.750        0.000                       0                 10245  
+  pll_adc_clk           0.221        0.000                      0                23784        0.053        0.000                      0                23784        2.750        0.000                       0                 10245  
   pll_clk_adc_2x        0.258        0.000                      0                 3824        0.052        0.000                      0                 3824        1.020        0.000                       0                   798  
   pll_dac_clk_1x        0.415        0.000                      0                   45        0.176        0.000                      0                   45        3.500        0.000                       0                    47  
   pll_dac_clk_2p                                                                                                                                                    1.845        0.000                       0                     3  
@@ -254,7 +254,7 @@ Max Period  n/a     PLLE2_ADV/CLKFBOUT  n/a            160.000       8.000      
 From Clock:  pll_adc_clk
   To Clock:  pll_adc_clk
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.265ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.221ns,  Total Violation        0.000ns
 Hold  :            0  Failing Endpoints,  Worst Slack        0.053ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        2.750ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
@@ -262,6 +262,75 @@ PW    :            0  Failing Endpoints,  Worst Slack        2.750ns,  Total Vio
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
+Slack (MET) :             0.221ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[16]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.645ns  (logic 1.142ns (20.229%)  route 4.503ns (79.771%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.940    11.539    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[16]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.961    
+                         clock uncertainty           -0.069    13.892    
+    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[16])
+                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.761    
+                         arrival time                         -11.539    
+  -------------------------------------------------------------------
+                         slack                                  0.221    
+
 Slack (MET) :             0.265ns  (required time - arrival time)
   Source:                 i_ps/axi_slave_gp0/wr_wdata_reg[6]/C
                             (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
@@ -321,6 +390,420 @@ Slack (MET) :             0.265ns  (required time - arrival time)
                          arrival time                         -13.317    
   -------------------------------------------------------------------
                          slack                                  0.265    
+
+Slack (MET) :             0.278ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[17]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.589ns  (logic 1.142ns (20.434%)  route 4.447ns (79.566%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.883    11.483    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[17]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.961    
+                         clock uncertainty           -0.069    13.892    
+    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[17])
+                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.761    
+                         arrival time                         -11.483    
+  -------------------------------------------------------------------
+                         slack                                  0.278    
+
+Slack (MET) :             0.278ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[18]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.589ns  (logic 1.142ns (20.434%)  route 4.447ns (79.566%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.883    11.483    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[18]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.961    
+                         clock uncertainty           -0.069    13.892    
+    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[18])
+                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.761    
+                         arrival time                         -11.483    
+  -------------------------------------------------------------------
+                         slack                                  0.278    
+
+Slack (MET) :             0.278ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[19]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.589ns  (logic 1.142ns (20.434%)  route 4.447ns (79.566%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.883    11.483    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[19]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.961    
+                         clock uncertainty           -0.069    13.892    
+    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[19])
+                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.761    
+                         arrival time                         -11.483    
+  -------------------------------------------------------------------
+                         slack                                  0.278    
+
+Slack (MET) :             0.278ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[19]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.590ns  (logic 1.142ns (20.431%)  route 4.448ns (79.569%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.068ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.470ns = ( 13.470 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.884    11.484    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[19]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.580    13.470    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.962    
+                         clock uncertainty           -0.069    13.893    
+    DSP48_X1Y20          DSP48E1 (Setup_dsp48e1_CLK_A[19])
+                                                     -2.131    11.762    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.762    
+                         arrival time                         -11.484    
+  -------------------------------------------------------------------
+                         slack                                  0.278    
+
+Slack (MET) :             0.278ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[29]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.590ns  (logic 1.142ns (20.431%)  route 4.448ns (79.569%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.068ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.470ns = ( 13.470 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.884    11.484    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[29]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.580    13.470    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.962    
+                         clock uncertainty           -0.069    13.893    
+    DSP48_X1Y20          DSP48E1 (Setup_dsp48e1_CLK_A[29])
+                                                     -2.131    11.762    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.762    
+                         arrival time                         -11.484    
+  -------------------------------------------------------------------
+                         slack                                  0.278    
+
+Slack (MET) :             0.294ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[15]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
+  Data Path Delay:        5.573ns  (logic 1.142ns (20.491%)  route 4.431ns (79.509%))
+  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.894ns
+    Clock Pessimism Removal (CPR):    0.491ns
+  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_adc_clk rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.089     2.378 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
+    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
+                         net (fo=2, routed)           0.876     7.248    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
+    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.544 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
+                         net (fo=1, routed)           0.608     8.153    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
+    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.277 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
+                         net (fo=9, routed)           1.147     9.424    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
+    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.548 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
+                         net (fo=57, routed)          0.932    10.479    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
+    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.599 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
+                         net (fo=30, routed)          0.868    11.467    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[15]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
+    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
+                         clock pessimism              0.491    13.961    
+                         clock uncertainty           -0.069    13.892    
+    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[15])
+                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
+  -------------------------------------------------------------------
+                         required time                         11.761    
+                         arrival time                         -11.467    
+  -------------------------------------------------------------------
+                         slack                                  0.294    
 
 Slack (MET) :             0.298ns  (required time - arrival time)
   Source:                 i_ps/axi_slave_gp0/wr_wdata_reg[7]/C
@@ -441,499 +924,6 @@ Slack (MET) :             0.308ns  (required time - arrival time)
                          arrival time                         -13.316    
   -------------------------------------------------------------------
                          slack                                  0.308    
-
-Slack (MET) :             0.366ns  (required time - arrival time)
-  Source:                 i_ps/axi_slave_gp0/rd_do_reg/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/registers_read_inst/sys_rdata_reg[1]/D
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        7.528ns  (logic 1.935ns (25.706%)  route 5.593ns (74.294%))
-  Logic Levels:           6  (LUT3=1 LUT4=1 LUT5=1 LUT6=3)
-  Clock Path Skew:        -0.069ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.387ns = ( 13.387 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.914ns
-    Clock Pessimism Removal (CPR):    0.458ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.681     5.914    i_ps/axi_slave_gp0/CLK
-    SLICE_X10Y46         FDRE                                         r  i_ps/axi_slave_gp0/rd_do_reg/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X10Y46         FDRE (Prop_fdre_C_Q)         0.518     6.432 r  i_ps/axi_slave_gp0/rd_do_reg/Q
-                         net (fo=75, routed)          0.725     7.157    i_ps/axi_slave_gp0/rd_do
-    SLICE_X13Y46         LUT3 (Prop_lut3_I1_O)        0.150     7.307 f  i_ps/axi_slave_gp0/read_address[12]_i_1/O
-                         net (fo=15, routed)          1.032     8.340    i_ps/axi_slave_gp0/read_address_reg[12]
-    SLICE_X15Y46         LUT4 (Prop_lut4_I2_O)        0.360     8.700 r  i_ps/axi_slave_gp0/fifo_srst_i_5/O
-                         net (fo=5, routed)           0.738     9.437    i_ps/axi_slave_gp0/fifo_srst_i_5_n_6
-    SLICE_X14Y42         LUT6 (Prop_lut6_I1_O)        0.332     9.769 r  i_ps/axi_slave_gp0/dither0_lockin_output_reg[63]_i_3/O
-                         net (fo=10, routed)          0.616    10.385    i_ps/axi_slave_gp0/dither0_lockin_output_reg[63]_i_3_n_6
-    SLICE_X14Y39         LUT5 (Prop_lut5_I2_O)        0.119    10.504 r  i_ps/axi_slave_gp0/sys_rdata[14]_i_7/O
-                         net (fo=14, routed)          1.255    11.759    i_ps/axi_slave_gp0/sys_rdata[14]_i_7_n_6
-    SLICE_X3Y35          LUT6 (Prop_lut6_I5_O)        0.332    12.091 r  i_ps/axi_slave_gp0/sys_rdata[1]_i_3/O
-                         net (fo=1, routed)           1.226    13.318    i_ps/axi_slave_gp0/sys_rdata[1]_i_3_n_6
-    SLICE_X15Y37         LUT6 (Prop_lut6_I3_O)        0.124    13.442 r  i_ps/axi_slave_gp0/sys_rdata[1]_i_1/O
-                         net (fo=1, routed)           0.000    13.442    dpll_wrapper_inst/registers_read_inst/counter1_out_reg_reg[63]_0[1]
-    SLICE_X15Y37         FDRE                                         r  dpll_wrapper_inst/registers_read_inst/sys_rdata_reg[1]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.497    13.387    dpll_wrapper_inst/registers_read_inst/adc_clk
-    SLICE_X15Y37         FDRE                                         r  dpll_wrapper_inst/registers_read_inst/sys_rdata_reg[1]/C
-                         clock pessimism              0.458    13.845    
-                         clock uncertainty           -0.069    13.776    
-    SLICE_X15Y37         FDRE (Setup_fdre_C_D)        0.031    13.807    dpll_wrapper_inst/registers_read_inst/sys_rdata_reg[1]
-  -------------------------------------------------------------------
-                         required time                         13.807    
-                         arrival time                         -13.442    
-  -------------------------------------------------------------------
-                         slack                                  0.366    
-
-Slack (MET) :             0.392ns  (required time - arrival time)
-  Source:                 i_ps/axi_slave_gp0/wr_wdata_reg[7]/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/dither_lockin_wrapper1/cmd_data_internal_reg[7]/D
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        7.214ns  (logic 0.456ns (6.321%)  route 6.758ns (93.679%))
-  Logic Levels:           0  
-  Clock Path Skew:        -0.244ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.369ns = ( 13.369 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.956ns
-    Clock Pessimism Removal (CPR):    0.343ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.723     5.956    i_ps/axi_slave_gp0/CLK
-    SLICE_X1Y43          FDRE                                         r  i_ps/axi_slave_gp0/wr_wdata_reg[7]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X1Y43          FDRE (Prop_fdre_C_Q)         0.456     6.412 r  i_ps/axi_slave_gp0/wr_wdata_reg[7]/Q
-                         net (fo=33, routed)          6.758    13.170    dpll_wrapper_inst/dither_lockin_wrapper1/wr_wdata_reg[26][7]
-    SLICE_X7Y74          FDRE                                         r  dpll_wrapper_inst/dither_lockin_wrapper1/cmd_data_internal_reg[7]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.479    13.369    dpll_wrapper_inst/dither_lockin_wrapper1/adc_clk
-    SLICE_X7Y74          FDRE                                         r  dpll_wrapper_inst/dither_lockin_wrapper1/cmd_data_internal_reg[7]/C
-                         clock pessimism              0.343    13.712    
-                         clock uncertainty           -0.069    13.643    
-    SLICE_X7Y74          FDRE (Setup_fdre_C_D)       -0.081    13.562    dpll_wrapper_inst/dither_lockin_wrapper1/cmd_data_internal_reg[7]
-  -------------------------------------------------------------------
-                         required time                         13.562    
-                         arrival time                         -13.170    
-  -------------------------------------------------------------------
-                         slack                                  0.392    
-
-Slack (MET) :             0.412ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[16]
-                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        5.454ns  (logic 1.142ns (20.937%)  route 4.312ns (79.063%))
-  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
-  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.894ns
-    Clock Pessimism Removal (CPR):    0.491ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
-    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
-                         net (fo=2, routed)           0.879     7.251    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
-    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.547 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
-                         net (fo=1, routed)           0.608     8.155    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
-    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.279 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
-                         net (fo=9, routed)           0.943     9.223    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
-    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.347 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
-                         net (fo=57, routed)          0.951    10.298    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
-    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.418 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
-                         net (fo=30, routed)          0.931    11.349    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
-    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[16]
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
-    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
-                         clock pessimism              0.491    13.961    
-                         clock uncertainty           -0.069    13.892    
-    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[16])
-                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
-  -------------------------------------------------------------------
-                         required time                         11.761    
-                         arrival time                         -11.349    
-  -------------------------------------------------------------------
-                         slack                                  0.412    
-
-Slack (MET) :             0.437ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[28]
-                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        5.431ns  (logic 1.142ns (21.028%)  route 4.289ns (78.972%))
-  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
-  Clock Path Skew:        0.068ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.470ns = ( 13.470 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.894ns
-    Clock Pessimism Removal (CPR):    0.491ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
-    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
-                         net (fo=2, routed)           0.879     7.251    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
-    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.547 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
-                         net (fo=1, routed)           0.608     8.155    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
-    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.279 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
-                         net (fo=9, routed)           0.943     9.223    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
-    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.347 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
-                         net (fo=57, routed)          0.951    10.298    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
-    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.418 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
-                         net (fo=30, routed)          0.907    11.325    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
-    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[28]
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.580    13.470    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
-    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
-                         clock pessimism              0.491    13.962    
-                         clock uncertainty           -0.069    13.893    
-    DSP48_X1Y20          DSP48E1 (Setup_dsp48e1_CLK_A[28])
-                                                     -2.131    11.762    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
-  -------------------------------------------------------------------
-                         required time                         11.762    
-                         arrival time                         -11.325    
-  -------------------------------------------------------------------
-                         slack                                  0.437    
-
-Slack (MET) :             0.437ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[29]
-                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        5.431ns  (logic 1.142ns (21.028%)  route 4.289ns (78.972%))
-  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
-  Clock Path Skew:        0.068ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.470ns = ( 13.470 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.894ns
-    Clock Pessimism Removal (CPR):    0.491ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
-    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
-                         net (fo=2, routed)           0.879     7.251    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
-    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.547 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
-                         net (fo=1, routed)           0.608     8.155    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
-    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.279 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
-                         net (fo=9, routed)           0.943     9.223    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
-    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.347 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
-                         net (fo=57, routed)          0.951    10.298    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
-    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.418 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
-                         net (fo=30, routed)          0.907    11.325    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
-    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[29]
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.580    13.470    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
-    DSP48_X1Y20          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
-                         clock pessimism              0.491    13.962    
-                         clock uncertainty           -0.069    13.893    
-    DSP48_X1Y20          DSP48E1 (Setup_dsp48e1_CLK_A[29])
-                                                     -2.131    11.762    dpll_wrapper_inst/DDC1_inst/input_multiplier_I/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
-  -------------------------------------------------------------------
-                         required time                         11.762    
-                         arrival time                         -11.325    
-  -------------------------------------------------------------------
-                         slack                                  0.437    
-
-Slack (MET) :             0.441ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[3]/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/PLL1_loop_filters/out_saturation_inst/railed_negative_temp_reg/D
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        7.199ns  (logic 3.112ns (43.229%)  route 4.087ns (56.771%))
-  Logic Levels:           10  (CARRY4=5 LUT3=3 LUT5=1 LUT6=1)
-  Clock Path Skew:        -0.058ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.361ns = ( 13.361 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.876ns
-    Clock Pessimism Removal (CPR):    0.457ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.643     5.876    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/adc_clk
-    SLICE_X30Y75         FDRE                                         r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[3]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X30Y75         FDRE (Prop_fdre_C_Q)         0.518     6.394 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[3]/Q
-                         net (fo=3, routed)           0.875     7.269    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg_n_6_[3]
-    SLICE_X30Y75         LUT3 (Prop_lut3_I0_O)        0.124     7.393 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp[7]_i_14__0/O
-                         net (fo=2, routed)           0.576     7.970    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp[7]_i_14__0_n_6
-    SLICE_X29Y75         LUT5 (Prop_lut5_I4_O)        0.124     8.094 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp[7]_i_6__0/O
-                         net (fo=2, routed)           0.614     8.707    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp[7]_i_6__0_n_6
-    SLICE_X28Y76         LUT6 (Prop_lut6_I0_O)        0.124     8.831 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp[7]_i_10__0/O
-                         net (fo=1, routed)           0.000     8.831    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp[7]_i_10__0_n_6
-    SLICE_X28Y76         CARRY4 (Prop_carry4_S[0]_CO[3])
-                                                      0.513     9.344 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[7]_i_2__0/CO[3]
-                         net (fo=1, routed)           0.000     9.344    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[7]_i_2__0_n_6
-    SLICE_X28Y77         CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.117     9.461 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[11]_i_2__0/CO[3]
-                         net (fo=1, routed)           0.000     9.461    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[11]_i_2__0_n_6
-    SLICE_X28Y78         CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.117     9.578 r  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[15]_i_2__3/CO[3]
-                         net (fo=1, routed)           0.000     9.578    dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/data_out_temp_reg[15]_i_2__3_n_6
-    SLICE_X28Y79         CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.323     9.901 f  dpll_wrapper_inst/PLL1_loop_filters/ii_saturation_inst/railed_positive_temp_reg_i_6__0/O[1]
-                         net (fo=4, routed)           0.750    10.651    dpll_wrapper_inst/parallel_bus_register_pll1_gaini/output_sum0[17]
-    SLICE_X27Y78         LUT3 (Prop_lut3_I0_O)        0.306    10.957 r  dpll_wrapper_inst/parallel_bus_register_pll1_gaini/railed_positive_temp_i_4__0/O
-                         net (fo=1, routed)           0.000    10.957    dpll_wrapper_inst/parallel_bus_register_pll1_gaini/railed_positive_temp_i_4__0_n_6
-    SLICE_X27Y78         CARRY4 (Prop_carry4_S[1]_CO[1])
-                                                      0.491    11.448 f  dpll_wrapper_inst/parallel_bus_register_pll1_gaini/railed_positive_temp_reg_i_1__0/CO[1]
-                         net (fo=18, routed)          0.889    12.338    dpll_wrapper_inst/parallel_bus_register_pll1_gaini/CO[0]
-    SLICE_X25Y77         LUT3 (Prop_lut3_I2_O)        0.355    12.693 r  dpll_wrapper_inst/parallel_bus_register_pll1_gaini/railed_negative_temp_i_1__0/O
-                         net (fo=1, routed)           0.382    13.075    dpll_wrapper_inst/PLL1_loop_filters/out_saturation_inst/update_flag_internal_reg
-    SLICE_X24Y77         FDRE                                         r  dpll_wrapper_inst/PLL1_loop_filters/out_saturation_inst/railed_negative_temp_reg/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.471    13.361    dpll_wrapper_inst/PLL1_loop_filters/out_saturation_inst/adc_clk
-    SLICE_X24Y77         FDRE                                         r  dpll_wrapper_inst/PLL1_loop_filters/out_saturation_inst/railed_negative_temp_reg/C
-                         clock pessimism              0.457    13.818    
-                         clock uncertainty           -0.069    13.749    
-    SLICE_X24Y77         FDRE (Setup_fdre_C_D)       -0.233    13.516    dpll_wrapper_inst/PLL1_loop_filters/out_saturation_inst/railed_negative_temp_reg
-  -------------------------------------------------------------------
-                         required time                         13.516    
-                         arrival time                         -13.075    
-  -------------------------------------------------------------------
-                         slack                                  0.441    
-
-Slack (MET) :             0.446ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[17]
-                            (rising edge-triggered cell DSP48E1 clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            8.000ns  (pll_adc_clk rise@8.000ns - pll_adc_clk rise@0.000ns)
-  Data Path Delay:        5.421ns  (logic 1.142ns (21.067%)  route 4.279ns (78.933%))
-  Logic Levels:           4  (LUT3=1 LUT4=1 LUT5=1 LUT6=1)
-  Clock Path Skew:        0.067ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.469ns = ( 13.469 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.894ns
-    Clock Pessimism Removal (CPR):    0.491ns
-  Clock Uncertainty:      0.069ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_adc_clk rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.089     2.378 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.754     4.132    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.661     5.894    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/adc_clk
-    SLICE_X32Y60         FDRE                                         r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X32Y60         FDRE (Prop_fdre_C_Q)         0.478     6.372 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/output_reg[9]/Q
-                         net (fo=2, routed)           0.879     7.251    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/Q[9]
-    SLICE_X32Y60         LUT4 (Prop_lut4_I2_O)        0.296     7.547 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42/O
-                         net (fo=1, routed)           0.608     8.155    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_42_n_6
-    SLICE_X33Y60         LUT5 (Prop_lut5_I4_O)        0.124     8.279 f  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35/O
-                         net (fo=9, routed)           0.943     9.223    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_35_n_6
-    SLICE_X32Y56         LUT6 (Prop_lut6_I4_O)        0.124     9.347 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_33/O
-                         net (fo=57, routed)          0.951    10.298    dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/ADC1_next_reg[0]
-    SLICE_X33Y50         LUT3 (Prop_lut3_I1_O)        0.120    10.418 r  dpll_wrapper_inst/parallel_bus_register_64_bits_or_less_freq1/input_multiplier_I_i_1/O
-                         net (fo=30, routed)          0.897    11.315    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/A[15]
-    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/A[17]
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.579    13.469    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/CLK
-    DSP48_X1Y21          DSP48E1                                      r  dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg/CLK
-                         clock pessimism              0.491    13.961    
-                         clock uncertainty           -0.069    13.892    
-    DSP48_X1Y21          DSP48E1 (Setup_dsp48e1_CLK_A[17])
-                                                     -2.131    11.761    dpll_wrapper_inst/DDC1_inst/input_multiplier_Q/U0/i_mult/gDSP.gDSP_only.iDSP/inferred_dsp.reg_mult.m_reg_reg
-  -------------------------------------------------------------------
-                         required time                         11.761    
-                         arrival time                         -11.315    
-  -------------------------------------------------------------------
-                         slack                                  0.446    
 
 
 
@@ -1799,7 +1789,7 @@ Slack (MET) :             0.268ns  (required time - arrival time)
   -------------------------------------------------------------------
                          slack                                  0.268    
 
-Slack (MET) :             0.270ns  (required time - arrival time)
+Slack (MET) :             0.280ns  (required time - arrival time)
   Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
                             (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
   Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[0].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[24]
@@ -1807,7 +1797,7 @@ Slack (MET) :             0.270ns  (required time - arrival time)
   Path Group:             pll_clk_adc_2x
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (pll_clk_adc_2x rise@4.000ns - pll_clk_adc_2x rise@0.000ns)
-  Data Path Delay:        3.174ns  (logic 0.478ns (15.062%)  route 2.696ns (84.938%))
+  Data Path Delay:        3.164ns  (logic 0.478ns (15.109%)  route 2.686ns (84.891%))
   Logic Levels:           0  
   Clock Path Skew:        0.043ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    5.468ns = ( 9.468 - 4.000 ) 
@@ -1834,7 +1824,7 @@ Slack (MET) :             0.270ns  (required time - arrival time)
     SLICE_X30Y70         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
   -------------------------------------------------------------------    -------------------
     SLICE_X30Y70         FDRE (Prop_fdre_C_Q)         0.478     6.361 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/Q
-                         net (fo=120, routed)         2.696     9.057    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[0].i_madd/i_addsub_mult_accum/DATA_OUT[15]
+                         net (fo=120, routed)         2.686     9.047    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[0].i_madd/i_addsub_mult_accum/DATA_OUT[15]
     DSP48_X1Y36          DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[0].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[24]
   -------------------------------------------------------------------    -------------------
 
@@ -1856,11 +1846,11 @@ Slack (MET) :             0.270ns  (required time - arrival time)
                                                      -0.536     9.327    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[0].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
   -------------------------------------------------------------------
                          required time                          9.327    
-                         arrival time                          -9.057    
+                         arrival time                          -9.047    
   -------------------------------------------------------------------
-                         slack                                  0.270    
+                         slack                                  0.280    
 
-Slack (MET) :             0.281ns  (required time - arrival time)
+Slack (MET) :             0.291ns  (required time - arrival time)
   Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
                             (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
   Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[24]
@@ -1868,7 +1858,7 @@ Slack (MET) :             0.281ns  (required time - arrival time)
   Path Group:             pll_clk_adc_2x
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (pll_clk_adc_2x rise@4.000ns - pll_clk_adc_2x rise@0.000ns)
-  Data Path Delay:        3.159ns  (logic 0.478ns (15.133%)  route 2.681ns (84.867%))
+  Data Path Delay:        3.149ns  (logic 0.478ns (15.180%)  route 2.671ns (84.820%))
   Logic Levels:           0  
   Clock Path Skew:        0.039ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    5.464ns = ( 9.464 - 4.000 ) 
@@ -1895,7 +1885,7 @@ Slack (MET) :             0.281ns  (required time - arrival time)
     SLICE_X30Y70         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
   -------------------------------------------------------------------    -------------------
     SLICE_X30Y70         FDRE (Prop_fdre_C_Q)         0.478     6.361 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/Q
-                         net (fo=120, routed)         2.681     9.042    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/DATA_OUT[15]
+                         net (fo=120, routed)         2.671     9.032    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/DATA_OUT[15]
     DSP48_X1Y34          DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[24]
   -------------------------------------------------------------------    -------------------
 
@@ -1917,131 +1907,9 @@ Slack (MET) :             0.281ns  (required time - arrival time)
                                                      -0.536     9.323    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
   -------------------------------------------------------------------
                          required time                          9.323    
-                         arrival time                          -9.042    
+                         arrival time                          -9.032    
   -------------------------------------------------------------------
-                         slack                                  0.281    
-
-Slack (MET) :             0.292ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
-                            (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[22]
-                            (rising edge-triggered cell DSP48E1 clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Path Group:             pll_clk_adc_2x
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            4.000ns  (pll_clk_adc_2x rise@4.000ns - pll_clk_adc_2x rise@0.000ns)
-  Data Path Delay:        3.148ns  (logic 0.478ns (15.183%)  route 2.670ns (84.817%))
-  Logic Levels:           0  
-  Clock Path Skew:        0.039ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.464ns = ( 9.464 - 4.000 ) 
-    Source Clock Delay      (SCD):    5.883ns
-    Clock Pessimism Removal (CPR):    0.457ns
-  Clock Uncertainty:      0.063ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.104ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_clk_adc_2x rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
-                                                      0.089     2.378 r  pll/pll/CLKOUT4
-                         net (fo=1, routed)           1.754     4.132    pll_clk_adc_2x
-    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_ser_clk/O
-                         net (fo=796, routed)         1.650     5.883    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/CLK
-    SLICE_X30Y70         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X30Y70         FDRE (Prop_fdre_C_Q)         0.478     6.361 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/Q
-                         net (fo=120, routed)         2.670     9.031    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/DATA_OUT[15]
-    DSP48_X1Y34          DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[22]
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_clk_adc_2x rise edge)
-                                                      4.000     4.000 r  
-    U18                                               0.000     4.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     4.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     4.940 r  i_clk/O
-                         net (fo=1, routed)           1.181     6.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
-                                                      0.084     6.205 r  pll/pll/CLKOUT4
-                         net (fo=1, routed)           1.594     7.799    pll_clk_adc_2x
-    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.091     7.890 r  bufg_ser_clk/O
-                         net (fo=796, routed)         1.574     9.464    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/aclk
-    DSP48_X1Y34          DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/CLK
-                         clock pessimism              0.457     9.922    
-                         clock uncertainty           -0.063     9.859    
-    DSP48_X1Y34          DSP48E1 (Setup_dsp48e1_CLK_A[22])
-                                                     -0.536     9.323    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
-  -------------------------------------------------------------------
-                         required time                          9.323    
-                         arrival time                          -9.031    
-  -------------------------------------------------------------------
-                         slack                                  0.292    
-
-Slack (MET) :             0.292ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
-                            (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[23]
-                            (rising edge-triggered cell DSP48E1 clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Path Group:             pll_clk_adc_2x
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            4.000ns  (pll_clk_adc_2x rise@4.000ns - pll_clk_adc_2x rise@0.000ns)
-  Data Path Delay:        3.148ns  (logic 0.478ns (15.183%)  route 2.670ns (84.817%))
-  Logic Levels:           0  
-  Clock Path Skew:        0.039ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.464ns = ( 9.464 - 4.000 ) 
-    Source Clock Delay      (SCD):    5.883ns
-    Clock Pessimism Removal (CPR):    0.457ns
-  Clock Uncertainty:      0.063ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.104ns
-    Phase Error              (PE):    0.000ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_clk_adc_2x rise edge)
-                                                      0.000     0.000 r  
-    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     0.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
-                                                      0.089     2.378 r  pll/pll/CLKOUT4
-                         net (fo=1, routed)           1.754     4.132    pll_clk_adc_2x
-    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_ser_clk/O
-                         net (fo=796, routed)         1.650     5.883    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/CLK
-    SLICE_X30Y70         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X30Y70         FDRE (Prop_fdre_C_Q)         0.478     6.361 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/Q
-                         net (fo=120, routed)         2.670     9.031    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/DATA_OUT[15]
-    DSP48_X1Y34          DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[23]
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_clk_adc_2x rise edge)
-                                                      4.000     4.000 r  
-    U18                                               0.000     4.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     4.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     4.940 r  i_clk/O
-                         net (fo=1, routed)           1.181     6.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
-                                                      0.084     6.205 r  pll/pll/CLKOUT4
-                         net (fo=1, routed)           1.594     7.799    pll_clk_adc_2x
-    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.091     7.890 r  bufg_ser_clk/O
-                         net (fo=796, routed)         1.574     9.464    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/aclk
-    DSP48_X1Y34          DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/CLK
-                         clock pessimism              0.457     9.922    
-                         clock uncertainty           -0.063     9.859    
-    DSP48_X1Y34          DSP48E1 (Setup_dsp48e1_CLK_A[23])
-                                                     -0.536     9.323    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[2].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
-  -------------------------------------------------------------------
-                         required time                          9.323    
-                         arrival time                          -9.031    
-  -------------------------------------------------------------------
-                         slack                                  0.292    
+                         slack                                  0.291    
 
 Slack (MET) :             0.293ns  (required time - arrival time)
   Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
@@ -2158,6 +2026,128 @@ Slack (MET) :             0.293ns  (required time - arrival time)
                          clock pessimism              0.458     9.926    
                          clock uncertainty           -0.063     9.863    
     DSP48_X1Y8           DSP48E1 (Setup_dsp48e1_CLK_A[21])
+                                                     -0.536     9.327    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
+  -------------------------------------------------------------------
+                         required time                          9.327    
+                         arrival time                          -9.034    
+  -------------------------------------------------------------------
+                         slack                                  0.293    
+
+Slack (MET) :             0.293ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
+                            (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[22]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             pll_clk_adc_2x
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (pll_clk_adc_2x rise@4.000ns - pll_clk_adc_2x rise@0.000ns)
+  Data Path Delay:        3.129ns  (logic 0.478ns (15.276%)  route 2.651ns (84.724%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.021ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.468ns = ( 9.468 - 4.000 ) 
+    Source Clock Delay      (SCD):    5.905ns
+    Clock Pessimism Removal (CPR):    0.458ns
+  Clock Uncertainty:      0.063ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.104ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_clk_adc_2x rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
+                                                      0.089     2.378 r  pll/pll/CLKOUT4
+                         net (fo=1, routed)           1.754     4.132    pll_clk_adc_2x
+    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_ser_clk/O
+                         net (fo=796, routed)         1.672     5.905    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/CLK
+    SLICE_X30Y9          FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X30Y9          FDRE (Prop_fdre_C_Q)         0.478     6.383 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/Q
+                         net (fo=120, routed)         2.651     9.034    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/DATA_OUT[15]
+    DSP48_X1Y8           DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[22]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_clk_adc_2x rise edge)
+                                                      4.000     4.000 r  
+    U18                                               0.000     4.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     4.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     4.940 r  i_clk/O
+                         net (fo=1, routed)           1.181     6.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
+                                                      0.084     6.205 r  pll/pll/CLKOUT4
+                         net (fo=1, routed)           1.594     7.799    pll_clk_adc_2x
+    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.091     7.890 r  bufg_ser_clk/O
+                         net (fo=796, routed)         1.578     9.468    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/aclk
+    DSP48_X1Y8           DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/CLK
+                         clock pessimism              0.458     9.926    
+                         clock uncertainty           -0.063     9.863    
+    DSP48_X1Y8           DSP48E1 (Setup_dsp48e1_CLK_A[22])
+                                                     -0.536     9.327    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
+  -------------------------------------------------------------------
+                         required time                          9.327    
+                         arrival time                          -9.034    
+  -------------------------------------------------------------------
+                         slack                                  0.293    
+
+Slack (MET) :             0.293ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
+                            (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[23]
+                            (rising edge-triggered cell DSP48E1 clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             pll_clk_adc_2x
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (pll_clk_adc_2x rise@4.000ns - pll_clk_adc_2x rise@0.000ns)
+  Data Path Delay:        3.129ns  (logic 0.478ns (15.276%)  route 2.651ns (84.724%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.021ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.468ns = ( 9.468 - 4.000 ) 
+    Source Clock Delay      (SCD):    5.905ns
+    Clock Pessimism Removal (CPR):    0.458ns
+  Clock Uncertainty:      0.063ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.104ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_clk_adc_2x rise edge)
+                                                      0.000     0.000 r  
+    U18                                               0.000     0.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     0.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     0.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     2.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
+                                                      0.089     2.378 r  pll/pll/CLKOUT4
+                         net (fo=1, routed)           1.754     4.132    pll_clk_adc_2x
+    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.101     4.233 r  bufg_ser_clk/O
+                         net (fo=796, routed)         1.672     5.905    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/CLK
+    SLICE_X30Y9          FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X30Y9          FDRE (Prop_fdre_C_Q)         0.478     6.383 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_data_array.g_data_mem.i_data_mem/gen_srl16.gen_mem.d_out_reg[15]/Q
+                         net (fo=120, routed)         2.651     9.034    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/DATA_OUT[15]
+    DSP48_X1Y8           DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/A[23]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_clk_adc_2x rise edge)
+                                                      4.000     4.000 r  
+    U18                                               0.000     4.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     4.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     4.940 r  i_clk/O
+                         net (fo=1, routed)           1.181     6.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
+                                                      0.084     6.205 r  pll/pll/CLKOUT4
+                         net (fo=1, routed)           1.594     7.799    pll_clk_adc_2x
+    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.091     7.890 r  bufg_ser_clk/O
+                         net (fo=796, routed)         1.578     9.468    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/aclk
+    DSP48_X1Y8           DSP48E1                                      r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1/CLK
+                         clock pessimism              0.458     9.926    
+                         clock uncertainty           -0.063     9.863    
+    DSP48_X1Y8           DSP48E1 (Setup_dsp48e1_CLK_A[23])
                                                      -0.536     9.327    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst/U0/i_synth/g_transpose_single_rate.i_transpose_single_rate/g_paths[0].g_madd[3].i_madd/i_addsub_mult_accum/g_dsp48.g_dsp48e1.i_dsp48e1
   -------------------------------------------------------------------
                          required time                          9.327    
@@ -6451,6 +6441,66 @@ Slack (MET) :             0.998ns  (required time - arrival time)
   -------------------------------------------------------------------
                          slack                                  0.998    
 
+Slack (MET) :             1.066ns  (required time - arrival time)
+  Source:                 dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Path Group:             pll_adc_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (pll_adc_clk rise@8.000ns - pll_clk_adc_2x rise@4.000ns)
+  Data Path Delay:        2.344ns  (logic 0.456ns (19.452%)  route 1.888ns (80.548%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.338ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    5.380ns = ( 13.380 - 8.000 ) 
+    Source Clock Delay      (SCD):    5.891ns = ( 9.891 - 4.000 ) 
+    Clock Pessimism Removal (CPR):    0.173ns
+  Clock Uncertainty:      0.189ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.118ns
+    Phase Error              (PE):    0.120ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock pll_clk_adc_2x rise edge)
+                                                      4.000     4.000 r  
+    U18                                               0.000     4.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     4.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     4.983 r  i_clk/O
+                         net (fo=1, routed)           1.306     6.289    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
+                                                      0.089     6.378 r  pll/pll/CLKOUT4
+                         net (fo=1, routed)           1.754     8.132    pll_clk_adc_2x
+    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.101     8.233 r  bufg_ser_clk/O
+                         net (fo=796, routed)         1.658     9.891    dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/CLK
+    SLICE_X25Y18         FDRE                                         r  dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[3]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X25Y18         FDRE (Prop_fdre_C_Q)         0.456    10.347 r  dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[3]/Q
+                         net (fo=1, routed)           1.888    12.235    dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg[3]
+    SLICE_X24Y14         FDRE                                         r  dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock pll_adc_clk rise edge)
+                                                      8.000     8.000 r  
+    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
+                         net (fo=0)                   0.000     8.000    adc_clk_p_i
+    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
+                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
+                                                      0.084    10.205 r  pll/pll/CLKOUT0
+                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
+                         net (fo=10250, routed)       1.490    13.380    dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/adc_clk
+    SLICE_X24Y14         FDRE                                         r  dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[3]/C
+                         clock pessimism              0.173    13.554    
+                         clock uncertainty           -0.189    13.365    
+    SLICE_X24Y14         FDRE (Setup_fdre_C_D)       -0.063    13.302    dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[3]
+  -------------------------------------------------------------------
+                         required time                         13.302    
+                         arrival time                         -12.235    
+  -------------------------------------------------------------------
+                         slack                                  1.066    
+
 Slack (MET) :             1.093ns  (required time - arrival time)
   Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[13]/C
                             (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
@@ -6810,66 +6860,6 @@ Slack (MET) :             1.156ns  (required time - arrival time)
                          arrival time                         -12.141    
   -------------------------------------------------------------------
                          slack                                  1.156    
-
-Slack (MET) :             1.161ns  (required time - arrival time)
-  Source:                 dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[5]/C
-                            (rising edge-triggered cell FDRE clocked by pll_clk_adc_2x  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[5]/D
-                            (rising edge-triggered cell FDRE clocked by pll_adc_clk  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Path Group:             pll_adc_clk
-  Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            4.000ns  (pll_adc_clk rise@8.000ns - pll_clk_adc_2x rise@4.000ns)
-  Data Path Delay:        2.226ns  (logic 0.456ns (20.489%)  route 1.770ns (79.511%))
-  Logic Levels:           0  
-  Clock Path Skew:        -0.348ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    5.454ns = ( 13.454 - 8.000 ) 
-    Source Clock Delay      (SCD):    5.975ns = ( 9.975 - 4.000 ) 
-    Clock Pessimism Removal (CPR):    0.173ns
-  Clock Uncertainty:      0.189ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
-    Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.118ns
-    Phase Error              (PE):    0.120ns
-
-    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
-  -------------------------------------------------------------------    -------------------
-                         (clock pll_clk_adc_2x rise edge)
-                                                      4.000     4.000 r  
-    U18                                               0.000     4.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     4.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.983     4.983 r  i_clk/O
-                         net (fo=1, routed)           1.306     6.289    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT4)
-                                                      0.089     6.378 r  pll/pll/CLKOUT4
-                         net (fo=1, routed)           1.754     8.132    pll_clk_adc_2x
-    BUFGCTRL_X0Y5        BUFG (Prop_bufg_I_O)         0.101     8.233 r  bufg_ser_clk/O
-                         net (fo=796, routed)         1.742     9.975    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/CLK
-    SLICE_X40Y19         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[5]/C
-  -------------------------------------------------------------------    -------------------
-    SLICE_X40Y19         FDRE (Prop_fdre_C_Q)         0.456    10.431 r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg_reg[5]/Q
-                         net (fo=1, routed)           1.770    12.201    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_N_reg[5]
-    SLICE_X36Y19         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[5]/D
-  -------------------------------------------------------------------    -------------------
-
-                         (clock pll_adc_clk rise edge)
-                                                      8.000     8.000 r  
-    U18                                               0.000     8.000 r  adc_clk_p_i (IN)
-                         net (fo=0)                   0.000     8.000    adc_clk_p_i
-    U18                  IBUFDS (Prop_ibufds_I_O)     0.940     8.940 r  i_clk/O
-                         net (fo=1, routed)           1.181    10.121    pll/adc_clk_in
-    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                      0.084    10.205 r  pll/pll/CLKOUT0
-                         net (fo=1, routed)           1.594    11.799    pll_adc_clk
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    11.890 r  bufg_adc_clk/O
-                         net (fo=10250, routed)       1.564    13.454    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/adc_clk
-    SLICE_X36Y19         FDRE                                         r  dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[5]/C
-                         clock pessimism              0.173    13.628    
-                         clock uncertainty           -0.189    13.439    
-    SLICE_X36Y19         FDRE (Setup_fdre_C_D)       -0.077    13.362    dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/data_out_times_1_reg[5]
-  -------------------------------------------------------------------
-                         required time                         13.362    
-                         arrival time                         -12.201    
-  -------------------------------------------------------------------
-                         slack                                  1.161    
 
 
 

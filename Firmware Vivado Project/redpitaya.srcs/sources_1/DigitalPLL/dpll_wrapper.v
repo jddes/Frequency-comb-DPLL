@@ -680,6 +680,10 @@ DDC_wideband_filters DDC1_inst (
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+// multiplexer to select the input of the Loop filters for DAC 1:
+// input : inst_frequency0, pll0_output or DDC1_output (old inst_frequency1)
+// output called inst_frequency1 to assure compatibility with all tools
 wire [2-1:0] loop_filter_1_mux_selector;
 // Registers which controls the multiplexer:
 parallel_bus_register_32bits_or_less # (
@@ -699,9 +703,9 @@ parallel_bus_register_mux_pll1  (
 multiplexer_3to1 loop_filters_1_mux (
  .clk                               (clk1                       ),
  .selector_mux                      (loop_filter_1_mux_selector ),
- .in0_mux                           (DDC1_output                ), 
- .in1_mux                           (inst_frequency0            ),
- .in2_mux                           (pll0_output >> 5           ), //pll0_output is 15 bits and in2_mux is 10 bits
+ .in0_mux                           (inst_frequency0            ), 
+ .in1_mux                           (pll0_output >> 5           ), //pll0_output is 15 bits and in2_mux is 10 bits
+ .in2_mux                           (DDC1_output                ),
  .out_mux                           (inst_frequency1            )
 );
 
@@ -816,6 +820,7 @@ reg [10+7-1:0] inst_frequency0_filtered_for_fll;
 //    .data_output(fll0_output), 
 //    .output_railed()
 //    );
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date             : Wed Jun 28 17:37:04 2017
+| Date             : Thu Jun 29 11:36:44 2017
 | Host             : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 | Command          : 
 | Design           : red_pitaya_top
@@ -30,8 +30,8 @@ Table of Contents
 ----------
 
 +--------------------------+-------+
-| Total On-Chip Power (W)  | 2.389 |
-| Dynamic (W)              | 2.233 |
+| Total On-Chip Power (W)  | 2.388 |
+| Dynamic (W)              | 2.232 |
 | Device Static (W)        | 0.156 |
 | Effective TJA (C/W)      | 11.5  |
 | Max Ambient (C)          | 57.5  |
@@ -65,7 +65,7 @@ Table of Contents
 | XADC                     |     0.004 |        1 |       --- |             --- |
 | PS7                      |     1.292 |        1 |       --- |             --- |
 | Static Power             |     0.156 |          |           |                 |
-| Total                    |     2.389 |          |           |                 |
+| Total                    |     2.388 |          |           |                 |
 +--------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -159,7 +159,7 @@ Table of Contents
 +-------------------------------------------------------------------------------+-----------+
 | Name                                                                          | Power (W) |
 +-------------------------------------------------------------------------------+-----------+
-| red_pitaya_top                                                                |     2.233 |
+| red_pitaya_top                                                                |     2.232 |
 |   dpll_wrapper_inst                                                           |     0.464 |
 |     DDC0_inst                                                                 |     0.144 |
 |       CORDIC_inst                                                             |     0.021 |
@@ -947,7 +947,7 @@ Table of Contents
 |       IIR_LPF_inst                                                            |     0.002 |
 |       d_saturation_inst                                                       |    <0.001 |
 |       i_saturation_inst                                                       |    <0.001 |
-|       ii_saturation_inst                                                      |     0.001 |
+|       ii_saturation_inst                                                      |    <0.001 |
 |       integrator_with_saturation_inst2                                        |     0.001 |
 |       out_saturation_inst                                                     |    <0.001 |
 |       p_saturation_inst                                                       |    <0.001 |
@@ -1213,7 +1213,7 @@ Table of Contents
 |                 aw_cmd_fsm_0                                                  |     0.001 |
 |                 cmd_translator_0                                              |     0.002 |
 |                   incr_cmd_0                                                  |    <0.001 |
-|                   wrap_cmd_0                                                  |     0.001 |
+|                   wrap_cmd_0                                                  |    <0.001 |
 |               WR.b_channel_0                                                  |    <0.001 |
 |                 bid_fifo_0                                                    |    <0.001 |
 |                 bresp_fifo_0                                                  |    <0.001 |

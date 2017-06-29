@@ -111,7 +111,7 @@ begin
 -- This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
 -- offset is equal to dec2bin(31.25e6/125e6 * 2^48, 48)
 -- in verilog : vco_frequency <= (signed(vco_input_voltage)<<<(48-16-1)) + signed(48'b0100000000000000000000000000000_00000000000000000);
-vco_frequency <= std_logic_vector(signed(vco_input_voltage & "0000000000000000000000000000000") + signed("010000000000000000000000000000000000000000000000")) ;
+vco_frequency <= std_logic_vector(signed(vco_input_voltage & "0000000000000000000000000000000") + "010000000000000000000000000000000000000000000000") ;
 
 	-- select which signal (DPLL0 or vco) will control the DAC0
 	output_muxa : process (clk)

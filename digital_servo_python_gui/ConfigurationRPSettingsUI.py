@@ -34,24 +34,25 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.initUI()
 
 		if bUpdateFPGA == True:
-			self.muxAction()
+			self.mux_vco_Action()
+			self.mux_pll2_Action()
 			self.setInternalVCO_amplitude()
 			#self.updateClicked()
 			#self.residualsClicked()
 
 	def initUI(self):
 
-		self.qgroupbox_MUX = Qt.QGroupBox('Select connection to VCO')
-		self.qgroupbox_MUX.setAutoFillBackground(True)
-		MUX = Qt.QGridLayout()
+		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select connection to VCO')
+		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
+		MUX_vco = Qt.QGridLayout()
 
 		self.qradio_VCO_to_DAC0 = Qt.QRadioButton('VCO connected to DAC A')
 		self.qradio_VCO_to_DAC1 = Qt.QRadioButton('VCO connected to DAC B')
 		self.qradio_no_VCO = Qt.QRadioButton('No VCO connected')
 		self.qradio_no_VCO.setChecked(True)
-		self.qradio_VCO_to_DAC0.clicked.connect(self.muxAction)
-		self.qradio_VCO_to_DAC1.clicked.connect(self.muxAction)
-		self.qradio_no_VCO.clicked.connect(self.muxAction)
+		self.qradio_VCO_to_DAC0.clicked.connect(self.mux_vco_Action)
+		self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
+		self.qradio_no_VCO.clicked.connect(self.mux_vco_Action)
 
 		self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude')
 		self.qedit_int_vco_amplitude = user_friendly_QLineEdit('0.5')
@@ -59,22 +60,45 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qedit_int_vco_amplitude.setMaximumWidth(60)
   
 
-		MUX.addWidget(self.qradio_VCO_to_DAC0,	 0, 0)	
-		MUX.addWidget(self.qradio_VCO_to_DAC1,	 1, 0)
-		MUX.addWidget(self.qradio_no_VCO, 		 2, 0)
-		MUX.addWidget(self.qlabel_int_vco_amplitude, 2,1)
-		MUX.addWidget(self.qedit_int_vco_amplitude, 2,2)
-		MUX.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
-		MUX.setRowStretch(2, 2)
+		MUX_vco.addWidget(self.qradio_VCO_to_DAC0,	 0, 0)	
+		MUX_vco.addWidget(self.qradio_VCO_to_DAC1,	 1, 0)
+		MUX_vco.addWidget(self.qradio_no_VCO, 		 2, 0)
+		MUX_vco.addWidget(self.qlabel_int_vco_amplitude, 2,1)
+		MUX_vco.addWidget(self.qedit_int_vco_amplitude, 2,2)
+		MUX_vco.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
+		MUX_vco.setRowStretch(2, 2)
 
-		self.qgroupbox_MUX.setLayout(MUX)
+		self.qgroupbox_MUX_vco.setLayout(MUX_vco)
 
+		###################################################################################
+		self.qgroupbox_MUX_pll2 = Qt.QGroupBox('Select connection to PLL 2')
+		self.qgroupbox_MUX_pll2.setAutoFillBackground(True)
+		MUX_pll2 = Qt.QGridLayout()
+
+		self.qradio_ddc1_to_pll2 = Qt.QRadioButton('DDC_a output to PLL_b input')
+		self.qradio_pll1_to_pll2 = Qt.QRadioButton('PLL_a output to PLL_b input')
+		self.qradio_ddc2_to_pll2 = Qt.QRadioButton('DDC_b output to PLL_b input')
+		self.qradio_ddc2_to_pll2.setChecked(True)
+		self.qradio_pll1_to_pll2.clicked.connect(self.mux_pll2_Action)
+		self.qradio_ddc1_to_pll2.clicked.connect(self.mux_pll2_Action)
+		self.qradio_ddc2_to_pll2.clicked.connect(self.mux_pll2_Action)
+
+		MUX_pll2.addWidget(self.qradio_ddc1_to_pll2, 	0, 0)
+		MUX_pll2.addWidget(self.qradio_pll1_to_pll2, 	1, 0)
+		MUX_pll2.addWidget(self.qradio_ddc2_to_pll2, 	2, 0)
+		MUX_pll2.setRowStretch(2, 0)
+
+		self.qgroupbox_MUX_pll2.setLayout(MUX_pll2)
+
+
+		###################################################################################
 			
 		self.group = Qt.QGroupBox('RP configuration')
 		self.group.setAutoFillBackground(True)
 		group = Qt.QGridLayout()
 
-		group.addWidget(self.qgroupbox_MUX, 0, 0, 2, 1)
+		group.addWidget(self.qgroupbox_MUX_vco, 0, 0, 2, 1)
+		group.addWidget(self.qgroupbox_MUX_pll2, 3, 0, 2, 1)
 		#vbox = Qt.QVBoxLayout()
 		#vbox.addStretch(1)
 		self.group.setLayout(group)
@@ -97,7 +121,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		#self.move(qr.topLeft())
 		#self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
 
-	def muxAction(self):
+	def mux_vco_Action(self):
 		if self.qradio_VCO_to_DAC0.isChecked():
 			data = 1
 		elif self.qradio_VCO_to_DAC1.isChecked():
@@ -116,9 +140,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		
 		self.sl.set_internal_VCO_amplitude(int_vco_amplitude)
 	  
+	def mux_pll2_Action(self):
+		if self.qradio_ddc1_to_pll2.isChecked():
+			data = 0
+		elif self.qradio_pll1_to_pll2.isChecked():
+			data = 1
+		else: #self.qradio_ddc2_to_pll2.isChecked()
+			data = 2
+		print(data)
+		self.sl.set_mux_pll2(data)
 
 
-    
+	
 if __name__ == '__main__':
 
 	#app = QApplication(sys.argv)
