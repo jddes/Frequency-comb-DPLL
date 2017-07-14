@@ -21,6 +21,8 @@ add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware V
 set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp}}]
 add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp}}
 set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp}}]
+add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_18x32_mult_d_synth_1/pll_18x32_mult_d.dcp}}
+set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_18x32_mult_d_synth_1/pll_18x32_mult_d.dcp}}]
 add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp}}
 set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp}}]
 add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/system_identification_outputgain_mult_synth_1/system_identification_outputgain_mult.dcp}}
@@ -29,6 +31,12 @@ add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware V
 set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp}}]
 add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp}}
 set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp}}]
+add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}
+set_property used_in_implementation false [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}]
+read_mem {
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/fast_arctan_LUT1.mif}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/fast_arctan_LUT2.mif}
+}
 read_ip {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/LO_DDS/LO_DDS.xci}}
 set_property used_in_implementation false [get_files -all {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/LO_DDS/LO_DDS.dcp}}]
 set_property used_in_implementation false [get_files -all {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/LO_DDS/LO_DDS_ooc.xdc}}]
@@ -45,29 +53,38 @@ set_property used_in_implementation false [get_files -all {{d:/Users/Alex/Docume
 set_property used_in_implementation false [get_files -all {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/system_ooc.xdc}}]
 set_property is_locked true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/system.bd}}]
 
-read_verilog -sv {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pll.sv}}
+read_verilog -sv {
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pwm.sv}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pll.sv}
+}
 read_verilog {
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_dfilt1.v}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/axi_wr_fifo.v}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/hdl/system_wrapper.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pid_block.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_asg_ch.v}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/axi_slave.v}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/axi_master.v}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_scope.v}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_dfilt1.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/axi_wr_fifo.v}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_ps.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pid.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_asg.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_ams.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/programmable_clk_divider.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/fast_arctan.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_scope.v}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_hk.v}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_top.v}
 }
 read_vhdl -library work {
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/programmable_delay_line.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_macc_behav.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/quadrature_dither_generator.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/helper_functions.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/boxcar_4_pts_filter.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/boxcar_2_pts_filter.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/adjustable_boxcar_filter_v2.vhd}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_macc_behav.vhd}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/IIR_LPF.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/triangular_frequency_counter.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd}
@@ -75,10 +92,11 @@ read_vhdl -library work {
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/parallel_bus_register.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/limiter.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/integrator_with_saturation.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/IIR_LPF.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/first_order_IIR_highpass_filter.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dither_lockin.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/ddc_frontend_lowpass_filter.vhd}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/internal_vco.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/simple_dualport_ram.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_vna_with_dither_wrapper.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/Status_LED_driver.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/residuals_monitor.vhd}
@@ -87,13 +105,35 @@ read_vhdl -library work {
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/parallel_bus_register_64_bits_or_less.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/output_summing.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/multiplexer_NbitsxMsignals_to_Nbits.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/multiplexer_3to1.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/lfsr_8bits.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/FSM_addr_packed.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dual_type_frequency_counter.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dualport_ram_for_monitor.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dither_lockin_wrapper.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/aux_data_mux.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/adjustable_boxcar_filter.vhd}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/simple_dualport_ram.vhd}
-  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/multiplexer_3to1.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/internal_vco.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/serialize_register_value.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/residuals_streaming.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/registers_read_testbench.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PWM_generator.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/programmable_delay_line_v2.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/prbs_generator.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/parallel_bus_register_128_bits_or_less.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/output_multiplexer.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper_testbench.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/integrate_and_dump.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/fir_3tap_plus_2ndorder_boxcar.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/first_order_IIR_lowpass_filter.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/differentiator_with_filter.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dac2_error_computation.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/crash_monitor_v1.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd}
+  {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/acquisition_FLL.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/mux_internal_vco.vhd}
   {D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ram_data_logger.vhd}
 }

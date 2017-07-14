@@ -142,11 +142,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 	  
 	def mux_pll2_Action(self):
 		if self.qradio_ddc1_to_pll2.isChecked():
-			data = 0
-		elif self.qradio_pll1_to_pll2.isChecked():
 			data = 1
-		else: #self.qradio_ddc2_to_pll2.isChecked()
+		elif self.qradio_pll1_to_pll2.isChecked():
 			data = 2
+		else: #self.qradio_ddc2_to_pll2.isChecked()
+			data = 0
 		self.sl.set_mux_pll2(data)
 
 

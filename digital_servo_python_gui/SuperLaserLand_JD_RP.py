@@ -2381,7 +2381,7 @@ class SuperLaserLand_JD_RP:
     # amplitude = [0 to 1]
     # amplitude = 1 means 1 V peak of output, or 2 Vpeak-peak.
     def set_internal_VCO_amplitude(self, amplitude):
-        addr_vco = 2
+        addr_vco = 6
         addr_vco_amplitude = 0x0000
         if self.bVerbose == True:
             print('set_internal_VCO_amplitude')

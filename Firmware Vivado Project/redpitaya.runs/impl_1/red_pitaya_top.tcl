@@ -62,6 +62,8 @@ set rc [catch {
   set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/input_multiplier_synth_1/input_multiplier.dcp}}]
   add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp}}
   set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_32x32_mult_ii_synth_1/pll_32x32_mult_ii.dcp}}]
+  add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_18x32_mult_d_synth_1/pll_18x32_mult_d.dcp}}
+  set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_18x32_mult_d_synth_1/pll_18x32_mult_d.dcp}}]
   add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp}}
   set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/pll_wide_mult_synth_1/pll_wide_mult.dcp}}]
   add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/system_identification_outputgain_mult_synth_1/system_identification_outputgain_mult.dcp}}
@@ -70,6 +72,8 @@ set rc [catch {
   set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fir_compiler_minimumphase_N_times_clk_synth_1/fir_compiler_minimumphase_N_times_clk.dcp}}]
   add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp}}
   set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp}}]
+  add_files -quiet {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}
+  set_property netlist_only true [get_files {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}]
   read_xdc -prop_thru_buffers -ref system_proc_sys_reset_0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc}}
   set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc}}]
   read_xdc -ref system_proc_sys_reset_0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc}}
@@ -84,6 +88,8 @@ set rc [catch {
   set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/input_multiplier/input_multiplier_ooc.xdc}}]
   read_xdc -mode out_of_context -ref pll_32x32_mult_ii -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/pll_32x32_mult_ii/pll_32x32_mult_ii_ooc.xdc}}
   set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/pll_32x32_mult_ii/pll_32x32_mult_ii_ooc.xdc}}]
+  read_xdc -mode out_of_context -ref pll_18x32_mult_d -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/pll_18x32_mult_d/pll_18x32_mult_d_ooc.xdc}}
+  set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/pll_18x32_mult_d/pll_18x32_mult_d_ooc.xdc}}]
   read_xdc -mode out_of_context -ref pll_wide_mult -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/pll_wide_mult/pll_wide_mult_ooc.xdc}}
   set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/pll_wide_mult/pll_wide_mult_ooc.xdc}}]
   read_xdc -mode out_of_context -ref system_identification_outputgain_mult -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/system_identification_outputgain_mult/system_identification_outputgain_mult_ooc.xdc}}
@@ -96,6 +102,10 @@ set rc [catch {
   set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0_ooc.xdc}}]
   read_xdc -ref fifo_generator_0 -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0/fifo_generator_0.xdc}}
   set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/fifo_generator_0/fifo_generator_0/fifo_generator_0.xdc}}]
+  read_xdc -mode out_of_context -ref FIFO_addr_packed -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc}}
+  set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc}}]
+  read_xdc -ref FIFO_addr_packed -cells U0 {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc}}
+  set_property processing_order EARLY [get_files {{d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc}}]
   read_xdc {{D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc}}
   link_design -top red_pitaya_top -part xc7z010clg400-1
   close_msg_db -file init_design.pb

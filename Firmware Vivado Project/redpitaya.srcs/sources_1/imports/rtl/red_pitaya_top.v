@@ -408,6 +408,16 @@ wire [16-1:0] LoggerData;
 wire LoggerData_clk_enable;
 wire LoggerIsWriting;
 
+wire dpll_output_selector;
+
+wire [ 32-1:0] dpll_output;
+wire dpll_ack;
+wire [ 32-1:0] addr_packed_output;
+wire addr_packed_ack;
+
+wire selected_ack;
+wire [32-1:0] selected_output;
+
 assign ADCraw0 = {adc_a, 2'b0};
 assign ADCraw1 = {adc_b, 2'b0};
 // assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
@@ -438,11 +448,50 @@ dpll_wrapper dpll_wrapper_inst (
   .sys_sel                 (  sys_sel                    ),  // write byte select
   .sys_wen                 (  sys_wen[0]                 ),  // write enable
   .sys_ren                 (  sys_ren[0]                 ),  // read enable
-  .sys_rdata               (  sys_rdata[ 0*32+31: 0*32]  ),  // read data
+  .sys_rdata               (  dpll_output                ),  // read data
   .sys_err                 (  sys_err[0]                 ),  // error indicator
-  .sys_ack                 (  sys_ack[0]                 )   // acknowledge signal
+  .sys_ack                 (  dpll_ack                   )   // acknowledge signal
 
 );
+
+
+
+addr_packed addr_packed_inst (
+  .clk                    ( adc_clk                 ),
+  .rst                    ( 0                       ),
+  .sys_addr               ( sys_addr                ),
+  .sys_wdata              ( sys_wdata               ),
+  .sys_wen                ( sys_wen[0]              ),
+  .sys_ren                ( sys_ren[0]              ),
+  .sys_rdata              ( addr_packed_output      ),
+  .sys_ack                ( addr_packed_ack         )
+);
+
+
+always @(posedge adc_clk) 
+begin
+    if ((20'h00025 < sys_addr[20-1:0]) && (sys_addr[20-1:0] > 20'h00040)) begin
+        dpll_output_selector = 1;
+    end
+    else begin
+        dpll_output_selector = 0;
+    end
+end
+
+always @*
+begin
+    if (dpll_output_selector == 0) begin
+        selected_output = addr_packed_output;
+        selected_ack = addr_packed_ack;
+    end
+    else begin
+        selected_output = dpll_output;
+        selected_ack = dpll_ack;
+    end
+end
+
+assign sys_rdata[ 0*32+31: 0*32] = selected_output;
+assign sys_ack[0] = selected_ack;
 
 // // ---------------------------------------------------------------------------------
 // // For testing the N-times clk FIR filter:
