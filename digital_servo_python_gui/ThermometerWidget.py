@@ -15,7 +15,7 @@ from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 
-
+import math
 
 # stuff for Python 3 port
 #import pyqtgraph as pg
@@ -59,6 +59,9 @@ class ThermometerWidget(QtWidgets.QWidget):
         self.setRange(min_value, max_value)
 
     def setValue(self, value):
+        # avoid being set equal to NaN or inf:
+        if not math.isfinite(value):
+            value = self.min_value
         
         # assign value with bounds checking
         if value > self.max_value:

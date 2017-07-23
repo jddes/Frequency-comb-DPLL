@@ -2264,7 +2264,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
             self.qthermo_baseband_snr.setValue(baseband_snr)
             self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
             
-            
             if self.qcombo_adc_plottype.currentIndex() == 2:
                 # show phase error as a function of time
                 
@@ -2336,7 +2335,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                 self.plt_spc.setXRange(time_axis[0], time_axis[-1])
             
                 self.plt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
-            
             
             complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
             self.curve_IQ.setData(np.real(complex_baseband), np.imag(complex_baseband))
