@@ -191,13 +191,14 @@ def main():
         
     # Lookup filename and load if file is there:
     try:
+        custom_config_file = ''
         custom_config_file = devices_data[initial_config.strSelectedSerial]['config file']
         sp.loadFromFile(custom_config_file)
         print('Loaded configuration from %s' % custom_config_file)
     except (KeyError, IOError):
         strFileDefaultConfig = 'system_parameters_RP_Default.xml'
         print('Warning: Could not parse config file "%s" for FPGA serial: %s, loading values from file %s' % (custom_config_file, initial_config.strSelectedSerial, strFileDefaultConfig))
-        custom_config_file = ''
+        
         try:
             sp.loadFromFile(strFileDefaultConfig)
             print('Loaded configuration from %s' % strFileDefaultConfig)
