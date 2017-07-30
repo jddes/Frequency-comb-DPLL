@@ -1,7 +1,0 @@
-Running: xsim.dir/ddc_frontend_lowpass_filter_testbench_behav/xsimk.exe -simmode gui -wdb ddc_frontend_lowpass_filter_testbench_behav.wdb -simrunnum 0 -socket 55262
-Design successfully loaded
-Design Loading Memory Usage: 22540 KB (Peak: 22540 KB)
-Design Loading CPU Usage: 265 ms
-Simulation completed
-Simulation Memory Usage: 23724 KB (Peak: 23724 KB)
-Simulation CPU Usage: 5327 ms

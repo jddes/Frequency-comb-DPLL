@@ -1,0 +1,11 @@
+# compile vhdl design source files
+vhdl work  "../../../redpitaya.srcs/sources_1/simple_dualport_ram.vhd"
+vhdl work  "../../../redpitaya.srcs/sources_1/FSM_addr_packed.vhd"
+vhdl fifo_generator_v13_0_1  "../../../redpitaya.ip_user_files/ipstatic/fifo_generator_v13_0_1/simulation/fifo_generator_vhdl_beh.vhd"
+vhdl fifo_generator_v13_0_1  "../../../redpitaya.ip_user_files/ipstatic/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_rfs.vhd"
+vhdl work  "../../../redpitaya.srcs/sources_1/ip/FIFO_addr_packed/sim/FIFO_addr_packed.vhd"
+vhdl work  "../../../redpitaya.srcs/sources_1/addr_packed.vhd"
+vhdl work  "../../../redpitaya.srcs/sources_1/addr_packed_testbench.vhd"
+
+# Do not sort compile order
+nosort
