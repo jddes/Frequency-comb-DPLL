@@ -645,7 +645,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                         self.sl.wait_for_write()
                         (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
     #                    print(np.mean(samples_out))
-                        current_dac_offset_in_counts = np.mean(samples_out)*2**4 # The DAC is actually 20 bits, but only the 16 MSBs are sent to the DDR2 logger, which amounts to dividing the DAC counts by 2**4
+                        current_dac_offset_in_counts = np.mean(samples_out)
                         kDAC = 1
                         
                     # Read the current manual offset value:
