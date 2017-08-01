@@ -1473,6 +1473,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                     print('before calling self.qloop_filters[k].loadParameters(self.sp)')
                     self.qloop_filters[k].loadParameters(self.sp)
                     print('after calling self.qloop_filters[k].loadParameters(self.sp)')
+                    self.qchk_lock.setChecked(self.qloop_filters[k].qchk_lock.isChecked()) # update the qchk_lock in this widget with the value loaded from sp
                     
                 # Get dac gain from the system parameters object and set it in the UI:
                 strDAC = 'DAC{:01d}'.format(k)
