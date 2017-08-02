@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Mon Jul 24 16:44:10 2017
+| Date         : Tue Aug 01 23:40:31 2017
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_utilization -file red_pitaya_top_utilization_synth.rpt -pb red_pitaya_top_utilization_synth.pb
 | Design       : red_pitaya_top
@@ -30,15 +30,15 @@ Table of Contents
 +----------------------------+------+-------+-----------+-------+
 |          Site Type         | Used | Fixed | Available | Util% |
 +----------------------------+------+-------+-----------+-------+
-| Slice LUTs*                | 6959 |     0 |     17600 | 39.54 |
-|   LUT as Logic             | 6668 |     0 |     17600 | 37.89 |
+| Slice LUTs*                | 7221 |     0 |     17600 | 41.03 |
+|   LUT as Logic             | 6930 |     0 |     17600 | 39.38 |
 |   LUT as Memory            |  291 |     0 |      6000 |  4.85 |
 |     LUT as Distributed RAM |  208 |     0 |           |       |
 |     LUT as Shift Register  |   83 |     0 |           |       |
-| Slice Registers            | 7970 |     0 |     35200 | 22.64 |
-|   Register as Flip Flop    | 7970 |     0 |     35200 | 22.64 |
+| Slice Registers            | 8304 |     0 |     35200 | 23.59 |
+|   Register as Flip Flop    | 8304 |     0 |     35200 | 23.59 |
 |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
-| F7 Muxes                   |    0 |     0 |      8800 |  0.00 |
+| F7 Muxes                   |    1 |     0 |      8800 |  0.01 |
 | F8 Muxes                   |    0 |     0 |      4400 |  0.00 |
 +----------------------------+------+-------+-----------+-------+
 * Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
@@ -58,8 +58,8 @@ Table of Contents
 | 0     |          Yes |           - |            - |
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
-| 314   |          Yes |         Set |            - |
-| 7656  |          Yes |       Reset |            - |
+| 339   |          Yes |         Set |            - |
+| 7965  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -118,7 +118,7 @@ Table of Contents
 +------------+------+-------+-----------+-------+
 |  Site Type | Used | Fixed | Available | Util% |
 +------------+------+-------+-----------+-------+
-| BUFGCTRL   |   14 |     0 |        32 | 43.75 |
+| BUFGCTRL   |   13 |     0 |        32 | 40.63 |
 | BUFIO      |    0 |     0 |         8 |  0.00 |
 | MMCME2_ADV |    0 |     0 |         2 |  0.00 |
 | PLLE2_ADV  |    1 |     0 |         2 | 50.00 |
@@ -151,30 +151,31 @@ Table of Contents
 +-----------+------+----------------------+
 |  Ref Name | Used |  Functional Category |
 +-----------+------+----------------------+
-| FDRE      | 7656 |         Flop & Latch |
-| LUT2      | 2817 |                  LUT |
-| LUT3      | 1758 |                  LUT |
-| LUT1      | 1485 |                  LUT |
-| CARRY4    | 1007 |           CarryLogic |
-| LUT6      |  977 |                  LUT |
-| LUT4      |  839 |                  LUT |
-| LUT5      |  672 |                  LUT |
-| FDSE      |  314 |         Flop & Latch |
+| FDRE      | 7965 |         Flop & Latch |
+| LUT2      | 2823 |                  LUT |
+| LUT3      | 1779 |                  LUT |
+| LUT1      | 1494 |                  LUT |
+| LUT6      | 1189 |                  LUT |
+| CARRY4    | 1011 |           CarryLogic |
+| LUT4      |  892 |                  LUT |
+| LUT5      |  664 |                  LUT |
+| FDSE      |  339 |         Flop & Latch |
 | RAMD32    |  312 |   Distributed Memory |
 | BIBUF     |  130 |                   IO |
 | RAMS32    |  104 |   Distributed Memory |
 | IBUF      |   54 |                   IO |
 | SRLC32E   |   51 |   Distributed Memory |
+| OBUF      |   35 |                   IO |
 | SRL16E    |   32 |   Distributed Memory |
-| OBUF      |   31 |                   IO |
-| OBUFT     |   22 |                   IO |
 | RAMB36E1  |   18 |         Block Memory |
 | ODDR      |   18 |                   IO |
-| BUFG      |   14 |                Clock |
+| OBUFT     |   18 |                   IO |
+| BUFG      |   13 |                Clock |
 | DSP48E1   |    8 |     Block Arithmetic |
 | XADC      |    1 |               Others |
 | PS7       |    1 | Specialized Resource |
 | PLLE2_ADV |    1 |                Clock |
+| MUXF7     |    1 |                MuxFx |
 | IBUFDS    |    1 |                   IO |
 | DNA_PORT  |    1 |               Others |
 +-----------+------+----------------------+

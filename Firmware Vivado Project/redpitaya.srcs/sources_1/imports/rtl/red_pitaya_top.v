@@ -235,15 +235,16 @@ assign ps_sys_ack   = |(sys_cs & sys_ack);
 // channel 3 is "Housekeeping"
 // channel 4 is VCO for DACb
 // channel 5 is output multiplexer
+// channel 6 is AMS (Analog and mixed signal - the PWM DACs)
 
 
 // assign sys_rdata[5*32+:32] = 32'h0; 
 // assign sys_err  [5       ] =  1'b0;
 // assign sys_ack  [5       ] =  1'b1;
 
-assign sys_rdata[6*32+:32] = 32'h0; 
-assign sys_err  [6       ] =  1'b0;
-assign sys_ack  [6       ] =  1'b1;
+// assign sys_rdata[6*32+:32] = 32'h0; 
+// assign sys_err  [6       ] =  1'b0;
+// assign sys_ack  [6       ] =  1'b1;
 
 assign sys_rdata[7*32+:32] = 32'h0; 
 assign sys_err  [7       ] =  1'b0;
@@ -321,7 +322,8 @@ BUFG bufg_dac_clk_1x (.O (dac_clk_1x), .I (pll_dac_clk_1x));
 BUFG bufg_dac_clk_2x (.O (dac_clk_2x), .I (pll_dac_clk_2x));
 BUFG bufg_dac_clk_2p (.O (dac_clk_2p), .I (pll_dac_clk_2p));
 BUFG bufg_ser_clk    (.O (adc_clk_2x), .I (pll_clk_adc_2x));
-BUFG bufg_pwm_clk    (.O (pwm_clk   ), .I (pll_pwm_clk   ));
+//BUFG bufg_pwm_clk    (.O (pwm_clk   ), .I (pll_pwm_clk   ));
+assign pwm_clk = dac_clk_2x;
 
 // ADC reset (active low) 
 always @(posedge adc_clk)
@@ -574,7 +576,7 @@ internal_vco internal_vco_1 (
  // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
  .frequency       (  vco1_frequency              ),
 
-  // System bus, address starts at 0x4X20_0000
+  // System bus, address starts at 0x4X40_0000
  .sys_addr        (  sys_addr                   ),  // address
  .sys_wdata       (  sys_wdata                  ),  // write data
  .sys_sel         (  sys_sel                    ),  // write byte select
@@ -759,45 +761,45 @@ red_pitaya_scope i_scope (
 //  .sys_ack         (  sys_ack[3]                 )   // acknowledge signal
 //);
 
-////---------------------------------------------------------------------------------
-////  Analog mixed signals
-////  XADC and slow PWM DAC control
+//---------------------------------------------------------------------------------
+//  Analog mixed signals
+//  XADC and slow PWM DAC control
 
-//wire  [ 24-1: 0] pwm_cfg_a;
-//wire  [ 24-1: 0] pwm_cfg_b;
-//wire  [ 24-1: 0] pwm_cfg_c;
-//wire  [ 24-1: 0] pwm_cfg_d;
+wire  [ 24-1: 0] pwm_cfg_a;
+wire  [ 24-1: 0] pwm_cfg_b;
+wire  [ 24-1: 0] pwm_cfg_c;
+wire  [ 24-1: 0] pwm_cfg_d;
 
-//red_pitaya_ams i_ams (
-//   // power test
-//  .clk_i           (  adc_clk                    ),  // clock
-//  .rstn_i          (  adc_rstn                   ),  // reset - active low
-//  // PWM configuration
-//  .dac_a_o         (  pwm_cfg_a                  ),
-//  .dac_b_o         (  pwm_cfg_b                  ),
-//  .dac_c_o         (  pwm_cfg_c                  ),
-//  .dac_d_o         (  pwm_cfg_d                  ),
-//   // System bus
-//  .sys_addr        (  sys_addr                   ),  // address
-//  .sys_wdata       (  sys_wdata                  ),  // write data
-//  .sys_sel         (  sys_sel                    ),  // write byte select
-//  .sys_wen         (  sys_wen[4]                 ),  // write enable
-//  .sys_ren         (  sys_ren[4]                 ),  // read enable
-//  .sys_rdata       (  sys_rdata[ 4*32+31: 4*32]  ),  // read data
-//  .sys_err         (  sys_err[4]                 ),  // error indicator
-//  .sys_ack         (  sys_ack[4]                 )   // acknowledge signal
-//);
+red_pitaya_ams i_ams (
+  // power test
+ .clk_i           (  adc_clk                    ),  // clock
+ .rstn_i          (  adc_rstn                   ),  // reset - active low
+ // PWM configuration
+ .dac_a_o         (  pwm_cfg_a                  ),
+ .dac_b_o         (  pwm_cfg_b                  ),
+ .dac_c_o         (  pwm_cfg_c                  ),
+ .dac_d_o         (  pwm_cfg_d                  ),
+  // System bus
+ .sys_addr        (  sys_addr                   ),  // address
+ .sys_wdata       (  sys_wdata                  ),  // write data
+ .sys_sel         (  sys_sel                    ),  // write byte select
+ .sys_wen         (  sys_wen[6]                 ),  // write enable
+ .sys_ren         (  sys_ren[6]                 ),  // read enable
+ .sys_rdata       (  sys_rdata[ 6*32+31: 6*32]  ),  // read data
+ .sys_err         (  sys_err[6]                 ),  // error indicator
+ .sys_ack         (  sys_ack[6]                 )   // acknowledge signal
+);
 
-//red_pitaya_pwm pwm [4-1:0] (
-//  // system signals
-//  .clk   (pwm_clk ),
-//  .rstn  (pwm_rstn),
-//  // configuration
-//  .cfg   ({pwm_cfg_d, pwm_cfg_c, pwm_cfg_b, pwm_cfg_a}),
-//  // PWM outputs
-//  .pwm_o (dac_pwm_o),
-//  .pwm_s ()
-//);
+red_pitaya_pwm pwm [4-1:0] (
+ // system signals
+ .clk   (pwm_clk ),
+ .rstn  (pwm_rstn),
+ // configuration
+ .cfg   ({pwm_cfg_d, pwm_cfg_c, pwm_cfg_b, pwm_cfg_a}),
+ // PWM outputs
+ .pwm_o (dac_pwm_o),
+ .pwm_s ()
+);
 
 //---------------------------------------------------------------------------------
 //  Daisy chain

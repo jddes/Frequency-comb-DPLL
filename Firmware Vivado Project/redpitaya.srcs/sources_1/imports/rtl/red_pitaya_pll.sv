@@ -56,12 +56,12 @@ PLLE2_ADV #(
 ) pll (
    // Output clocks
    .CLKFBOUT     (clk_fb    ),
-   .CLKOUT0      (clk_adc   ),
-   .CLKOUT1      (clk_dac_1x),
-   .CLKOUT2      (clk_dac_2x),
-   .CLKOUT3      (clk_dac_2p),
-   .CLKOUT4      (clk_adc_2x),
-   .CLKOUT5      (clk_pwm   ),
+   .CLKOUT0      (clk_adc   ),  // 125 MHz
+   .CLKOUT1      (clk_dac_1x),  // 125 MHz
+   .CLKOUT2      (clk_dac_2x),  // 250 MHz
+   .CLKOUT3      (clk_dac_2p),  // 250 MHz, 45 deg
+   .CLKOUT4      (clk_adc_2x),  // 250 MHz
+   .CLKOUT5      (clk_pwm   ),  // 250 MHz
    // Input clock control
    .CLKFBIN      (clk_fb    ),
    .CLKIN1       (clk       ),

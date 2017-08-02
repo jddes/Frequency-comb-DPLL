@@ -191,6 +191,17 @@ def main():
     
     for kAux in range(16):
         print("Vaux[%d]: %f V" % (kAux, xadc_unipolar_code_to_voltage(       sl.dev.read_Zynq_XADC_register_uint32(0x240+4*kAux)   )))
+        
+        
+    ###########################################################################
+    # Test writing the PWM DAC values:
+    # range is 0 to 1.8 V
+    pwm_dac_voltage_to_code = lambda x: max(min(int(round(x/1.8*(156*2**16))), (156*2**16)), 0)
+    sl.dev.write_Zynq_register_uint32(0x00600020, pwm_dac_voltage_to_code(  0.5))   # slow DAC A
+    sl.dev.write_Zynq_register_uint32(0x00600024, pwm_dac_voltage_to_code(  0.0))   # slow DAC B
+    sl.dev.write_Zynq_register_uint32(0x00600028, pwm_dac_voltage_to_code(  0.0))   # slow DAC C
+    sl.dev.write_Zynq_register_uint32(0x0060002C, pwm_dac_voltage_to_code(  0.0))   # slow DAC D
+    
     
     # Start the init process (this sets the PLL gain/settings registers and the residuals streaming)
     sl.initSubModules(initial_config.bSendDefaultValues)
