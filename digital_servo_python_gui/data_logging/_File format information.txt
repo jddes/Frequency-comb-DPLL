@@ -1,0 +1,3 @@
+All files contain a stream of double-precision floating point values.
+The frequency values are in units of Hertz (Hz).
+The DAC values are in normalized units between 0 and 1, representing the full-range of the DAC (0 = minimum value, 1 = maximum value).
