@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Thu Jun 15 11:50:26 2017
-| Host         : 0381-JDD running 64-bit major release  (build 9200)
+| Date         : Mon Jul 24 16:46:36 2017
+| Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_timing_summary -warn_on_violation -max_paths 10 -file red_pitaya_top_timing_summary_routed.rpt -rpx red_pitaya_top_timing_summary_routed.rpx
 | Design       : red_pitaya_top
 | Device       : 7z010-clg400
