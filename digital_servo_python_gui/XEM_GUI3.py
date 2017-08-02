@@ -141,6 +141,8 @@ def main():
     
     
     
+
+    
     
 #    # this will remove minimized status 
 #    # and restore window with keeping maximized/normal state
@@ -172,7 +174,23 @@ def main():
         # User clicked cancel. simply close the program:
         return
         
+    ###########################################################################
+    # Test reading the XADC values:
+    # See Xilinx document UG480 chapter 2 for conversion factors
+    # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+    xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
+    xadc_temperature_code_to_voltage = lambda x: x*503.975/2.**16-273.15
+    xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
+    print("Temperature: %f deg C" % (xadc_temperature_code_to_voltage(    sl.dev.read_Zynq_XADC_register_uint32(0x200)   )))
+    print("Vccint: %f V"          % (xadc_powersupply_code_to_voltage(    sl.dev.read_Zynq_XADC_register_uint32(0x204)   )))
+    print("Vccaux: %f V"          % (xadc_powersupply_code_to_voltage(    sl.dev.read_Zynq_XADC_register_uint32(0x208)   )))
+    print("Vp/vn: %f V"           % (xadc_unipolar_code_to_voltage(       sl.dev.read_Zynq_XADC_register_uint32(0x20C)   )))
+    print("Vrefp: %f V"           % (xadc_unipolar_code_to_voltage(       sl.dev.read_Zynq_XADC_register_uint32(0x210)   )))
+    print("Vrefn: %f V"           % (xadc_unipolar_code_to_voltage(       sl.dev.read_Zynq_XADC_register_uint32(0x214)   )))
+    print("Vbram: %f V"           % (xadc_powersupply_code_to_voltage(    sl.dev.read_Zynq_XADC_register_uint32(0x218)   )))
     
+    for kAux in range(16):
+        print("Vaux[%d]: %f V" % (kAux, xadc_unipolar_code_to_voltage(       sl.dev.read_Zynq_XADC_register_uint32(0x240+4*kAux)   )))
     
     # Start the init process (this sets the PLL gain/settings registers and the residuals streaming)
     sl.initSubModules(initial_config.bSendDefaultValues)
