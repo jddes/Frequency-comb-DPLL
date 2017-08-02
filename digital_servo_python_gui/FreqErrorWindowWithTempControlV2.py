@@ -55,6 +55,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             
         self.last_update_freq = time.clock()
         self.initUI()
+        self.qchk_triangular.blockSignals(True)
+        self.qchk_triangular.setChecked(self.sl.bTriangularAveraging)
+        self.qchk_triangular.blockSignals(False)
+        self.chkTriangular_checked()
+        
         self.openOutputFiles()
         self.initSL()
 

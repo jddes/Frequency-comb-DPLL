@@ -645,7 +645,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                         self.sl.wait_for_write()
                         (samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
     #                    print(np.mean(samples_out))
-                        current_dac_offset_in_counts = np.mean(samples_out)*2**4 # The DAC is actually 20 bits, but only the 16 MSBs are sent to the DDR2 logger, which amounts to dividing the DAC counts by 2**4
+                        current_dac_offset_in_counts = np.mean(samples_out)
                         kDAC = 1
                         
                     # Read the current manual offset value:
@@ -1473,6 +1473,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                     print('before calling self.qloop_filters[k].loadParameters(self.sp)')
                     self.qloop_filters[k].loadParameters(self.sp)
                     print('after calling self.qloop_filters[k].loadParameters(self.sp)')
+                    self.qchk_lock.setChecked(self.qloop_filters[k].qchk_lock.isChecked()) # update the qchk_lock in this widget with the value loaded from sp
                     
                 # Get dac gain from the system parameters object and set it in the UI:
                 strDAC = 'DAC{:01d}'.format(k)
