@@ -91,7 +91,11 @@ module red_pitaya_ps (
   input  wire  [  4-1: 0] axi1_wlen_i  , axi0_wlen_i  ,  // system write burst length
   input  wire             axi1_wfixed_i, axi0_wfixed_i,  // system write burst type (fixed / incremental)
   output wire             axi1_werr_o  , axi0_werr_o  ,  // system write error
-  output wire             axi1_wrdy_o  , axi0_wrdy_o     // system write ready
+  output wire             axi1_wrdy_o  , axi0_wrdy_o  ,  // system write ready
+  output wire             rd_do_o,
+  output wire             wr_do_o,
+  output wire             ack_timout_o,
+  output wire             ack_combine_o
 );
 
 //------------------------------------------------------------------------------
@@ -327,7 +331,11 @@ axi_slave #(
   .sys_ren_o        (  sys_ren_o               ),  // system read enable
   .sys_rdata_i      (  sys_rdata_i             ),  // system read data
   .sys_err_i        (  sys_err_i               ),  // system error indicator
-  .sys_ack_i        (  sys_ack_i               )   // system acknowledge signal
+  .sys_ack_i        (  sys_ack_i               ),   // system acknowledge signal
+  .rd_do_out        (  rd_do_o                 ),
+  .wr_do_out        (  wr_do_o                 ),
+  .ack_timout_out   (  ack_timout_o            ),
+  .ack_combine_out  (  ack_combine_o           )
 );
 
 assign sys_clk_o  = gp0_maxi_aclk   ;

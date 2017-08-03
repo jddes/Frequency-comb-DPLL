@@ -40,8 +40,23 @@ class SLLSystemParameters():
         
         self.root.append(ET.Element('PWM0_settings', standard='3.3', levels='256', default='0.0', minval='0.0', maxval='3.3'))
         
-        
         self.root.append(ET.Element('Main_window_settings', refresh_delay='500', N_samples_adc='1.75e3', N_samples_ddc='1e6', Integration_limit='5e6'))
+        self.root.append(ET.Element('Triangular_averaging', DAC1='1', DAC0='1'))
+
+        self.root.append(ET.Element('Dither_frequency', DAC1='5.1e3', DAC0='1e3'))
+        self.root.append(ET.Element('Dither_integration_time', DAC1='0.1', DAC0='0.1'))
+        self.root.append(ET.Element('Dither_amplitude', DAC1='1e.3', DAC0='1e-3'))
+        self.root.append(ET.Element('Dither_mode', DAC1='2', DAC0='2'))
+        
+        self.root.append(ET.Element('VCO_settings', VCO_offset='0.00', VCO_amplitude='0.5', VCO_connection='0'))
+        self.root.append(ET.Element('RP_settings', Fan_state='0', PLL2_connection='0'))
+        self.root.append(ET.Element('Filter_select', DAC1='0', DAC0='0'))
+        self.root.append(ET.Element('Angle_select', DAC1='0', DAC0='0'))
+
+        
+
+
+
         
     def loadFromFile(self, strFilename):
         self.tree = ET.parse(strFilename)
@@ -79,14 +94,14 @@ class SLLSystemParameters():
         # Set the DAC output limits:
         limit_low = float(self.getValue('Output_limits_low', 'DAC0'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC0'))    # the limit is in volts
-        sl.set_dac_limits(0, sl.convertDACVoltsToCounts(0, limit_low), sl.convertDACVoltsToCounts(0, limit_high), bSendToFPGA)
+        sl.set_dac_limits(0, sl.convertDACVoltsToCounts(0, limit_low), sl.convertDACVoltsToCounts(0, limit_high))
         limit_low = float(self.getValue('Output_limits_low', 'DAC1'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC1'))    # the limit is in volts
-        sl.set_dac_limits(1, sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high), bSendToFPGA)
+        sl.set_dac_limits(1, sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high))
         # print('low = %d, high = %d' % (sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high)))
         limit_low = float(self.getValue('Output_limits_low', 'DAC2'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC2'))    # the limit is in volts
-        sl.set_dac_limits(2, sl.convertDACVoltsToCounts(2, limit_low), sl.convertDACVoltsToCounts(2, limit_high), bSendToFPGA)
+        sl.set_dac_limits(2, sl.convertDACVoltsToCounts(2, limit_low), sl.convertDACVoltsToCounts(2, limit_high))
         
         ##
         ## HB, 4/27/2015, Added PWM support on DOUT0

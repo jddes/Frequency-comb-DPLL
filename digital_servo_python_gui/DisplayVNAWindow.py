@@ -28,9 +28,17 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.sl = weakref.proxy(sl)
         self.initUI()
         
-
-            
+    def getSystemIdentificationSettings(self):
+        # Read the System identification settings from the Red Pitaya the set the correct states when opening the VNA window
+        print("TO DO")
+        #return (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         
+    def getDitherSettings(self):
+        # Read the dither settings from the Red Pitaya the set the correct states when opening the VNA window
+        print("TO DO")
+        #return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither)
+
+
     def runSytemIdentification(self):
     
         # Check if another function is currently using the DDR2 logger:
@@ -178,9 +186,6 @@ class DisplayVNAWindow(QtGui.QWidget):
         
 
         
-        
-
-        
     def readSystemIdentificationSettings(self):
         # Input select
         try:
@@ -298,8 +303,10 @@ class DisplayVNAWindow(QtGui.QWidget):
         trigger_dither = bEnableDither
         if bEnableDither == False:
             stop_flag = 1
+            self.qbtn_dither.setText("Activate dither")
         else:
             stop_flag = 0
+            self.qbtn_dither.setText("Stop dither")
         bSquareWave = bSquareWave
         self.sl.setVNA_mode_register(trigger_dither, stop_flag, bSquareWave)
         print('(trigger_dither, stop_flag, bSquareWave) = %d, %d, %d' % (trigger_dither, stop_flag, bSquareWave))

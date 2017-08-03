@@ -47,10 +47,11 @@ begin
     
 
     -- the actual ram
-    ram_inst : entity work.simple_dualport_ram
+    ram_inst : entity work.simple_dualport_ram_with_init
     generic map (
         ADDRESS_WIDTH => 8,
-        DATA_WIDTH    => 64
+        DATA_WIDTH    => 64,
+        DATA_FILE     => "ram_init_file.txt"
 
     ) port map (
         clk_write     => clk,
@@ -108,8 +109,8 @@ begin
         read_address   <= std_logic_vector(unsigned(read_address)+1); --0000000000000010        
         wait for clock_period;
         read_address   <= std_logic_vector(unsigned(read_address)+1); --0000000000000010        
-        --read_enable <= '0';
-        --wait for clock_period;
+        read_enable <= '0';
+        wait for clock_period;
 
         --read_address   <= "00000010"; --0000000000000010
         --wait for clock_period;

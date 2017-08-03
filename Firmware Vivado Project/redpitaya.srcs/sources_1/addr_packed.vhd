@@ -11,7 +11,10 @@ entity addr_packed is
 			sys_wen 	: in std_logic;
 			sys_ren		: in std_logic;
 			sys_rdata   : out std_logic_vector(32-1 downto 0);  -- bus read data
-			sys_ack		: out std_logic  -- bus acknowledge signal
+			sys_err		: out std_logic;						-- Error indicator
+			sys_ack		: out std_logic;  -- bus acknowledge signal
+			out_empty 	: out std_logic;
+			out_full 	: out std_logic
 		);
 end addr_packed;
 
@@ -33,36 +36,38 @@ end component;
 
 component FSM_addr_packed  is
     port (
-            clk				: in  std_logic; 						--clock
+            clk				: in  std_logic; 						-- Clock
+            rst 			: in  std_logic; 						-- Reset (active low)
             read_fifo       : out std_logic; 						-- pulse to read data from fifo
             data_in			: in  std_logic_vector(64-1 downto 0);	-- Data input from FIFO
             sys_ren 		: in  std_logic; 						-- read pulse --if computer want to read data
             addrAsk			: in  std_logic_vector(32-1 downto 0);	-- Addr at which the computer want to read
             FIFO_empty		: in  std_logic; 						-- 1 if FIFO is empty
             data_out		: out std_logic_vector(32-1 downto 0); 	-- Data to send to the computer
+            sys_err			: out std_logic;						-- Error indicator
             ack 			: out std_logic 						-- Ack to send to the computer
         );
 end component;
 
-signal fifo_ack : STD_LOGIC := '0';
-signal FSM_ack 	: STD_LOGIC := '0';
-
 signal read_fifo : STD_LOGIC := '0';
 signal data_exchange : std_logic_vector (64-1 downto 0) := (others => '0');
-signal fifo_empty : STD_LOGIC := '0';
+signal fifo_empty : STD_LOGIC := '1';
+
+
 
 begin
+
 
 FIFO_inst : FIFO_addr_packed
 port map (
 			clk 	=> clk,
-		    srst 	=> rst,
+		    srst 	=> not(rst),
 		    din 	=> sys_addr & sys_wdata,
 		    wr_en 	=> sys_wen,
 		    rd_en 	=> read_fifo,
 		    dout 	=> data_exchange,
-		    full 	=> open,
-		    wr_ack 	=> fifo_ack,
+		    full 	=> out_full,
+		    wr_ack 	=> open,
 		    empty 	=> fifo_empty
 	);
 
@@ -70,16 +75,17 @@ port map (
 FSM_inst : FSM_addr_packed
 port map (
 			clk 		=> clk,
+			rst 		=> rst,
             read_fifo 	=> read_fifo,
             data_in 	=> data_exchange,
             sys_ren		=> sys_ren,
             addrAsk 	=> sys_addr,
             FIFO_empty 	=> fifo_empty,
             data_out 	=> sys_rdata,
-            ack 		=> FSM_ack
+            sys_err 	=> sys_err,
+            ack 		=> sys_ack
 	);
 
-sys_ack <= fifo_ack or FSM_ack;
-
+out_empty <= fifo_empty;
 
 end;

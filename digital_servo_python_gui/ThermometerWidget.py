@@ -138,7 +138,12 @@ class ThermometerWidget(QtWidgets.QWidget):
 
         # compute required size for front label in pixels
         bck_size = self.bck_label.size()
-        actual_height = round((float(self.value)-self.min_value)/(self.max_value-self.min_value) * (bck_size.height()-2*self.border_width))
+        # Catch "cannot convert float NaN to integer" when one open the GUI without Red Pitaya
+        try:
+            actual_height = round((float(self.value)-self.min_value)/(self.max_value-self.min_value) * (bck_size.height()-2*self.border_width))
+        except:
+            actual_height = 100
+
         #print("value = %f, min = %f, max = %f" % (value, self.min_value, self.max_value))
 
         # set front label widget size

@@ -63,6 +63,7 @@ architecture Behavioral of mux_internal_vco is
 	end component;
 
 	signal selector_vco			: std_logic_vector (2-1 downto 0)	:= (others => '0') ; -- signal to select which DAC will get the VCO signal as output
+	signal vco_offset 			: std_logic_vector (14-1 downto 0)  := (others => '0') ; -- intermediate signal to change the selected value that controls the frequency of the VCO
 	signal vco_input_voltage	: std_logic_vector (16-1 downto 0)  := (others => '0') ; -- intermediate signal to change the selected value that controls the frequency of the VCO
 	signal vco_frequency 		: std_logic_vector (48-1 downto 0)  := (others => '0') ; -- signal that contains the value of the frequency of the vco
 	signal vco_cos_signal 		: std_logic_vector (16-1 downto 0)  := (others => '0') ; -- output value of the vco
@@ -119,7 +120,7 @@ vco_frequency <= std_logic_vector(signed(vco_input_voltage & "000000000000000000
 		if rising_edge(clk) then
 			--if the selected VCO output is DAC0
 			if selector_vco = "01" then
-				mux_a_out <= vco_cos_signal(16-1 downto 2);
+				mux_a_out <= std_logic_vector(resize(signed(vco_cos_signal(16-1 downto 2)),mux_a_out'length) + resize(signed(vco_offset),mux_a_out'length));
 			-- if no DAC1 or no DAC are selected for the VCO output
 			else
 				mux_a_out <= DACin0(16-1 downto 2);
@@ -133,7 +134,7 @@ vco_frequency <= std_logic_vector(signed(vco_input_voltage & "000000000000000000
 		if rising_edge(clk) then
 			--if the selected VCO output is DAC1
 			if selector_vco = "10" then
-				mux_b_out <= vco_cos_signal(16-1 downto 2);
+				mux_b_out <= std_logic_vector(resize(signed(vco_cos_signal(16-1 downto 2)),mux_b_out'length) + resize(signed(vco_offset),mux_b_out'length));
 			-- if no DAC1 or no DAC are selected for the VCO output
 			else
 				mux_b_out <= DACin1(16-1 downto 2);
@@ -156,8 +157,8 @@ DACb_out <= mux_b_out;
             -- Write
             if sys_wen_mux = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"00000" => 
-                        selector_vco  <= sys_wdata(2-1 downto 0); --select where will the vco be connected
+                    when x"00000" =>	selector_vco  <= sys_wdata(2-1 downto 0); --select where will the vco be connected
+                    when x"00004" =>	vco_offset    <= sys_wdata(14-1 downto 0); --change the vco offset
                     when others => selector_vco <= (others => '0');
                 end case;
             end if;
@@ -165,9 +166,8 @@ DACb_out <= mux_b_out;
             -- Read
             if sys_ren_mux = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"00000" => 
-                        sys_rdata_mux <= (others => '0');
-                        sys_rdata_mux(2-1 downto 0) <= selector_vco;
+                    when x"00000" => sys_rdata_mux <= std_logic_vector(resize(unsigned(selector_vco), 32));
+                    when x"00004" => sys_rdata_mux <= std_logic_vector(resize(  signed(vco_offset)	, 32));
                     when others => sys_rdata_mux <=  (others => '0');
                 end case;
             end if;

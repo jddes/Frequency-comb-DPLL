@@ -1,0 +1,7 @@
+Don't forget to push the new red_pitaya_top.bit to the Red Pitaya. Otherwise, Python will try to read at non-existing address and will crash.
+
+If you reconnect to an running box that have never run, most of the value will be zero and the GUI might not be usable.
+To correct the situation, you need to go to the settings tab and open the communication menu. Then, you will be able to push the default values to the Red Pitaya
+TO DO: look at a value (or create a boolean) to see if the box have already run. If not, push the default values.
+
+For now, Python doesn't read the current state from the VNA, so if the VNA-dither is active when you reconnect, you won't know

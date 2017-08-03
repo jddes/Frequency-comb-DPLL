@@ -148,6 +148,11 @@ wire             axi1_wfixed , axi0_wfixed ;
 wire             axi1_werr   , axi0_werr   ;
 wire             axi1_wrdy   , axi0_wrdy   ;
 
+wire rd_do_t;
+wire wr_do_t;
+wire ack_timout_t;
+wire ack_combine_t;
+
 red_pitaya_ps i_ps (
   .FIXED_IO_mio       (  FIXED_IO_mio                ),
   .FIXED_IO_ps_clk    (  FIXED_IO_ps_clk             ),
@@ -198,7 +203,11 @@ red_pitaya_ps i_ps (
   .axi1_wlen_i   (axi1_wlen   ),  .axi0_wlen_i   (axi0_wlen   ),  // system write burst length
   .axi1_wfixed_i (axi1_wfixed ),  .axi0_wfixed_i (axi0_wfixed ),  // system write burst type (fixed / incremental)
   .axi1_werr_o   (axi1_werr   ),  .axi0_werr_o   (axi0_werr   ),  // system write error
-  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   )   // system write ready
+  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   ),  // system write ready
+  .rd_do_o       (rd_do_t      ),
+  .wr_do_o       (wr_do_t      ),
+  .ack_timout_o  (ack_timout_t ),
+  .ack_combine_o (ack_combine_t)
 );
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -231,19 +240,21 @@ assign ps_sys_ack   = |(sys_cs & sys_ack);
 
 // channel 0 is DPLL
 // channel 1 is BRAM-based data logger
-// channel 2 is VCO for DACa
-// channel 3 is "Housekeeping"
-// channel 4 is VCO for DACb
-// channel 5 is output multiplexer
+// channel 2 is to read data in the RAM for addr_packed
 
+
+// channel 3 is "Housekeeping"
+// channel 4 is VCO for DACb // not in use
+// channel 5 is output multiplexer
+// channel 6 is VCO for DAC
 
 // assign sys_rdata[5*32+:32] = 32'h0; 
 // assign sys_err  [5       ] =  1'b0;
 // assign sys_ack  [5       ] =  1'b1;
 
-assign sys_rdata[6*32+:32] = 32'h0; 
-assign sys_err  [6       ] =  1'b0;
-assign sys_ack  [6       ] =  1'b1;
+assign sys_rdata[4*32+:32] = 32'h0; 
+assign sys_err  [4       ] =  1'b0;
+assign sys_ack  [4       ] =  1'b1;
 
 assign sys_rdata[7*32+:32] = 32'h0; 
 assign sys_err  [7       ] =  1'b0;
@@ -408,15 +419,26 @@ wire [16-1:0] LoggerData;
 wire LoggerData_clk_enable;
 wire LoggerIsWriting;
 
-wire dpll_output_selector;
+reg dpll_output_selector;
 
 wire [ 32-1:0] dpll_output;
 wire dpll_ack;
 wire [ 32-1:0] addr_packed_output;
 wire addr_packed_ack;
 
-wire selected_ack;
-wire [32-1:0] selected_output;
+reg selected_ack;
+reg [32-1:0] selected_output;
+
+wire fifo_empty;
+wire fifo_full;
+
+
+wire debug_out_1;
+wire debug_out_2;
+wire debug_out_3;
+wire debug_out_4;
+
+reg [26-1:0] led_counter;
 
 assign ADCraw0 = {adc_a, 2'b0};
 assign ADCraw1 = {adc_b, 2'b0};
@@ -448,50 +470,63 @@ dpll_wrapper dpll_wrapper_inst (
   .sys_sel                 (  sys_sel                    ),  // write byte select
   .sys_wen                 (  sys_wen[0]                 ),  // write enable
   .sys_ren                 (  sys_ren[0]                 ),  // read enable
-  .sys_rdata               (  dpll_output                ),  // read data
+  .sys_rdata               (  sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
   .sys_err                 (  sys_err[0]                 ),  // error indicator
-  .sys_ack                 (  dpll_ack                   )   // acknowledge signal
-
+  .sys_ack                 (  sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
 );
-
-
 
 addr_packed addr_packed_inst (
-  .clk                    ( adc_clk                 ),
-  .rst                    ( 0                       ),
-  .sys_addr               ( sys_addr                ),
-  .sys_wdata              ( sys_wdata               ),
-  .sys_wen                ( sys_wen[0]              ),
-  .sys_ren                ( sys_ren[0]              ),
-  .sys_rdata              ( addr_packed_output      ),
-  .sys_ack                ( addr_packed_ack         )
+  .clk                    ( adc_clk                   ),
+  .rst                    ( adc_rstn                  ),
+  .sys_addr               ( sys_addr                  ),
+  .sys_wdata              ( sys_wdata                 ),
+  .sys_wen                ( sys_wen[0]                ),
+  .sys_ren                ( sys_ren[2]                ),
+  .sys_rdata              ( sys_rdata[ 2*32+31: 2*32] ),
+  .sys_err                ( sys_err[2]                ),
+  .sys_ack                ( sys_ack[2]                ),
+  .out_empty              ( fifo_empty                ),
+  .out_full               ( fifo_full                 )
 );
 
 
-always @(posedge adc_clk) 
-begin
-    if ((20'h00025 < sys_addr[20-1:0]) && (sys_addr[20-1:0] > 20'h00040)) begin
-        dpll_output_selector = 1;
-    end
-    else begin
-        dpll_output_selector = 0;
-    end
+// assign  = selected_output;
+
+// always @(posedge adc_clk)
+// begin
+//   if (sys_wen[0] || sys_ren[0]) begin
+//     if ((20'h00025 <= sys_addr) && (sys_addr <= 20'h00040)) begin
+//         dpll_output_selector <= 1;
+//     end
+//     else begin
+//         dpll_output_selector <= 0;
+//     end
+//     end
+// end
+
+// always @*
+// begin
+//     if (dpll_output_selector == 1) begin
+//         selected_output <= dpll_output;
+//     end
+//     else begin
+//         selected_output <= addr_packed_output;
+//     end
+// end
+
+// assign sys_rdata[ 0*32+31: 0*32] = dpll_output;
+// assign sys_ack[0] = addr_packed_ack; // || dpll_ack;
+
+always @(posedge adc_clk) begin
+  if (adc_rstn == 1'b0) begin
+    led_counter <= 26'h0;
+  end
+  else begin
+    led_counter <= led_counter + 26'h1;
+  end
 end
 
-always @*
-begin
-    if (dpll_output_selector == 0) begin
-        selected_output = addr_packed_output;
-        selected_ack = addr_packed_ack;
-    end
-    else begin
-        selected_output = dpll_output;
-        selected_ack = dpll_ack;
-    end
-end
-
-assign sys_rdata[ 0*32+31: 0*32] = selected_output;
-assign sys_ack[0] = selected_ack;
+assign led_o = {fifo_empty, fifo_full, led_counter[25], 4'b0};
 
 // // ---------------------------------------------------------------------------------
 // // For testing the N-times clk FIR filter:
@@ -545,8 +580,6 @@ ram_data_logger ram_data_logger_i (
   .sys_rdata            (  sys_rdata[ 1*32+31: 1*32]  ),  // read data
   .sys_err              (  sys_err[1]                 ),  // error indicator
   .sys_ack              (  sys_ack[1]                 )   // acknowledge signal
-
-
   );
 
 
@@ -647,21 +680,29 @@ wire  [  8-1: 0] exp_p_in , exp_n_in ;
 wire  [  8-1: 0] exp_p_out, exp_n_out;
 wire  [  8-1: 0] exp_p_dir, exp_n_dir;
 
+wire  [  8-1: 0] exp_p_in_hk , exp_n_in_hk ;
+wire  [  8-1: 0] exp_p_out_hk, exp_n_out_hk;
+wire  [  8-1: 0] exp_p_dir_hk, exp_n_dir_hk;
+
+wire  [ 8-1: 0] led_o_hk;
+
+wire            digital_loop_hk;
+
 red_pitaya_hk i_hk (
   // system signals
   .clk_i           (  adc_clk                    ),  // clock
   .rstn_i          (  adc_rstn                   ),  // reset - active low
   // LED
-  .led_o           (  led_o                      ),  // LED output
+  .led_o           (  led_o_hk                   ),  // LED output
   // global configuration
-  .digital_loop    (  digital_loop               ),
+  .digital_loop    (  digital_loop_hk            ),
   // Expansion connector
-  .exp_p_dat_i     (  exp_p_in                   ),  // input data
-  .exp_p_dat_o     (  exp_p_out                  ),  // output data
-  .exp_p_dir_o     (  exp_p_dir                  ),  // 1-output enable
-  .exp_n_dat_i     (  exp_n_in                   ),
-  .exp_n_dat_o     (  exp_n_out                  ),
-  .exp_n_dir_o     (  exp_n_dir                  ),
+  .exp_p_dat_i     (  exp_p_in_hk                ),  // input data
+  .exp_p_dat_o     (  exp_p_out_hk               ),  // output data
+  .exp_p_dir_o     (  exp_p_dir_hk               ),  // 1-output enable
+  .exp_n_dat_i     (  exp_n_in_hk                ),
+  .exp_n_dat_o     (  exp_n_out_hk               ),
+  .exp_n_dir_o     (  exp_n_dir_hk               ),
    // System bus
   .sys_addr        (  sys_addr                   ),  // address
   .sys_wdata       (  sys_wdata                  ),  // write data
@@ -673,21 +714,23 @@ red_pitaya_hk i_hk (
   .sys_ack         (  sys_ack[3]                 )   // acknowledge signal
 );
 
-// always @(posedge adc_clk) begin
-//   if (adc_rstn == 1'b0) begin
-//     led_counter <= 26'h0;
-//   end
-//   else begin
-//     led_counter <= led_counter + 26'h1;
-//   end
-// end
+// // always @(posedge adc_clk) begin
+// //   if (adc_rstn == 1'b0) begin
+// //     led_counter <= 26'h0;
+// //   end
+// //   else begin
+// //     led_counter <= led_counter + 26'h1;
+// //   end
+// // end
 
 
-// assign exp_n_out = {3'b0,sys_ack[2],sys_ack[2], sys_ack[0], sys_wen[0], led_counter[25]};
-// assign exp_n_dir = {8'b11111111};
+assign exp_n_out = {8'b10000000};
+assign exp_p_out = {8'b00000000};
+assign exp_n_dir = {8'b11111111};
+assign exp_p_dir = {8'b11111111};
 
-IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
-IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
+IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
+IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out_hk), .T(~exp_n_dir) );
 
 //---------------------------------------------------------------------------------
 // VCO and output mux
@@ -705,11 +748,11 @@ mux_internal_vco mux_vco (
   .sys_wdata      ( sys_wdata                 ), // write data
   .sys_sel        ( sys_sel                   ), // write byte select
   // communication bus for the vco
-  .sys_wen_vco    (sys_wen[2]                 ), // write enable for the vco
-  .sys_ren_vco    (sys_ren[2]                 ), // read enable for the vco
-  .sys_rdata_vco  (sys_rdata[ 2*32+31: 2*32]  ), // read data for the vco
-  .sys_err_vco    (sys_err[2]                 ), // error indicator for the vco
-  .sys_ack_vco    (sys_ack[2]                 ), // acknowledge signal for the vco
+  .sys_wen_vco    (sys_wen[6]                 ), // write enable for the vco
+  .sys_ren_vco    (sys_ren[6]                 ), // read enable for the vco
+  .sys_rdata_vco  (sys_rdata[ 6*32+31: 6*32]  ), // read data for the vco
+  .sys_err_vco    (sys_err[6]                 ), // error indicator for the vco
+  .sys_ack_vco    (sys_ack[6]                 ), // acknowledge signal for the vco
   // communication bus for the mux
   .sys_wen_mux    (sys_wen[5]                 ), // write enable for the mux
   .sys_ren_mux    (sys_ren[5]                 ), // read enable for the mux
@@ -723,8 +766,6 @@ mux_internal_vco mux_vco (
 
 assign dac_a = to_DAC0;
 assign dac_b = to_DAC1;
-
-
 
 
 // ---------------------------------------------------------------------------------
