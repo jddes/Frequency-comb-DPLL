@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/angle_CORDIC_synth_1'
+HD_PWD='D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.runs/angle_CORDIC_synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

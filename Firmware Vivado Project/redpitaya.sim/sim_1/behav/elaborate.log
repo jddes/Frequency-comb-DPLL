@@ -14,12 +14,13 @@ Compiling package synopsys.attributes
 Compiling package ieee.std_logic_misc
 Compiling package ieee.std_logic_arith
 Compiling package ieee.std_logic_unsigned
+Compiling package std.textio
 Compiling architecture behavioral of entity fifo_generator_v13_0_1.fifo_generator_v13_0_1_bhv_ss [\fifo_generator_v13_0_1_bhv_ss("...]
 Compiling architecture behavioral of entity fifo_generator_v13_0_1.fifo_generator_v13_0_1_conv [\fifo_generator_v13_0_1_conv(1,0...]
 Compiling architecture behavioral of entity fifo_generator_v13_0_1.fifo_generator_vhdl_beh [\fifo_generator_vhdl_beh(1,0,9,"...]
 Compiling architecture xilinx of entity fifo_generator_v13_0_1.fifo_generator_v13_0_1 [\fifo_generator_v13_0_1(1,0,9,"B...]
 Compiling architecture fifo_addr_packed_arch of entity work.FIFO_addr_packed [fifo_addr_packed_default]
-Compiling architecture behavioral of entity work.simple_dualport_ram [\simple_dualport_ram(8,64)\]
+Compiling architecture behavioral of entity work.simple_dualport_ram_with_init [\simple_dualport_ram_with_init(8...]
 Compiling architecture behavioral of entity work.FSM_addr_packed [fsm_addr_packed_default]
 Compiling architecture behavioral of entity work.addr_packed [addr_packed_default]
 Compiling architecture behavior of entity work.addr_packed_testbench

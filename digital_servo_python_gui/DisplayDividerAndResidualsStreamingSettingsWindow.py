@@ -16,7 +16,7 @@ import weakref
 
 class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 		
-	def __init__(self, sl, sp, clk_divider_modulus=67e3, bDividerOn=0, bPulses=0, custom_style_sheet='', custom_shorthand='', bUpdateFPGA = True, bConnectedRP = True):
+	def __init__(self, sl, sp, clk_divider_modulus=67e3, bDividerOn=0, bPulses=0, custom_style_sheet='', custom_shorthand=''):
 		super(DisplayDividerAndResidualsStreamingSettingsWindow, self).__init__()
 		
 		self.clk_divider_modulus = clk_divider_modulus
@@ -40,13 +40,6 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 		# if bUpdateFPGA == True:
 		# 	self.updateClicked()
 		# 	self.residualsClicked()
-
-		#bUpdateFPGA = False        # To force connection to an already configure Red Pitaya (for debugging)
-		if bConnectedRP:
-			if bUpdateFPGA == True:
-				self.pushValues()
-			else:
-				self.getValues()
 
 	def pushValues(self):
 		self.ddcClicked()

@@ -16,7 +16,7 @@ import weakref
 
 class DisplayDitherSettingsWindow(QtGui.QWidget):
 		
-	def __init__(self, sl, sp, output_number, modulation_frequency_in_hz=1e3, output_amplitude=1e-4, integration_time_in_seconds=0.1, bEnableDither=0, custom_style_sheet='', bUpdateFPGA = True, bConnectedRP = True):
+	def __init__(self, sl, sp, output_number, modulation_frequency_in_hz=1e3, output_amplitude=1e-4, integration_time_in_seconds=0.1, bEnableDither=0, custom_style_sheet=''):
 		super(DisplayDitherSettingsWindow, self).__init__()
 		
 		
@@ -30,13 +30,6 @@ class DisplayDitherSettingsWindow(QtGui.QWidget):
 		
 		self.initUI(modulation_frequency_in_hz, output_amplitude, integration_time_in_seconds, bEnableDither)
 		
-
-		#bUpdateFPGA = False
-		if bConnectedRP:
-			if bUpdateFPGA == True:
-				self.pushValues()
-			else:
-				self.getValues()
 
 	def loadParameters(self):
 		strDAC = 'DAC{:01d}'.format(self.output_number)

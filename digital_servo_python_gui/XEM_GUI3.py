@@ -32,7 +32,7 @@ import time
 
 
 class controller(object):
-	"""docstring for controllor"""
+	"""Main class of the GUI. It contains most of the elements of the GUI, the main_window and the communication class"""
 	def __init__(self):
 		# Create the object that handles the communication with the FPGA board:
 		self.sl = SuperLaserLand_JD_RP(self)
@@ -46,12 +46,7 @@ class controller(object):
 			self.app = QtWidgets.QApplication(sys.argv)
 
 
-		#self.initGUI()
-		# self.connectionGUI()
 		self.main()
-
-	def initGUI(self):
-		self.connectionGUI()
 
 
 	def updateDeviceData(self):
@@ -102,9 +97,6 @@ class controller(object):
 		
 	#    def __init__(self, dev, devices_data={}, strBroadcastAddress="192.168.2.255", strFPGAFirmware='', strCPUFirmware=''):
 		
-		
-		
-		
 	   # this will remove minimized status 
 	   # and restore window with keeping maximized/normal state
 		# allowSetForegroundWindow.allowSetForegroundWindow()
@@ -136,11 +128,9 @@ class controller(object):
 	def main(self):
 
 		
-		
+	############################################## - OLD CODE - ##############################################
 	# this opens the connection to the fpga (hard-coded IP address for now)
 	#    strList = self.sl.getDeviceList()
-		
-		
 		###########################################################################
 		# Update the FPGA bitfile and the Zynq monitor-tcp C program
 		
@@ -157,8 +147,6 @@ class controller(object):
 	#    self.sl.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
 
 	#    time.sleep(3)
-		
-		
 	#    
 	#    # send new monitor-tcp version
 	#    self.sl.dev.write_file_on_remote(strFilenameLocal=u'D:\\Université\\Dropbox\\22_H2015\\Red Pitaya\\monitor-tcp\\monitor-tcp', strFilenameRemote='/opt/monitor-tcp-new')
@@ -183,7 +171,7 @@ class controller(object):
 	##    return  # for quick debug tests
 		
 		
-		###########################################################################
+		############################################## - OLD CODE - ##############################################
 		# Start the User Interface
 		
 		
@@ -258,16 +246,16 @@ class controller(object):
 		# 200 MHz/(modulus+1)
 	#    sl.set_clk_divider_settings(bOn=1, bPulses=0, modulus=67e3-1)
 	#    sl.set_clk_divider_settings(bOn=1, bPulses=0, modulus=67e3+1-1)
-		self.divider_settings_window = DisplayDividerAndResidualsStreamingSettingsWindow(self.sl, self.sp, clk_divider_modulus=67e3, bDividerOn=0, bPulses=0, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)    
+		self.divider_settings_window = DisplayDividerAndResidualsStreamingSettingsWindow(self.sl, self.sp, clk_divider_modulus=67e3, bDividerOn=0, bPulses=0, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand)    
 		
 		
 		# Optical lock window
 		# self.xem_gui_mainwindow2 = XEM_GUI_MainWindow(self.sl, custom_shorthand + ': Optical lock', 1, (False, True, False), sp, custom_style_sheet, self.initial_config.strSelectedSerial, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
-		self.xem_gui_mainwindow2 = XEM_GUI_MainWindow(self.sl, custom_shorthand + ': Optical lock', 1, (False, True, False), self.sp, custom_style_sheet, self.strSelectedSerial, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
+		self.xem_gui_mainwindow2 = XEM_GUI_MainWindow(self.sl, custom_shorthand + ': Optical lock', 1, (False, True, False), self.sp, custom_style_sheet, self.strSelectedSerial)
 		
 		# CEO Lock window
 		# self.xem_gui_mainwindow = XEM_GUI_MainWindow(self.sl, custom_shorthand + ': CEO lock', 0, (True, False, False), sp, custom_style_sheet, self.initial_config.strSelectedSerial, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
-		self.xem_gui_mainwindow = XEM_GUI_MainWindow(self.sl, custom_shorthand + ': CEO lock', 0, (True, False, False), self.sp, custom_style_sheet, self.strSelectedSerial, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
+		self.xem_gui_mainwindow = XEM_GUI_MainWindow(self.sl, custom_shorthand + ': CEO lock', 0, (True, False, False), self.sp, custom_style_sheet, self.strSelectedSerial)
 		
 		
 	#    ###########################################################################
@@ -303,8 +291,8 @@ class controller(object):
 		strNameTemplate = 'data_logging\%s' % strOfTime
 		# strNameTemplate = '%s_%s_' % (strNameTemplate, self.initial_config.strSelectedSerial)
 		strNameTemplate = '%s_%s_' % (strNameTemplate, self.strSelectedSerial)
-		self.freq_error_window1 = FreqErrorWindowWithTempControlV2(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
-		self.freq_error_window2 = FreqErrorWindowWithTempControlV2(self.sl, 'Optical beat in-loop counter', self.sp, 1, strNameTemplate, custom_style_sheet, temp_control_port, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
+		self.freq_error_window1 = FreqErrorWindowWithTempControlV2(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0)
+		self.freq_error_window2 = FreqErrorWindowWithTempControlV2(self.sl, 'Optical beat in-loop counter', self.sp, 1, strNameTemplate, custom_style_sheet, temp_control_port)
 
 		self.counters_window = Qt.QWidget()
 		self.counters_window.setObjectName('MainWindow')
@@ -321,11 +309,11 @@ class controller(object):
 		#self.counters_window.show()
 		
 		# Dither windows, this code could be moved to another class/file to help with clutter:
-		self.dither_widget0 = DisplayDitherSettingsWindow(self.sl, self.sp, 0, modulation_frequency_in_hz='1e3', output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
-		self.dither_widget1 = DisplayDitherSettingsWindow(self.sl, self.sp, 1, modulation_frequency_in_hz='5.1e3' , output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
+		self.dither_widget0 = DisplayDitherSettingsWindow(self.sl, self.sp, 0, modulation_frequency_in_hz='1e3', output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
+		self.dither_widget1 = DisplayDitherSettingsWindow(self.sl, self.sp, 1, modulation_frequency_in_hz='5.1e3' , output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
 		#dither_widget2 = DisplayDitherSettingsWindow(self.sl, self.sp, 2, modulation_frequency_in_hz='110' , output_amplitude='1e-4', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
 
-		self.RP_Settings = ConfigRPSettingsUI(self.sl, self.sp, self, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand, bUpdateFPGA = bSendToFPGA, bConnectedRP = bConnectedRP)
+		self.RP_Settings = ConfigRPSettingsUI(self.sl, self.sp, self, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand)
 		
 		self.settings_window = Qt.QWidget()
 		self.settings_window.setObjectName('MainWindow')

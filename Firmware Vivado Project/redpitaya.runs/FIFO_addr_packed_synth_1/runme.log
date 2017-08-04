@@ -12,19 +12,19 @@ source FIFO_addr_packed.tcl -notrace
 INFO: [IP_Flow 19-234] Refreshing IP repositories
 INFO: [IP_Flow 19-1704] No user IP repositories specified
 INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2015.4/data/ip'.
-WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed.dcp'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_stub.v'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_stub.vhdl'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_sim_netlist.v'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_sim_netlist.vhdl'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed.dcp'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_stub.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_stub.vhdl'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_sim_netlist.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'FIFO_addr_packed' generated file not found 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_sim_netlist.vhdl'. Please regenerate to continue.
 Command: synth_design -top FIFO_addr_packed -part xc7z010clg400-1 -mode out_of_context
 Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 331.844 ; gain = 160.832
+Starting RTL Elaboration : Time (s): cpu = 00:00:09 ; elapsed = 00:00:12 . Memory (MB): peak = 332.063 ; gain = 160.621
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-638] synthesizing module 'FIFO_addr_packed' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/synth/FIFO_addr_packed.vhd:73]
+INFO: [Synth 8-638] synthesizing module 'FIFO_addr_packed' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/synth/FIFO_addr_packed.vhd:73]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_COUNT_TYPE bound to: 0 - type: integer 
 	Parameter C_DATA_COUNT_WIDTH bound to: 9 - type: integer 
@@ -226,8 +226,8 @@ INFO: [Synth 8-638] synthesizing module 'FIFO_addr_packed' [d:/Users/Alex/Docume
 	Parameter C_REG_SLICE_MODE_RACH bound to: 0 - type: integer 
 	Parameter C_REG_SLICE_MODE_RDCH bound to: 0 - type: integer 
 	Parameter C_REG_SLICE_MODE_AXIS bound to: 0 - type: integer 
-INFO: [Synth 8-3491] module 'fifo_generator_v13_0_1' declared at 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0.vhd:137' bound to instance 'U0' of component 'fifo_generator_v13_0_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/synth/FIFO_addr_packed.vhd:530]
-INFO: [Synth 8-638] synthesizing module 'fifo_generator_v13_0_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0.vhd:676]
+INFO: [Synth 8-3491] module 'fifo_generator_v13_0_1' declared at 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0.vhd:137' bound to instance 'U0' of component 'fifo_generator_v13_0_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/synth/FIFO_addr_packed.vhd:530]
+INFO: [Synth 8-638] synthesizing module 'fifo_generator_v13_0_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0.vhd:676]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_COUNT_TYPE bound to: 0 - type: integer 
 	Parameter C_DATA_COUNT_WIDTH bound to: 9 - type: integer 
@@ -429,7 +429,7 @@ INFO: [Synth 8-638] synthesizing module 'fifo_generator_v13_0_1' [d:/Users/Alex/
 	Parameter C_REG_SLICE_MODE_RACH bound to: 0 - type: integer 
 	Parameter C_REG_SLICE_MODE_RDCH bound to: 0 - type: integer 
 	Parameter C_REG_SLICE_MODE_AXIS bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'fifo_generator_v13_0_1_synth' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:33659]
+INFO: [Synth 8-638] synthesizing module 'fifo_generator_v13_0_1_synth' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:33659]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_COUNT_TYPE bound to: 0 - type: integer 
 	Parameter C_DATA_COUNT_WIDTH bound to: 9 - type: integer 
@@ -631,8 +631,8 @@ INFO: [Synth 8-638] synthesizing module 'fifo_generator_v13_0_1_synth' [d:/Users
 	Parameter C_REG_SLICE_MODE_RACH bound to: 0 - type: integer 
 	Parameter C_REG_SLICE_MODE_RDCH bound to: 0 - type: integer 
 	Parameter C_REG_SLICE_MODE_AXIS bound to: 0 - type: integer 
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:33723]
-INFO: [Synth 8-638] synthesizing module 'reset_blk_ramfifo' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:33723]
+INFO: [Synth 8-638] synthesizing module 'reset_blk_ramfifo' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_MEMORY_TYPE bound to: 1 - type: integer 
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
@@ -644,17 +644,17 @@ INFO: [Synth 8-638] synthesizing module 'reset_blk_ramfifo' [d:/Users/Alex/Docum
 	Parameter C_ENABLE_RST_SYNC bound to: 1 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
 	Parameter C_FULL_FLAGS_RST_VAL bound to: 1 - type: integer 
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12483]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12484]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12485]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12486]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12803]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12804]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12805]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12806]
-INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12807]
-INFO: [Synth 8-256] done synthesizing module 'reset_blk_ramfifo' (1#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
-INFO: [Synth 8-638] synthesizing module 'fifo_generator_top' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:32420]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12483]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12484]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12485]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12486]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12803]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12804]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12805]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12806]
+INFO: [Synth 8-5534] Detected attribute (* async_reg = "true" *) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12807]
+INFO: [Synth 8-256] done synthesizing module 'reset_blk_ramfifo' (1#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
+INFO: [Synth 8-638] synthesizing module 'fifo_generator_top' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:32420]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_MEMORY_TYPE bound to: 1 - type: integer 
@@ -727,7 +727,7 @@ INFO: [Synth 8-638] synthesizing module 'fifo_generator_top' [d:/Users/Alex/Docu
 	Parameter C_USE_FIFO16_FLAGS bound to: 0 - type: integer 
 	Parameter C_WR_FREQ bound to: 1 - type: integer 
 	Parameter C_WR_RESPONSE_LATENCY bound to: 1 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'fifo_generator_ramfifo' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:20583]
+INFO: [Synth 8-638] synthesizing module 'fifo_generator_ramfifo' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:20583]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_MEMORY_TYPE bound to: 1 - type: integer 
@@ -783,7 +783,7 @@ INFO: [Synth 8-638] synthesizing module 'fifo_generator_ramfifo' [d:/Users/Alex/
 	Parameter C_USE_SYNC_CLK bound to: 0 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
 	Parameter C_AXI_TYPE bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'reset_blk_ramfifo__parameterized0' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
+INFO: [Synth 8-638] synthesizing module 'reset_blk_ramfifo__parameterized0' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_MEMORY_TYPE bound to: 1 - type: integer 
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
@@ -795,8 +795,8 @@ INFO: [Synth 8-638] synthesizing module 'reset_blk_ramfifo__parameterized0' [d:/
 	Parameter C_ENABLE_RST_SYNC bound to: 1 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
 	Parameter C_FULL_FLAGS_RST_VAL bound to: 0 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'reset_blk_ramfifo__parameterized0' (1#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
-INFO: [Synth 8-638] synthesizing module 'input_blk' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:3996]
+INFO: [Synth 8-256] done synthesizing module 'reset_blk_ramfifo__parameterized0' (1#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:12376]
+INFO: [Synth 8-638] synthesizing module 'input_blk' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:3996]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_IMPLEMENTATION_TYPE bound to: 0 - type: integer 
 	Parameter C_DIN_WIDTH bound to: 64 - type: integer 
@@ -815,8 +815,8 @@ INFO: [Synth 8-638] synthesizing module 'input_blk' [d:/Users/Alex/Documents/Git
 	Parameter C_USE_INPUT_CE bound to: 0 - type: integer 
 	Parameter C_USE_OUTPUT_CE bound to: 0 - type: integer 
 	Parameter C_USE_SYNC_CLK bound to: 0 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'input_blk' (2#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:3996]
-INFO: [Synth 8-638] synthesizing module 'memory' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:5632]
+INFO: [Synth 8-256] done synthesizing module 'input_blk' (2#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:3996]
+INFO: [Synth 8-638] synthesizing module 'memory' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:5632]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_HAS_RST bound to: 0 - type: integer 
@@ -910,8 +910,8 @@ INFO: [Synth 8-638] synthesizing module 'memory' [d:/Users/Alex/Documents/GitHub
 	Parameter C_COMMON_CLK bound to: 1 - type: integer 
 	Parameter C_DISABLE_WARN_BHV_COLL bound to: 0 - type: integer 
 	Parameter C_DISABLE_WARN_BHV_RANGE bound to: 0 - type: integer 
-INFO: [Synth 8-3491] module 'blk_mem_gen_v8_3_1' declared at 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd:133' bound to instance 'bmg' of component 'blk_mem_gen_v8_3_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:6262]
-INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_v8_3_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd:277]
+INFO: [Synth 8-3491] module 'blk_mem_gen_v8_3_1' declared at 'd:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd:133' bound to instance 'bmg' of component 'blk_mem_gen_v8_3_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:6262]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_v8_3_1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd:277]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_XDEVICEFAMILY bound to: zynq - type: string 
 	Parameter C_ELABORATION_DIR bound to: (null) - type: string 
@@ -985,7 +985,7 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_v8_3_1' [d:/Users/Alex/Docu
 	Parameter C_COUNT_36K_BRAM bound to: (null) - type: string 
 	Parameter C_COUNT_18K_BRAM bound to: (null) - type: string 
 	Parameter C_EST_POWER_SUMMARY bound to: (null) - type: string 
-INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_v8_3_1_synth' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193780]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_v8_3_1_synth' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193780]
 	Parameter C_FAMILY bound to: zynq - type: string 
 	Parameter C_XDEVICEFAMILY bound to: zynq - type: string 
 	Parameter C_ELABORATION_DIR bound to: (null) - type: string 
@@ -1054,7 +1054,7 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_v8_3_1_synth' [d:/Users/Ale
 	Parameter C_DISABLE_WARN_BHV_COLL bound to: 0 - type: integer 
 	Parameter C_DISABLE_WARN_BHV_RANGE bound to: 0 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_top' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:192741]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_top' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:192741]
 	Parameter C_SIM_DEVICE bound to: 7SERIES - type: string 
 	Parameter C_FAMILY bound to: virtex6 - type: string 
 	Parameter C_XDEVICEFAMILY bound to: zynq - type: string 
@@ -1125,22 +1125,22 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_top' [d:/Users/Alex/Documen
 	Parameter C_DISABLE_WARN_BHV_RANGE bound to: 0 - type: integer 
 	Parameter DOUBLING_RESOURCE_FIX bound to: 0 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
-INFO: [Synth 8-638] synthesizing module 'blk_mem_input_block' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187182]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:4803]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_input_block' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187182]
 	Parameter C_FAMILY bound to: virtex6 - type: string 
 	Parameter C_MEM_TYPE bound to: 1 - type: integer 
 	Parameter C_HAS_RSTA bound to: 0 - type: integer 
@@ -1177,13 +1177,13 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_input_block' [d:/Users/Alex/Doc
 	Parameter C_USE_ECC bound to: 0 - type: integer 
 	Parameter C_USE_SOFTECC bound to: 0 - type: integer 
 	Parameter C_HAS_INJECTERR bound to: 0 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_input_block' (3#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187182]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193270]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193274]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193278]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193282]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193296]
-INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_generic_cstr' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:184458]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_input_block' (3#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187182]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193270]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193274]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193278]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193282]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193296]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_generic_cstr' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:184458]
 	Parameter C_FAMILY bound to: virtex6 - type: string 
 	Parameter C_XDEVICEFAMILY bound to: zynq - type: string 
 	Parameter C_SIM_DEVICE bound to: 7SERIES - type: string 
@@ -1257,7 +1257,7 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_generic_cstr' [d:/Users/Ale
 	Parameter C_SIM_COLLISION_CHECK bound to: ALL - type: string 
 	Parameter DOUBLING_RESOURCE_FIX bound to: 0 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_prim_width' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:182885]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_prim_width' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:182885]
 	Parameter C_SIM_DEVICE bound to: 7SERIES - type: string 
 	Parameter C_FAMILY bound to: virtex6 - type: string 
 	Parameter C_XDEVICEFAMILY bound to: zynq - type: string 
@@ -1315,9 +1315,9 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_prim_width' [d:/Users/Alex/
 	Parameter C_MEM_ADDR_WIDTH_B bound to: 9 - type: integer 
 	Parameter DOUBLING_RESOURCE_FIX bound to: 0 - type: integer 
 	Parameter C_EN_SAFETY_CKT bound to: 0 - type: integer 
-INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183564]
-INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183565]
-INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_prim_wrapper' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:6987]
+INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183564]
+INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183565]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_prim_wrapper' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:6987]
 	Parameter C_SIM_DEVICE bound to: 7SERIES - type: string 
 	Parameter C_ELABORATION_DIR bound to: (null) - type: string 
 	Parameter C_ENABLE_32BIT_ADDRESS bound to: 0 - type: integer 
@@ -1374,7 +1374,7 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_gen_prim_wrapper' [d:/Users/Ale
 	Parameter C_MEM_ADDR_WIDTH_A bound to: 9 - type: integer 
 	Parameter C_MEM_ADDR_WIDTH_B bound to: 9 - type: integer 
 	Parameter DOUBLING_RESOURCE_FIX bound to: 0 - type: integer 
-INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:16984]
+INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:16984]
 	Parameter DOA_REG bound to: 0 - type: integer 
 	Parameter DOB_REG bound to: 0 - type: integer 
 	Parameter EN_ECC_READ bound to: 0 - type: bool 
@@ -1550,13 +1550,13 @@ INFO: [Synth 8-3919] null assignment ignored [d:/Users/Alex/Documents/GitHub/Fre
 	Parameter WRITE_MODE_B bound to: READ_FIRST - type: string 
 	Parameter WRITE_WIDTH_A bound to: 0 - type: integer 
 	Parameter WRITE_WIDTH_B bound to: 72 - type: integer 
-INFO: [Synth 8-113] binding component instance 'ram' to cell 'RAMB36E1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:17045]
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_prim_wrapper' (4#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:6987]
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_prim_width' (5#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:182885]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:185950]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:186103]
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_generic_cstr' (6#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:184458]
-INFO: [Synth 8-638] synthesizing module 'blk_mem_output_block' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187787]
+INFO: [Synth 8-113] binding component instance 'ram' to cell 'RAMB36E1' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:17045]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_prim_wrapper' (4#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:6987]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_prim_width' (5#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:182885]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:185950]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:186103]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_generic_cstr' (6#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:184458]
+INFO: [Synth 8-638] synthesizing module 'blk_mem_output_block' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187787]
 	Parameter C_MEM_TYPE bound to: 1 - type: integer 
 	Parameter C_WRITE_WIDTH_A bound to: 64 - type: integer 
 	Parameter C_READ_WIDTH_A bound to: 64 - type: integer 
@@ -1567,12 +1567,12 @@ INFO: [Synth 8-638] synthesizing module 'blk_mem_output_block' [d:/Users/Alex/Do
 	Parameter C_HAS_SOFTECC_OUTPUT_REGS_B bound to: 0 - type: integer 
 	Parameter C_USE_SOFTECC bound to: 0 - type: integer 
 	Parameter C_USE_ECC bound to: 0 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_output_block' (7#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187787]
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_top' (8#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:192741]
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_v8_3_1_synth' (9#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193780]
-INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_v8_3_1' (10#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd:277]
-INFO: [Synth 8-256] done synthesizing module 'memory' (11#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:5632]
-INFO: [Synth 8-638] synthesizing module 'rd_logic' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:19688]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_output_block' (7#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:187787]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_top' (8#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:192741]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_v8_3_1_synth' (9#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:193780]
+INFO: [Synth 8-256] done synthesizing module 'blk_mem_gen_v8_3_1' (10#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3.vhd:277]
+INFO: [Synth 8-256] done synthesizing module 'memory' (11#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:5632]
+INFO: [Synth 8-638] synthesizing module 'rd_logic' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:19688]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_HAS_ALMOST_EMPTY bound to: 0 - type: integer 
 	Parameter C_HAS_RD_DATA_COUNT bound to: 0 - type: integer 
@@ -1595,29 +1595,29 @@ INFO: [Synth 8-638] synthesizing module 'rd_logic' [d:/Users/Alex/Documents/GitH
 	Parameter C_PROG_EMPTY_THRESH_NEGATE_VAL bound to: 3 - type: integer 
 	Parameter C_USE_EMBEDDED_REG bound to: 0 - type: integer 
 	Parameter C_FIFO_TYPE bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'rd_bin_cntr' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8178]
+INFO: [Synth 8-638] synthesizing module 'rd_bin_cntr' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8178]
 	Parameter C_HAS_RST bound to: 0 - type: integer 
 	Parameter C_HAS_SRST bound to: 1 - type: integer 
 	Parameter C_HAS_ALMOST_EMPTY bound to: 0 - type: integer 
 	Parameter C_PNTR_WIDTH bound to: 9 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'rd_bin_cntr' (12#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8178]
-INFO: [Synth 8-638] synthesizing module 'rd_status_flags_ss' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8787]
+INFO: [Synth 8-256] done synthesizing module 'rd_bin_cntr' (12#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8178]
+INFO: [Synth 8-638] synthesizing module 'rd_status_flags_ss' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8787]
 	Parameter C_HAS_RST bound to: 0 - type: integer 
 	Parameter C_HAS_SRST bound to: 1 - type: integer 
 	Parameter C_RD_PNTR_WIDTH bound to: 9 - type: integer 
 	Parameter C_WR_PNTR_WIDTH bound to: 9 - type: integer 
 	Parameter C_HAS_ALMOST_EMPTY bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'compare' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7562]
+INFO: [Synth 8-638] synthesizing module 'compare' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7562]
 	Parameter C_WIDTH bound to: 9 - type: integer 
-INFO: [Synth 8-113] binding component instance 'm1' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7622]
-INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
-INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
-INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
-INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
-INFO: [Synth 8-256] done synthesizing module 'compare' (13#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7562]
-INFO: [Synth 8-256] done synthesizing module 'rd_status_flags_ss' (14#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8787]
-INFO: [Synth 8-256] done synthesizing module 'rd_logic' (15#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:19688]
-INFO: [Synth 8-638] synthesizing module 'wr_logic' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:16249]
+INFO: [Synth 8-113] binding component instance 'm1' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7622]
+INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
+INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
+INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
+INFO: [Synth 8-113] binding component instance 'ms' to cell 'MUXCY' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7634]
+INFO: [Synth 8-256] done synthesizing module 'compare' (13#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7562]
+INFO: [Synth 8-256] done synthesizing module 'rd_status_flags_ss' (14#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:8787]
+INFO: [Synth 8-256] done synthesizing module 'rd_logic' (15#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:19688]
+INFO: [Synth 8-638] synthesizing module 'wr_logic' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:16249]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_HAS_ALMOST_FULL bound to: 0 - type: integer 
 	Parameter C_HAS_WR_DATA_COUNT bound to: 0 - type: integer 
@@ -1640,7 +1640,7 @@ INFO: [Synth 8-638] synthesizing module 'wr_logic' [d:/Users/Alex/Documents/GitH
 	Parameter C_PROG_FULL_THRESH_ASSERT_VAL bound to: 510 - type: integer 
 	Parameter C_PROG_FULL_THRESH_NEGATE_VAL bound to: 509 - type: integer 
 	Parameter C_FULL_FLAGS_RST_VAL bound to: 0 - type: integer 
-INFO: [Synth 8-638] synthesizing module 'wr_bin_cntr' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7761]
+INFO: [Synth 8-638] synthesizing module 'wr_bin_cntr' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7761]
 	Parameter C_HAS_RST bound to: 0 - type: integer 
 	Parameter C_HAS_SRST bound to: 1 - type: integer 
 	Parameter C_HAS_ALMOST_FULL bound to: 0 - type: integer 
@@ -1649,8 +1649,8 @@ INFO: [Synth 8-638] synthesizing module 'wr_bin_cntr' [d:/Users/Alex/Documents/G
 	Parameter C_PNTR_WIDTH bound to: 9 - type: integer 
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_WR_RD_RATIO bound to: 1 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'wr_bin_cntr' (16#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7761]
-INFO: [Synth 8-638] synthesizing module 'wr_status_flags_ss' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:13849]
+INFO: [Synth 8-256] done synthesizing module 'wr_bin_cntr' (16#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:7761]
+INFO: [Synth 8-638] synthesizing module 'wr_status_flags_ss' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:13849]
 	Parameter C_RD_PNTR_WIDTH bound to: 9 - type: integer 
 	Parameter C_WR_PNTR_WIDTH bound to: 9 - type: integer 
 	Parameter C_HAS_RST bound to: 0 - type: integer 
@@ -1659,17 +1659,17 @@ INFO: [Synth 8-638] synthesizing module 'wr_status_flags_ss' [d:/Users/Alex/Docu
 	Parameter C_PROG_FULL_TYPE bound to: 0 - type: integer 
 	Parameter C_PROG_EMPTY_TYPE bound to: 0 - type: integer 
 	Parameter C_FULL_FLAGS_RST_VAL bound to: 0 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'wr_status_flags_ss' (17#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:13849]
-INFO: [Synth 8-638] synthesizing module 'wr_handshaking_flags' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:15405]
+INFO: [Synth 8-256] done synthesizing module 'wr_status_flags_ss' (17#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:13849]
+INFO: [Synth 8-638] synthesizing module 'wr_handshaking_flags' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:15405]
 	Parameter C_HAS_RST bound to: 0 - type: integer 
 	Parameter C_HAS_SRST bound to: 1 - type: integer 
 	Parameter C_HAS_WR_ACK bound to: 1 - type: integer 
 	Parameter C_WR_ACK_LOW bound to: 0 - type: integer 
 	Parameter C_HAS_OVERFLOW bound to: 0 - type: integer 
 	Parameter C_OVERFLOW_LOW bound to: 0 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'wr_handshaking_flags' (18#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:15405]
-INFO: [Synth 8-256] done synthesizing module 'wr_logic' (19#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:16249]
-INFO: [Synth 8-638] synthesizing module 'output_blk' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:4436]
+INFO: [Synth 8-256] done synthesizing module 'wr_handshaking_flags' (18#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:15405]
+INFO: [Synth 8-256] done synthesizing module 'wr_logic' (19#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:16249]
+INFO: [Synth 8-638] synthesizing module 'output_blk' [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:4436]
 	Parameter C_COMMON_CLOCK bound to: 1 - type: integer 
 	Parameter C_DATA_COUNT_WIDTH bound to: 9 - type: integer 
 	Parameter C_DIN_WIDTH bound to: 64 - type: integer 
@@ -1695,14 +1695,14 @@ INFO: [Synth 8-638] synthesizing module 'output_blk' [d:/Users/Alex/Documents/Gi
 	Parameter C_USE_ECC bound to: 0 - type: integer 
 	Parameter C_FIFO_TYPE bound to: 0 - type: integer 
 	Parameter C_BYTE_STRB_WIDTH bound to: 8 - type: integer 
-INFO: [Synth 8-256] done synthesizing module 'output_blk' (20#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:4436]
-INFO: [Synth 8-256] done synthesizing module 'fifo_generator_ramfifo' (21#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:20583]
-INFO: [Synth 8-256] done synthesizing module 'fifo_generator_top' (22#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:32420]
-INFO: [Synth 8-256] done synthesizing module 'fifo_generator_v13_0_1_synth' (23#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:33659]
-INFO: [Synth 8-256] done synthesizing module 'fifo_generator_v13_0_1' (24#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0.vhd:676]
-INFO: [Synth 8-256] done synthesizing module 'FIFO_addr_packed' (25#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/synth/FIFO_addr_packed.vhd:73]
+INFO: [Synth 8-256] done synthesizing module 'output_blk' (20#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:4436]
+INFO: [Synth 8-256] done synthesizing module 'fifo_generator_ramfifo' (21#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:20583]
+INFO: [Synth 8-256] done synthesizing module 'fifo_generator_top' (22#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:32420]
+INFO: [Synth 8-256] done synthesizing module 'fifo_generator_v13_0_1_synth' (23#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0_vhsyn_rfs.vhd:33659]
+INFO: [Synth 8-256] done synthesizing module 'fifo_generator_v13_0_1' (24#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/fifo_generator_v13_0_1/hdl/fifo_generator_v13_0.vhd:676]
+INFO: [Synth 8-256] done synthesizing module 'FIFO_addr_packed' (25#1) [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/synth/FIFO_addr_packed.vhd:73]
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:01:16 ; elapsed = 00:01:20 . Memory (MB): peak = 515.121 ; gain = 344.109
+Finished RTL Elaboration : Time (s): cpu = 00:01:14 ; elapsed = 00:01:19 . Memory (MB): peak = 515.410 ; gain = 343.969
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -1711,24 +1711,24 @@ Report Check Netlist:
 +------+------------------+-------+---------+-------+------------------+
 |1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
 +------+------------------+-------+---------+-------+------------------+
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[71] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[62] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[53] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[44] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[35] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[26] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[17] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[8] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[71] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[62] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[53] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[44] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[35] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[26] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[17] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
-INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[8] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[71] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[62] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[53] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[44] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[35] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[26] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[17] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINA[8] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[71] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[62] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[53] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[44] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[35] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[26] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[17] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
+INFO: [Synth 8-3295] tying undriven pin \prim_noinit.ram :DINB[8] to constant 0 [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/blk_mem_gen_v8_3_1/hdl/blk_mem_gen_v8_3_vhsyn_rfs.vhd:183803]
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:01:16 ; elapsed = 00:01:20 . Memory (MB): peak = 515.121 ; gain = 344.109
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:01:14 ; elapsed = 00:01:19 . Memory (MB): peak = 515.410 ; gain = 343.969
 ---------------------------------------------------------------------------------
 INFO: [Netlist 29-17] Analyzing 21 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
@@ -1737,37 +1737,37 @@ INFO: [Project 1-570] Preparing netlist for logic optimization
 
 Processing XDC Constraints
 Initializing timing engine
-Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
-Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
-Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
-Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
-Parsing XDC File [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/dont_touch.xdc]
-Finished Parsing XDC File [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/dont_touch.xdc]
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
+Parsing XDC File [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/dont_touch.xdc]
 Completed Processing XDC Constraints
 
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.020 . Memory (MB): peak = 576.430 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.019 . Memory (MB): peak = 576.430 ; gain = 0.000
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:01:23 ; elapsed = 00:01:33 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished Constraint Validation : Time (s): cpu = 00:01:21 ; elapsed = 00:01:31 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7z010clg400-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:01:23 ; elapsed = 00:01:33 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished Loading Part and Timing Information : Time (s): cpu = 00:01:21 ; elapsed = 00:01:31 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
 ---------------------------------------------------------------------------------
 Applied set_property DONT_TOUCH = true for U0. (constraint file  auto generated constraint, line ).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:01:23 ; elapsed = 00:01:33 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:01:21 ; elapsed = 00:01:31 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:01:24 ; elapsed = 00:01:34 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:01:22 ; elapsed = 00:01:32 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1843,14 +1843,14 @@ BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
 ---------------------------------------------------------------------------------
 Finished Part Resource Summary
 ---------------------------------------------------------------------------------
-Start Parallel Synthesis Optimization  : Time (s): cpu = 00:01:24 ; elapsed = 00:01:34 . Memory (MB): peak = 576.430 ; gain = 405.418
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:01:22 ; elapsed = 00:01:32 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
 Start Cross Boundary Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Cross Boundary Optimization : Time (s): cpu = 00:01:24 ; elapsed = 00:01:34 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished Cross Boundary Optimization : Time (s): cpu = 00:01:22 ; elapsed = 00:01:32 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
-Finished Parallel Reinference  : Time (s): cpu = 00:01:24 ; elapsed = 00:01:34 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished Parallel Reinference  : Time (s): cpu = 00:01:22 ; elapsed = 00:01:32 . Memory (MB): peak = 576.430 ; gain = 404.988
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
@@ -1861,9 +1861,9 @@ Report RTL Partitions:
 Start Area Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Area Optimization : Time (s): cpu = 00:01:24 ; elapsed = 00:01:34 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished Area Optimization : Time (s): cpu = 00:01:22 ; elapsed = 00:01:32 . Memory (MB): peak = 576.430 ; gain = 404.988
 ---------------------------------------------------------------------------------
-Finished Parallel Area Optimization  : Time (s): cpu = 00:01:24 ; elapsed = 00:01:34 . Memory (MB): peak = 576.430 ; gain = 405.418
+Finished Parallel Area Optimization  : Time (s): cpu = 00:01:22 ; elapsed = 00:01:32 . Memory (MB): peak = 576.430 ; gain = 404.988
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
@@ -1877,10 +1877,10 @@ Start Timing Optimization
 Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:34 ; elapsed = 00:01:44 . Memory (MB): peak = 613.512 ; gain = 442.500
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 613.617 ; gain = 442.176
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:01:34 ; elapsed = 00:01:44 . Memory (MB): peak = 623.293 ; gain = 452.281
+Finished Timing Optimization : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 623.395 ; gain = 451.953
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1898,16 +1898,16 @@ WARNING: [Synth 8-3332] Sequential element (\inst_fifo_gen/reset_gen_cc.rstblk_c
 WARNING: [Synth 8-3332] Sequential element (\inst_fifo_gen/reset_gen_cc.rstblk_cc/ngwrdrst.grst.g7serrst.rd_rst_asreg_reg ) is unused and will be removed from module fifo_generator_v13_0_1.
 WARNING: [Synth 8-3332] Sequential element (\inst_fifo_gen/reset_gen_cc.rstblk_cc/ngwrdrst.grst.g7serrst.rd_rst_asreg_d2_reg ) is unused and will be removed from module fifo_generator_v13_0_1.
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:01:34 ; elapsed = 00:01:44 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Technology Mapping : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
-Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:34 ; elapsed = 00:01:44 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
 | |RTL Partition |Replication |Instances |
 +-+--------------+------------+----------+
 +-+--------------+------------+----------+
-Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:34 ; elapsed = 00:01:44 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 Start IO Insertion
 ---------------------------------------------------------------------------------
@@ -1924,7 +1924,7 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished IO Insertion : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -1937,7 +1937,7 @@ Report Check Netlist:
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -1949,25 +1949,25 @@ Report RTL Partitions:
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:34 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:34 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -2026,19 +2026,19 @@ Report Instance Areas:
 |24    |      \reset_gen_cc.rstblk_cc                   |reset_blk_ramfifo            |     8|
 +------+------------------------------------------------+-----------------------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:34 ; elapsed = 00:01:43 . Memory (MB): peak = 633.984 ; gain = 462.543
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 6 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:14 ; elapsed = 00:01:29 . Memory (MB): peak = 633.941 ; gain = 323.281
-Synthesis Optimization Complete : Time (s): cpu = 00:01:35 ; elapsed = 00:01:45 . Memory (MB): peak = 633.941 ; gain = 462.930
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:15 ; elapsed = 00:01:28 . Memory (MB): peak = 633.984 ; gain = 323.547
+Synthesis Optimization Complete : Time (s): cpu = 00:01:34 ; elapsed = 00:01:44 . Memory (MB): peak = 633.984 ; gain = 462.543
 INFO: [Project 1-571] Translating synthesized netlist
 INFO: [Netlist 29-17] Analyzing 21 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
-Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
-Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
-Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
-Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc] for cell 'U0'
+Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc] for cell 'U0'
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 8 instances were transformed.
@@ -2047,7 +2047,7 @@ INFO: [Project 1-111] Unisim Transformation Summary:
 INFO: [Common 17-83] Releasing license: Synthesis
 104 Infos, 34 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:01:33 ; elapsed = 00:01:43 . Memory (MB): peak = 633.941 ; gain = 384.590
+synth_design: Time (s): cpu = 00:01:32 ; elapsed = 00:01:42 . Memory (MB): peak = 633.984 ; gain = 384.566
 INFO: [Coretcl 2-1174] Renamed 23 cell refs.
-report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.018 . Memory (MB): peak = 633.941 ; gain = 0.000
-INFO: [Common 17-206] Exiting Vivado at Fri Jun 30 16:29:56 2017...
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.017 . Memory (MB): peak = 633.984 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Tue Jul 04 16:23:00 2017...

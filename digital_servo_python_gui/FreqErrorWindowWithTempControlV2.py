@@ -31,7 +31,7 @@ import pyqtgraph as pg
 
 class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
-	def __init__(self, sl, strTitle, sp, output_number=0, strNameTemplate='', custom_style_sheet='', port_number=0, bUpdateFPGA = True, bConnectedRP = True):
+	def __init__(self, sl, strTitle, sp, output_number=0, strNameTemplate='', custom_style_sheet='', port_number=0):
 		super(FreqErrorWindowWithTempControlV2, self).__init__()
 
 		self.strTitle = strTitle
@@ -60,12 +60,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 		self.openOutputFiles()
 
 		self.state = 1
-
-		if bConnectedRP:
-			if bUpdateFPGA:
-				self.pushValues()
-			else:
-				self.getValues()
 		
 
 

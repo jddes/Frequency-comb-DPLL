@@ -2,11 +2,11 @@
 # Webtalk v2015.4 (64-bit)
 # SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
 # IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
-# Start of session at: Tue Jul 04 15:27:59 2017
-# Process ID: 14104
-# Current directory: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.sim/sim_1/behav
-# Command line: wbtcv.exe -mode batch -source D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.sim/sim_1/behav/xsim.dir/addr_packed_testbench_behav/webtalk/xsim_webtalk.tcl -notrace
-# Log file: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.sim/sim_1/behav/webtalk.log
-# Journal file: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.sim/sim_1/behav\webtalk.jou
+# Start of session at: Thu Jul 27 10:19:06 2017
+# Process ID: 15156
+# Current directory: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware_Vivado_Project/redpitaya.sim/sim_1/behav
+# Command line: wbtcv.exe -mode batch -source D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware_Vivado_Project/redpitaya.sim/sim_1/behav/xsim.dir/addr_packed_testbench_behav/webtalk/xsim_webtalk.tcl -notrace
+# Log file: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware_Vivado_Project/redpitaya.sim/sim_1/behav/webtalk.log
+# Journal file: D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware_Vivado_Project/redpitaya.sim/sim_1/behav\webtalk.jou
 #-----------------------------------------------------------
-source D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware -notrace
+source D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL_v2/Frequency-comb-DPLL-DPLL-python3/Firmware_Vivado_Project/redpitaya.sim/sim_1/behav/xsim.dir/addr_packed_testbench_behav/webtalk/xsim_webtalk.tcl -notrace

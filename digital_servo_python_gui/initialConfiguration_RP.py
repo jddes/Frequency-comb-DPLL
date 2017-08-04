@@ -289,15 +289,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.bSendDefaultValues  = self.qradio_reprogram.isChecked()
 #        self.bExternalClock = self.qradio_clk_external.isChecked()
 
-		
-		   
-
-		self.pushValueToFPGA = True
-		self.connectWithoutFPGA = False
-
-		
-
-		print(self.strSelectedIP)
+		#print(self.strSelectedIP)
 
 		if self.qradio_pushValue.isChecked() :
 			# connect to the selected RedPitaya.
@@ -305,7 +297,7 @@ class initialConfiguration(QtGui.QDialog):
 			if not self.strSelectedIP:
 				return
 			#self.dev.OpenTCPConnection(self.strSelectedIP)
-			print("About to connect")
+			#print("About to connect")
 			self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP)
 
 		elif self.qradio_existingRP.isChecked():
@@ -313,8 +305,8 @@ class initialConfiguration(QtGui.QDialog):
 			self.readSelectedFPGA()
 			if not self.strSelectedIP:
 				return
-			print("About to reconnect")
-			self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP)
+			#print("About to reconnect")
+			self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP) 
 
 		elif self.qradio_noRP.isChecked():
 			# Open the GUI without any RP
@@ -324,7 +316,7 @@ class initialConfiguration(QtGui.QDialog):
 			# self.strSelectedMAC = strMAC
 			# self.strSelectedSerial = strMAC.replace(':', '') # this is just for legacy compatibility, when we had actual serial numbers
 			# self.strSelectedIP = "192.168.0.150"
-			self.controller.stopCommunication()
+			self.controller.stopCommunication() #Call the function which kill the timers and call the fake socket
 
 
 		# close UDP discovery server:

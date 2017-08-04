@@ -108,7 +108,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #        self.output_controls = (True, True, True)
 #        self.initUI()
 		
-	def __init__(self, sl, strTitle, selected_ADC, output_controls, sp, custom_style_sheet, strFGPASerialNumber, bUpdateFPGA = True, bConnectedRP = True):
+	def __init__(self, sl, strTitle, selected_ADC, output_controls, sp, custom_style_sheet, strFGPASerialNumber):
 		super(XEM_GUI_MainWindow, self).__init__()
 		
 		self.strTitle = strTitle
@@ -120,7 +120,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.setObjectName('MainWindow')
 		self.setStyleSheet(custom_style_sheet)
 		self.strFGPASerialNumber = strFGPASerialNumber
-		self.bUpdateFPGA = bUpdateFPGA
 
 		self.state = 1
 
@@ -144,13 +143,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.foutput_residuals2     = open('%s\\residuals_optical_%s.bin'   % (strFolder, self.strFGPASerialNumber), 'wb')
 			self.foutput_residuals_time = open('%s\\residuals_time_%s.bin' % (strFolder, self.strFGPASerialNumber), 'wb', 0)   # the 0 means un-buffered writes
 		
-		self.initUI()
-		
-		if bConnectedRP:
-			if self.bUpdateFPGA:
-				self.pushDefaultValues()
-			else:
-				self.getValues()		
+		self.initUI()	
 
 		
 #    def reject(self):
@@ -1692,14 +1685,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		
 	def initSL(self):
+		# Old function to start the GUI communication
 #        self.sl = SuperLaserLand_JD2()
 #        self.sl.open()
 		print("initSL()")
 
 		self.loadParameters()
 		
+		bUpdateFPGA = True
 		# Send values to FPGA
-		if self.bUpdateFPGA == True:
+		if bUpdateFPGA == True:
 			self.setVCOFreq_event()
 			self.setVCOGain_event()
 			# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway

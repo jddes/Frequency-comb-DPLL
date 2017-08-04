@@ -22,7 +22,7 @@ from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 
 class ConfigRPSettingsUI(Qt.QWidget):
 	"""docstring for ConfigRP"""
-	def __init__(self, sl, sp, controller, custom_style_sheet='', custom_shorthand='', bUpdateFPGA = True, bConnectedRP = True):
+	def __init__(self, sl, sp, controller, custom_style_sheet='', custom_shorthand=''):
 		super(ConfigRPSettingsUI, self).__init__()  
 		print('ConfigRPSettingsUI::__init(): Entering')		
 		self.sl = weakref.proxy(sl)
@@ -31,19 +31,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setStyleSheet(custom_style_sheet)
 		self.custom_shorthand = custom_shorthand
 
-		self.controller = controller
+		self.controller = controller #link to the top class
 
 		self.initUI()
 		self.loadParameters()
-		self.state = 1
-		#bUpdateFPGA = False
-		if bConnectedRP:
-			if bUpdateFPGA == True:
-				self.pushValues()
-			else:
-				self.getValues()
 
 	def loadParameters(self):
+		# Load the default parameters from the selected xml file (select by the devices_data dictionnary in the controller class)
 		fan_state = int((self.sp.getValue('RP_settings', "Fan_state")))
 		mux_pll2 = int((self.sp.getValue('RP_settings', "PLL2_connection")))
 		mux_vco = int((self.sp.getValue('VCO_settings', "VCO_connection")))
@@ -79,16 +73,20 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 
 	def pushDefaultValues(self):
+		# Push the values from the xml file to the red pitaya (load + send)
 		self.loadParameters()
 		self.pushValues()
 
 	def pushValues(self):
+		# Send the values in the different fields to the RP
 		self.mux_vco_Action()
 		self.mux_pll2_Action()
 		self.setInternalVCO_amplitude()
 		self.setFan()
 
 	def getValues(self):
+		#get value from the memory of the red pitaya 
+
 		#get value for the VCO connection
 		mux_vco = self.sl.get_mux_vco()
 		if mux_vco == 1:
@@ -276,29 +274,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 
 	def communication_menu(self):
-		# if self.state == 1 : 
-		# 	self.sl.dev.CloseTCPConnection()
-		# 	self.state = 0
-		# 	self.qbtn_2.blockSignals(True)
-		# 	self.qbtn_2.setText("Reconnect to RP")
-		# 	self.qbtn_2.blockSignals(False)
-		# elif self.state == 0:
-		# 	self.sl.dev.OpenTCPConnection('192.168.0.150')
-		# 	self.state = 1
-		# 	self.qbtn_2.blockSignals(True)
-		# 	self.qbtn_2.setText("Disconnect from RP")
-		# 	self.qbtn_2.blockSignals(False)
-
-		# self.sl.dev.CloseTCPConnection()
-		#print("Trying")
-		#self.controller.startCommunication()
+		# Open the initial menu in which we select the RP and if we want to reconnect to one. We can open a new connection without closing the GUI
 		self.controller.connectionGUI()
 		
-		
-
 
 	def center(self):
-				
 		qr = self.frameGeometry()
 		cp = QtGui.QDesktopWidget().availableGeometry().center()
 		qr.moveCenter(cp)
@@ -307,6 +287,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 
 	def setFan(self):
+		# Set the output of 2 IO pins (0 or 3.3V) for the activation of the fan
 		self.sl.setFan(self.qradio_fan_on.isChecked())
 
 	def mux_vco_Action(self):

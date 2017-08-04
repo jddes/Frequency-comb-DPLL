@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Fri Jun 30 16:29:56 2017
+| Date         : Tue Jul 04 16:23:00 2017
 | Host         : DESKTOP-OULANE9 running 64-bit major release  (build 9200)
 | Command      : report_utilization -file FIFO_addr_packed_utilization_synth.rpt -pb FIFO_addr_packed_utilization_synth.pb
 | Design       : FIFO_addr_packed
