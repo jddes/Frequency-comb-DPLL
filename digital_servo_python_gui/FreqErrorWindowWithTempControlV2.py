@@ -58,8 +58,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 		self.last_update_freq = time.clock()
 		self.initUI()
 		self.openOutputFiles()
-
-		self.state = 1
 		
 
 
@@ -88,6 +86,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 		self.startTimers()
 
 	def pushActualValues(self):
+		# Not use for the moment
 		self.chkTriangular_checked()
 		self.initBuffer()
 		# Start timer which grabs data
