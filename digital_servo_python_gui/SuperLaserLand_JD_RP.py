@@ -2425,8 +2425,8 @@ class SuperLaserLand_JD_RP:
 	def set_ddc_filter_select_register(self):
 		if self.bVerbose == True:
 			print('set_ddc_filter_select_register')
+
 			
-		
 		# takes the internal states and dumps them to the fpga:
 		register_value = self.ddc0_filter_select + (self.ddc1_filter_select<<2) + (self.residuals0_phase_or_freq<<4) + (self.residuals1_phase_or_freq<<5)
 		self.send_bus_cmd_16bits(self.BUS_ADDR_ddc_filter_select, register_value)
@@ -2441,8 +2441,8 @@ class SuperLaserLand_JD_RP:
 			print('get_ddc_filter_select')
 
 		data = self.read_RAM_dpll_wrapper(self.BUS_ADDR_ddc_filter_select)
-		self.ddc0_filter_select = data%(2**2)
-		self.ddc1_filter_select = (data - self.ddc0_filter_select)/(2**2)
+		self.ddc0_filter_select = int(data%(2**2))
+		self.ddc1_filter_select = int((data - self.ddc0_filter_select)/(2**2))
 
 		return (self.ddc1_filter_select, self.ddc0_filter_select)
 
@@ -2451,8 +2451,8 @@ class SuperLaserLand_JD_RP:
 			print('get_ddc_angle_select')
 
 		data = self.read_RAM_dpll_wrapper(self.BUS_ADDR_ddc_angle_select)
-		self.ddc0_angle_select = data%(2**4)
-		self.ddc1_angle_select = (data - self.ddc0_angle_select)/(2**4)
+		self.ddc0_angle_select = int(data%(2**4))
+		self.ddc1_angle_select = int((data - self.ddc0_angle_select)/(2**4))
 
 		return (self.ddc1_angle_select, self.ddc0_angle_select)
 		
