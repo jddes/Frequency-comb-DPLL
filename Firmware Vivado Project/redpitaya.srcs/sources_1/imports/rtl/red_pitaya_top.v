@@ -931,8 +931,31 @@ red_pitaya_scope i_scope (
 //  Daisy chain
 //  simple communication module
 
-assign daisy_p_o = 1'bz;
-assign daisy_n_o = 1'bz;
+reg [3-1:0] daisy_counter;
+
+wire clk_out_10;
+
+always @(posedge adc_clk) begin
+  if (adc_rstn == 1'b0) begin
+    daisy_counter <= 3'h0;
+  end
+  else begin
+    daisy_counter <= daisy_counter + 3'h1;
+  end
+end
+
+clk_10MHz_sync 
+(// Clock in ports
+  .clk_in1    ( adc_clk   ),
+  // Clock out ports
+  .clk_out1   (clk_out_10 ),
+  // Status and control signals
+  .locked     (           )
+ );
+
+
+assign daisy_p_o = {clk_out_10, 1'bz};  //Important : if you want to use only one of the signals (p or n), terminate the other one with a 50 Ohm. To do so
+assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SMA connector at the end (one for the "p" and one for the "n" signal).
 
 endmodule
 

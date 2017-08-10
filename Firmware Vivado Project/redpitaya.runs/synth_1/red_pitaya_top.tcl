@@ -31,6 +31,8 @@ add_files -quiet {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado
 set_property used_in_implementation false [get_files {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp}}]
 add_files -quiet {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}
 set_property used_in_implementation false [get_files {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}]
+add_files -quiet {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/clk_10MHz_sync_synth_1/clk_10MHz_sync.dcp}}
+set_property used_in_implementation false [get_files {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/clk_10MHz_sync_synth_1/clk_10MHz_sync.dcp}}]
 read_ip {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/LO_DDS/LO_DDS.xci}}
 set_property used_in_implementation false [get_files -all {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/LO_DDS/LO_DDS.dcp}}]
 set_property used_in_implementation false [get_files -all {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/LO_DDS/LO_DDS_ooc.xdc}}]

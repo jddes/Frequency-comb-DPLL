@@ -72,6 +72,8 @@ set rc [catch {
   set_property netlist_only true [get_files {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/fifo_generator_0_synth_1/fifo_generator_0.dcp}}]
   add_files -quiet {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}
   set_property netlist_only true [get_files {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/FIFO_addr_packed_synth_1/FIFO_addr_packed.dcp}}]
+  add_files -quiet {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/clk_10MHz_sync_synth_1/clk_10MHz_sync.dcp}}
+  set_property netlist_only true [get_files {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/clk_10MHz_sync_synth_1/clk_10MHz_sync.dcp}}]
   read_xdc -prop_thru_buffers -ref system_proc_sys_reset_0 {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc}}
   set_property processing_order EARLY [get_files {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc}}]
   read_xdc -ref system_proc_sys_reset_0 {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc}}
@@ -102,6 +104,12 @@ set rc [catch {
   set_property processing_order EARLY [get_files {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_ooc.xdc}}]
   read_xdc -ref FIFO_addr_packed -cells U0 {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc}}
   set_property processing_order EARLY [get_files {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed/FIFO_addr_packed.xdc}}]
+  read_xdc -mode out_of_context -ref clk_10MHz_sync -cells inst {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync_ooc.xdc}}
+  set_property processing_order EARLY [get_files {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync_ooc.xdc}}]
+  read_xdc -prop_thru_buffers -ref clk_10MHz_sync -cells inst {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync_board.xdc}}
+  set_property processing_order EARLY [get_files {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync_board.xdc}}]
+  read_xdc -ref clk_10MHz_sync -cells inst {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync.xdc}}
+  set_property processing_order EARLY [get_files {{c:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync.xdc}}]
   read_xdc {{C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.srcs/constrs_1/imports/sdc/red_pitaya.xdc}}
   link_design -top red_pitaya_top -part xc7z010clg400-1
   close_msg_db -file init_design.pb

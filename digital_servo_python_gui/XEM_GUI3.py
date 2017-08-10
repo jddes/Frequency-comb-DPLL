@@ -27,6 +27,8 @@ from DisplayDividerAndResidualsStreamingSettingsWindow import DisplayDividerAndR
 
 from ConfigurationRPSettingsUI import ConfigRPSettingsUI
 
+from devicesData import devicesData
+
 import time
 
 
@@ -52,29 +54,32 @@ class controller(object):
 	def updateDeviceData(self):
 		# Hardcoded dictionnary containing the known Red Pitaya
 		# TO DO : xml file, user can add RP from the GUI?
+		self.devices_data = {}
+		devices_xml = devicesData("devices_data.xml")
+		self.devices_data = devices_xml.updateDictionnary(self.devices_data)
 
 		# Specify the mapping between the MAC addresses (which are used as a form of serial numbers) and the box data
-		self.devices_data = {}
-		self.devices_data['002632f016dc'] = {'color': '#E37405',
-							'name': 'Red Pitaya 0',
-							'shorthand': 'RP 0',
-							'config file': 'system_parameters_RP_1.xml',
-							#'port': 60002
-							}
+		# self.devices_data = {}
+		# self.devices_data['002632f016dc'] = {'color': '#E37405',
+		# 					'name': 'Red Pitaya 0',
+		# 					'shorthand': 'RP 0',
+		# 					'config file': 'system_parameters_RP_1.xml',
+		# 					#'port': 60002
+		# 					}
 							
-		self.devices_data['002632f03cc2'] = {'color': '#811CC9',
-							'name': 'RP Comb 1',
-							'shorthand': 'RPC 1',
-							'config file': 'system_parameters_RP_C1.xml',
-							#'port': 60002
-							}
+		# self.devices_data['002632f03cc2'] = {'color': '#811CC9',
+		# 					'name': 'RP Comb 1',
+		# 					'shorthand': 'RPC 1',
+		# 					'config file': 'system_parameters_RP_C1.xml',
+		# 					#'port': 60002
+		# 					}
 
-		self.devices_data['002632f03d5b'] = {'color': '#1CC981',
-							'name': 'RP Comb 2',
-							'shorthand': 'RPC 2',
-							'config file': 'system_parameters_RP_C2.xml',
-							#'port': 60002
-							}
+		# self.devices_data['002632f03d5b'] = {'color': '#1CC981',
+		# 					'name': 'RP Comb 2',
+		# 					'shorthand': 'RPC 2',
+		# 					'config file': 'system_parameters_RP_C2.xml',
+		# 					#'port': 60002
+		# 					}
 		
 	#    serial_to_color_mapping = {}
 	#    serial_to_color_mapping['000000054R'] = '#1CC981'

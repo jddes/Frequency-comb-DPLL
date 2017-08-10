@@ -103,7 +103,42 @@ BEGIN
 			data_input <= std_logic_vector(to_signed(0, data_input'length));	
 		wait for clk_period*100;
 		wait until rising_edge(clk);
-			data_input <= std_logic_vector(to_signed(999, data_input'length));
+			data_input <= std_logic_vector(to_signed(123456, data_input'length));
+        
+         wait for clk_period*100;
+            filter_select <= "01";
+         wait for clk_period*10;
+           wait until rising_edge(clk);
+               data_input <= std_logic_vector(to_signed(1000, data_input'length));
+           wait until rising_edge(clk);
+               data_input <= std_logic_vector(to_signed(0, data_input'length));        
+           wait for clk_period*100;
+           wait until rising_edge(clk);
+               data_input <= std_logic_vector(to_signed(1e3, data_input'length));
+           wait for clk_period*100;
+           wait until rising_edge(clk);
+               data_input <= std_logic_vector(to_signed(0, data_input'length));    
+           wait for clk_period*100;
+           wait until rising_edge(clk);
+               data_input <= std_logic_vector(to_signed(123456, data_input'length));
+               
+               
+           wait for clk_period*100;
+               filter_select <= "10";
+            wait for clk_period*10;
+              wait until rising_edge(clk);
+                  data_input <= std_logic_vector(to_signed(1000, data_input'length));
+              wait until rising_edge(clk);
+                  data_input <= std_logic_vector(to_signed(0, data_input'length));        
+              wait for clk_period*100;
+              wait until rising_edge(clk);
+                  data_input <= std_logic_vector(to_signed(1e3, data_input'length));
+              wait for clk_period*100;
+              wait until rising_edge(clk);
+                  data_input <= std_logic_vector(to_signed(0, data_input'length));    
+              wait for clk_period*100;
+              wait until rising_edge(clk);
+                  data_input <= std_logic_vector(to_signed(123456, data_input'length));
       -- insert stimulus here 
 
       wait;
