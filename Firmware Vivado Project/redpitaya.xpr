@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="10" Path="C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.xpr">
+<Project Version="7" Minor="10" Path="D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="55fbcb833fab42aea5d71afd7d8d1644"/>
@@ -165,24 +165,18 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system_bd.tcl"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.hwdef"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xadc_0/system_xadc_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system_bd.tcl"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system.hwh"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="system_ooc.xdc"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.v"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system.hwh"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xadc_0/system_xadc_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_protocol_converter_0_0/system_axi_protocol_converter_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xlconstant_0/system_xlconstant_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_processing_system7_0/system_processing_system7_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_protocol_converter_0_0/system_axi_protocol_converter_0_0.xci"/>
       </File>
       <File Path="$PSRCDIR/sources_1/simple_dualport_ram_with_init.vhd">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1.vhd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -327,6 +321,30 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1_async.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pwm.sv">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pwm.sv"/>
+          <Attr Name="ImportTime" Val="1453373286"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_ams.v">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_ams.v"/>
+          <Attr Name="ImportTime" Val="1453373286"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_hk.v">
         <FileInfo>
           <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_hk.v"/>
@@ -397,6 +415,13 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1.vhd">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/output_multiplexer.vhd">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -459,16 +484,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pwm.sv">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pwm.sv"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pid.v">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -483,16 +498,6 @@
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_asg.v"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_ams.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_ams.v"/>
           <Attr Name="ImportTime" Val="1453373286"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -1208,18 +1213,6 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync.xml"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync.veo"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_ooc.xdc"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync.v"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync.xdc"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="doc/clk_wiz_v5_2_changelog.txt"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_clk_wiz.v"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_board.xdc"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_sim_netlist.vhdl"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_sim_netlist.v"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_stub.vhdl"/>
-        <CompFileExtendedInfo CompFileName="clk_10MHz_sync.xci" FileRelPathName="clk_10MHz_sync_stub.v"/>
       </File>
       <Config>
         <Option Name="TopModule" Val="clk_10MHz_sync"/>
@@ -1324,9 +1317,7 @@
     </Run>
     <Run Id="clk_10MHz_sync_synth_1" Type="Ft3:Synth" SrcSet="clk_10MHz_sync" Part="xc7z010clg400-1" ConstrsSet="clk_10MHz_sync" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/clk_10MHz_sync_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
@@ -1474,9 +1465,7 @@
     </Run>
     <Run Id="clk_10MHz_sync_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="clk_10MHz_sync" Description="Vivado Implementation Defaults" SynthRun="clk_10MHz_sync_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015">
-          <Desc>Vivado Implementation Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>

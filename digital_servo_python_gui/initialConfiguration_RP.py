@@ -139,7 +139,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.qradio_pushValue = Qt.QRadioButton('Push default values to Red Pitaya')
 		self.qradio_existingRP = Qt.QRadioButton('Reconnect to an already running Red Pitaya')
 		self.qradio_noRP = Qt.QRadioButton('Open the GUI without any Red Pitaya')
-		self.qradio_noRP.setChecked(True)
+		self.qradio_existingRP.setChecked(True)
 
 		gridConnection.addWidget(self.qradio_pushValue,		0, 0)
 		gridConnection.addWidget(self.qradio_existingRP, 	0, 1)
@@ -213,6 +213,7 @@ class initialConfiguration(QtGui.QDialog):
 		# build the string that we will display to the user in the combo box:
 		strDisplay = ''
 		#print('MAC_to_display_string: %s, %s' % (strMAC, strIP))
+		#print(self.devices_data)
 
 		try:
 			box_name = self.devices_data[strMAC.replace(':', '')]['name']
@@ -380,7 +381,8 @@ class initialConfiguration(QtGui.QDialog):
 		self.close()
 		
 	def closeEvent(self, e):
-#        print('close')
+		print('close')
+		del self.udp_discovery
 		return
 
 def main():

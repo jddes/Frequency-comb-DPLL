@@ -29,7 +29,7 @@ class SLLSystemParameters():
         
         # Default values for all the parameters:
         self.root.append(ET.Element('Reference_frequency', DDC0='31.25e6', DDC1='31.25e6'))
-        self.root.append(ET.Element('Beat_frequency_modulation_range', DAC0='2e8', DAC1='0.5e6', DAC2='9e6'))
+        self.root.append(ET.Element('VCO gain', DAC0='2e8', DAC1='0.5e6', DAC2='9e6'))
         self.root.append(ET.Element('Output_limits_low', DAC0='-1.0', DAC1='-0', DAC2='0'))
         self.root.append(ET.Element('Output_limits_high', DAC0='1.0', DAC1='1', DAC2='55'))
         self.root.append(ET.Element('Input_Output_gain', ADC0='1', ADC1='1', DAC0='1', DAC1='1'))

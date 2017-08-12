@@ -14,12 +14,9 @@ import numpy as np
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
-#from FreqErrorWindow import FreqErrorWindow
 from FreqErrorWindowWithTempControlV2 import FreqErrorWindowWithTempControlV2
-#from DisplayPhaseResponseWindow import DisplayPhaseResponseWindow
 from initialConfiguration_RP import initialConfiguration
 from SLLSystemParameters import SLLSystemParameters
-from SLLConfigurationWindow import SLLConfigurationWindow
 
 from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
 
@@ -193,7 +190,7 @@ class controller(object):
 		# 	print("Push")
 		# 	bTriggerEvents = True
 		# 	bConnectedRP = True
-		# 	self.updateDefaultValues(self.initial_config.strSelectedSerial)
+		# 	self.loadDefaultValueFromConfigFile(self.initial_config.strSelectedSerial)
 		# elif self.initial_config.qradio_existingRP.isChecked():
 		# 	print("Reconnection")
 		# 	bTriggerEvents = False
@@ -427,7 +424,7 @@ class controller(object):
 			print("XEM_GUI3.py: Exception during app.exec_()")
 
 
-	def updateDefaultValues(self, strSelectedSerial):
+	def loadDefaultValueFromConfigFile(self, strSelectedSerial):
 		try:
 			# custom_config_file = self.devices_data[self.initial_config.strSelectedSerial]['config file']
 			custom_config_file = self.devices_data[strSelectedSerial]['config file']
@@ -484,7 +481,7 @@ class controller(object):
 		self.sl.dev.OpenTCPConnection(ip_addr)
 		# Now we just need to reset the frontend to make sure we start everything in a nice state
 		self.sl.resetFrontend()
-		self.updateDefaultValues(strSelectedSerial)
+		self.loadDefaultValueFromConfigFile(strSelectedSerial)
 		
 		
 		self.xem_gui_mainwindow2.pushDefaultValues()

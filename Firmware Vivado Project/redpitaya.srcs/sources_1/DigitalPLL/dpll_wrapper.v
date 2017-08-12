@@ -696,7 +696,7 @@ parallel_bus_register_mux_pll1  (
  .update_flag                   (                           )
 );
 
-multiplexer_3to1 loop_filters_1_mux (
+multiplexer_3to1_async loop_filters_1_mux (
  .clk                               (clk1                       ),
  .selector_mux                      (loop_filter_1_mux_selector ),
  .in0_mux                           (DDC1_output                ), 

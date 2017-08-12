@@ -121,7 +121,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.setStyleSheet(custom_style_sheet)
 		self.strFGPASerialNumber = strFGPASerialNumber
 
-		self.state = 1
+		
 
 		# For the crash monitor
 		self.crash_number = 0
@@ -282,14 +282,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				if k == 0 or k == 1:
 					self.qloop_filters[k].kc = VCO_gain_in_counts_per_counts
 					self.qloop_filters[k].checkFirmwareLimits()
-					self.qloop_filters[k].updateGraph()
 					self.qloop_filters[k].updateFilterSettings()
+					self.qloop_filters[k].updateGraph()
 				elif k == 2:
 					# DAC 2 loop settings are controlled by the same widget as DAC1
 					self.qloop_filters[1].kc_dac2 = VCO_gain_in_counts_per_counts
 					self.qloop_filters[1].checkFirmwareLimits()
-					self.qloop_filters[1].updateGraph()
 					self.qloop_filters[1].updateFilterSettings()
+					self.qloop_filters[1].updateGraph()
 
 				self.sl.save_openLoop_gain(k, VCO_gain_in_counts_per_counts) #Save the value of the open-loop gain in the FPGA to allow reconnection (usefull to read Loop-Filter gain value)
 				
@@ -402,7 +402,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 	def refreshChk_event(self):
 #        print('refreshChk_event()')
-		if self.qchk_refresh.isChecked() and True:
+		if self.qchk_refresh.isChecked():
 			# We are doing a not running->running transition
 			try:
 #            if True:
@@ -679,7 +679,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		bLock = self.qloop_filters[self.selected_ADC].qchk_lock.isChecked()
 		self.qchk_lock.setChecked(bLock)
 		if bLock:
-			#We are reconnecting to a RP which have a looked loop-filter
+			#We are reconnecting to a RP which has a locked loop filter
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: green')            
 		else:
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
@@ -800,7 +800,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 						self.sl.wait_for_write()
 						(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 	#                    print(np.mean(samples_out))
-						current_dac_offset_in_counts = np.mean(samples_out)	#*2**4 # The DAC is actually 20 bits, but only the 16 MSBs are sent to the DDR2 logger, which amounts to dividing the DAC counts by 2**4
+						current_dac_offset_in_counts = np.mean(samples_out)
 						kDAC = 1
 						
 					# Read the current manual offset value:
@@ -1609,15 +1609,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		
 	def loadParameters(self):                                             
-		#print('loadParameters()')
-#        self.root.append(Element('Reference_frequency', DDC0='5e6', DDC1='5e6'))
-#        self.root.append(Element('Beat_frequency_modulation_range', DAC0='20e9', DAC1='5e6', DAC2='600e6'))
-#
-#        strDDC = 'DDC{:01d}'.format(self.selected_ADC)
-#        ref_freq = float(self.sp.getValue('Reference_frequency', strDDC))
-		
+
 		# Update the values in the UI to reflect the internal values:
-		# TODO...
 
 		# Get values from xml file
 		for k in range(3):
@@ -1631,7 +1624,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 				# Get dac gain from the system parameters object and set it in the UI:
 				strDAC = 'DAC{:01d}'.format(k)
-				str_VCO_gain = (self.sp.getValue('Beat_frequency_modulation_range', strDAC))
+				str_VCO_gain = (self.sp.getValue('VCO_gain', strDAC))
 				# print('before calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
 				self.qedit_vco_gain[k].blockSignals(True)
 				self.qedit_vco_gain[k].setText(str_VCO_gain)

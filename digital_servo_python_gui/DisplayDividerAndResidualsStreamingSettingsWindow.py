@@ -470,9 +470,9 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 
 		# Wideband/narrowband DDC0:
 		self.qlbl_ddc0 = Qt.QLabel('DDC 0 filter BW:')
-		self.qchk_Wideband0 = Qt.QRadioButton('Wideband (25 MHz)')
-		self.qchk_Narrowband0 = Qt.QRadioButton('Narrowband (6 MHz)')
-		self.qchk_WidebandFIR0 = Qt.QRadioButton('Wideband FIR (50 MHz)')
+		self.qchk_Wideband0 = Qt.QRadioButton('Wideband (31 MHz)')
+		self.qchk_Narrowband0 = Qt.QRadioButton('Narrowband (7.5 MHz)')
+		self.qchk_WidebandFIR0 = Qt.QRadioButton('Wideband FIR (62 MHz)')
 		self.qddc0_group = Qt.QButtonGroup(self)
 		self.qddc0_group.addButton(self.qchk_Wideband0)
 		self.qddc0_group.addButton(self.qchk_Narrowband0)

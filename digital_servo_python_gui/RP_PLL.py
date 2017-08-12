@@ -90,6 +90,7 @@ class RP_PLL_device():
             # send actual file
             self.sock.sendall(file_data.tobytes())
         except:
+            print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
             self.disconnectEvent()
     # Function used to send a shell command to the Red Pitaya:
     def send_shell_command(self, strCommand):
@@ -101,6 +102,7 @@ class RP_PLL_device():
             # send filename
             self.sock.sendall(strCommand.encode('ascii'))
         except:
+            print("RP_PLL.py: send_shell_command(): exception while sending command!")
             self.disconnectEvent()
     # Function used to reboot the monitor-tcp program
     def send_reboot_command(self):
@@ -110,6 +112,7 @@ class RP_PLL_device():
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_REBOOT_MONITOR, 0, 0)
             self.sock.sendall(packet_to_send)
         except:
+            print("RP_PLL.py: send_reboot_command(): exception while sending command!")
             self.disconnectEvent()
 
     #######################################################

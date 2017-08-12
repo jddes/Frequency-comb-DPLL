@@ -62,7 +62,7 @@ class LoopFiltersUI(Qt.QWidget):
 
 
 	def pushValues(self):
-		x=1
+		pass
 
 	def getValues(self):
 		self.getFilterSettings()
@@ -141,15 +141,15 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		
 		self.qchk_lock = Qt.QCheckBox('Lock On')
-		self.qchk_lock.clicked.connect(self.updateGraph)
+		self.qchk_lock.clicked.connect(self.textboxChanged)
 		self.qchk_lock.setEnabled(self.bDisplayLockChkBox)
 			
 		
 		self.qchk_kp = Qt.QCheckBox('Kp On')
-		self.qchk_kp.clicked.connect(self.updateGraph)
+		self.qchk_kp.clicked.connect(self.textboxChanged)
 		
 		self.qchk_kd = Qt.QCheckBox('Kd On')
-		self.qchk_kd.clicked.connect(self.updateGraph)
+		self.qchk_kd.clicked.connect(self.textboxChanged)
 		
 		# Labels and controls to show the settings:
 		self.qlabel_kp = Qt.QLabel('Kp:')
@@ -176,7 +176,7 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		self.qchk_bKpCrossing = Qt.QCheckBox('fi refer to kp crossover')
 		self.qchk_bKpCrossing.setChecked(False)
-		self.qchk_bKpCrossing.clicked.connect(self.updateGraph)
+		self.qchk_bKpCrossing.clicked.connect(self.textboxChanged)
 		
 		self.qchk_lockSlider = Qt.QCheckBox('Lock D sliders')
 		self.qchk_lockSlider.setChecked(False)
@@ -397,8 +397,8 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qedit_kp.blockSignals(False)
 		
 		self.checkFirmwareLimits()
-		self.updateGraph()
 		self.updateFilterSettings()
+		self.updateGraph()
 		
 	def fiSliderEvent(self):
 #        print('fiSliderEvent()')
@@ -412,9 +412,8 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qedit_fi.blockSignals(False)
 		
 		self.checkFirmwareLimits()
-		self.updateGraph()
 		self.updateFilterSettings()
-		
+		self.updateGraph()
 		
 	def fiiSliderEvent(self):
 #        print('fiiSliderEvent()')
@@ -427,9 +426,8 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qedit_fii.blockSignals(False)
 		
 		self.checkFirmwareLimits()
-		self.updateGraph()
 		self.updateFilterSettings()
-		
+		self.updateGraph()
 		
 	def fdSliderEvent(self):
 #        print('fiiSliderEvent()')
@@ -442,9 +440,9 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		if (self.slider_locked == True and self.slider_inhibit == True) or self.slider_locked == False:
 			self.checkFirmwareLimits()
-			self.updateGraph()
 			self.updateFilterSettings()
-		
+			self.updateGraph()
+
 		if self.slider_locked == True and self.slider_inhibit == False:
 			self.slider_inhibit = True
 			self.qslider_fdf.setValue(int(float(sliderValue)+100*np.log10(self.slider_ratio)))
@@ -462,8 +460,8 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		if (self.slider_locked == True and self.slider_inhibit == True) or self.slider_locked == False:
 			self.checkFirmwareLimits()
-			self.updateGraph()
 			self.updateFilterSettings()
+			self.updateGraph()
 		
 		if self.slider_locked == True and self.slider_inhibit == False:
 			self.slider_inhibit = True
@@ -497,8 +495,8 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		# Update the display:
 		self.checkFirmwareLimits()
-		self.updateGraph()
 		self.updateFilterSettings()
+		self.updateGraph()
 
 	def textboxChanged_withoutUpdateFPGA(self):
 #        print('textboxChanged()')

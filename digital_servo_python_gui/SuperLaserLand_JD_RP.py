@@ -1433,7 +1433,7 @@ class SuperLaserLand_JD_RP:
 			self.log_file.write('set_ddc0_ref_freq()\n')
 		
 		self.ddc0_frequency_in_int = int(round(2**48 * frequency_in_hz/self.fs))
-		self.ddc0_frequency_in_int = self.ddc0_frequency_in_int % (1 << 48) # modulo 2**48 # Give number like a signed int of 47 bit + signed bit
+		self.ddc0_frequency_in_int = self.ddc0_frequency_in_int % (1 << 48) # modulo 2**48
 		self.ddc0_frequency_in_hz = self.ddc0_frequency_in_int/2.**48 * self.fs
 		frequency_in_int_bits15_to_0 = self.ddc0_frequency_in_int & 0xFFFF
 		frequency_in_int_bits31_to_16 = (self.ddc0_frequency_in_int & 0xFFFF0000) >> 16

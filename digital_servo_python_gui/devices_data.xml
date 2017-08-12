@@ -6,5 +6,6 @@
 	<Device_5 strSerial = "002632f052b7" color = "#333333" name = "Red Pitaya 2" shorthand = "RP 2"  config_file = "system_parameters_RP_Default.xml" />
 	<Device_6 strSerial = "002632f052c1" color = "#008080" name = "Red Pitaya 3" shorthand = "RP 3"  config_file = "system_parameters_RP_Default.xml" />
 	<Device_7 strSerial = "002632f052cb" color = "#35564A" name = "RP - Doppler" shorthand = "RPD 0" config_file = "system_parameters_RPD.xml" 		 />
+    <Device_8 strSerial = "002632f04895" color = "#B6E3E0" name = "RP - 8bits" shorthand = "RPD 8bits" config_file = "system_parameters_RP_8bits.xml"       />
 	<!-- For color, see http://www.color-hex.com/ or any other hex color ressource-->
 </devices_data>
