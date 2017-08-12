@@ -4226,3 +4226,1016 @@ INFO: [Synth 8-4471] merging register 'boxcar_2_pts_filter_inst3/in1_reg[15:0]' 
 WARNING: [Synth 8-3936] Found unconnected internal register 'boxcar_2_pts_filter_inst3/sum_register_reg' and it is trimmed from '17' to '16' bits. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/boxcar_2_pts_filter.vhd:54]
 INFO: [Synth 8-4471] merging register 'boxcar_2_pts_filter_inst3/in1_reg[15:0]' into 'boxcar_4_pts_filter_inst/in0_reg[15:0]' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/boxcar_2_pts_filter.vhd:51]
 WARNING: [Synth 8-3936] Found unconnected internal register 'boxcar_2_pts_filter_inst3/sum_register_reg' and it is trimmed from '17' to '16' bits. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/boxcar_2_pts_filter.vhd:54]
+INFO: [Synth 8-3936] Found unconnected internal register 'inst/gen_axilite.gen_b2s_conv.axilite_b2s/SI_REG/aw_pipe/m_payload_i_reg' and it is trimmed from '66' to '62' bits. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_register_slice_v2_1/hdl/verilog/axi_register_slice_v2_1_axic_register_slice.v:121]
+INFO: [Synth 8-3936] Found unconnected internal register 'inst/gen_axilite.gen_b2s_conv.axilite_b2s/SI_REG/ar_pipe/m_payload_i_reg' and it is trimmed from '66' to '62' bits. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_register_slice_v2_1/hdl/verilog/axi_register_slice_v2_1_axic_register_slice.v:121]
+INFO: [Synth 8-4471] merging register 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[15].GEN_POS_EDGE_DETECT.irpt_dly1_reg' into 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[14].GEN_POS_EDGE_DETECT.irpt_dly1_reg' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/interrupt_control_v2_01_a/hdl/src/vhdl/system_xadc_0_interrupt_control.vhd:638]
+INFO: [Synth 8-4471] merging register 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[15].GEN_POS_EDGE_DETECT.irpt_dly2_reg' into 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[14].GEN_POS_EDGE_DETECT.irpt_dly2_reg' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/interrupt_control_v2_01_a/hdl/src/vhdl/system_xadc_0_interrupt_control.vhd:639]
+INFO: [Synth 8-4471] merging register 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[16].GEN_POS_EDGE_DETECT.irpt_dly1_reg' into 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[14].GEN_POS_EDGE_DETECT.irpt_dly1_reg' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/interrupt_control_v2_01_a/hdl/src/vhdl/system_xadc_0_interrupt_control.vhd:638]
+INFO: [Synth 8-4471] merging register 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[16].GEN_POS_EDGE_DETECT.irpt_dly2_reg' into 'INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I/DO_IRPT_INPUT[14].GEN_POS_EDGE_DETECT.irpt_dly2_reg' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/interrupt_control_v2_01_a/hdl/src/vhdl/system_xadc_0_interrupt_control.vhd:639]
+INFO: [Synth 8-4471] merging register 'bus2ip_reset_active_high_reg' into 'AXI_LITE_IPIF_I/I_SLAVE_ATTACHMENT/rst_reg' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_xadc_0/system_xadc_0_axi_xadc.vhd:655]
+INFO: [Synth 8-5546] ROM "start_write" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "bWriting" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "FSM_state" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "led_o" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "digital_loop" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "exp_p_dat_o" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "exp_p_dir_o" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "exp_n_dat_o" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "exp_n_dir_o" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-4471] merging register 'sys_err_mux_reg' into 'internal_vco_inst/sys_err_reg' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/mux_internal_vco.vhd:154]
+INFO: [Synth 8-5546] ROM "internal_vco_inst/sys_rdata" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "internal_vco_inst/amplitude" won't be mapped to RAM because it is too sparse
+DSP Report: Generating DSP internal_vco_inst/ARG, operation Mode is: (C:0x4000)+(A*B)'.
+DSP Report: register internal_vco_inst/cos_times_amplitude_wide_reg is absorbed into DSP internal_vco_inst/ARG.
+DSP Report: operator internal_vco_inst/cos_times_amplitude_wide0 is absorbed into DSP internal_vco_inst/ARG.
+DSP Report: operator internal_vco_inst/ARG is absorbed into DSP internal_vco_inst/ARG.
+INFO: [Synth 8-4471] merging register 'r3_reg_reg[22:0]' into 'r3_reg_reg[22:0]' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_dfilt1.v:88]
+DSP Report: Generating DSP bb_mult, operation Mode is: A2*B.
+DSP Report: register cfg_bb_r_reg is absorbed into DSP bb_mult.
+DSP Report: operator bb_mult is absorbed into DSP bb_mult.
+DSP Report: Generating DSP r3_sum, operation Mode is: C'-A2*B2.
+DSP Report: register cfg_aa_r_reg is absorbed into DSP r3_sum.
+DSP Report: register r3_reg_reg is absorbed into DSP r3_sum.
+DSP Report: register C is absorbed into DSP r3_sum.
+DSP Report: operator r3_sum is absorbed into DSP r3_sum.
+DSP Report: operator aa_mult is absorbed into DSP r3_sum.
+DSP Report: Generating DSP r3_sum, operation Mode is: PCIN+A2:B2.
+DSP Report: register C is absorbed into DSP r3_sum.
+DSP Report: register A is absorbed into DSP r3_sum.
+DSP Report: operator r3_sum is absorbed into DSP r3_sum.
+DSP Report: Generating DSP pp_mult, operation Mode is: A2*B2.
+DSP Report: register r4_reg_reg is absorbed into DSP pp_mult.
+DSP Report: register cfg_pp_r_reg is absorbed into DSP pp_mult.
+DSP Report: operator pp_mult is absorbed into DSP pp_mult.
+DSP Report: Generating DSP kk_mult, operation Mode is: A2*BCIN''.
+DSP Report: register cfg_kk_r_reg is absorbed into DSP kk_mult.
+DSP Report: register r4_reg_r_reg is absorbed into DSP kk_mult.
+DSP Report: register r4_reg_rr_reg is absorbed into DSP kk_mult.
+DSP Report: operator kk_mult is absorbed into DSP kk_mult.
+INFO: [Synth 8-4471] merging register 'r3_reg_reg[22:0]' into 'r3_reg_reg[22:0]' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_dfilt1.v:88]
+DSP Report: Generating DSP bb_mult, operation Mode is: A2*B.
+DSP Report: register cfg_bb_r_reg is absorbed into DSP bb_mult.
+DSP Report: operator bb_mult is absorbed into DSP bb_mult.
+DSP Report: Generating DSP r3_sum, operation Mode is: C'-A2*B2.
+DSP Report: register cfg_aa_r_reg is absorbed into DSP r3_sum.
+DSP Report: register r3_reg_reg is absorbed into DSP r3_sum.
+DSP Report: register C is absorbed into DSP r3_sum.
+DSP Report: operator r3_sum is absorbed into DSP r3_sum.
+DSP Report: operator aa_mult is absorbed into DSP r3_sum.
+DSP Report: Generating DSP r3_sum, operation Mode is: PCIN+A2:B2.
+DSP Report: register C is absorbed into DSP r3_sum.
+DSP Report: register A is absorbed into DSP r3_sum.
+DSP Report: operator r3_sum is absorbed into DSP r3_sum.
+DSP Report: Generating DSP pp_mult, operation Mode is: A2*B2.
+DSP Report: register r4_reg_reg is absorbed into DSP pp_mult.
+DSP Report: register cfg_pp_r_reg is absorbed into DSP pp_mult.
+DSP Report: operator pp_mult is absorbed into DSP pp_mult.
+DSP Report: Generating DSP kk_mult, operation Mode is: A2*BCIN''.
+DSP Report: register cfg_kk_r_reg is absorbed into DSP kk_mult.
+DSP Report: register r4_reg_r_reg is absorbed into DSP kk_mult.
+DSP Report: register r4_reg_rr_reg is absorbed into DSP kk_mult.
+DSP Report: operator kk_mult is absorbed into DSP kk_mult.
+INFO: [Synth 8-5544] ROM "axi_a_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_a_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_a_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_a_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_b_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_b_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_b_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5544] ROM "axi_b_dat" won't be mapped to Block RAM because address size (2) smaller than threshold (5)
+INFO: [Synth 8-5546] ROM "adc_we_keep" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_dec" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_tresh" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_hyst" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_tresh" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_hyst" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_deb_len" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "ext_trig_dp" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "ext_trig_dn" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "asg_trig_dp" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "asg_trig_dn" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_dly" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_avg_en" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_filt_aa" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_filt_bb" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_filt_kk" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_filt_pp" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_filt_aa" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_filt_bb" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_filt_kk" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_filt_pp" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_axi_start" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_axi_stop" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_axi_dly" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_a_axi_en" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_axi_start" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_axi_stop" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_axi_dly" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "set_b_axi_en" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "dac_a_o" won't be mapped to RAM because it is too sparse
+INFO: [Synth 8-5546] ROM "dac_b_o" won't be mapped to RAM because it is too sparse
+INFO: [Common 17-14] Message 'Synth 8-5546' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+WARNING: [Synth 8-3917] design red_pitaya_top has port adc_clk_o[1] driven by constant 1
+WARNING: [Synth 8-3917] design red_pitaya_top has port adc_clk_o[0] driven by constant 0
+WARNING: [Synth 8-3917] design red_pitaya_top has port adc_cdcs_o driven by constant 1
+WARNING: [Synth 8-3917] design red_pitaya_top has port led_o[7] driven by constant 0
+WARNING: [Synth 8-3917] design red_pitaya_top has port led_o[3] driven by constant 0
+WARNING: [Synth 8-3917] design red_pitaya_top has port led_o[2] driven by constant 0
+WARNING: [Synth 8-3917] design red_pitaya_top has port led_o[1] driven by constant 0
+WARNING: [Synth 8-3917] design red_pitaya_top has port led_o[0] driven by constant 0
+WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_p_i[1]
+WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_p_i[0]
+WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_n_i[1]
+WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_n_i[0]
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:01:03 ; elapsed = 00:01:11 . Memory (MB): peak = 743.629 ; gain = 572.094
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:01:03 ; elapsed = 00:01:11 . Memory (MB): peak = 743.629 ; gain = 572.094
+
+Report RTL Partitions: 
++------+--------------------+------------+----------+
+|      |RTL Partition       |Replication |Instances |
++------+--------------------+------------+----------+
+|1     |dpll_wrapper__GB0   |           1|     26315|
+|2     |dpll_wrapper__GB1   |           1|     15935|
+|3     |dpll_wrapper__GB2   |           1|     17129|
+|4     |red_pitaya_top__GC0 |           1|     23261|
++------+--------------------+------------+----------+
+WARNING: [Synth 8-3936] Found unconnected internal register 'FSM_inst/ram_inst/read_data_internal_reg' and it is trimmed from '64' to '50' bits. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/simple_dualport_ram_with_init.vhd:81]
+INFO: [Synth 8-4652] Swapped enable and write-enable on 16 RAM instances of RAM ram_inst/RAM_reg to conserve power
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+
+Block RAM:
++--------------------+---------------------------+------------------------+---+---+------------------------+---+---+--------------+--------+--------+-----------------------------+
+|Module Name         | RTL Object                | PORT A (Depth x Width) | W | R | PORT B (Depth x Width) | W | R | OUT_REG      | RAMB18 | RAMB36 | Hierarchical Name           | 
++--------------------+---------------------------+------------------------+---+---+------------------------+---+---+--------------+--------+--------+-----------------------------+
+|red_pitaya_top__GC0 | FSM_inst/ram_inst/RAM_reg | 256 x 50(READ_FIRST)   | W |   | 256 x 50(WRITE_FIRST)  |   | R | Port A and B | 0      | 1      | addr_packed/extram__22      | 
+|red_pitaya_top__GC0 | ram_inst/RAM_reg          | 32 K x 16(READ_FIRST)  | W |   | 32 K x 16(WRITE_FIRST) |   | R | Port A and B | 0      | 16     | ram_data_logger/extram__24  | 
+|red_pitaya_top__GC0 | i_wr0/fifo_reg            | 256 x 64(READ_FIRST)   | W |   | 256 x 64(WRITE_FIRST)  |   | R | Port A and B | 0      | 1      | red_pitaya_scope/extram__26 | 
+|red_pitaya_top__GC0 | i_wr1/fifo_reg            | 256 x 64(READ_FIRST)   | W |   | 256 x 64(WRITE_FIRST)  |   | R | Port A and B | 0      | 1      | red_pitaya_scope/extram__28 | 
+|red_pitaya_top__GC0 | adc_a_buf_reg             | 16 K x 14(READ_FIRST)  | W |   | 16 K x 14(WRITE_FIRST) |   | R | Port A and B | 0      | 7      | red_pitaya_scope/extram__30 | 
+|red_pitaya_top__GC0 | adc_b_buf_reg             | 16 K x 14(READ_FIRST)  | W |   | 16 K x 14(WRITE_FIRST) |   | R | Port A and B | 0      | 7      | red_pitaya_scope/extram__32 | 
++--------------------+---------------------------+------------------------+---+---+------------------------+---+---+--------------+--------+--------+-----------------------------+
+
+Note: The table above shows the Block RAMs at the current stage of the synthesis flow. Some Block RAMs may be reimplemented as non Block RAM primitives later in the synthesis flow. Multiple instantiated Block RAMs are reported only once. "Hierarchical Name" reflects the Block RAM name as it appears in the hierarchical module and only part of it is displayed.
+Distributed RAM: 
++--------------------+---------------------------------------------------------------------------------+----------------+----------------------+---------------+----------------------------------+
+|Module Name         | RTL Object                                                                      | Inference      | Size (Depth x Width) | Primitives    | Hierarchical Name                | 
++--------------------+---------------------------------------------------------------------------------+----------------+----------------------+---------------+----------------------------------+
+|dpll_wrapper__GB1   | delay_inst/RAM_reg                                                              | Implied        | 8 x 10               | RAM32M x 2    | adjustable_boxcar_filter/ram__14 | 
+|dpll_wrapper__GB2   | ddc_frontend_lowpass_filter_inst_I/boxcar_filter_16_pts_inst/delay_inst/RAM_reg | Implied        | 32 x 18              | RAM32M x 3    | DDC_wideband_filters/ram__15     | 
+|dpll_wrapper__GB2   | ddc_frontend_lowpass_filter_inst_Q/boxcar_filter_16_pts_inst/delay_inst/RAM_reg | Implied        | 32 x 18              | RAM32M x 3    | DDC_wideband_filters/ram__16     | 
+|dpll_wrapper__GB2   | ddc_frontend_lowpass_filter_inst_I/boxcar_filter_16_pts_inst/delay_inst/RAM_reg | Implied        | 32 x 18              | RAM32M x 3    | DDC_wideband_filters/ram__17     | 
+|dpll_wrapper__GB2   | ddc_frontend_lowpass_filter_inst_Q/boxcar_filter_16_pts_inst/delay_inst/RAM_reg | Implied        | 32 x 18              | RAM32M x 3    | DDC_wideband_filters/ram__18     | 
+|red_pitaya_top__GC0 | axi_master[1]/axi_awfifo_reg                                                    | User Attribute | 16 x 37              | RAM32M x 7    | red_pitaya_ps/ram__20            | 
+|red_pitaya_top__GC0 | axi_master[1]/axi_wfifo_reg                                                     | User Attribute | 16 x 73              | RAM32M x 13   | red_pitaya_ps/ram__22            | 
+|red_pitaya_top__GC0 | axi_master[0]/axi_awfifo_reg                                                    | User Attribute | 16 x 37              | RAM32M x 7    | red_pitaya_ps/ram__24            | 
+|red_pitaya_top__GC0 | axi_master[0]/axi_wfifo_reg                                                     | User Attribute | 16 x 73              | RAM32M x 13   | red_pitaya_ps/ram__26            | 
++--------------------+---------------------------------------------------------------------------------+----------------+----------------------+---------------+----------------------------------+
+
+Note: The table above shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once. "Hierarchical Name" reflects the Distributed RAM name as it appears in the hierarchical module and only part of it is displayed.
+DSP:
++---------------------------------+-------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|Module Name                      | DSP Mapping       | Neg Edge Clk | A Size | B Size | C Size | D Size | P Size | AREG | BREG | CREG | DREG | ADREG | MREG | PREG | 
++---------------------------------+-------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+|system_identification_macc_behav | (A''*B'')'        | No           | 16     | 16     | 48     | 25     | 32     | 2    | 2    | 1    | 1    | 1     | 1    | 0    | 
+|system_identification_macc_behav | (A''*B'')'        | No           | 16     | 16     | 48     | 25     | 32     | 2    | 2    | 1    | 1    | 1     | 1    | 0    | 
+|IIR_LPF                          | (P+A2*B)'         | No           | 18     | 14     | 32     | 25     | 32     | 1    | 0    | 1    | 1    | 1     | 0    | 1    | 
+|PLL_loop_filters_with_saturation | (PCIN-A2:B2)'     | No           | 14     | 18     | 32     | -1     | 32     | 1    | 1    | 1    | 1    | 1     | 0    | 1    | 
+|IIR_LPF                          | (P+A2*B)'         | No           | 18     | 14     | 32     | 25     | 32     | 1    | 0    | 1    | 1    | 1     | 0    | 1    | 
+|PLL_loop_filters_with_saturation | (PCIN-A2:B2)'     | No           | 14     | 18     | 32     | -1     | 32     | 1    | 1    | 1    | 1    | 1     | 0    | 1    | 
+|internal_vco                     | (C:0x4000)+(A*B)' | No           | 16     | 16     | 16     | 25     | 32     | 0    | 0    | 0    | 1    | 1     | 1    | 0    | 
+|red_pitaya_dfilt1                | A2*B              | No           | 25     | 14     | 48     | 25     | 39     | 1    | 0    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | C'-A2*B2          | No           | 23     | 18     | 48     | 25     | 48     | 1    | 1    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | PCIN+A2:B2        | No           | 30     | 18     | 48     | -1     | 48     | 1    | 1    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | A2*B2             | No           | 25     | 15     | 48     | 25     | 40     | 1    | 1    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | A2*BCIN''         | No           | 25     | 15     | 48     | 25     | 40     | 1    | 2    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | A2*B              | No           | 25     | 14     | 48     | 25     | 39     | 1    | 0    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | C'-A2*B2          | No           | 23     | 18     | 48     | 25     | 48     | 1    | 1    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | PCIN+A2:B2        | No           | 30     | 18     | 48     | -1     | 48     | 1    | 1    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | A2*B2             | No           | 25     | 15     | 48     | 25     | 40     | 1    | 1    | 1    | 1    | 1     | 0    | 0    | 
+|red_pitaya_dfilt1                | A2*BCIN''         | No           | 25     | 15     | 48     | 25     | 40     | 1    | 2    | 1    | 1    | 1     | 0    | 0    | 
++---------------------------------+-------------------+--------------+--------+--------+--------+--------+--------+------+------+------+------+-------+------+------+
+
+Note: The table above shows the DSPs inferred at the current stage of the synthesis flow. Some DSP may be reimplemented as non DSP primitives later in the synthesis flow. Multiple instantiated DSPs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[0] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[1] '
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[1] )
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[11] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[12] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[12] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[13] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[13] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[14] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[14] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[15] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux67_reg[16] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[16] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] '
+INFO: [Synth 8-3333] propagating constant 1 across sequential element (dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] )
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[0] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[1] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[1] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[1] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[11] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[14] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[12] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[14] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[13] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[14] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[14] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[15] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux67_reg_reg[16] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg_reg[16] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg_reg[16] ' (FD) to 'dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[17] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[18] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[18] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[19] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[19] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[20] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[20] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac0_auxilary/\sum_register_reg[21] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[17] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[18] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[18] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[19] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[19] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[20] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[20] ' (FD) to 'dpll_wrapper_insti_0/output_summing_dac1_auxilary/\sum_register_reg[21] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[15] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[15] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[16] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[47] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[47] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[16] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[16] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[17] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[48] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[48] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[17] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[17] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[18] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[49] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[49] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[18] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[18] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[19] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[50] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[50] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[19] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[19] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[20] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[51] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[51] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[20] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[20] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[21] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[52] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[52] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[21] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[21] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[22] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[53] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[53] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[22] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[22] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[23] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[54] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[54] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[23] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[23] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[24] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[55] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[55] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[24] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[24] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[25] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[56] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[56] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[25] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[25] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[26] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[57] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[57] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[26] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[26] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[27] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[58] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[58] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[27] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[27] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[28] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[59] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[59] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[28] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[28] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[29] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[60] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[60] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[29] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[29] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[30] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[61] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[61] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[30] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC1_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[30] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\DAC0_out_reg_reg[31] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[62] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither1_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[62] ' (FDE) to 'dpll_wrapper_insti_0/registers_read_inst/\dither0_lockin_output_reg_reg[63] '
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_0/registers_read_inst/sys_err_reg)
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux23_reg[1] )
+INFO: [Synth 8-3333] propagating constant 1 across sequential element (dpll_wrapper_insti_0/multiplexer_NbitsxMsignals_to_Nbits_inst/\mux01_reg[16] )
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[62] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[61] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[60] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[59] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[58] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[57] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[56] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[55] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[54] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[53] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[52] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[51] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[50] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[49] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[48] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[47] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[31] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[30] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[29] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[28] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[27] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[26] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[25] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[24] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[23] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[22] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[21] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[20] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[19] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[18] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[17] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[16] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[15] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[14] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[13] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[12] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[11] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[10] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[9] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[8] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[7] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[6] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[5] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[4] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[3] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[2] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[1] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither0_lockin_output_reg_reg[0] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[62] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[61] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[60] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[59] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[58] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[57] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[56] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[55] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[54] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[53] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[52] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[51] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[50] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[49] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[48] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[47] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[31] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[30] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[29] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[28] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[27] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[26] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[25] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[24] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[23] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[22] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[21] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[20] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[19] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[18] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[17] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[16] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[15] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[14] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[13] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[12] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[11] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[10] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[9] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[8] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[7] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[6] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[5] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[4] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[3] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[2] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[1] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\dither1_lockin_output_reg_reg[0] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\DAC0_out_reg_reg[30] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\DAC0_out_reg_reg[29] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\DAC0_out_reg_reg[28] ) is unused and will be removed from module registers_read.
+WARNING: [Synth 8-3332] Sequential element (\DAC0_out_reg_reg[27] ) is unused and will be removed from module registers_read.
+INFO: [Common 17-14] Message 'Synth 8-3332' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[0] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[2] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\IIR_LPF_inst/data_in_int_reg[0] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\IIR_LPF_inst/data_in_int_reg[2] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[1] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[2] '
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[2] )
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[12] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[13] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\IIR_LPF_inst/data_in_int_reg[1] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[2] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\IIR_LPF_inst/data_in_int_reg[2] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[2] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL1_loop_filters/\IIR_LPF_inst/data_in_int_reg[12] ' (FD) to 'dpll_wrapper_insti_1/PLL1_loop_filters/\IIR_LPF_inst/data_in_int_reg[13] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[0] ' (FD) to 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[2] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL0_loop_filters/\IIR_LPF_inst/data_in_int_reg[0] ' (FD) to 'dpll_wrapper_insti_1/PLL0_loop_filters/\IIR_LPF_inst/data_in_int_reg[2] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[1] ' (FD) to 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[2] '
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[2] )
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[12] ' (FD) to 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[13] '
+INFO: [Synth 8-3886] merging instance 'dpll_wrapper_insti_1/PLL0_loop_filters/\IIR_LPF_inst/data_in_int_reg[1] ' (FD) to 'dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[2] '
+INFO: [Common 17-14] Message 'Synth 8-3886' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_1/PLL1_loop_filters/\d_in_filt_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_1/PLL0_loop_filters/\d_in_filt_reg[2] )
+CRITICAL WARNING: [Synth 8-3352] multi-driven net red_LED with 1st driver pin 'dpll_wrapper_insti_1/Status_LED_driver1/red_LED' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:193]
+CRITICAL WARNING: [Synth 8-3352] multi-driven net red_LED with 2nd driver pin 'GND' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:193]
+CRITICAL WARNING: [Synth 8-5559] multi-driven net red_LED is connected to constant driver, other driver is ignored [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:193]
+CRITICAL WARNING: [Synth 8-3352] multi-driven net green_LED with 1st driver pin 'dpll_wrapper_insti_1/Status_LED_driver1/green_LED' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:193]
+CRITICAL WARNING: [Synth 8-3352] multi-driven net green_LED with 2nd driver pin 'GND' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:193]
+CRITICAL WARNING: [Synth 8-5559] multi-driven net green_LED is connected to constant driver, other driver is ignored [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:193]
+CRITICAL WARNING: [Synth 8-3352] multi-driven net red_LED with 1st driver pin 'dpll_wrapper_insti_1/Status_LED_driver0/red_LED' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:182]
+CRITICAL WARNING: [Synth 8-3352] multi-driven net red_LED with 2nd driver pin 'GND' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:182]
+CRITICAL WARNING: [Synth 8-5559] multi-driven net red_LED is connected to constant driver, other driver is ignored [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:182]
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_min_reg[8] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[9] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[10] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[11] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[12] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[13] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[14] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/regi_di_max_reg[15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_min_reg[8] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[9] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[10] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[11] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[12] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[13] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[14] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/regi_di_max_reg[15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_min_reg[8] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[9] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[10] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[11] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[12] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[13] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[14] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_limiter/regi_di_max_reg[15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[5] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[6] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[7] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_min_reg[8] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[9] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[10] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[11] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[12] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[13] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[14] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_limiter/regi_di_max_reg[15] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_quantizer/noise_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_quantizer/noise_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_quantizer/noise_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_quantizer/noise_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_quantizer/noise_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_quantizer/noise_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_quantizer/noise_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_quantizer/noise_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_quantizer/noise_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_quantizer/noise_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_quantizer/noise_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_quantizer/noise_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_quantizer/noise_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_quantizer/noise_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\inphase_quantizer/noise_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_quantizer/noise_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_quantizer/noise_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_quantizer/noise_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_quantizer/noise_reg[3] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC1_inst/\quadrature_quantizer/noise_reg[4] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/dly_di_min_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/dly_di_min_reg[0] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/dly_di_min_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/dly_di_min_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/dly_di_min_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\inphase_limiter/dly_di_min_reg[2] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (dpll_wrapper_insti_2/DDC0_inst/\quadrature_limiter/dly_di_min_reg[3] )
+INFO: [Common 17-14] Message 'Synth 8-3333' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:01:16 ; elapsed = 00:01:24 . Memory (MB): peak = 743.629 ; gain = 572.094
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:01:16 ; elapsed = 00:01:24 . Memory (MB): peak = 743.629 ; gain = 572.094
+
+Report RTL Partitions: 
++------+--------------------+------------+----------+
+|      |RTL Partition       |Replication |Instances |
++------+--------------------+------------+----------+
+|1     |dpll_wrapper__GB0   |           1|     10337|
+|2     |dpll_wrapper__GB1   |           1|      4619|
+|3     |dpll_wrapper__GB2   |           1|      7740|
+|4     |red_pitaya_top__GC0 |           1|      8269|
++------+--------------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+INFO: [Synth 8-5578] Moved timing constraint from pin 'nolabel_line949/clk_in1' to pin 'bufg_adc_clk/O'
+INFO: [Synth 8-5578] Moved timing constraint from pin 'nolabel_line949/clk_out1' to pin 'nolabel_line949/bbstub_clk_out1/O'
+info: Source pin 'i_3/nolabel_line949/clk_in1' of generated clock is hierarchical
+info: Moving clock source from hierarchical pin 'i_3/nolabel_line949/clk_in1' to 'i_3/i_4/\led_counter_reg[25] /C'
+INFO: Moved 3 constraints on hierarchical pins to their respective driving/loading pins
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:27 ; elapsed = 00:01:35 . Memory (MB): peak = 949.375 ; gain = 777.840
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:01:30 ; elapsed = 00:01:38 . Memory (MB): peak = 1000.344 ; gain = 828.809
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++------+--------------------+------------+----------+
+|      |RTL Partition       |Replication |Instances |
++------+--------------------+------------+----------+
+|1     |dpll_wrapper__GB0   |           1|     10337|
+|2     |dpll_wrapper__GB1   |           1|      4619|
+|3     |dpll_wrapper__GB2   |           1|      7740|
+|4     |red_pitaya_top__GC0 |           1|      8184|
++------+--------------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4480] The timing for the instance \addr_packed_inst/FSM_inst/ram_inst/RAM_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
+INFO: [Synth 8-4480] The timing for the instance \i_scope/i_wr0/fifo_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
+INFO: [Synth 8-4480] The timing for the instance \i_scope/i_wr1/fifo_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:01:37 ; elapsed = 00:01:45 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:37 ; elapsed = 00:01:45 . Memory (MB): peak = 1030.039 ; gain = 858.504
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:37 ; elapsed = 00:01:45 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/transaction_fifo_0/cnt_read [0]. Fanout reduced from 21 to 7 by creating 3 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/transaction_fifo_0/cnt_read [1]. Fanout reduced from 20 to 7 by creating 2 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/transaction_fifo_0/cnt_read [2]. Fanout reduced from 18 to 7 by creating 2 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/transaction_fifo_0/cnt_read [3]. Fanout reduced from 17 to 7 by creating 2 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/transaction_fifo_0/cnt_read [4]. Fanout reduced from 16 to 7 by creating 2 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/WR.b_channel_0/bid_fifo_0/cnt_read [1]. Fanout reduced from 27 to 7 by creating 3 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/WR.b_channel_0/bid_fifo_0/cnt_read [0]. Fanout reduced from 28 to 10 by creating 2 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/rd_data_fifo_0/cnt_read [0]. Fanout reduced from 44 to 9 by creating 5 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/rd_data_fifo_0/cnt_read [2]. Fanout reduced from 41 to 9 by creating 4 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/rd_data_fifo_0/cnt_read [1]. Fanout reduced from 43 to 9 by creating 4 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/rd_data_fifo_0/cnt_read [3]. Fanout reduced from 40 to 9 by creating 4 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 10 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.r_channel_0/rd_data_fifo_0/cnt_read [4]. Fanout reduced from 39 to 9 by creating 4 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 20 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.ar_channel_0/ar_cmd_fsm_0/state [1]. Fanout reduced from 28 to 14 by creating 1 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 20 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/RD.ar_channel_0/ar_cmd_fsm_0/state [0]. Fanout reduced from 28 to 14 by creating 1 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 20 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/WR.aw_channel_0/aw_cmd_fsm_0/state [1]. Fanout reduced from 21 to 11 by creating 1 replicas.
+INFO: [Synth 8-4618] Found max_fanout attribute set to 20 on net \inst/gen_axilite.gen_b2s_conv.axilite_b2s/WR.aw_channel_0/aw_cmd_fsm_0/state [0]. Fanout reduced from 21 to 11 by creating 1 replicas.
+INFO: [Synth 8-5365] Flop mux_vco/vco_input_voltage_reg[15] is being inverted and renamed to mux_vco/vco_input_voltage_reg[15]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[0] is being inverted and renamed to mux_vco/mux_b_out_reg[0]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[1] is being inverted and renamed to mux_vco/mux_b_out_reg[1]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[2] is being inverted and renamed to mux_vco/mux_b_out_reg[2]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[3] is being inverted and renamed to mux_vco/mux_b_out_reg[3]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[4] is being inverted and renamed to mux_vco/mux_b_out_reg[4]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[5] is being inverted and renamed to mux_vco/mux_b_out_reg[5]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[6] is being inverted and renamed to mux_vco/mux_b_out_reg[6]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[7] is being inverted and renamed to mux_vco/mux_b_out_reg[7]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[8] is being inverted and renamed to mux_vco/mux_b_out_reg[8]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[9] is being inverted and renamed to mux_vco/mux_b_out_reg[9]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[10] is being inverted and renamed to mux_vco/mux_b_out_reg[10]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[11] is being inverted and renamed to mux_vco/mux_b_out_reg[11]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_b_out_reg[12] is being inverted and renamed to mux_vco/mux_b_out_reg[12]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[0] is being inverted and renamed to mux_vco/mux_a_out_reg[0]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[1] is being inverted and renamed to mux_vco/mux_a_out_reg[1]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[2] is being inverted and renamed to mux_vco/mux_a_out_reg[2]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[3] is being inverted and renamed to mux_vco/mux_a_out_reg[3]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[4] is being inverted and renamed to mux_vco/mux_a_out_reg[4]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[5] is being inverted and renamed to mux_vco/mux_a_out_reg[5]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[6] is being inverted and renamed to mux_vco/mux_a_out_reg[6]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[7] is being inverted and renamed to mux_vco/mux_a_out_reg[7]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[8] is being inverted and renamed to mux_vco/mux_a_out_reg[8]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[9] is being inverted and renamed to mux_vco/mux_a_out_reg[9]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[10] is being inverted and renamed to mux_vco/mux_a_out_reg[10]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[11] is being inverted and renamed to mux_vco/mux_a_out_reg[11]_inv.
+INFO: [Synth 8-5365] Flop mux_vco/mux_a_out_reg[12] is being inverted and renamed to mux_vco/mux_a_out_reg[12]_inv.
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+INFO: [Synth 8-4560] design has 9 instantiated BUFGs while the available bufg limit from the part is 8
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:01:39 ; elapsed = 00:01:47 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:39 ; elapsed = 00:01:47 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:40 ; elapsed = 00:01:49 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:40 ; elapsed = 00:01:49 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:41 ; elapsed = 00:01:49 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:41 ; elapsed = 00:01:49 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+
+Static Shift Register:
++---------------+--------------------------------------------------------------------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|Module Name    | RTL Name                                                                                                                 | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
++---------------+--------------------------------------------------------------------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|red_pitaya_top | dpll_wrapper_inst/dither_lockin_wrapper1/dither_lockin_inst/sync_I_delayed_reg                                           | 62     | 1     | NO           | NO                 | YES               | 0      | 2       | 
+|red_pitaya_top | dpll_wrapper_inst/dither_lockin_wrapper0/dither_lockin_inst/sync_I_delayed_reg                                           | 62     | 1     | NO           | NO                 | YES               | 0      | 2       | 
+|red_pitaya_top | dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/modulation_phase_zerocrossing_srl_reg[3] | 4      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC1_inst/quadrature_quantizer/shift_register_reg[7]                                                   | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC1_inst/quadrature_quantizer/shift_register_reg[0]                                                   | 7      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC1_inst/inphase_quantizer/shift_register_reg[7]                                                      | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC1_inst/inphase_quantizer/shift_register_reg[0]                                                      | 7      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC0_inst/quadrature_quantizer/shift_register_reg[7]                                                   | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC0_inst/quadrature_quantizer/shift_register_reg[0]                                                   | 7      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC0_inst/inphase_quantizer/shift_register_reg[7]                                                      | 3      | 1     | NO           | NO                 | YES               | 1      | 0       | 
+|red_pitaya_top | dpll_wrapper_inst/DDC0_inst/inphase_quantizer/shift_register_reg[0]                                                      | 7      | 1     | NO           | NO                 | YES               | 1      | 0       | 
++---------------+--------------------------------------------------------------------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+
+
+Dynamic Shift Register:
++------------+----------------+--------+------------+--------+---------+--------+--------+--------+
+|Module Name | RTL Name       | Length | Data Width | SRL16E | SRLC32E | Mux F7 | Mux F8 | Mux F9 | 
++------------+----------------+--------+------------+--------+---------+--------+--------+--------+
+|dsrl        | memory_reg[3]  | 4      | 20         | 20     | 0       | 0      | 0      | 0      | 
+|dsrl__1     | memory_reg[3]  | 4      | 2          | 2      | 0       | 0      | 0      | 0      | 
+|dsrl__2     | memory_reg[31] | 32     | 34         | 0      | 34      | 0      | 0      | 0      | 
+|dsrl__3     | memory_reg[31] | 32     | 13         | 0      | 13      | 0      | 0      | 0      | 
++------------+----------------+--------+------------+--------+---------+--------+--------+--------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++------+--------------------------------------+----------+
+|      |BlackBox name                         |Instances |
++------+--------------------------------------+----------+
+|1     |clk_10MHz_sync                        |         1|
+|2     |FIFO_addr_packed                      |         1|
+|3     |LO_DDS                                |         4|
+|4     |input_multiplier                      |         4|
+|5     |angle_CORDIC                          |         2|
+|6     |fir_compiler_minimumphase_N_times_clk |         4|
+|7     |pll_wide_mult                         |         2|
+|8     |pll_32x32_mult_ii                     |         6|
+|9     |fifo_generator_0                      |         1|
+|10    |system_identification_outputgain_mult |         1|
++------+--------------------------------------+----------+
+
+Report Cell Usage: 
++------+-----------------------------------------+------+
+|      |Cell                                     |Count |
++------+-----------------------------------------+------+
+|1     |FIFO_addr_packed                         |     1|
+|2     |LO_DDS                                   |     1|
+|3     |LO_DDS__2                                |     1|
+|4     |LO_DDS__3                                |     1|
+|5     |LO_DDS__4                                |     1|
+|6     |angle_CORDIC                             |     1|
+|7     |angle_CORDIC__2                          |     1|
+|8     |clk_10MHz_sync                           |     1|
+|9     |fifo_generator_0                         |     1|
+|10    |fir_compiler_minimumphase_N_times_clk    |     1|
+|11    |fir_compiler_minimumphase_N_times_clk__4 |     1|
+|12    |fir_compiler_minimumphase_N_times_clk__5 |     1|
+|13    |fir_compiler_minimumphase_N_times_clk__6 |     1|
+|14    |input_multiplier                         |     1|
+|15    |input_multiplier__2                      |     1|
+|16    |input_multiplier__3                      |     1|
+|17    |input_multiplier__4                      |     1|
+|18    |pll_32x32_mult_ii                        |     1|
+|19    |pll_32x32_mult_ii__1                     |     1|
+|20    |pll_32x32_mult_ii__2                     |     1|
+|21    |pll_32x32_mult_ii__3                     |     1|
+|22    |pll_32x32_mult_ii__4                     |     1|
+|23    |pll_32x32_mult_ii__5                     |     1|
+|24    |pll_wide_mult                            |     1|
+|25    |pll_wide_mult__1                         |     1|
+|26    |system_identification_outputgain_mult    |     1|
+|27    |BIBUF                                    |   130|
+|28    |BUFG                                     |    13|
+|29    |CARRY4                                   |  1026|
+|30    |DNA_PORT                                 |     1|
+|31    |DSP48E1_1                                |     2|
+|32    |DSP48E1_2                                |     2|
+|33    |DSP48E1_4                                |     2|
+|34    |DSP48E1_5                                |     1|
+|35    |LUT1                                     |  1504|
+|36    |LUT2                                     |  2837|
+|37    |LUT3                                     |  1701|
+|38    |LUT4                                     |   944|
+|39    |LUT5                                     |   705|
+|40    |LUT6                                     |  1202|
+|41    |MUXF7                                    |    25|
+|42    |ODDR                                     |    18|
+|43    |PLLE2_ADV                                |     1|
+|44    |PS7                                      |     1|
+|45    |RAM32M                                   |    52|
+|46    |RAMB36E1                                 |     1|
+|47    |RAMB36E1_1                               |    16|
+|48    |RAMB36E1_2                               |     2|
+|49    |SRL16                                    |     1|
+|50    |SRL16E                                   |    31|
+|51    |SRLC32E                                  |    51|
+|52    |XADC                                     |     1|
+|53    |FDR                                      |     8|
+|54    |FDRE                                     |  8096|
+|55    |FDSE                                     |   362|
+|56    |IBUF                                     |    36|
+|57    |IBUFDS                                   |     1|
+|58    |IOBUF                                    |    16|
+|59    |OBUF                                     |    35|
+|60    |OBUFT                                    |     2|
++------+-----------------------------------------+------+
+
+Report Instance Areas: 
++------+------------------------------------------------------+--------------------------------------------------------------+------+
+|      |Instance                                              |Module                                                        |Cells |
++------+------------------------------------------------------+--------------------------------------------------------------+------+
+|1     |top                                                   |                                                              | 20019|
+|2     |  i_ams                                               |red_pitaya_ams                                                |   121|
+|3     |  \pwm[0]                                             |red_pitaya_pwm                                                |   104|
+|4     |  \pwm[1]                                             |red_pitaya_pwm_0                                              |   105|
+|5     |  \pwm[2]                                             |red_pitaya_pwm_1                                              |   104|
+|6     |  \pwm[3]                                             |red_pitaya_pwm_2                                              |   104|
+|7     |  addr_packed_inst                                    |addr_packed                                                   |   285|
+|8     |    FSM_inst                                          |FSM_addr_packed                                               |   218|
+|9     |      ram_inst                                        |simple_dualport_ram_with_init                                 |    29|
+|10    |  dpll_wrapper_inst                                   |dpll_wrapper                                                  | 14484|
+|11    |    output_summing_dac0                               |output_summing                                                |    97|
+|12    |    DDC0_inst                                         |DDC_wideband_filters__xdcDup__1                               |  2342|
+|13    |      ddc_frontend_lowpass_filter_inst_I              |ddc_frontend_lowpass_filter_32                                |   653|
+|14    |        N_times_clk_FIR_wrapper_inst                  |N_times_clk_FIR_wrapper_46                                    |   104|
+|15    |        boxcar_2_pts_filter_inst1                     |boxcar_2_pts_filter_47                                        |    38|
+|16    |        boxcar_2_pts_filter_inst2                     |boxcar_2_pts_filter__parameterized0_48                        |    84|
+|17    |        boxcar_2_pts_filter_inst3                     |boxcar_2_pts_filter__parameterized1_49                        |    36|
+|18    |        boxcar_4_pts_filter_inst                      |boxcar_4_pts_filter_50                                        |   160|
+|19    |        boxcar_filter_16_pts_inst                     |adjustable_boxcar_filter_v2_51                                |   215|
+|20    |          delay_inst                                  |programmable_delay_line_52                                    |   164|
+|21    |      ddc_frontend_lowpass_filter_inst_Q              |ddc_frontend_lowpass_filter_33                                |   654|
+|22    |        N_times_clk_FIR_wrapper_inst                  |N_times_clk_FIR_wrapper_39                                    |   104|
+|23    |        boxcar_2_pts_filter_inst1                     |boxcar_2_pts_filter_40                                        |    38|
+|24    |        boxcar_2_pts_filter_inst2                     |boxcar_2_pts_filter__parameterized0_41                        |    84|
+|25    |        boxcar_2_pts_filter_inst3                     |boxcar_2_pts_filter__parameterized1_42                        |    36|
+|26    |        boxcar_4_pts_filter_inst                      |boxcar_4_pts_filter_43                                        |   160|
+|27    |        boxcar_filter_16_pts_inst                     |adjustable_boxcar_filter_v2_44                                |   216|
+|28    |          delay_inst                                  |programmable_delay_line_45                                    |   165|
+|29    |      first_order_IIR_highpass_filter_inst            |first_order_IIR_highpass_filter_34                            |   238|
+|30    |      inphase_limiter                                 |limiter_35                                                    |    46|
+|31    |      inphase_quantizer                               |quantizer_36                                                  |   162|
+|32    |      quadrature_limiter                              |limiter_37                                                    |    42|
+|33    |      quadrature_quantizer                            |quantizer_38                                                  |   173|
+|34    |    DDC1_inst                                         |DDC_wideband_filters                                          |  2339|
+|35    |      ddc_frontend_lowpass_filter_inst_I              |ddc_frontend_lowpass_filter                                   |   653|
+|36    |        N_times_clk_FIR_wrapper_inst                  |N_times_clk_FIR_wrapper_25                                    |   104|
+|37    |        boxcar_2_pts_filter_inst1                     |boxcar_2_pts_filter_26                                        |    38|
+|38    |        boxcar_2_pts_filter_inst2                     |boxcar_2_pts_filter__parameterized0_27                        |    84|
+|39    |        boxcar_2_pts_filter_inst3                     |boxcar_2_pts_filter__parameterized1_28                        |    36|
+|40    |        boxcar_4_pts_filter_inst                      |boxcar_4_pts_filter_29                                        |   160|
+|41    |        boxcar_filter_16_pts_inst                     |adjustable_boxcar_filter_v2_30                                |   215|
+|42    |          delay_inst                                  |programmable_delay_line_31                                    |   164|
+|43    |      ddc_frontend_lowpass_filter_inst_Q              |ddc_frontend_lowpass_filter_22                                |   654|
+|44    |        N_times_clk_FIR_wrapper_inst                  |N_times_clk_FIR_wrapper                                       |   104|
+|45    |        boxcar_2_pts_filter_inst1                     |boxcar_2_pts_filter                                           |    38|
+|46    |        boxcar_2_pts_filter_inst2                     |boxcar_2_pts_filter__parameterized0                           |    84|
+|47    |        boxcar_2_pts_filter_inst3                     |boxcar_2_pts_filter__parameterized1                           |    36|
+|48    |        boxcar_4_pts_filter_inst                      |boxcar_4_pts_filter                                           |   160|
+|49    |        boxcar_filter_16_pts_inst                     |adjustable_boxcar_filter_v2                                   |   216|
+|50    |          delay_inst                                  |programmable_delay_line                                       |   165|
+|51    |      first_order_IIR_highpass_filter_inst            |first_order_IIR_highpass_filter                               |   238|
+|52    |      inphase_limiter                                 |limiter                                                       |    46|
+|53    |      inphase_quantizer                               |quantizer                                                     |   162|
+|54    |      quadrature_limiter                              |limiter_23                                                    |    42|
+|55    |      quadrature_quantizer                            |quantizer_24                                                  |   173|
+|56    |    PLL0_loop_filters                                 |PLL_loop_filters_with_saturation                              |   948|
+|57    |      IIR_LPF_inst                                    |IIR_LPF_21                                                    |    29|
+|58    |      d_saturation_inst                               |resize_with_saturation__parameterized2                        |    97|
+|59    |      i_saturation_inst                               |resize_with_saturation__parameterized0                        |    96|
+|60    |      ii_saturation_inst                              |resize_with_saturation__parameterized1                        |    63|
+|61    |      integrator_with_saturation_inst2                |integrator_with_saturation                                    |   227|
+|62    |      out_saturation_inst                             |resize_with_saturation__parameterized3                        |    20|
+|63    |      p_saturation_inst                               |resize_with_saturation                                        |    66|
+|64    |    PLL1_loop_filters                                 |PLL_loop_filters_with_saturation__parameterized0              |   940|
+|65    |      IIR_LPF_inst                                    |IIR_LPF                                                       |    29|
+|66    |      d_saturation_inst                               |resize_with_saturation__parameterized7                        |    97|
+|67    |      i_saturation_inst                               |resize_with_saturation__parameterized5                        |   108|
+|68    |      ii_saturation_inst                              |resize_with_saturation__parameterized6                        |    63|
+|69    |      integrator_with_saturation_inst2                |integrator_with_saturation__parameterized0                    |   207|
+|70    |      out_saturation_inst                             |resize_with_saturation__parameterized8                        |    20|
+|71    |      p_saturation_inst                               |resize_with_saturation__parameterized4                        |    72|
+|72    |    aux_data_mux_inst                                 |aux_data_mux                                                  |   120|
+|73    |    dither_lockin_wrapper0                            |dither_lockin_wrapper                                         |   709|
+|74    |      dither_lockin_inst                              |dither_lockin_19                                              |   580|
+|75    |        quadrature_dither_generator_inst              |quadrature_dither_generator_20                                |   120|
+|76    |      parallel_bus_register_N_periods                 |parallel_bus_register_32bits_or_less__parameterized28         |    45|
+|77    |      parallel_bus_register_amplitude                 |parallel_bus_register_32bits_or_less__parameterized29         |    36|
+|78    |      parallel_bus_register_enable                    |parallel_bus_register_32bits_or_less__parameterized26         |     2|
+|79    |      parallel_bus_register_period                    |parallel_bus_register_32bits_or_less__parameterized27         |    45|
+|80    |    dither_lockin_wrapper1                            |dither_lockin_wrapper__parameterized0                         |   737|
+|81    |      dither_lockin_inst                              |dither_lockin                                                 |   580|
+|82    |        quadrature_dither_generator_inst              |quadrature_dither_generator                                   |   120|
+|83    |      parallel_bus_register_N_periods                 |parallel_bus_register_32bits_or_less__parameterized32         |    45|
+|84    |      parallel_bus_register_amplitude                 |parallel_bus_register_32bits_or_less__parameterized33         |    36|
+|85    |      parallel_bus_register_enable                    |parallel_bus_register_32bits_or_less__parameterized30         |     2|
+|86    |      parallel_bus_register_period                    |parallel_bus_register_32bits_or_less__parameterized31         |    45|
+|87    |    dual_type_frequency_counter_inst0                 |dual_type_frequency_counter                                   |  1280|
+|88    |      triangular_frequency_counter_inst1              |triangular_frequency_counter_17                               |   571|
+|89    |      triangular_frequency_counter_inst2              |triangular_frequency_counter_18                               |   465|
+|90    |    dual_type_frequency_counter_inst1                 |dual_type_frequency_counter_11                                |  1192|
+|91    |      triangular_frequency_counter_inst1              |triangular_frequency_counter                                  |   571|
+|92    |      triangular_frequency_counter_inst2              |triangular_frequency_counter_16                               |   465|
+|93    |    loop_filters_1_mux                                |multiplexer_3to1_async                                        |    10|
+|94    |    multiplexer_NbitsxMsignals_to_Nbits_inst          |multiplexer_NbitsxMsignals_to_Nbits                           |   170|
+|95    |    output_summing_dac0_auxilary                      |output_summing_12                                             |    88|
+|96    |    output_summing_dac1                               |output_summing_13                                             |   129|
+|97    |    output_summing_dac1_auxilary                      |output_summing_14                                             |    88|
+|98    |    parallel_bus_register_64_bits_or_less_angleSelect |parallel_bus_register_32bits_or_less__parameterized6          |    28|
+|99    |    parallel_bus_register_64_bits_or_less_freq0       |parallel_bus_register_64_bits_or_less                         |   118|
+|100   |    parallel_bus_register_64_bits_or_less_freq1       |parallel_bus_register_64_bits_or_less__parameterized0         |   118|
+|101   |    parallel_bus_register_counter_mode                |parallel_bus_register_32bits_or_less__parameterized8          |     1|
+|102   |    parallel_bus_register_dac0_limits                 |parallel_bus_register_32bits_or_less__parameterized22         |    70|
+|103   |    parallel_bus_register_dac1_limits                 |parallel_bus_register_32bits_or_less__parameterized23         |    70|
+|104   |    parallel_bus_register_ddc_filter_select           |parallel_bus_register_32bits_or_less__parameterized7          |    70|
+|105   |    parallel_bus_register_logger_mux_select           |parallel_bus_register_32bits_or_less__parameterized5          |    23|
+|106   |    parallel_bus_register_manual_offset_dac0          |parallel_bus_register_32bits_or_less__parameterized24         |    18|
+|107   |    parallel_bus_register_manual_offset_dac1          |parallel_bus_register_32bits_or_less__parameterized25         |    18|
+|108   |    parallel_bus_register_mux_pll1                    |parallel_bus_register_32bits_or_less__parameterized9          |    25|
+|109   |    parallel_bus_register_ok_reset                    |parallel_bus_register_32bits_or_less                          |     1|
+|110   |    parallel_bus_register_phase_ok_reset_frontend     |parallel_bus_register_32bits_or_less__parameterized1          |     3|
+|111   |    parallel_bus_register_pll0_coefdfilter            |parallel_bus_register_32bits_or_less__parameterized15         |    19|
+|112   |    parallel_bus_register_pll0_gaind                  |parallel_bus_register_32bits_or_less__parameterized14         |    33|
+|113   |    parallel_bus_register_pll0_gaini                  |parallel_bus_register_32bits_or_less__parameterized12         |    61|
+|114   |    parallel_bus_register_pll0_gainii                 |parallel_bus_register_32bits_or_less__parameterized13         |    33|
+|115   |    parallel_bus_register_pll0_gainp                  |parallel_bus_register_32bits_or_less__parameterized11         |    33|
+|116   |    parallel_bus_register_pll0_settings               |parallel_bus_register_32bits_or_less__parameterized10         |     2|
+|117   |    parallel_bus_register_pll1_coefdfilter            |parallel_bus_register_32bits_or_less__parameterized21         |    19|
+|118   |    parallel_bus_register_pll1_gaind                  |parallel_bus_register_32bits_or_less__parameterized20         |    32|
+|119   |    parallel_bus_register_pll1_gaini                  |parallel_bus_register_32bits_or_less__parameterized18         |    61|
+|120   |    parallel_bus_register_pll1_gainii                 |parallel_bus_register_32bits_or_less__parameterized19         |    33|
+|121   |    parallel_bus_register_pll1_gainp                  |parallel_bus_register_32bits_or_less__parameterized17         |    33|
+|122   |    parallel_bus_register_pll1_settings               |parallel_bus_register_32bits_or_less__parameterized16         |     2|
+|123   |    parallel_bus_register_trigger_identification      |parallel_bus_register_32bits_or_less__parameterized0          |     1|
+|124   |    registers_read_inst                               |registers_read                                                |   457|
+|125   |    system_identification_vna_inst                    |system_identification_vna_with_dither_wrapper                 |  1760|
+|126   |      system_identification_vna_inst                  |system_identification_with_dither2                            |  1432|
+|127   |        system_identification_macc_cos_inst           |system_identification_macc_behav                              |   273|
+|128   |        system_identification_macc_sin_inst           |system_identification_macc_behav_15                           |   273|
+|129   |  i_hk                                                |red_pitaya_hk                                                 |   191|
+|130   |  i_ps                                                |red_pitaya_ps                                                 |  3171|
+|131   |    \axi_master[0]                                    |axi_master                                                    |   225|
+|132   |    \axi_master[1]                                    |axi_master_4                                                  |   225|
+|133   |    axi_slave_gp0                                     |axi_slave                                                     |   707|
+|134   |    system_i                                          |system_wrapper                                                |  2009|
+|135   |      system_i                                        |system                                                        |  1996|
+|136   |        axi_protocol_converter_0                      |system_axi_protocol_converter_0_0                             |  1206|
+|137   |          inst                                        |axi_protocol_converter_v2_1_7_axi_protocol_converter          |  1206|
+|138   |            \gen_axilite.gen_b2s_conv.axilite_b2s     |axi_protocol_converter_v2_1_7_b2s                             |  1206|
+|139   |              \RD.ar_channel_0                        |axi_protocol_converter_v2_1_7_b2s_ar_channel                  |   195|
+|140   |                ar_cmd_fsm_0                          |axi_protocol_converter_v2_1_7_b2s_rd_cmd_fsm                  |    33|
+|141   |                cmd_translator_0                      |axi_protocol_converter_v2_1_7_b2s_cmd_translator_8            |   150|
+|142   |                  incr_cmd_0                          |axi_protocol_converter_v2_1_7_b2s_incr_cmd_9                  |    56|
+|143   |                  wrap_cmd_0                          |axi_protocol_converter_v2_1_7_b2s_wrap_cmd_10                 |    89|
+|144   |              \RD.r_channel_0                         |axi_protocol_converter_v2_1_7_b2s_r_channel                   |   124|
+|145   |                rd_data_fifo_0                        |axi_protocol_converter_v2_1_7_b2s_simple_fifo__parameterized1 |    72|
+|146   |                transaction_fifo_0                    |axi_protocol_converter_v2_1_7_b2s_simple_fifo__parameterized2 |    38|
+|147   |              SI_REG                                  |axi_register_slice_v2_1_7_axi_register_slice                  |   615|
+|148   |                ar_pipe                               |axi_register_slice_v2_1_7_axic_register_slice                 |   208|
+|149   |                aw_pipe                               |axi_register_slice_v2_1_7_axic_register_slice_7               |   208|
+|150   |                b_pipe                                |axi_register_slice_v2_1_7_axic_register_slice__parameterized1 |    50|
+|151   |                r_pipe                                |axi_register_slice_v2_1_7_axic_register_slice__parameterized2 |   149|
+|152   |              \WR.aw_channel_0                        |axi_protocol_converter_v2_1_7_b2s_aw_channel                  |   199|
+|153   |                aw_cmd_fsm_0                          |axi_protocol_converter_v2_1_7_b2s_wr_cmd_fsm                  |    36|
+|154   |                cmd_translator_0                      |axi_protocol_converter_v2_1_7_b2s_cmd_translator              |   147|
+|155   |                  incr_cmd_0                          |axi_protocol_converter_v2_1_7_b2s_incr_cmd                    |    54|
+|156   |                  wrap_cmd_0                          |axi_protocol_converter_v2_1_7_b2s_wrap_cmd                    |    89|
+|157   |              \WR.b_channel_0                         |axi_protocol_converter_v2_1_7_b2s_b_channel                   |    72|
+|158   |                bid_fifo_0                            |axi_protocol_converter_v2_1_7_b2s_simple_fifo                 |    37|
+|159   |                bresp_fifo_0                          |axi_protocol_converter_v2_1_7_b2s_simple_fifo__parameterized0 |    10|
+|160   |        proc_sys_reset                                |system_proc_sys_reset_0                                       |    64|
+|161   |          U0                                          |proc_sys_reset                                                |    64|
+|162   |            EXT_LPF                                   |lpf                                                           |    19|
+|163   |              \ACTIVE_LOW_AUX.ACT_LO_AUX              |cdc_sync                                                      |     5|
+|164   |              \ACTIVE_LOW_EXT.ACT_LO_EXT              |cdc_sync_6                                                    |     5|
+|165   |            SEQ                                       |sequence_psr                                                  |    40|
+|166   |              SEQ_COUNTER                             |upcnt_n                                                       |    14|
+|167   |        processing_system7                            |system_processing_system7_0                                   |   293|
+|168   |          inst                                        |processing_system7_v5_5_processing_system7                    |   293|
+|169   |            xlnx_axi_wrshim_unwrap_inst_gp0           |xlnx_axi_wrshim_unwrap                                        |    18|
+|170   |            xlnx_axi_wrshim_unwrap_inst_gp1           |xlnx_axi_wrshim_unwrap_5                                      |    18|
+|171   |        xadc                                          |system_xadc_0                                                 |   433|
+|172   |          inst                                        |system_xadc_0_axi_xadc                                        |   433|
+|173   |            AXI_LITE_IPIF_I                           |system_xadc_0_axi_lite_ipif                                   |   188|
+|174   |              I_SLAVE_ATTACHMENT                      |system_xadc_0_slave_attachment                                |   188|
+|175   |                I_DECODER                             |system_xadc_0_address_decoder                                 |   134|
+|176   |            AXI_XADC_CORE_I                           |system_xadc_0_xadc_core_drp                                   |    77|
+|177   |            \INTR_CTRLR_GEN_I.INTERRUPT_CONTROL_I     |system_xadc_0_interrupt_control                               |    96|
+|178   |            SOFT_RESET_I                              |system_xadc_0_soft_reset                                      |    39|
+|179   |        xlconstant                                    |system_xlconstant_0                                           |     0|
+|180   |  i_scope                                             |red_pitaya_scope                                              |   716|
+|181   |    i_wr0                                             |axi_wr_fifo                                                   |   361|
+|182   |    i_wr1                                             |axi_wr_fifo_3                                                 |   355|
+|183   |  mux_vco                                             |mux_internal_vco                                              |   264|
+|184   |    internal_vco_inst                                 |internal_vco                                                  |   159|
+|185   |  pll                                                 |red_pitaya_pll                                                |     2|
+|186   |  ram_data_logger_i                                   |ram_data_logger                                               |    94|
+|187   |    ram_inst                                          |simple_dualport_ram                                           |    16|
++------+------------------------------------------------------+--------------------------------------------------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:41 ; elapsed = 00:01:49 . Memory (MB): peak = 1030.039 ; gain = 858.504
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 9 critical warnings and 3500 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:55 ; elapsed = 00:01:33 . Memory (MB): peak = 1030.039 ; gain = 565.516
+Synthesis Optimization Complete : Time (s): cpu = 00:01:41 ; elapsed = 00:01:49 . Memory (MB): peak = 1030.039 ; gain = 858.504
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 1186 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-140] Inserted 2 IBUFs to IO ports without IO buffers.
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 77 instances were transformed.
+  FDR => FDRE: 8 instances
+  IOBUF => IOBUF (IBUF, OBUFT): 16 instances
+  RAM32M => RAM32M (RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMD32, RAMS32, RAMS32): 52 instances
+  SRL16 => SRL16E: 1 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+933 Infos, 283 Warnings, 9 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:01:43 ; elapsed = 00:01:51 . Memory (MB): peak = 1030.039 ; gain = 792.645
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.082 . Memory (MB): peak = 1030.039 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Sat Aug 12 16:32:16 2017...
