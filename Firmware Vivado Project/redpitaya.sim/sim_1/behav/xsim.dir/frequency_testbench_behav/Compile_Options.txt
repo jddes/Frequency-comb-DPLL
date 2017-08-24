@@ -1,0 +1,1 @@
+-wto "55fbcb833fab42aea5d71afd7d8d1644" --debug "typical" --relax --mt "2" -L "work" -L "secureip" --snapshot "frequency_testbench_behav" "work.frequency_testbench" -log "elaborate.log" 

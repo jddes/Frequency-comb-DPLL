@@ -1,0 +1,5 @@
+# compile vhdl design source files
+vhdl work  "../../../redpitaya.srcs/sources_1/frequency_testbench.vhd"
+
+# Do not sort compile order
+nosort
