@@ -115,10 +115,16 @@ class initialConfiguration(QtGui.QDialog):
 		self.qlabel_manual_entry = Qt.QLabel('Manual IP entry')
 		self.qedit_manual_entry = Qt.QLineEdit('')
 
+		self.qlabel_host_port = Qt.QLabel('Host Port')
+		self.qedit_host_port = Qt.QLineEdit('5000')
+
 
 		gridIP.addWidget(self.qradio_usefromtextbox, 0, 0)
 		gridIP.addWidget(self.qlabel_manual_entry, 0, 1)
 		gridIP.addWidget(self.qedit_manual_entry, 0, 2)
+		gridIP.addWidget(self.qlabel_host_port, 0, 3)
+		gridIP.addWidget(self.qedit_host_port, 0, 4)
+        
 
 	
 
@@ -254,6 +260,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.strSelectedIP = ''
 		self.strSelectedMAC = ''
 		self.strSelectedSerial = ''
+		self.strSelectedPort = 5000
 
 		# do we use the manual entry IP address or the one from the list?
 		if self.qradio_usefromlist.isChecked():
@@ -277,6 +284,8 @@ class initialConfiguration(QtGui.QDialog):
 			# we don't have a good way of populating the MAC and serial number yet using this manual connection
 			print("using manual entry")
 			self.strSelectedIP = str(self.qedit_manual_entry.text())
+			self.strSelectedPort = int(self.qedit_host_port.text())
+            
 		
 	def okClicked(self):
 		self.bOk = True
@@ -298,7 +307,7 @@ class initialConfiguration(QtGui.QDialog):
 				return
 			#self.dev.OpenTCPConnection(self.strSelectedIP)
 			#print("About to connect")
-			self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP)
+			self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort)
 
 		elif self.qradio_existingRP.isChecked():
 			# Reconnect to the selected RedPitaya.
@@ -306,7 +315,7 @@ class initialConfiguration(QtGui.QDialog):
 			if not self.strSelectedIP:
 				return
 			#print("About to reconnect")
-			self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP) 
+			self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort) 
 
 		elif self.qradio_noRP.isChecked():
 			# Open the GUI without any RP
@@ -335,7 +344,7 @@ class initialConfiguration(QtGui.QDialog):
 			return
 
 		# connect to the selected RedPitaya, send new bitfile, then send programming command to the shell:
-		self.dev.OpenTCPConnection(self.strSelectedIP)
+		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		self.dev.write_file_on_remote(strFilenameLocal=str(self.qedit_firmware.text()), strFilenameRemote='/opt/red_pitaya_top.bit')
 		print("File written to remote host at /opt/red_pitaya_top.bit.")
 		self.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
@@ -354,7 +363,7 @@ class initialConfiguration(QtGui.QDialog):
 			return
 
 		# connect to the selected RedPitaya
-		self.dev.OpenTCPConnection(self.strSelectedIP)
+		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		# send new monitor-tcp version
 		self.dev.write_file_on_remote(strFilenameLocal=self.qedit_software.text(), strFilenameRemote='/opt/monitor-tcp-new')
 		
