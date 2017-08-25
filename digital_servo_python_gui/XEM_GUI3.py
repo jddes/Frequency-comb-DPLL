@@ -293,8 +293,8 @@ class controller(object):
 		strNameTemplate = 'data_logging\%s' % strOfTime
 		# strNameTemplate = '%s_%s_' % (strNameTemplate, self.initial_config.strSelectedSerial)
 		strNameTemplate = '%s_%s_' % (strNameTemplate, self.strSelectedSerial)
-		self.freq_error_window1 = FreqErrorWindowWithTempControlV2(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0)
-		self.freq_error_window2 = FreqErrorWindowWithTempControlV2(self.sl, 'Optical beat in-loop counter', self.sp, 1, strNameTemplate, custom_style_sheet, temp_control_port)
+		self.freq_error_window1 = FreqErrorWindowWithTempControlV2(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0, self.xem_gui_mainwindow)
+		self.freq_error_window2 = FreqErrorWindowWithTempControlV2(self.sl, 'Optical beat in-loop counter', self.sp, 1, strNameTemplate, custom_style_sheet, temp_control_port, self.xem_gui_mainwindow2)
 
 		self.counters_window = Qt.QWidget()
 		self.counters_window.setObjectName('MainWindow')
@@ -541,7 +541,6 @@ class controller(object):
 		self.freq_error_window2.startTimers()
 
 
-	
 
 if __name__ == '__main__':
 	controller()
