@@ -286,7 +286,7 @@ def main():
     strNameTemplate = 'data_logging\%s' % strOfTime
     strNameTemplate = '%s_%s_' % (strNameTemplate, initial_config.strSelectedSerial)
     freq_error_window1 = FreqErrorWindowWithTempControlV2(sl, 'CEO beat in-loop counter', 0, strNameTemplate, custom_style_sheet, 0, xem_gui_mainwindow)
-    freq_error_window2 = FreqErrorWindowWithTempControlV2(sl, 'Optical beat in-loop counter', 1, strNameTemplate, custom_style_sheet, temp_control_port, None)
+    freq_error_window2 = FreqErrorWindowWithTempControlV2(sl, 'Optical beat in-loop counter', 1, strNameTemplate, custom_style_sheet, temp_control_port, xem_gui_mainwindow2)
 
     counters_window = Qt.QWidget()
     counters_window.setObjectName('MainWindow')

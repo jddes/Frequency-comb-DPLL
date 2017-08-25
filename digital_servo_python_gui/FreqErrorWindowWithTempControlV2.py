@@ -62,6 +62,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         self.openOutputFiles()
         self.initSL()
+        
+        self.dac_hist = np.array([])
 
 
 #    def __del__(self):
@@ -220,9 +222,12 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.qedit_ymin = Qt.QLineEdit('%f' % (-self.sl.fs/4.))
         self.qedit_ymax = Qt.QLineEdit('%f' % (self.sl.fs/4.))
 
-        
-        self.qchk_phd_in_the_loop = Qt.QCheckBox('PhD-in-the-loop')
-        self.qchk_phd_in_the_loop.setChecked(False)
+        # Controls for Auto Recovery
+        self.qchk_autorecover = Qt.QCheckBox('Auto Recover')
+        self.qchk_autorecover.setChecked(False)
+        self.qlabel_rec_thresh = Qt.QLabel('Recovery Threshold')
+        self.qedit_rec_thresh = Qt.QLineEdit('5')
+        self.qedit_rec_thresh.setMaximumWidth(40)
         
         # Put the two graphs into a vertical box layout, so that they share all the vertical space equally:
         vbox = QtGui.QVBoxLayout()
@@ -244,8 +249,9 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         grid.addWidget(self.qedit_ymax,                     6, 0, 1, 2)        
 
         #FEATURE        
-        #grid.addWidget(self.qchk_phd_in_the_loop,           7, 0, 1, 2)        
-        
+        grid.addWidget(self.qchk_autorecover,           	7, 0, 1, 2)        
+        grid.addWidget(self.qlabel_rec_thresh,              8, 0)
+        grid.addWidget(self.qedit_rec_thresh,               8, 1)
 
         
         if self.client or True:
@@ -437,53 +443,44 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 #            print('Temp control disactivated.')
                     
 
-    def runFreqControlLoop(self, current_time, current_frequency_error):
-
-
-
-
-        step_delay = 120.
-        frequency_error_threshold = 15e6
-        step_size_in_hz = 15e6
+    def runAutoRecover(self, output_number, current_dac):
+        # Try to read the lock state
         try:
-            output_gain_in_hz_per_volts = float(self.xem_gui_mainwindow.qedit_vco_gain[0].text())
+            bLock = self.xem_gui_mainwindow.qchk_lock.isChecked()
         except:
-            output_gain_in_hz_per_volts = 4e8
-            
+            print('failed to read lock state')
+            bLock = False
 
-        step_size_in_volts = step_size_in_hz / output_gain_in_hz_per_volts
-        if self.qchk_phd_in_the_loop.isChecked() == True:
-            current_dac_value_in_counts = self.sl.DACs_offset[0]
-            current_dac_value_in_Volts = current_dac_value_in_counts/2.**15 * 2.
-            
+        if bLock and self.qchk_autorecover.isChecked():
+        # If the lock and auto recovery are enabled
+            if self.dac_hist.size < 50:
+            # Append to the DAC history if the sample size is too small
+                self.dac_hist = np.append(current_dac, self.dac_hist)
+            else:
+            # Calculate the historical mean and standard deviation
+                dac_mean = np.mean(self.dac_hist)
+                dac_std = np.std(self.dac_hist)
+                if np.abs(current_dac - dac_mean) > float(self.qedit_rec_thresh.text())*dac_std:
+                # If the current DAC value is out of bounds, relock to the average
+                    self.sl.set_dac_offset(output_number, int(dac_mean))
+                    self.xem_gui_mainwindow.qloop_filters[output_number].qchk_lock.setChecked(False)
+                    self.xem_gui_mainwindow.qloop_filters[output_number].updateFilterSettings()
+                    self.xem_gui_mainwindow.qloop_filters[output_number].qchk_lock.setChecked(True)
+                    self.xem_gui_mainwindow.qloop_filters[output_number].updateFilterSettings()
+                    print("{}: channel {} lost lock".format(time.strftime('%c'),output_number))
+                else:
+                # If the current DAC value is in bounds, add it to the DAC history
+                    if self.dac_hist.size < 500:
+                    # Append up to a certain size
+                        self.dac_hist = np.append(current_dac, self.dac_hist)
+                    else:
+                    # Roll the values otherwise
+                        self.dac_hist = np.roll(self.dac_hist, 1)
+                        self.dac_hist[0] = current_dac
+        else:
+        # If lock or auto recovery are disabled, clear the accumulated DAC history
+            self.dac_hist = np.array([])
 
-            if self.last_update_freq + step_delay <= current_time:
-                # We can do a step if we need to.
-            
-                if current_frequency_error > frequency_error_threshold:
-                    # We are too high. need to lower the voltage
-                    new_dac_value_in_volts = current_dac_value_in_Volts - step_size_in_volts
-                    new_value_in_counts = new_dac_value_in_volts/2. * (2**15-1)
-                    self.sl.set_dac_offset(0, new_value_in_counts)
-                    
-
-                    self.last_update_freq = time.clock()
-                    print('Decreasing voltage')
-                    print('current_frequency_error = %f Hz, current dac value = %f V, new_dac_value = %f V' % (current_frequency_error, current_dac_value_in_Volts, new_dac_value_in_volts))
-                    
-                elif current_frequency_error < -frequency_error_threshold:
-                    # We are too low. need to increase the voltage
-                    new_dac_value_in_volts = current_dac_value_in_Volts + step_size_in_volts
-                    new_value_in_counts = new_dac_value_in_volts/2. * (2**15-1)
-                    self.sl.set_dac_offset(0, new_value_in_counts)
-                    
-                    self.last_update_freq = time.clock()
-                    print('Increasing voltage')
-                    print('current_frequency_error = %f Hz, current dac value = %f V, new_dac_value = %f V' % (current_frequency_error, current_dac_value_in_Volts, new_dac_value_in_volts))
-                
-            
-            
-#            self.sl.set_dac_offset(k, counts_offset)
     
         
     def displayFreqCounter(self):
@@ -511,12 +508,18 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.file_output_time.write(time_axis)
                 
             if DAC0_output is not None:
+                if self.output_number == 0:
+                # Run auto recovery for DAC0
+                    self.runAutoRecover(self.output_number, np.mean(DAC0_output))
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                 # Write data to disk:
                 self.file_output_dac0.write(DAC0_output)
                 
             if DAC1_output is not None:
+                if self.output_number == 1:
+                # Run auto recovery for DAC1
+                    self.runAutoRecover(self.output_number, np.mean(DAC1_output))
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
                 # Write data to disk:
@@ -543,8 +546,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                         DAC2_output = DAC2_output[2:]
                     self.bVeryFirst = False
                     return
-                    
-                self.runFreqControlLoop(time.clock(), freq_counter_samples[-1:])
                     
                 # Write data to disk:
                 if self.output_number == 0:
