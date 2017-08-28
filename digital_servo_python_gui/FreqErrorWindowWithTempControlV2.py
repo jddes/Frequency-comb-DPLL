@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import sys
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtGui, Qt, QtCore
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
@@ -63,7 +63,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.openOutputFiles()
         self.initSL()
         
-        self.dac_hist = np.array([])
+        self.recovery_history = np.array([])
 
 
 #    def __del__(self):
@@ -103,11 +103,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.N_history_counters = int(round(10 / self.gate_time_counter))
             self.N_history_dacs = int(round(10 / self.gate_time_dacs))
         
-        if self.output_number == 0:
-            self.DAC0_history = np.zeros(self.N_history_dacs)
-        if self.output_number == 1:
-            self.DAC1_history = np.zeros(self.N_history_dacs)
-            self.DAC2_history = np.zeros(self.N_history_dacs)
+        self.DAC_history = np.zeros(self.N_history_dacs)
+        self.DAC_mean_history = np.zeros(self.N_history_dacs)*np.nan
+        self.DAC_thrsh_history = np.zeros(self.N_history_dacs)*np.nan
+
         self.freq_history = np.zeros(self.N_history_counters)
 #        self.time_history = np.zeros(self.N_history)
         self.time_history_counters = np.linspace(-self.N_history_counters+1, 0, self.N_history_counters) * self.gate_time_counter
@@ -186,16 +185,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         #self.curve_freq_error.setPen(Qt.QPen(Qt.Qt.blue))
         
         # Create the curve in the plot
-        if self.output_number == 0:
-            self.curve_dac0 = self.qplt_dac.getPlotItem().plot(pen='b')
-            #self.curve_dac0.attach(self.qplt_dac)
-            #self.curve_dac0.setPen(Qt.QPen(Qt.Qt.blue))
-            
-        if self.output_number == 1:
-            self.curve_dac1 = self.qplt_dac.getPlotItem().plot(pen='b')
-            #self.curve_dac1.attach(self.qplt_dac)
-            #self.curve_dac1.setPen(Qt.QPen(Qt.Qt.blue))
-            
+        self.curve_dac = self.qplt_dac.getPlotItem().plot(pen='b')
+        self.curve_dac_uthrsh = self.qplt_dac.getPlotItem().plot(connect='finite', pen=pg.mkPen(0.5, style=QtCore.Qt.DashLine))
+        self.curve_dac_lthrsh = self.qplt_dac.getPlotItem().plot(connect='finite', pen=pg.mkPen(0.5, style=QtCore.Qt.DashLine))
+                    
         
         # Create widgets to specify buffer length and clear buffer:
         self.qbtn_reset = Qt.QPushButton('Clear display')
@@ -453,14 +446,17 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
         if bLock and self.qchk_autorecover.isChecked():
         # If the lock and auto recovery are enabled
-            if self.dac_hist.size < 50:
+            if self.recovery_history.size < 50:
             # Append to the DAC history if the sample size is too small
-                self.dac_hist = np.append(current_dac, self.dac_hist)
+                self.recovery_history = np.append(current_dac, self.recovery_history)
+                # Return NANs for plotting
+                return (np.nan, np.nan)
             else:
             # Calculate the historical mean and standard deviation
-                dac_mean = np.mean(self.dac_hist)
-                dac_std = np.std(self.dac_hist)
-                if np.abs(current_dac - dac_mean) > float(self.qedit_rec_thresh.text())*dac_std:
+                dac_mean = np.mean(self.recovery_history)
+                dac_std = np.std(self.recovery_history)
+                rec_threshold = float(self.qedit_rec_thresh.text())
+                if np.abs(current_dac - dac_mean) > rec_threshold*dac_std:
                 # If the current DAC value is out of bounds, relock to the average
                     self.sl.set_dac_offset(output_number, int(dac_mean))
                     self.xem_gui_mainwindow.qloop_filters[output_number].qchk_lock.setChecked(False)
@@ -470,16 +466,20 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     print("{}: channel {} lost lock".format(time.strftime('%c'),output_number))
                 else:
                 # If the current DAC value is in bounds, add it to the DAC history
-                    if self.dac_hist.size < 500:
+                    if self.recovery_history.size < 500:
                     # Append up to a certain size
-                        self.dac_hist = np.append(current_dac, self.dac_hist)
+                        self.recovery_history = np.append(current_dac, self.recovery_history)
                     else:
                     # Roll the values otherwise
-                        self.dac_hist = np.roll(self.dac_hist, 1)
-                        self.dac_hist[0] = current_dac
+                        self.recovery_history = np.roll(self.recovery_history, 1)
+                        self.recovery_history[0] = current_dac
+                # Return the mean and std deviation for plotting
+                return (dac_mean, rec_threshold*dac_std)
         else:
         # If lock or auto recovery are disabled, clear the accumulated DAC history
-            self.dac_hist = np.array([])
+            self.recovery_history = np.array([])
+            # Return NANs for plotting
+            return (np.nan, np.nan)
 
     
         
@@ -510,7 +510,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             if DAC0_output is not None:
                 if self.output_number == 0:
                 # Run auto recovery for DAC0
-                    self.runAutoRecover(self.output_number, np.mean(DAC0_output))
+                    dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC0_output))
+                    dac_output = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                 # Write data to disk:
@@ -519,7 +522,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             if DAC1_output is not None:
                 if self.output_number == 1:
                 # Run auto recovery for DAC1
-                    self.runAutoRecover(self.output_number, np.mean(DAC1_output))
+                    dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC1_output))
+                    dac_output = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
                 # Write data to disk:
@@ -558,19 +564,15 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.freq_history[:-len(freq_counter_samples)] = self.freq_history[len(freq_counter_samples):]
                 self.freq_history[-len(freq_counter_samples):] = freq_counter_samples
                 
-                if self.output_number == 0:
-                    self.DAC0_history[:-len(DAC0_output)] = self.DAC0_history[len(DAC0_output):]
-                    self.DAC0_history[-len(DAC0_output):] = DAC0_output
-                    self.bValid_dacs[:-len(DAC0_output)] = self.bValid_dacs[len(DAC0_output):]
-                    self.bValid_dacs[-len(DAC0_output):] = True
-                if self.output_number == 1:
-                    self.DAC1_history[:-len(DAC1_output)] = self.DAC1_history[len(DAC1_output):]
-                    self.DAC1_history[-len(DAC1_output):] = DAC1_output
-                    self.DAC2_history[:-len(DAC1_output)] = self.DAC2_history[len(DAC1_output):]
-                    self.DAC2_history[-len(DAC1_output):] = DAC2_output
-                    self.bValid_dacs[:-len(DAC1_output)] = self.bValid_dacs[len(DAC1_output):]
-                    self.bValid_dacs[-len(DAC1_output):] = True
-                    
+                self.DAC_history[:-1] = self.DAC_history[1:]
+                self.DAC_history[-1:] = dac_output
+                self.DAC_mean_history[:-1] = self.DAC_mean_history[1:]
+                self.DAC_mean_history[-1:] = dac_mean
+                self.DAC_thrsh_history[:-1] = self.DAC_thrsh_history[1:]
+                self.DAC_thrsh_history[-1:] = dac_thrsh
+                self.bValid_dacs[:-1] = self.bValid_dacs[1:]
+                self.bValid_dacs[-1:] = True
+                
     #            self.time_history[:-len(freq_counter_samples)] = self.time_history[len(freq_counter_samples):]
     #            self.time_history[-len(freq_counter_samples):] = time_axis
                 
@@ -605,18 +607,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 #self.qplt_freq.replot()
                 
                 # Update graph:
-                if self.output_number == 0:
-                    self.curve_dac0.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC0_history[self.bValid_dacs])            
-                    self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f' % (channelName, self.DAC0_history[-1]))
-                    
-                if self.output_number == 1:
-                    self.curve_dac1.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC1_history[self.bValid_dacs])            
-                    #self.curve_dac2.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC2_history[self.bValid_dacs])            
-                    self.qplt_dac.setTitle('%s Lock DAC outputs, last raw codes = %f, %f' % (channelName, self.DAC1_history[-1], self.DAC2_history[-1]))
+                self.curve_dac.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_history[self.bValid_dacs])
+                self.curve_dac_uthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]+self.DAC_thrsh_history[self.bValid_dacs])
+                self.curve_dac_lthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]-self.DAC_thrsh_history[self.bValid_dacs])
+                self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f' % (channelName, self.DAC_history[-1]))
                 
                 if self.qchk_fullscale_dac.isChecked():
                     #self.qplt_dac.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
-                    self.qplt_dac.setYRange(0, 1)
+                    self.qplt_dac.setYRange(-1, 1)
                     #self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
                 else:
                     self.qplt_dac.enableAutoRange(y=True)
