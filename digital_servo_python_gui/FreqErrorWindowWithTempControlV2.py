@@ -10,6 +10,7 @@ import time
 from PyQt5 import QtGui, Qt, QtCore
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
+import tables as tb
 import math
 
 
@@ -28,6 +29,10 @@ import weakref
 # stuff for Python 3 port
 import pyqtgraph as pg
 
+# Description class for uptime record
+class Uptime(tb.IsDescription):
+    start = tb.Float64Col()
+    stop = tb.Float64Col()
 
 class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
@@ -122,18 +127,15 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.make_sure_path_exists('data_logging')
 
         # Open file for output
-        strCurrentName1 = self.strNameTemplate + 'freq_counter0.bin'
-        strCurrentName2 = self.strNameTemplate + 'freq_counter1.bin'
-        strCurrentName3 = self.strNameTemplate + 'freq_counter0_time_axis.bin'
-        strCurrentName4 = self.strNameTemplate + 'DAC0.bin'
-        strCurrentName5 = self.strNameTemplate + 'DAC1.bin'
-        strCurrentName6 = self.strNameTemplate + 'DAC2.bin'
-        self.file_output_counter0 = open(strCurrentName1, 'wb')
-        self.file_output_counter1 = open(strCurrentName2, 'wb')
-        self.file_output_time = open(strCurrentName3, 'wb')
-        self.file_output_dac0 = open(strCurrentName4, 'wb')
-        self.file_output_dac1 = open(strCurrentName5, 'wb')
-        self.file_output_dac2 = open(strCurrentName6, 'wb')
+        strCurrentName1 = self.strNameTemplate + 'freq_counter{:}.bin'.format(self.output_number)
+        strCurrentName2 = self.strNameTemplate + 'freq_counter{:}_time_axis.bin'.format(self.output_number)
+        strCurrentName3 = self.strNameTemplate + 'DAC{:}.bin'.format(self.output_number)
+        strCurrentName4 = self.strNameTemplate + 'uptime{:}.h5'.format(self.output_number)
+        self.file_output_counter = open(strCurrentName1, 'wb')
+        self.file_output_time = open(strCurrentName2, 'wb')
+        self.file_output_dac = open(strCurrentName3, 'wb')
+        self.file_output_uptime = tb.open_file(strCurrentName4, mode="w", title="Uptime {:}".format(self.output_number))
+
         
     def initSL(self):
         
@@ -436,7 +438,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 #            print('Temp control disactivated.')
                     
 
-    def runAutoRecover(self, output_number, current_dac):
+    def runAutoRecover(self, current_dac, current_time):
         # Try to read the lock state
         try:
             bLock = self.xem_gui_mainwindow.qchk_lock.isChecked()
@@ -446,9 +448,28 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
         if bLock and self.qchk_autorecover.isChecked():
         # If the lock and auto recovery are enabled
-            if self.recovery_history.size < 50:
+            if self.recovery_history.size == 0:
+            # If this is no history, make new uptime table
+                self.uptime_table = self.file_output_uptime.create_table("/", "t"+str(int(current_time)), Uptime, time.strftime("%c"))
+                self.uptime = self.uptime_table.row
+                self.uptime["start"] = current_time
+                self.uptime["stop"] = current_time
+                self.uptime.append()
+                self.uptime_table.flush()
+            # Initialize timestamps
+                self.recovery_last_timestamp = current_time
+                self.recovery_lost_timestamp = current_time
+                self.recovery_gained_timestamp = current_time
+                self.bRecord_unlock = False
             # Append to the DAC history if the sample size is too small
                 self.recovery_history = np.append(current_dac, self.recovery_history)
+                # Return NANs for plotting
+                return (np.nan, np.nan)
+            elif self.recovery_history.size < 50:
+            # Append to the DAC history if the sample size is too small
+                self.recovery_history = np.append(current_dac, self.recovery_history)
+            # Update timestamps
+                self.recovery_last_timestamp = current_time
                 # Return NANs for plotting
                 return (np.nan, np.nan)
             else:
@@ -458,14 +479,18 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 rec_threshold = float(self.qedit_rec_thresh.text())
                 if np.abs(current_dac - dac_mean) > rec_threshold*dac_std:
                 # If the current DAC value is out of bounds, relock to the average
-                    self.sl.set_dac_offset(output_number, int(dac_mean))
-                    self.xem_gui_mainwindow.qloop_filters[output_number].qchk_lock.setChecked(False)
-                    self.xem_gui_mainwindow.qloop_filters[output_number].updateFilterSettings()
-                    self.xem_gui_mainwindow.qloop_filters[output_number].qchk_lock.setChecked(True)
-                    self.xem_gui_mainwindow.qloop_filters[output_number].updateFilterSettings()
-                    print("{}: channel {} lost lock".format(time.strftime('%c'),output_number))
-                else:
-                # If the current DAC value is in bounds, add it to the DAC history
+                    self.sl.set_dac_offset(self.output_number, int(dac_mean))
+                    self.xem_gui_mainwindow.qloop_filters[self.output_number].qchk_lock.setChecked(False)
+                    self.xem_gui_mainwindow.qloop_filters[self.output_number].updateFilterSettings()
+                    self.xem_gui_mainwindow.qloop_filters[self.output_number].qchk_lock.setChecked(True)
+                    self.xem_gui_mainwindow.qloop_filters[self.output_number].updateFilterSettings()
+                    print("{}: channel {} lost lock".format(time.strftime('%c'),self.output_number))
+                # Update the timestamps
+                    self.recovery_lost_timestamp = self.recovery_last_timestamp
+                    self.recovery_gained_timestamp = time.time()
+                    self.bRecord_unlock = True
+                elif current_time - self.recovery_gained_timestamp > 1.5:
+                # If the current DAC value is locked and in bounds, add it to the DAC history
                     if self.recovery_history.size < 500:
                     # Append up to a certain size
                         self.recovery_history = np.append(current_dac, self.recovery_history)
@@ -473,6 +498,16 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     # Roll the values otherwise
                         self.recovery_history = np.roll(self.recovery_history, 1)
                         self.recovery_history[0] = current_dac
+                    if self.bRecord_unlock:
+                    # If available, record an unlock event
+                        self.uptime["start"] = self.recovery_lost_timestamp
+                        self.uptime["stop"] = self.recovery_gained_timestamp
+                        self.uptime.append()
+                        self.uptime_table.flush()
+                        self.bRecord_unlock = False
+                # Update the timestamps
+                    self.recovery_last_timestamp = current_time
+                    self.uptime_table.cols.stop[0] = current_time
                 # Return the mean and std deviation for plotting
                 return (dac_mean, rec_threshold*dac_std)
         else:
@@ -502,36 +537,33 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             
         try:
             if time_axis is not None:
-                # scale to seconds:
-                time_axis = time_axis.astype(float) * self.gate_time
                 # Write data to disk:
                 self.file_output_time.write(time_axis)
+                time_axis = np.mean(time_axis)
                 
-            if DAC0_output is not None:
-                if self.output_number == 0:
+            if DAC0_output is not None and self.output_number is 0:
                 # Run auto recovery for DAC0
-                    dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC0_output))
-                    dac_output = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
-                    dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
-                    dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                dac_mean, dac_thrsh = self.runAutoRecover(np.mean(DAC0_output), time_axis)
+                dac_output = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                 # Write data to disk:
-                self.file_output_dac0.write(DAC0_output)
+                self.file_output_dac.write(DAC0_output)
                 
-            if DAC1_output is not None:
-                if self.output_number == 1:
+            if DAC1_output is not None and self.output_number is 1:
                 # Run auto recovery for DAC1
-                    dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC1_output))
-                    dac_output = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
-                    dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
-                    dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                dac_mean, dac_thrsh = self.runAutoRecover(np.mean(DAC1_output), time_axis)
+                dac_output = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
                 # Write data to disk:
-                self.file_output_dac1.write(DAC1_output)
+                self.file_output_dac.write(DAC1_output)
                 
-            if DAC2_output is not None:
+            if DAC2_output is not None and self.output_number is 2:
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(np.float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
                 # Write data to disk:
@@ -542,23 +574,9 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 
                 
             if freq_counter_samples is not None:
-                if self.bVeryFirst == True:
-                    # We flush the first two samples because the system isn't fully initialized and they always force the plot scale too wide
-                    freq_counter_samples = freq_counter_samples[2:]
-                    if self.output_number == 0 and (DAC0_output is not None):
-                        DAC0_output = DAC0_output[2:]
-                    if self.output_number == 1 and (DAC1_output is not None):
-                        DAC1_output = DAC1_output[2:]
-                        DAC2_output = DAC2_output[2:]
-                    self.bVeryFirst = False
-                    return
-                    
                 # Write data to disk:
-                if self.output_number == 0:
-                    self.file_output_counter0.write(freq_counter_samples)
-                elif self.output_number == 1:
-                    self.file_output_counter1.write(freq_counter_samples)
-                            
+                self.file_output_counter.write(freq_counter_samples)
+
                 # Record the new chunk of data in the buffer:
 #                print('len = %d' % len(freq_counter_samples))
                 self.freq_history[:-len(freq_counter_samples)] = self.freq_history[len(freq_counter_samples):]

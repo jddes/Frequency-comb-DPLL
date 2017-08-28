@@ -2166,7 +2166,7 @@ class SuperLaserLand_JD_RP:
             freq_counter1_sample = self.scaleCounterReadingsIntoHz(freq_counter1_sample)
 
 
-        time_axis = None # not currently used anymore
+        time_axis = np.array((time.time(),)) # approximate time (seconds since the UTC epoch, POSIX)
         if output_number == 0:
             return (freq_counter0_sample, time_axis, dac0_samples, dac1_samples, dac2_samples)
         elif output_number == 1:
