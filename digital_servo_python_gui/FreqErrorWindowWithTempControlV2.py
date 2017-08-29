@@ -97,28 +97,18 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.client = None
         end_time = time.clock()
         print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
-    def initBuffer(self):
-#        print('initBuffer')
-        self.gate_time_counter = self.sl.N_CYCLES_GATE_TIME/self.sl.fs
-        self.gate_time_dacs = self.sl.N_CYCLES_GATE_TIME/self.sl.fs/1
-        try:
-            self.N_history_counters = int(round(float(self.qedit_history.text()) / self.gate_time_counter))
-            self.N_history_dacs = int(round(float(self.qedit_history.text()) / self.gate_time_dacs))
-        except:
-            self.N_history_counters = int(round(10 / self.gate_time_counter))
-            self.N_history_dacs = int(round(10 / self.gate_time_dacs))
-        
-        self.DAC_history = np.zeros(self.N_history_dacs)
-        self.DAC_mean_history = np.zeros(self.N_history_dacs)*np.nan
-        self.DAC_thrsh_history = np.zeros(self.N_history_dacs)*np.nan
 
-        self.freq_history = np.zeros(self.N_history_counters)
-#        self.time_history = np.zeros(self.N_history)
-        self.time_history_counters = np.linspace(-self.N_history_counters+1, 0, self.N_history_counters) * self.gate_time_counter
-        self.time_history_dacs = np.linspace(-self.N_history_dacs+1, 0, self.N_history_dacs) * self.gate_time_dacs
-        self.bValid_counters = (np.zeros(self.N_history_counters) == 1)
-        self.bValid_dacs = (np.zeros(self.N_history_dacs) == 1)
-        self.bVeryFirst = True
+    def initBuffer(self):
+    # Initialize data buffers for plotting
+#        print('initBuffer')
+        #self.gate_time_counter = self.sl.N_CYCLES_GATE_TIME/self.sl.fs
+        self.DAC_history = np.array([])
+        self.DAC_mean_history = np.array([])
+        self.DAC_thrsh_history = np.array([])
+        self.time_history_dacs = np.array([])
+
+        self.freq_history = np.array([])
+        self.time_history_counters = np.array([])
             
     def openOutputFiles(self):
         
@@ -142,7 +132,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 #        print('initSL')
         self.initBuffer()
         # Start timer which grabs data
-        self.timerID = self.startTimer(500)
+        self.timerID = self.startTimer(200)
         
     def chkTriangular_checked(self):
         if self.qchk_triangular.isChecked():
@@ -523,7 +513,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         try:
             (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_dual_mode_counter(self.output_number)   
             # print (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
-            
+            channelName = ''
+            if self.output_number == 0:
+                channelName = 'CEO'
+            if self.output_number == 1:
+                channelName = 'Optical'
         except:
             print('Exception occured reading counter data. disabling further updates.')
             self.killTimer(self.timerID)
@@ -541,104 +535,95 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.file_output_time.write(time_axis)
                 time_axis = np.mean(time_axis)
                 
-            if DAC0_output is not None and self.output_number is 0:
-                # Run auto recovery for DAC0
-                dac_mean, dac_thrsh = self.runAutoRecover(np.mean(DAC0_output), time_axis)
-                dac_output = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
-                dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
-                dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
-                # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
-                DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
-                # Write data to disk:
-                self.file_output_dac.write(DAC0_output)
+                if DAC0_output is not None and self.output_number is 0:
+                    # Run auto recovery for DAC0
+                    dac_mean, dac_thrsh = self.runAutoRecover(np.mean(DAC0_output), time_axis)
+                    dac_output = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
+                    DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
+                    # Write data to disk:
+                    self.file_output_dac.write(DAC0_output)
                 
-            if DAC1_output is not None and self.output_number is 1:
-                # Run auto recovery for DAC1
-                dac_mean, dac_thrsh = self.runAutoRecover(np.mean(DAC1_output), time_axis)
-                dac_output = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
-                dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
-                dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
-                # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
-                DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
-                # Write data to disk:
-                self.file_output_dac.write(DAC1_output)
+                if DAC1_output is not None and self.output_number is 1:
+                    # Run auto recovery for DAC1
+                    dac_mean, dac_thrsh = self.runAutoRecover(np.mean(DAC1_output), time_axis)
+                    dac_output = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
+                    DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
+                    # Write data to disk:
+                    self.file_output_dac.write(DAC1_output)
                 
-            if DAC2_output is not None and self.output_number is 2:
-                # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
-                DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(np.float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
-                # Write data to disk:
-                self.file_output_dac2.write(DAC2_output)
+                if DAC2_output is not None and self.output_number is 2:
+                    # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
+                    DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(np.float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
+                    # Write data to disk:
+                    self.file_output_dac2.write(DAC2_output)
                 
-                self.runTempControlLoop(time.clock(), DAC2_output[-1:])
+                    self.runTempControlLoop(time.clock(), DAC2_output[-1:])
                 
+                if (DAC0_output is not None) or (DAC1_output is not None):
+                    # Write to plot buffers
+                    self.DAC_history = np.append(self.DAC_history, dac_output)
+                    self.DAC_mean_history = np.append(self.DAC_mean_history, dac_mean)
+                    self.DAC_thrsh_history = np.append(self.DAC_thrsh_history, dac_thrsh)
+                    self.time_history_dacs = np.append(self.time_history_dacs, time_axis)
+                    # Filter plot points by age
+                    hist_filt = (time_axis - self.time_history_dacs) < float(self.qedit_history.text())
+                    self.DAC_history = self.DAC_history[hist_filt]
+                    self.DAC_mean_history = self.DAC_mean_history[hist_filt]
+                    self.DAC_thrsh_history = self.DAC_thrsh_history[hist_filt]
+                    self.time_history_dacs = self.time_history_dacs[hist_filt]
+                    # Update graph:
+                    self.curve_dac.setData(self.time_history_dacs - time_axis, self.DAC_history)
+                    self.curve_dac_uthrsh.setData(self.time_history_dacs - time_axis, self.DAC_mean_history+self.DAC_thrsh_history)
+                    self.curve_dac_lthrsh.setData(self.time_history_dacs - time_axis, self.DAC_mean_history-self.DAC_thrsh_history)
+                    self.qplt_dac.setTitle('%s Lock DAC output = %f' % (channelName, self.DAC_history[-1]))
+                    if self.qchk_fullscale_dac.isChecked():
+                        #self.qplt_dac.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                        self.qplt_dac.setYRange(-1, 1)
+                        #self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
+                    else:
+                        self.qplt_dac.enableAutoRange(y=True)
+                        #self.qplt_dac.setAxisAutoScale(Qwt.QwtPlot.yLeft)
+            
                 
-                
-            if freq_counter_samples is not None:
-                # Write data to disk:
-                self.file_output_counter.write(freq_counter_samples)
+                if freq_counter_samples is not None:
+                    # Write data to disk:
+                    self.file_output_counter.write(freq_counter_samples)
 
-                # Record the new chunk of data in the buffer:
-#                print('len = %d' % len(freq_counter_samples))
-                self.freq_history[:-len(freq_counter_samples)] = self.freq_history[len(freq_counter_samples):]
-                self.freq_history[-len(freq_counter_samples):] = freq_counter_samples
-                
-                self.DAC_history[:-1] = self.DAC_history[1:]
-                self.DAC_history[-1:] = dac_output
-                self.DAC_mean_history[:-1] = self.DAC_mean_history[1:]
-                self.DAC_mean_history[-1:] = dac_mean
-                self.DAC_thrsh_history[:-1] = self.DAC_thrsh_history[1:]
-                self.DAC_thrsh_history[-1:] = dac_thrsh
-                self.bValid_dacs[:-1] = self.bValid_dacs[1:]
-                self.bValid_dacs[-1:] = True
-                
-    #            self.time_history[:-len(freq_counter_samples)] = self.time_history[len(freq_counter_samples):]
-    #            self.time_history[-len(freq_counter_samples):] = time_axis
-                
-                self.bValid_counters[:-len(freq_counter_samples)] = self.bValid_counters[len(freq_counter_samples):]
-                self.bValid_counters[-len(freq_counter_samples):] = True
-
-                                
-                channelName = ''
-                if self.output_number == 0:
-                    channelName = 'CEO'
-                if self.output_number == 1:
-                    channelName = 'Optical'
-                
-                # Update graph:
-                self.curve_freq_error.setData(self.time_history_counters[self.bValid_counters] - self.time_history_counters[len(self.time_history_counters)-1], self.freq_history[self.bValid_counters])            
-                self.qplt_freq.setTitle('%s Lock Freq error, mean = %.6f Hz, std = %.3f mHz' % (channelName, np.mean(self.freq_history[self.bValid_counters]), 1e3*np.std(self.freq_history[self.bValid_counters])))
-                if self.qchk_fullscale_freq.isChecked():
-                    #self.qplt_freq.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
-                    try:
-                        ymin = float(self.qedit_ymin.text())
-                        ymax = float(self.qedit_ymax.text())
-                    except:
-                        ymin = -25e6
-                        ymax = 25e6
+                    # Write to plot buffers
+                    self.freq_history = np.append(self.freq_history, freq_counter_samples)
+                    self.time_history_counters = np.append(self.time_history_counters, time_axis)
+                    # Filter plot points by age
+                    hist_filt = (time_axis - self.time_history_counters) < float(self.qedit_history.text())
+                    self.freq_history = self.freq_history[hist_filt]
+                    self.time_history_counters = self.time_history_counters[hist_filt]
+                    # Update graph:
+                    self.curve_freq_error.setData(self.time_history_counters - time_axis, self.freq_history)
+                    counts_mean = self.SI_scale(np.mean(self.freq_history), sig_figs=4)
+                    counts_std = self.SI_scale(np.std(self.freq_history), sig_figs=3)
+                    self.qplt_freq.setTitle('{0:} Lock Freq error, mean = {1:} Hz, std = {2:} Hz'.format(channelName, counts_mean, counts_std))
+                    if self.qchk_fullscale_freq.isChecked():
+                        #self.qplt_freq.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
+                        try:
+                            ymin = float(self.qedit_ymin.text())
+                            ymax = float(self.qedit_ymax.text())
+                        except:
+                            ymin = -25e6
+                            ymax = 25e6
                         
-                    #self.qplt_freq.setAxisScale(Qwt.QwtPlot.yLeft, ymin, ymax)
-                    self.qplt_freq.setYRange(ymin, ymax)
-                else:
-                    #self.qplt_freq.setAxisAutoScale(Qwt.QwtPlot.yLeft)
-                    self.qplt_freq.enableAutoRange(y=True)
+                        #self.qplt_freq.setAxisScale(Qwt.QwtPlot.yLeft, ymin, ymax)
+                        self.qplt_freq.setYRange(ymin, ymax)
+                    else:
+                        #self.qplt_freq.setAxisAutoScale(Qwt.QwtPlot.yLeft)
+                        self.qplt_freq.enableAutoRange(y=True)
                     
-                #self.qplt_freq.replot()
-                
-                # Update graph:
-                self.curve_dac.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_history[self.bValid_dacs])
-                self.curve_dac_uthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]+self.DAC_thrsh_history[self.bValid_dacs])
-                self.curve_dac_lthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]-self.DAC_thrsh_history[self.bValid_dacs])
-                self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f' % (channelName, self.DAC_history[-1]))
-                
-                if self.qchk_fullscale_dac.isChecked():
-                    #self.qplt_dac.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
-                    self.qplt_dac.setYRange(-1, 1)
-                    #self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
-                else:
-                    self.qplt_dac.enableAutoRange(y=True)
-                    #self.qplt_dac.setAxisAutoScale(Qwt.QwtPlot.yLeft)
-                    
-                #self.qplt_dac.replot()
+                    #self.qplt_freq.replot()
+
             
         except:
             print('Exception occured parsing counter data. disabling further updates.')
@@ -650,6 +635,20 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             DAC2_output = 0
             
             raise
+
+    def SI_scale(self, x, sig_figs = 6):
+        if sig_figs < 3:
+            sig_figs = 3
+        if x != 0:
+            raw_scale = np.log10(np.abs(x))
+            mod = int(raw_scale) % 3
+            scale = int(raw_scale - mod)
+            frac_digits =  int(sig_figs - mod -0.5*(1+np.sign(raw_scale)))
+            str_x = "{0:.{2:}f}e{1:}".format(x*10.**(-scale), scale, frac_digits)
+            return str_x
+        else:
+            str_x = "{0:.{2:}f}e{1:}".format(0., 0, int(sig_figs-1))
+            return str_x
 
     # From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
     def make_sure_path_exists(self, path):
