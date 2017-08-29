@@ -69,6 +69,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.initSL()
         
         self.recovery_history = np.array([])
+        self.recovery_session = 0
 
 
 #    def __del__(self):
@@ -440,7 +441,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # If the lock and auto recovery are enabled
             if self.recovery_history.size == 0:
             # If this is no history, make new uptime table
-                self.uptime_table = self.file_output_uptime.create_table("/", "t"+str(int(current_time)), Uptime, time.strftime("%c"))
+                self.recovery_session = self.recovery_session + 1
+                self.uptime_table = self.file_output_uptime.create_table("/", "t"+str(self.recovery_session), Uptime, time.strftime("%c"))
                 self.uptime = self.uptime_table.row
                 self.uptime["start"] = current_time
                 self.uptime["stop"] = current_time
