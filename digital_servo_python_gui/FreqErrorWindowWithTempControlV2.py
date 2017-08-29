@@ -18,6 +18,7 @@ import os
 import errno
 import sys
 
+from user_friendly_QLineEdit import user_friendly_QLineEdit
 
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 
@@ -142,6 +143,16 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.sl.setCounterMode(False)
         print('Updating counter mode')
 
+    def freq_plot_limits_edited(self):
+        self.freq_ymax = float(self.qedit_ymax.text())
+        self.freq_ymin = float(self.qedit_ymin.text())
+
+    def rec_thresh_edited(self):
+        self.recovery_thrsh_std = float(self.qedit_rec_thresh.text())
+
+    def hist_buff_edited(self):
+        self.hist_buff_length = float(self.qedit_history.text())
+
     def initUI(self):
         
         # Put everything in a groupbox so we can change the border of the window without it looking too obnoxious:
@@ -187,10 +198,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.qbtn_reset = Qt.QPushButton('Clear display')
         self.qbtn_reset.clicked.connect(self.initBuffer)
         self.qlabel_history = Qt.QLabel('Display [s]')
-        self.qedit_history = Qt.QLineEdit('600')
+        self.qedit_history = user_friendly_QLineEdit('600')
+        self.hist_buff_length = 600
         self.qedit_history.setMaximumWidth(40)
-        self.qedit_history.textChanged.connect(self.initBuffer)
-        
+        self.qedit_history.editingFinished.connect(self.hist_buff_edited)
 
         self.qchk_fullscale_freq = Qt.QCheckBox('Fullscale Freq Graph')
         self.qchk_fullscale_freq.setChecked(True)
@@ -205,14 +216,24 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # Controls for the vertical scale of the frequency graph:
         print(type(self.sl.fs))
         print(self.sl.fs)
-        self.qedit_ymin = Qt.QLineEdit('%f' % (-self.sl.fs/4.))
-        self.qedit_ymax = Qt.QLineEdit('%f' % (self.sl.fs/4.))
+        self.qedit_ymin = user_friendly_QLineEdit(self.SI_scale(-self.sl.fs/4., sig_figs=4))
+        self.qedit_ymax = user_friendly_QLineEdit(self.SI_scale(self.sl.fs/4., sig_figs=4))
+        self.freq_ymin = -self.sl.fs/4.
+        self.freq_ymax = self.sl.fs/4.
+        self.qedit_ymin.setMaximumWidth(80)
+        self.qedit_ymax.setMaximumWidth(80)
+        self.qlabel_ymin = Qt.QLabel('y min [Hz]')
+        self.qlabel_ymax = Qt.QLabel('y max [Hz]')
+        self.qedit_ymin.editingFinished.connect(self.freq_plot_limits_edited)
+        self.qedit_ymax.editingFinished.connect(self.freq_plot_limits_edited)
 
         # Controls for Auto Recovery
         self.qchk_autorecover = Qt.QCheckBox('Auto Recover')
         self.qchk_autorecover.setChecked(False)
         self.qlabel_rec_thresh = Qt.QLabel('Recovery Threshold')
-        self.qedit_rec_thresh = Qt.QLineEdit('5')
+        self.qedit_rec_thresh = user_friendly_QLineEdit('5')
+        self.recovery_thrsh_std = 5.
+        self.qedit_rec_thresh.editingFinished.connect(self.rec_thresh_edited)
         self.qedit_rec_thresh.setMaximumWidth(40)
         
         # Put the two graphs into a vertical box layout, so that they share all the vertical space equally:
@@ -221,23 +242,25 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         vbox.addWidget(self.qplt_dac)
         
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()        
-        grid.addLayout(vbox,                                0, 2, 16, 1)
+        grid = QtGui.QGridLayout()
+        grid.addLayout(vbox,                                0, 3, 16, 1)
         
-        grid.addWidget(self.qbtn_reset,                     0, 0, 1, 2)
-        grid.addWidget(self.qlabel_history,                 1, 0)
-        grid.addWidget(self.qedit_history,                  1, 1)
-        grid.addWidget(self.qchk_fullscale_freq,            2, 0, 1, 2)
-        grid.addWidget(self.qchk_fullscale_dac,             3, 0, 1, 2)
-        grid.addWidget(self.qchk_triangular,                4, 0, 1, 2)
+        grid.addWidget(self.qbtn_reset,                     0, 0, 1, 3)
+        grid.addWidget(self.qlabel_history,                 1, 0, 1, 2)
+        grid.addWidget(self.qedit_history,                  1, 2)
+        grid.addWidget(self.qchk_triangular,                2, 0, 1, 3)
+        grid.addWidget(self.qchk_fullscale_freq,            3, 0, 1, 3)
+        grid.addWidget(self.qlabel_ymin,                    4, 0, 1, 2)
+        grid.addWidget(self.qedit_ymin,                     4, 1, 1, 2, alignment=QtCore.Qt.AlignRight)
+        grid.addWidget(self.qlabel_ymax,                    5, 0, 1, 2)
+        grid.addWidget(self.qedit_ymax,                     5, 1, 1, 2, alignment=QtCore.Qt.AlignRight)
+        grid.addWidget(self.qchk_fullscale_dac,             6, 0, 1, 3)
+        
 
-        grid.addWidget(self.qedit_ymin,                     5, 0, 1, 2)
-        grid.addWidget(self.qedit_ymax,                     6, 0, 1, 2)        
-
-        #FEATURE        
-        grid.addWidget(self.qchk_autorecover,           	7, 0, 1, 2)        
-        grid.addWidget(self.qlabel_rec_thresh,              8, 0)
-        grid.addWidget(self.qedit_rec_thresh,               8, 1)
+        #FEATURE
+        grid.addWidget(self.qchk_autorecover,           	  7, 0, 1, 3)
+        grid.addWidget(self.qlabel_rec_thresh,              8, 0, 1, 2)
+        grid.addWidget(self.qedit_rec_thresh,               8, 2)
 
         
         if self.client or True:
@@ -468,7 +491,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             # Calculate the historical mean and standard deviation
                 dac_mean = np.mean(self.recovery_history)
                 dac_std = np.std(self.recovery_history)
-                rec_threshold = float(self.qedit_rec_thresh.text())
+                rec_threshold = self.recovery_thrsh_std
                 if np.abs(current_dac - dac_mean) > rec_threshold*dac_std:
                 # If the current DAC value is out of bounds, relock to the average
                     self.sl.set_dac_offset(self.output_number, int(dac_mean))
@@ -579,7 +602,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     self.DAC_thrsh_history = np.append(self.DAC_thrsh_history, dac_thrsh)
                     self.time_history_dacs = np.append(self.time_history_dacs, time_axis)
                     # Filter plot points by age
-                    hist_filt = (time_axis - self.time_history_dacs) < float(self.qedit_history.text())
+                    hist_filt = (time_axis - self.time_history_dacs) < self.hist_buff_length
                     self.DAC_history = self.DAC_history[hist_filt]
                     self.DAC_mean_history = self.DAC_mean_history[hist_filt]
                     self.DAC_thrsh_history = self.DAC_thrsh_history[hist_filt]
@@ -606,7 +629,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     self.freq_history = np.append(self.freq_history, freq_counter_samples)
                     self.time_history_counters = np.append(self.time_history_counters, time_axis)
                     # Filter plot points by age
-                    hist_filt = (time_axis - self.time_history_counters) < float(self.qedit_history.text())
+                    hist_filt = (time_axis - self.time_history_counters) < self.hist_buff_length
                     self.freq_history = self.freq_history[hist_filt]
                     self.time_history_counters = self.time_history_counters[hist_filt]
                     # Update graph:
@@ -617,8 +640,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     if self.qchk_fullscale_freq.isChecked():
                         #self.qplt_freq.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
                         try:
-                            ymin = float(self.qedit_ymin.text())
-                            ymax = float(self.qedit_ymax.text())
+                            ymin = self.freq_ymin
+                            ymax = self.freq_ymax
                         except:
                             ymin = -25e6
                             ymax = 25e6
