@@ -479,6 +479,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     self.recovery_lost_timestamp = self.recovery_last_timestamp
                     self.recovery_gained_timestamp = time.time()
                     self.bRecord_unlock = True
+                # Update the UI
+                    dac_in_slider_units = self.xem_gui_mainwindow.dac_offset_in_slider_units(dac_mean, self.output_number)
+                    self.xem_gui_mainwindow.q_dac_offset[self.output_number].blockSignals(True)
+                    self.xem_gui_mainwindow.q_dac_offset[self.output_number].setValue(dac_in_slider_units)
+                    self.xem_gui_mainwindow.q_dac_offset[self.output_number].blockSignals(False)
                 elif current_time - self.recovery_gained_timestamp > 1.5:
                 # If the current DAC value is locked and in bounds, add it to the DAC history
                     if self.recovery_history.size < 500:
