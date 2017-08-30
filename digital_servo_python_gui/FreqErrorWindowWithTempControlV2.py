@@ -624,7 +624,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 
                 if (DAC0_output is not None) or (DAC1_output is not None):
                     # Scale to volts
-                    dac_scale = float(self.sl.DACs_limit_high[self.output_number] - self.sl.DACs_limit_low[self.output_number])*2.
+                    dac_scale = float(self.sl.DACs_limit_high[self.output_number] - self.sl.DACs_limit_low[self.output_number])/2.
                     dac_output = dac_output/dac_scale
                     dac_mean = dac_mean/dac_scale
                     dac_thrsh = dac_thrsh/dac_scale
