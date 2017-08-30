@@ -41,6 +41,8 @@ class SuperLaserLand_JD_RP:
     DAC1_gain = 1
     DACs_limit_low = [-2**15, -2**15, -2**19]
     DACs_limit_high = [2**15-1, 2**15-1, 0]
+    restricted_DACs_limit_low = DACs_limit_low[:]
+    restricted_DACs_limit_high = DACs_limit_high[:]
     DACs_offset = [2**14, 2**14, -2**18]
 
 
@@ -299,8 +301,10 @@ class SuperLaserLand_JD_RP:
         self.ddc1_angle_select = 0
         self.residuals0_phase_or_freq = 0
         self.residuals1_phase_or_freq = 0
-        
+        # Initialize full DAC output range
         self.dev = RP_PLL.RP_PLL_device()
+        for dac_number in (0, 1):
+            self.set_dac_limits(dac_number, self.DACs_limit_low[dac_number], self.DACs_limit_high[dac_number])
     
         
     def openDevice(self, bConfigure=True, strSerial='', strFirmware='superlaserland.bit', bUpdateFPGA = True):
@@ -1300,7 +1304,7 @@ class SuperLaserLand_JD_RP:
             if limit_low < -2**15:
                 limit_low = -2**15
                 
-            print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
+#            print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
             if bSendToFPGA == True:
                 self.send_bus_cmd(self.BUS_ADDR_dac0_limits, limit_low, limit_high)
         if dac_number == 1:
@@ -1310,7 +1314,7 @@ class SuperLaserLand_JD_RP:
             if limit_low < -2**15:
                 limit_low = -2**15
                 
-            print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
+#            print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
             if bSendToFPGA == True:
                 self.send_bus_cmd(self.BUS_ADDR_dac1_limits, limit_low, limit_high)
             
@@ -1321,7 +1325,7 @@ class SuperLaserLand_JD_RP:
             if limit_low < -2**19:
                 limit_low = -2**19
             
-            print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
+#            print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
 #            limit_low_lsbs = limit_low & 0xFFFF
 #            limit_low_msbs = (limit_low & 0xFFFF0000) >> 16
 #            self.send_bus_cmd(self.BUS_ADDR_dac2_limit_low, limit_low_lsbs, limit_low_msbs)
@@ -1333,8 +1337,8 @@ class SuperLaserLand_JD_RP:
             if bSendToFPGA == True:
                 self.send_bus_cmd_32bits(self.BUS_ADDR_dac2_limit_high, limit_high)
             
-        self.DACs_limit_low[dac_number] = limit_low
-        self.DACs_limit_high[dac_number] = limit_high
+        self.restricted_DACs_limit_low[dac_number] = limit_low
+        self.restricted_DACs_limit_high[dac_number] = limit_high
         
 #    def set_fll0_settings(self, freq_lock, gain_in_bits):
 #        # Register format is:

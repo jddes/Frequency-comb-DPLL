@@ -131,8 +131,7 @@ class Loop_filters_module(object):
         self.gain_d = gain_d_int/2.**self.N_DIVIDE_D
         self.coef_d = coef_d_int/2.**self.N_DIVIDE_DF
         
-        #if bDebugOutput:
-        if True:
+        if bDebugOutput:
             print('P_gain = %e, in integer: P_gain = %d = 2^%.2f' % (self.gain_p, gain_p_int, np.log2(gain_p_int+0.1)))
             print('I_gain = %e, in integer: I_gain = %d = 2^%.2f' % (self.gain_i, gain_i_int, np.log2(gain_i_int+0.1)))
             print('II_gain = %e, in integer: II_gain = %d = 2^%.2f' % (self.gain_ii, gain_ii_int, np.log2(gain_ii_int+0.1)))
