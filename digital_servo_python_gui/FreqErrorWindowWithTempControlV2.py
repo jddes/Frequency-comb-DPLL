@@ -536,11 +536,12 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                         self.uptime["start"] = self.recovery_lost_timestamp
                         self.uptime["stop"] = self.recovery_gained_timestamp
                         self.uptime.append()
-                        self.uptime_table.flush()
                         self.bRecord_unlock = False
                 # Update the timestamps
                     self.recovery_last_timestamp = current_time
                     self.uptime_table.cols.stop[0] = current_time
+                # Write to Uptime file
+                    self.uptime_table.flush()
             # Update DAC output limits
                 if self.qchk_limit_DAC.isChecked():
                 # If DAC output limits are enabled
