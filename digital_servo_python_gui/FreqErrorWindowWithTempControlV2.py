@@ -125,11 +125,13 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         strCurrentName1 = self.strNameTemplate + 'freq_counter{:}.bin'.format(self.output_number)
         strCurrentName2 = self.strNameTemplate + 'freq_counter{:}_time_axis.bin'.format(self.output_number)
         strCurrentName3 = self.strNameTemplate + 'DAC{:}.bin'.format(self.output_number)
-        strCurrentName4 = self.strNameTemplate + 'uptime{:}.h5'.format(self.output_number)
+        strCurrentName4 = self.strNameTemplate + 'DAC{:}_time_axis.bin'.format(self.output_number)
+        strCurrentName5 = self.strNameTemplate + 'uptime{:}.h5'.format(self.output_number)
         self.file_output_counter = open(strCurrentName1, 'wb')
-        self.file_output_time = open(strCurrentName2, 'wb')
+        self.file_output_counter_time = open(strCurrentName2, 'wb')
         self.file_output_dac = open(strCurrentName3, 'wb')
-        self.file_output_uptime = tb.open_file(strCurrentName4, mode="w", title="Uptime {:}".format(self.output_number))
+        self.file_output_dac_time = open(strCurrentName4, 'wb')
+        self.file_output_uptime = tb.open_file(strCurrentName5, mode="w", title="Uptime {:}".format(self.output_number))
 
         
     def initSL(self):
@@ -593,8 +595,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             
         try:
             if time_axis is not None:
-                # Write data to disk:
-                self.file_output_time.write(time_axis)
                 time_axis = np.mean(time_axis)
                 
                 if DAC0_output is not None and self.output_number is 0:
@@ -604,6 +604,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                     DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                     # Write data to disk:
+                    self.file_output_dac_time.write(time_axis)
                     self.file_output_dac.write(DAC0_output)
                 
                 if DAC1_output is not None and self.output_number is 1:
@@ -613,6 +614,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                     DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
                     # Write data to disk:
+                    self.file_output_dac_time.write(time_axis)
                     self.file_output_dac.write(DAC1_output)
                 
                 if DAC2_output is not None and self.output_number is 2:
@@ -665,6 +667,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 if freq_counter_samples is not None:
                     # Write data to disk:
                     self.file_output_counter.write(freq_counter_samples)
+                    self.file_output_counter_time.write(time_axis)
 
                     # Write to plot buffers
                     self.freq_history = np.append(self.freq_history, freq_counter_samples)
