@@ -77,27 +77,48 @@ ARCHITECTURE behavior OF DDC_test_bench IS
 	-- The Core which generates sine and cosine to test the DDC
 	component LO_DDS
 		port (
-		clk: in std_logic;
-		pinc_in: in std_logic_vector(47 downto 0);
-		cosine: out std_logic_vector(15 downto 0);
-		sine: out std_logic_vector(15 downto 0);
-		phase_out: out std_logic_vector(47 downto 0));
+--		clk: in std_logic;
+--		pinc_in: in std_logic_vector(47 downto 0);
+--		cosine: out std_logic_vector(15 downto 0);
+--		sine: out std_logic_vector(15 downto 0);
+--		phase_out: out std_logic_vector(47 downto 0));
+        aclk : IN STD_LOGIC;
+        s_axis_phase_tvalid : IN STD_LOGIC;
+        s_axis_phase_tdata : IN STD_LOGIC_VECTOR(47 DOWNTO 0);  -- phase increments
+        m_axis_data_tvalid : OUT STD_LOGIC;
+        m_axis_data_tdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);  -- cos and sine (16 bits signed each)
+        m_axis_phase_tvalid : OUT STD_LOGIC;
+        m_axis_phase_tdata : OUT STD_LOGIC_VECTOR(47 DOWNTO 0)  -- output phase, not used in this module
+        );
 	end component;
 	
 	signal test_cosine : std_logic_vector(15 downto 0);
 	signal DDC_input_signal : std_logic_vector(15 downto 0);
 	signal pulses : std_logic_vector(15 downto 0) := (others => '0');
 	signal clock_counter : unsigned(15 downto 0) := (others => '0');
+	
+	signal lo_dds_m_axis_data_tdata : STD_LOGIC_VECTOR(31 DOWNTO 0);
 BEGIN
 
 -- Compute cos() and sin()
 	LO_DDS_inst : LO_DDS
 			port map (
-				clk => clk,
-				pinc_in => input_signal_frequency,
-				cosine => test_cosine,
-				sine => open,
-				phase_out => open);
+--				clk => clk,
+--				pinc_in => input_signal_frequency,
+--				cosine => test_cosine,
+--				sine => open,
+--				phase_out => open);
+				aclk                    => clk,
+                s_axis_phase_tvalid     => '1',
+                s_axis_phase_tdata      => input_signal_frequency,
+                m_axis_data_tvalid      => open,
+                m_axis_data_tdata       => lo_dds_m_axis_data_tdata,
+                m_axis_phase_tvalid     => open,
+                m_axis_phase_tdata      => open
+                );
+    test_cosine  <= lo_dds_m_axis_data_tdata(15 downto 0);
+--    DDS_sine_tmp    <= lo_dds_m_axis_data_tdata(31 downto 16);
+				
 	DDC_input_signal(15 downto 0) <= test_cosine(15) & test_cosine(15) & test_cosine(15 downto 0+2);
 	data_input <= std_logic_vector(signed(DDC_input_signal) + signed(pulses));
 	

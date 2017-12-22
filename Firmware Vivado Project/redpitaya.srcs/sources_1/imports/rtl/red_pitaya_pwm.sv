@@ -28,25 +28,36 @@ reg  [ 4-1: 0] bcnt  ;
 reg  [16-1: 0] b     ;
 reg  [ 8-1: 0] vcnt, vcnt_r;
 reg  [ 8-1: 0] v   , v_r   ;
+// add some registers to help timing closure:
+reg [CCW-1:0] cfg_reg;
+reg pwm_o_reg;
 
 always @(posedge clk)
-if (~rstn) begin
-   vcnt <=  8'h0 ;
-   bcnt <=  4'h0 ;
-   pwm_o    <=  1'b0 ;
-end else begin
-   vcnt   <= (vcnt == FULL) ? 8'h1 : (vcnt + 8'd1) ;
-   vcnt_r <= vcnt;
-   v_r    <= (v + b[0]) ; // add decimal bit to current value
-   if (vcnt == FULL) begin
-      bcnt <=  bcnt + 4'h1 ;
-      v    <= (bcnt == 4'hF) ? cfg[24-1:16] : v ; // new value on 16*FULL
-      b    <= (bcnt == 4'hF) ? cfg[16-1:0] : {1'b0,b[15:1]} ; // shift right
+begin
+	cfg_reg <= cfg;
+end
+
+always @(posedge clk)
+begin
+	if (~rstn) begin
+	   vcnt  <=  8'h0;
+	   bcnt  <=  4'h0;
+	   pwm_o <=  1'b0;
+	end else begin
+	   vcnt   <= (vcnt == FULL) ? 8'h1 : (vcnt + 8'd1) ;
+	   vcnt_r <= vcnt;
+	   v_r    <= (v + b[0]) ; // add decimal bit to current value
+	   if (vcnt == FULL) begin
+		  bcnt <=  bcnt + 4'h1 ;
+		  v    <= (bcnt == 4'hF) ? cfg_reg[24-1:16] : v ; // new value on 16*FULL
+		  b    <= (bcnt == 4'hF) ? cfg_reg[16-1:0] : {1'b0,b[15:1]} ; // shift right
+	   end
+	   // make PWM duty cycle
+	   pwm_o_reg <= (vcnt_r <= v_r) ;
    end
-   // make PWM duty cycle
-   pwm_o <= (vcnt_r <= v_r) ;
 end
 
 assign pwm_s = (bcnt == 4'hF) && (vcnt == (FULL-1)) ; // latch one before
+assign pwm_o = pwm_o_reg;
 
 endmodule: red_pitaya_pwm

@@ -148,6 +148,11 @@ wire             axi1_wfixed , axi0_wfixed ;
 wire             axi1_werr   , axi0_werr   ;
 wire             axi1_wrdy   , axi0_wrdy   ;
 
+wire rd_do_t;
+wire wr_do_t;
+wire ack_timout_t;
+wire ack_combine_t;
+
 red_pitaya_ps i_ps (
   .FIXED_IO_mio       (  FIXED_IO_mio                ),
   .FIXED_IO_ps_clk    (  FIXED_IO_ps_clk             ),
@@ -198,7 +203,11 @@ red_pitaya_ps i_ps (
   .axi1_wlen_i   (axi1_wlen   ),  .axi0_wlen_i   (axi0_wlen   ),  // system write burst length
   .axi1_wfixed_i (axi1_wfixed ),  .axi0_wfixed_i (axi0_wfixed ),  // system write burst type (fixed / incremental)
   .axi1_werr_o   (axi1_werr   ),  .axi0_werr_o   (axi0_werr   ),  // system write error
-  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   )   // system write ready
+  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   ),  // system write ready
+  .rd_do_o       (rd_do_t      ),
+  .wr_do_o       (wr_do_t      ),
+  .ack_timout_o  (ack_timout_t ),
+  .ack_combine_o (ack_combine_t)
 );
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -231,21 +240,21 @@ assign ps_sys_ack   = |(sys_cs & sys_ack);
 
 // channel 0 is DPLL
 // channel 1 is BRAM-based data logger
-// channel 2 is VCO
+// channel 2 is to read data in the RAM for addr_packed
 
-// assign sys_rdata[2*32+:32] = 32'h0; 
-// assign sys_err  [2       ] =  1'b0;
-// assign sys_ack  [2       ] =  1'b1;
 
 // channel 3 is "Housekeeping"
+// channel 4 is AMS
+// channel 5 is output multiplexer
+// channel 6 is VCO for DAC
 
-assign sys_rdata[5*32+:32] = 32'h0; 
-assign sys_err  [5       ] =  1'b0;
-assign sys_ack  [5       ] =  1'b1;
+// assign sys_rdata[5*32+:32] = 32'h0; 
+// assign sys_err  [5       ] =  1'b0;
+// assign sys_ack  [5       ] =  1'b1;
 
-assign sys_rdata[6*32+:32] = 32'h0; 
-assign sys_err  [6       ] =  1'b0;
-assign sys_ack  [6       ] =  1'b1;
+// assign sys_rdata[4*32+:32] = 32'h0; 
+// assign sys_err  [4       ] =  1'b0;
+// assign sys_ack  [4       ] =  1'b1;
 
 assign sys_rdata[7*32+:32] = 32'h0; 
 assign sys_err  [7       ] =  1'b0;
@@ -323,7 +332,8 @@ BUFG bufg_dac_clk_1x (.O (dac_clk_1x), .I (pll_dac_clk_1x));
 BUFG bufg_dac_clk_2x (.O (dac_clk_2x), .I (pll_dac_clk_2x));
 BUFG bufg_dac_clk_2p (.O (dac_clk_2p), .I (pll_dac_clk_2p));
 BUFG bufg_ser_clk    (.O (adc_clk_2x), .I (pll_clk_adc_2x));
-BUFG bufg_pwm_clk    (.O (pwm_clk   ), .I (pll_pwm_clk   ));
+//BUFG bufg_pwm_clk    (.O (pwm_clk   ), .I (pll_pwm_clk   ));
+assign pwm_clk = adc_clk_2x;
 
 // ADC reset (active low) 
 always @(posedge adc_clk)
@@ -410,10 +420,31 @@ wire [16-1:0] LoggerData;
 wire LoggerData_clk_enable;
 wire LoggerIsWriting;
 
+reg dpll_output_selector;
+
+wire [ 32-1:0] dpll_output;
+wire dpll_ack;
+wire [ 32-1:0] addr_packed_output;
+wire addr_packed_ack;
+
+reg selected_ack;
+reg [32-1:0] selected_output;
+
+wire fifo_empty;
+wire fifo_full;
+
+
+wire debug_out_1;
+wire debug_out_2;
+wire debug_out_3;
+wire debug_out_4;
+
+reg [26-1:0] led_counter;
+
 assign ADCraw0 = {adc_a, 2'b0};
 assign ADCraw1 = {adc_b, 2'b0};
-assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
-assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
+// assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
+// assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
 
 wire dpll_rst = 1'b0; // I don't know if we can use the RedPitaya's reset because I don't know if it is clock-synchronous or not. In any case, it does not matter because we have the sys_bus driven resets.
 
@@ -440,11 +471,63 @@ dpll_wrapper dpll_wrapper_inst (
   .sys_sel                 (  sys_sel                    ),  // write byte select
   .sys_wen                 (  sys_wen[0]                 ),  // write enable
   .sys_ren                 (  sys_ren[0]                 ),  // read enable
-  .sys_rdata               (  sys_rdata[ 0*32+31: 0*32]  ),  // read data
+  .sys_rdata               (  sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
   .sys_err                 (  sys_err[0]                 ),  // error indicator
-  .sys_ack                 (  sys_ack[0]                 )   // acknowledge signal
-
+  .sys_ack                 (  sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
 );
+
+addr_packed addr_packed_inst (
+  .clk                    ( adc_clk                   ),
+  .rst                    ( adc_rstn                  ),
+  .sys_addr               ( sys_addr                  ),
+  .sys_wdata              ( sys_wdata                 ),
+  .sys_wen                ( sys_wen[0]                ),
+  .sys_ren                ( sys_ren[2]                ),
+  .sys_rdata              ( sys_rdata[ 2*32+31: 2*32] ),
+  .sys_err                ( sys_err[2]                ),
+  .sys_ack                ( sys_ack[2]                ),
+  .out_empty              ( fifo_empty                ),
+  .out_full               ( fifo_full                 )
+);
+
+
+// assign  = selected_output;
+
+// always @(posedge adc_clk)
+// begin
+//   if (sys_wen[0] || sys_ren[0]) begin
+//     if ((20'h00025 <= sys_addr) && (sys_addr <= 20'h00040)) begin
+//         dpll_output_selector <= 1;
+//     end
+//     else begin
+//         dpll_output_selector <= 0;
+//     end
+//     end
+// end
+
+// always @*
+// begin
+//     if (dpll_output_selector == 1) begin
+//         selected_output <= dpll_output;
+//     end
+//     else begin
+//         selected_output <= addr_packed_output;
+//     end
+// end
+
+// assign sys_rdata[ 0*32+31: 0*32] = dpll_output;
+// assign sys_ack[0] = addr_packed_ack; // || dpll_ack;
+
+always @(posedge adc_clk) begin
+  if (adc_rstn == 1'b0) begin
+    led_counter <= 26'h0;
+  end
+  else begin
+    led_counter <= led_counter + 26'h1;
+  end
+end
+
+assign led_o = {fifo_empty, fifo_full, led_counter[25], 4'b0};
 
 // // ---------------------------------------------------------------------------------
 // // For testing the N-times clk FIR filter:
@@ -498,34 +581,36 @@ ram_data_logger ram_data_logger_i (
   .sys_rdata            (  sys_rdata[ 1*32+31: 1*32]  ),  // read data
   .sys_err              (  sys_err[1]                 ),  // error indicator
   .sys_ack              (  sys_ack[1]                 )   // acknowledge signal
-
-
   );
 
 
-// //---------------------------------------------------------------------------------
-// //  Internal VCO for testing purposes:
-// wire signed [16-1:0] vco_cosine_out;
-// wire signed [16-1:0] vco_sine_out;
-
-// reg  signed [48-1:0] vco_frequency;
+//---------------------------------------------------------------------------------
+// //  Internal VCO channel a
+// wire signed [16-1:0] vco0_cosine_out;
+// wire signed [16-1:0] vco0_sine_out;
+// reg  signed [48-1:0] vco0_frequency;
 
 // always @(posedge adc_clk)
 // begin
-//  // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
-//  // log2(3e8/(125e6/2^48 * 2^15/1))
-//  // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
-//  vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
-//  // this value is equal to dec2bin(11e6/125e6 * 2^48, 48) (MATLAB)
-//  //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
+//     // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
+//     // log2(3e8/(125e6/2^48 * 2^15/1))
+//     // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+//     //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
+    
+//     // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+//     // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+//     vco0_frequency <= ($signed(DACout0)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
+    
+//     // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
+//     //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
 // end
 
-// internal_vco internal_vco_i (
+// internal_vco internal_vco_0 (
 
 //  .clk             (  adc_clk                    ),
 
 //  // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
-//  .frequency       (  vco_frequency              ),
+//  .frequency       (  vco0_frequency              ),
 
 //   // System bus, address starts at 0x4X20_0000
 //  .sys_addr        (  sys_addr                   ),  // address
@@ -538,11 +623,56 @@ ram_data_logger ram_data_logger_i (
 //  .sys_ack         (  sys_ack[2]                 ),  // acknowledge signal
 
 
-//  .cosine_out      (  vco_cosine_out             ),
-//  .sine_out        (  vco_sine_out               )
+//  .cosine_out      (  vco0_cosine_out             ),
+//  .sine_out        (  vco0_sine_out               )
 
 //  );
-// assign dac_b = vco_cosine_out[16-1:2];
+// //assign dac_b = vco0_cosine_out[16-1:2];
+
+// //---------------------------------------------------------------------------------
+// //  Internal VCO channel b
+// wire signed [16-1:0] vco1_cosine_out;
+// wire signed [16-1:0] vco1_sine_out;
+// reg  signed [48-1:0] vco1_frequency;
+
+// always @(posedge adc_clk)
+// begin
+//     // gain was determined to mimick ~3e8 Hz/V of VCO gain, using:
+//     // log2(3e8/(125e6/2^48 * 2^15/1))
+//     // offset is equal to dec2bin(20e6/100e6 * 2^48, 48)
+//     //vco_frequency <= ($signed(DACout0)<<<34) + $signed(48'b001100110011001100110011001100110011001100110011);
+    
+//     // This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+//     // offset is equal to dec2bin(31.25e6/125e6 * 2^48, 48)
+//     vco1_frequency <= ($signed(DACout1)<<<(48-16-1)) + $signed(48'b0100000000000000000000000000000_00000000000000000);
+    
+//     // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
+//     //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
+// end
+
+// internal_vco internal_vco_1 (
+
+//  .clk             (  adc_clk                    ),
+
+//  // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
+//  .frequency       (  vco1_frequency              ),
+
+//   // System bus, address starts at 0x4X20_0000
+//  .sys_addr        (  sys_addr                   ),  // address
+//  .sys_wdata       (  sys_wdata                  ),  // write data
+//  .sys_sel         (  sys_sel                    ),  // write byte select
+//  .sys_wen         (  sys_wen[4]                 ),  // write enable
+//  .sys_ren         (  sys_ren[4]                 ),  // read enable
+//  .sys_rdata       (  sys_rdata[ 4*32+31: 4*32]  ),  // read data
+//  .sys_err         (  sys_err[4]                 ),  // error indicator
+//  .sys_ack         (  sys_ack[4]                 ),  // acknowledge signal
+
+
+//  .cosine_out      (  vco1_cosine_out             ),
+//  .sine_out        (  vco1_sine_out               )
+
+//  );
+// //assign dac_b = vco0_cosine_out[16-1:2];
 
 //---------------------------------------------------------------------------------
 //  House Keeping
@@ -551,21 +681,29 @@ wire  [  8-1: 0] exp_p_in , exp_n_in ;
 wire  [  8-1: 0] exp_p_out, exp_n_out;
 wire  [  8-1: 0] exp_p_dir, exp_n_dir;
 
+wire  [  8-1: 0] exp_p_in_hk , exp_n_in_hk ;
+wire  [  8-1: 0] exp_p_out_hk, exp_n_out_hk;
+wire  [  8-1: 0] exp_p_dir_hk, exp_n_dir_hk;
+
+wire  [ 8-1: 0] led_o_hk;
+
+wire            digital_loop_hk;
+
 red_pitaya_hk i_hk (
   // system signals
   .clk_i           (  adc_clk                    ),  // clock
   .rstn_i          (  adc_rstn                   ),  // reset - active low
   // LED
-  .led_o           (  led_o                      ),  // LED output
+  .led_o           (  led_o_hk                   ),  // LED output
   // global configuration
-  .digital_loop    (  digital_loop               ),
+  .digital_loop    (  digital_loop_hk            ),
   // Expansion connector
-  .exp_p_dat_i     (  exp_p_in                   ),  // input data
-  .exp_p_dat_o     (  exp_p_out                  ),  // output data
-  .exp_p_dir_o     (  exp_p_dir                  ),  // 1-output enable
-  .exp_n_dat_i     (  exp_n_in                   ),
-  .exp_n_dat_o     (  exp_n_out                  ),
-  .exp_n_dir_o     (  exp_n_dir                  ),
+  .exp_p_dat_i     (  exp_p_in_hk                ),  // input data
+  .exp_p_dat_o     (  exp_p_out_hk               ),  // output data
+  .exp_p_dir_o     (  exp_p_dir_hk               ),  // 1-output enable
+  .exp_n_dat_i     (  exp_n_in_hk                ),
+  .exp_n_dat_o     (  exp_n_out_hk               ),
+  .exp_n_dir_o     (  exp_n_dir_hk               ),
    // System bus
   .sys_addr        (  sys_addr                   ),  // address
   .sys_wdata       (  sys_wdata                  ),  // write data
@@ -577,9 +715,91 @@ red_pitaya_hk i_hk (
   .sys_ack         (  sys_ack[3]                 )   // acknowledge signal
 );
 
-IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
-IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
+// // always @(posedge adc_clk) begin
+// //   if (adc_rstn == 1'b0) begin
+// //     led_counter <= 26'h0;
+// //   end
+// //   else begin
+// //     led_counter <= led_counter + 26'h1;
+// //   end
+// // end
 
+
+assign exp_n_out = {8'b10000000};
+assign exp_p_out = {8'b00000000};
+assign exp_n_dir = {8'b11111111};
+assign exp_p_dir = {8'b11111111};
+
+IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
+IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out_hk), .T(~exp_n_dir) );
+
+//---------------------------------------------------------------------------------
+// VCO and output mux
+// Channel 5
+
+wire signed [14-1 : 0] to_DAC0;
+wire signed [14-1 : 0] to_DAC1;
+
+mux_internal_vco mux_vco (
+  .clk            ( adc_clk                   ), // clock
+  .DACin0         ( DACout0                   ), // output of the DPLL channel a
+  .DACin1         ( DACout1                   ), // output of the DPLL channel b
+  // internal configuration bus
+  .sys_addr       ( sys_addr                  ), // address
+  .sys_wdata      ( sys_wdata                 ), // write data
+  .sys_sel        ( sys_sel                   ), // write byte select
+  // communication bus for the vco
+  .sys_wen_vco    (sys_wen[6]                 ), // write enable for the vco
+  .sys_ren_vco    (sys_ren[6]                 ), // read enable for the vco
+  .sys_rdata_vco  (sys_rdata[ 6*32+31: 6*32]  ), // read data for the vco
+  .sys_err_vco    (sys_err[6]                 ), // error indicator for the vco
+  .sys_ack_vco    (sys_ack[6]                 ), // acknowledge signal for the vco
+  // communication bus for the mux
+  .sys_wen_mux    (sys_wen[5]                 ), // write enable for the mux
+  .sys_ren_mux    (sys_ren[5]                 ), // read enable for the mux
+  .sys_rdata_mux  (sys_rdata[ 5*32+31: 5*32]  ), // read data for the mux
+  .sys_err_mux    (sys_err[5]                 ), // error indicator for the mux
+  .sys_ack_mux    (sys_ack[5]                 ), // acknowledge signal for the mux
+  // output
+  .DACa_out       ( to_DAC0                  ), // output to the dac (from vco or directly from dpll)
+  .DACb_out       ( to_DAC1                  )  // output to the dac (from vco or directly from dpll)
+  );
+
+assign dac_a = to_DAC0;
+assign dac_b = to_DAC1;
+
+
+// ---------------------------------------------------------------------------------
+// // output mux (select between different configurations)
+// // Channel 5
+
+// wire signed [14-1:0] signal_mux0;
+// wire signed [14-1:0] signal_mux1;
+
+// output_multiplexer muxDAC (
+//   // system signals
+//   .clk             (  adc_clk                    ),  // clock
+// //  .rstn_i          (  adc_rstn                   ),  // reset - active low
+
+//    // System bus
+//   .sys_addr        (  sys_addr                   ),  // address
+//   .sys_wdata       (  sys_wdata                  ),  // write data
+//   .sys_sel         (  sys_sel                    ),  // write byte select
+//   .sys_wen         (  sys_wen[5]                 ),  // write enable
+//   .sys_ren         (  sys_ren[5]                 ),  // read enable
+//   .sys_rdata       (  sys_rdata[ 5*32+31: 5*32]  ),  // read data
+//   .sys_err         (  sys_err[5]                 ),  // error indicator
+//   .sys_ack         (  sys_ack[5]                 ),  // acknowledge signal
+//   .in0_0_mux       (  DACout0[16-1:2]            ),  // 
+//   .in1_0_mux       (  vco0_cosine_out[16-1:2]     ),  //
+//   .out_0_mux       (  signal_mux0                ),
+//   .in0_1_mux       (  DACout1[16-1:2]            ),  // 
+//   .in1_1_mux       (  vco1_cosine_out[16-1:2]     ),  //
+//   .out_1_mux       (  signal_mux1                )
+// );
+
+// assign dac_a = signal_mux0;
+// assign dac_b = signal_mux1;
 
 
 // ---------------------------------------------------------------------------------
@@ -668,52 +888,75 @@ red_pitaya_scope i_scope (
 //  .sys_ack         (  sys_ack[3]                 )   // acknowledge signal
 //);
 
-////---------------------------------------------------------------------------------
-////  Analog mixed signals
-////  XADC and slow PWM DAC control
+//---------------------------------------------------------------------------------
+//  Analog mixed signals
+//  XADC and slow PWM DAC control
 
-//wire  [ 24-1: 0] pwm_cfg_a;
-//wire  [ 24-1: 0] pwm_cfg_b;
-//wire  [ 24-1: 0] pwm_cfg_c;
-//wire  [ 24-1: 0] pwm_cfg_d;
+wire  [ 24-1: 0] pwm_cfg_a;
+wire  [ 24-1: 0] pwm_cfg_b;
+wire  [ 24-1: 0] pwm_cfg_c;
+wire  [ 24-1: 0] pwm_cfg_d;
 
-//red_pitaya_ams i_ams (
-//   // power test
-//  .clk_i           (  adc_clk                    ),  // clock
-//  .rstn_i          (  adc_rstn                   ),  // reset - active low
-//  // PWM configuration
-//  .dac_a_o         (  pwm_cfg_a                  ),
-//  .dac_b_o         (  pwm_cfg_b                  ),
-//  .dac_c_o         (  pwm_cfg_c                  ),
-//  .dac_d_o         (  pwm_cfg_d                  ),
-//   // System bus
-//  .sys_addr        (  sys_addr                   ),  // address
-//  .sys_wdata       (  sys_wdata                  ),  // write data
-//  .sys_sel         (  sys_sel                    ),  // write byte select
-//  .sys_wen         (  sys_wen[4]                 ),  // write enable
-//  .sys_ren         (  sys_ren[4]                 ),  // read enable
-//  .sys_rdata       (  sys_rdata[ 4*32+31: 4*32]  ),  // read data
-//  .sys_err         (  sys_err[4]                 ),  // error indicator
-//  .sys_ack         (  sys_ack[4]                 )   // acknowledge signal
-//);
+red_pitaya_ams i_ams (
+  // power test
+ .clk_i           (  adc_clk                    ),  // clock
+ .rstn_i          (  adc_rstn                   ),  // reset - active low
+ // PWM configuration
+ .dac_a_o         (  pwm_cfg_a                  ),
+ .dac_b_o         (  pwm_cfg_b                  ),
+ .dac_c_o         (  pwm_cfg_c                  ),
+ .dac_d_o         (  pwm_cfg_d                  ),
+  // System bus
+ .sys_addr        (  sys_addr                   ),  // address
+ .sys_wdata       (  sys_wdata                  ),  // write data
+ .sys_sel         (  sys_sel                    ),  // write byte select
+ .sys_wen         (  sys_wen[4]                 ),  // write enable
+ .sys_ren         (  sys_ren[4]                 ),  // read enable
+ .sys_rdata       (  sys_rdata[ 4*32+31: 4*32]  ),  // read data
+ .sys_err         (  sys_err[4]                 ),  // error indicator
+ .sys_ack         (  sys_ack[4]                 )   // acknowledge signal
+);
 
-//red_pitaya_pwm pwm [4-1:0] (
-//  // system signals
-//  .clk   (pwm_clk ),
-//  .rstn  (pwm_rstn),
-//  // configuration
-//  .cfg   ({pwm_cfg_d, pwm_cfg_c, pwm_cfg_b, pwm_cfg_a}),
-//  // PWM outputs
-//  .pwm_o (dac_pwm_o),
-//  .pwm_s ()
-//);
+red_pitaya_pwm pwm [4-1:0] (
+ // system signals
+ .clk   (pwm_clk ),
+ .rstn  (pwm_rstn),
+ // configuration
+ .cfg   ({pwm_cfg_d, pwm_cfg_c, pwm_cfg_b, pwm_cfg_a}),
+ // PWM outputs
+ .pwm_o (dac_pwm_o),
+ .pwm_s ()
+);
 
 //---------------------------------------------------------------------------------
 //  Daisy chain
 //  simple communication module
 
-assign daisy_p_o = 1'bz;
-assign daisy_n_o = 1'bz;
+reg [3-1:0] daisy_counter;
+
+wire clk_out_10;
+
+always @(posedge adc_clk) begin
+  if (adc_rstn == 1'b0) begin
+    daisy_counter <= 3'h0;
+  end
+  else begin
+    daisy_counter <= daisy_counter + 3'h1;
+  end
+end
+
+clk_10MHz_sync 
+(// Clock in ports
+  .clk_in1    ( adc_clk   ),
+  // Clock out ports
+  .clk_out1   (clk_out_10 ),
+  // Status and control signals
+  .locked     (           )
+ );
+
+
+assign daisy_p_o = {clk_out_10, 1'bz};  //Important : if you want to use only one of the signals (p or n), terminate the other one with a 50 Ohm. To do so
+assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SMA connector at the end (one for the "p" and one for the "n" signal).
 
 endmodule
 

@@ -4,6 +4,7 @@ Created on Thu Dec 17 17:54:31 2015
 
 @author: JD
 """
+from __future__ import print_function
 
 # Simple service discovery implementation based on UDP broadcast packets:
 # This class sends a UDP broadcast packet on port 1952 and then listens for replies on port 1952+1.
@@ -51,7 +52,8 @@ class UDPRedPitayaDiscovery():
 
     def send_broadcast(self):
         # send a broadcast packet:
-        self.sock_client.send("")
+        self.sock_client.send(b"")
+        pass
         
     def check_answers(self):
         # is there any data ?
@@ -60,7 +62,8 @@ class UDPRedPitayaDiscovery():
         
         if ready_to_read:
             (mac_address_data, host_info) = self.sock_server.recvfrom(4096)
-#            print repr(mac_address_data)
+            mac_address_data = mac_address_data.decode('ascii') # received data is in bytes format and we handle the mac address as an ascii string internally
+
             # we don't care about the data, we are only looking for the IP addresses
             return (host_info[0], mac_address_data)
         else:
@@ -81,7 +84,7 @@ class UDPRedPitayaDiscovery():
             
             (host, mac_address) = self.check_answers()
 #            if not host is None:
-            print (host, mac_address)
+            print((host, mac_address))
             
             time.sleep(0.1)
             ElapsedTime = time.clock() - start_time

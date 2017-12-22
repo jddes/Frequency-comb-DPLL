@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Tue May 23 22:04:24 2017
-| Host         : 0381-JDD running 64-bit major release  (build 9200)
+| Date         : Mon Aug 14 12:55:53 2017
+| Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_utilization -file red_pitaya_top_utilization_synth.rpt -pb red_pitaya_top_utilization_synth.pb
 | Design       : red_pitaya_top
 | Device       : 7z010clg400-1
@@ -30,15 +30,15 @@ Table of Contents
 +----------------------------+------+-------+-----------+-------+
 |          Site Type         | Used | Fixed | Available | Util% |
 +----------------------------+------+-------+-----------+-------+
-| Slice LUTs*                | 6723 |     0 |     17600 | 38.20 |
-|   LUT as Logic             | 6432 |     0 |     17600 | 36.55 |
+| Slice LUTs*                | 7115 |     0 |     17600 | 40.43 |
+|   LUT as Logic             | 6824 |     0 |     17600 | 38.77 |
 |   LUT as Memory            |  291 |     0 |      6000 |  4.85 |
 |     LUT as Distributed RAM |  208 |     0 |           |       |
 |     LUT as Shift Register  |   83 |     0 |           |       |
-| Slice Registers            | 7676 |     0 |     35200 | 21.81 |
-|   Register as Flip Flop    | 7676 |     0 |     35200 | 21.81 |
+| Slice Registers            | 8381 |     0 |     35200 | 23.81 |
+|   Register as Flip Flop    | 8381 |     0 |     35200 | 23.81 |
 |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
-| F7 Muxes                   |    0 |     0 |      8800 |  0.00 |
+| F7 Muxes                   |   25 |     0 |      8800 |  0.28 |
 | F8 Muxes                   |    0 |     0 |      4400 |  0.00 |
 +----------------------------+------+-------+-----------+-------+
 * Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
@@ -58,8 +58,8 @@ Table of Contents
 | 0     |          Yes |           - |            - |
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
-| 314   |          Yes |         Set |            - |
-| 7362  |          Yes |       Reset |            - |
+| 362   |          Yes |         Set |            - |
+| 8019  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -69,9 +69,9 @@ Table of Contents
 +-------------------+------+-------+-----------+-------+
 |     Site Type     | Used | Fixed | Available | Util% |
 +-------------------+------+-------+-----------+-------+
-| Block RAM Tile    |   18 |     0 |        60 | 30.00 |
-|   RAMB36/FIFO*    |   18 |     0 |        60 | 30.00 |
-|     RAMB36E1 only |   18 |       |           |       |
+| Block RAM Tile    |   19 |     0 |        60 | 31.67 |
+|   RAMB36/FIFO*    |   19 |     0 |        60 | 31.67 |
+|     RAMB36E1 only |   19 |       |           |       |
 |   RAMB18          |    0 |     0 |       120 |  0.00 |
 +-------------------+------+-------+-----------+-------+
 * Note: Each Block RAM Tile only has one FIFO logic available and therefore can accommodate only one FIFO36E1 or one FIFO18E1. However, if a FIFO18E1 occupies a Block RAM Tile, that tile can still accommodate a RAMB18E1
@@ -83,8 +83,8 @@ Table of Contents
 +----------------+------+-------+-----------+-------+
 |    Site Type   | Used | Fixed | Available | Util% |
 +----------------+------+-------+-----------+-------+
-| DSPs           |    2 |     0 |        80 |  2.50 |
-|   DSP48E1 only |    2 |       |           |       |
+| DSPs           |    7 |     0 |        80 |  8.75 |
+|   DSP48E1 only |    7 |       |           |       |
 +----------------+------+-------+-----------+-------+
 
 
@@ -118,7 +118,7 @@ Table of Contents
 +------------+------+-------+-----------+-------+
 |  Site Type | Used | Fixed | Available | Util% |
 +------------+------+-------+-----------+-------+
-| BUFGCTRL   |   14 |     0 |        32 | 43.75 |
+| BUFGCTRL   |   13 |     0 |        32 | 40.63 |
 | BUFIO      |    0 |     0 |         8 |  0.00 |
 | MMCME2_ADV |    0 |     0 |         2 |  0.00 |
 | PLLE2_ADV  |    1 |     0 |         2 | 50.00 |
@@ -151,27 +151,28 @@ Table of Contents
 +-----------+------+----------------------+
 |  Ref Name | Used |  Functional Category |
 +-----------+------+----------------------+
-| FDRE      | 7362 |         Flop & Latch |
-| LUT2      | 2671 |                  LUT |
-| LUT3      | 1698 |                  LUT |
-| LUT1      | 1471 |                  LUT |
-| CARRY4    |  983 |           CarryLogic |
-| LUT6      |  956 |                  LUT |
-| LUT4      |  852 |                  LUT |
-| LUT5      |  612 |                  LUT |
-| FDSE      |  314 |         Flop & Latch |
+| FDRE      | 8019 |         Flop & Latch |
+| LUT2      | 2821 |                  LUT |
+| LUT3      | 1681 |                  LUT |
+| LUT1      | 1495 |                  LUT |
+| LUT6      | 1110 |                  LUT |
+| CARRY4    | 1022 |           CarryLogic |
+| LUT4      |  900 |                  LUT |
+| LUT5      |  685 |                  LUT |
+| FDSE      |  362 |         Flop & Latch |
 | RAMD32    |  312 |   Distributed Memory |
 | BIBUF     |  130 |                   IO |
 | RAMS32    |  104 |   Distributed Memory |
 | IBUF      |   54 |                   IO |
 | SRLC32E   |   51 |   Distributed Memory |
+| OBUF      |   35 |                   IO |
 | SRL16E    |   32 |   Distributed Memory |
-| OBUF      |   31 |                   IO |
-| OBUFT     |   22 |                   IO |
-| RAMB36E1  |   18 |         Block Memory |
+| MUXF7     |   25 |                MuxFx |
+| RAMB36E1  |   19 |         Block Memory |
 | ODDR      |   18 |                   IO |
-| BUFG      |   14 |                Clock |
-| DSP48E1   |    2 |     Block Arithmetic |
+| OBUFT     |   18 |                   IO |
+| BUFG      |   13 |                Clock |
+| DSP48E1   |    7 |     Block Arithmetic |
 | XADC      |    1 |               Others |
 | PS7       |    1 | Specialized Resource |
 | PLLE2_ADV |    1 |                Clock |
@@ -186,14 +187,16 @@ Table of Contents
 +---------------------------------------+------+
 |                Ref Name               | Used |
 +---------------------------------------+------+
-| pll_32x32_mult_ii                     |    4 |
+| pll_32x32_mult_ii                     |    6 |
 | input_multiplier                      |    4 |
 | fir_compiler_minimumphase_N_times_clk |    4 |
-| LO_DDS                                |    3 |
+| LO_DDS                                |    4 |
 | pll_wide_mult                         |    2 |
 | angle_CORDIC                          |    2 |
 | system_identification_outputgain_mult |    1 |
 | fifo_generator_0                      |    1 |
+| clk_10MHz_sync                        |    1 |
+| FIFO_addr_packed                      |    1 |
 +---------------------------------------+------+
 
 

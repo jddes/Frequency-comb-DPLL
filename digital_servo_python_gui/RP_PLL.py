@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import socket
 import struct
 import traceback    # for print_stack, for debugging purposes: traceback.print_stack()
 import time
 
+import sys
+
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 class socket_placeholder():
     def __init__(self):
         pass
     def sendall(*args):
-        print("socket_placeholder::sendall(): No active socket")
+        print("socket_placeholder::sendall(): No active socket. Was called from {}".format(sys._getframe().f_back.f_code.co_name))
         pass
     def recv(*args):
         print("socket_placeholder::recv(): No active socket")
@@ -31,22 +34,35 @@ class RP_PLL_device():
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
     MAGIC_BYTES_REBOOT_MONITOR  = 0xABCD1239
     
-    FPGA_BASE_ADDR          = 0x40000000
+    FPGA_BASE_ADDR              = 0x40000000
 
     MAX_SAMPLES_READ_BUFFER = 2**15 # should be equal to 2**ADDRESS_WIDTH from ram_data_logger.vhd
 
 
-    def __init__(self):
+    def __init__(self, controller):
         self.sock = socket_placeholder()
+        self.controller = controller
+        self.valid_socket = 0
+
         return
+
+    def disconnectEvent(self):
+        self.controller.stopCommunication()
+
+    def CloseTCPConnection(self):
+        print("RP_PLL_device::CloseTCPConnection()")
+        self.sock = socket_placeholder()
+        self.valid_socket = 0
 
     def OpenTCPConnection(self, HOST, PORT=5000):
         print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
         self.HOST = HOST
         self.PORT = PORT
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setblocking(1)
+        # self.sock.setblocking(1)
+        self.sock.settimeout(2)
         self.sock.connect((self.HOST, self.PORT))
+        self.valid_socket = 1
 
     # from http://stupidpythonideas.blogspot.ca/2013/05/sockets-are-byte-streams-not-message.html
     def recvall(self, count):
@@ -65,30 +81,39 @@ class RP_PLL_device():
     def write_file_on_remote(self, strFilenameLocal, strFilenameRemote):
         # open local file and load into memory:
         file_data = np.fromfile(strFilenameLocal, dtype=np.uint8)
-        
-        # send header
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_FILE, len(strFilenameRemote), len(file_data))
-        self.sock.sendall(packet_to_send)
-        # send filename
-        self.sock.sendall(strFilenameRemote.encode('ascii'))
-        # send actual file
-        self.sock.sendall(file_data.tobytes())
-        
+        try:
+            # send header
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_FILE, len(strFilenameRemote), len(file_data))
+            self.sock.sendall(packet_to_send)
+            # send filename
+            self.sock.sendall(strFilenameRemote.encode('ascii'))
+            # send actual file
+            self.sock.sendall(file_data.tobytes())
+        except:
+            print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
+            self.disconnectEvent()
     # Function used to send a shell command to the Red Pitaya:
     def send_shell_command(self, strCommand):
         
-        # send header
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_SHELL_COMMAND, len(strCommand), 0)
-        self.sock.sendall(packet_to_send)
-        # send filename
-        self.sock.sendall(strCommand.encode('ascii'))
-        
+        try:
+            # send header
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_SHELL_COMMAND, len(strCommand), 0)
+            self.sock.sendall(packet_to_send)
+            # send filename
+            self.sock.sendall(strCommand.encode('ascii'))
+        except:
+            print("RP_PLL.py: send_shell_command(): exception while sending command!")
+            self.disconnectEvent()
     # Function used to reboot the monitor-tcp program
     def send_reboot_command(self):
         
-        # send header
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_REBOOT_MONITOR, 0, 0)
-        self.sock.sendall(packet_to_send)
+        try:
+            # send header
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_REBOOT_MONITOR, 0, 0)
+            self.sock.sendall(packet_to_send)
+        except:
+            print("RP_PLL.py: send_reboot_command(): exception while sending command!")
+            self.disconnectEvent()
 
     #######################################################
     # Functions used to access the memory-mapped registers of the Zynq
@@ -96,36 +121,59 @@ class RP_PLL_device():
 
     def write_Zynq_register_uint32(self, address_uint32, data_uint32):
 #        print "write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32)
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_uint32) & 0xFFFFFFFF)
-        self.sock.sendall(packet_to_send)
+        if address_uint32 % 4:
+            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
+            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
+            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
+            return
+        try:
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_uint32) & 0xFFFFFFFF)
+            self.sock.sendall(packet_to_send)
+        except:
+            self.disconnectEvent()
 
     def write_Zynq_register_int32(self, address_uint32, data_int32):
 #        print "write_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
-        
-        packet_to_send = struct.pack('=IIi', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, data_int32)
-        self.sock.sendall(packet_to_send)
+        if address_uint32 % 4:
+            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
+            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
+            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
+            return
+        try:
+            packet_to_send = struct.pack('=IIi', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_int32) & 0xFFFFFFFF)
+            self.sock.sendall(packet_to_send)
+        except:
+            self.disconnectEvent()
 
     def read_Zynq_register_uint32(self, address_uint32):
-        # print "read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
-        self.sock.sendall(packet_to_send)
-        data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
+        try:
+            # print "read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
+            self.sock.sendall(packet_to_send)
+            data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
+        except:
+            self.disconnectEvent()
+
         if data_buffer is None:
             return 0
         if len(data_buffer) != 4:
-            print "read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer))
+            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
     def read_Zynq_register_int32(self, address_uint32):
-        # print "read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
-        self.sock.sendall(packet_to_send)
-        data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
+        try:
+            # print "read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
+            self.sock.sendall(packet_to_send)
+            data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
+        except:
+            self.disconnectEvent()
+
         if data_buffer is None:
             return 0
         if len(data_buffer) != 4:
-            print "read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer))
+            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
         register_value_as_tuple = struct.unpack('i', data_buffer)
         return register_value_as_tuple[0]
 
@@ -162,15 +210,20 @@ class RP_PLL_device():
         address_uint32 = 0    # currently unused
         if number_of_points > self.MAX_SAMPLES_READ_BUFFER:
             number_of_points = self.MAX_SAMPLES_READ_BUFFER
-            print "number of points clamped to %d." % number_of_points
+            print("number of points clamped to %d." % number_of_points)
             #traceback.print_stack()
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR+address_uint32, number_of_points)    # last value is reserved
-#        print "read_Zynq_buffer_int16: before sendall()"
-        self.sock.sendall(packet_to_send)
-#        print "read_Zynq_buffer_int16: after sendall()"
-        data_buffer = self.recvall(int(2*number_of_points)) # read number_of_points samples (16 bits each)
-#        print "read_Zynq_buffer_int16: len(data_buffer) = %d, data_buffer:" % (len(data_buffer))
-#        print repr(data_buffer[0:10])
+        
+        try:
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR+address_uint32, number_of_points)    # last value is reserved
+    #        print "read_Zynq_buffer_int16: before sendall()"
+            self.sock.sendall(packet_to_send)
+    #        print "read_Zynq_buffer_int16: after sendall()"
+            data_buffer = self.recvall(int(2*number_of_points)) # read number_of_points samples (16 bits each)
+    #        print "read_Zynq_buffer_int16: len(data_buffer) = %d, data_buffer:" % (len(data_buffer))
+    #        print repr(data_buffer[0:10])
+        except:
+            self.disconnectEvent()
+
         if data_buffer is None:
             return b''
         
@@ -297,14 +350,13 @@ def main2():
 #if 1:
     rp = RP_PLL_device()
     rp.OpenTCPConnection("192.168.2.12")
-    print "hi"
     
 #    rp.write_file_on_remote(strFilenameLocal='d:\\test_file.bin', strFilenameRemote='/opt/test_file.bin')
     
 
     
     time.sleep(3)
-    print "quitting"
+    print("quitting")
     return
     
     
@@ -356,9 +408,9 @@ def main2():
     data_buffer = rp.read_Zynq_buffer_int16(address_uint32, number_of_points)
 #   print("after recvall")
     data_np = np.fromstring(data_buffer, dtype=np.int16)
-    print data_np
+    print(data_np)
     for k in range(10):
-        print '%d:\t%s' % (k, hex((data_np[k])&0xFFFF))
+        print('%d:\t%s' % (k, hex((data_np[k])&0xFFFF)))
 #    print hex(data_np[7])
 #    print hex(data_np[7])
 #    print hex(data_np[7])

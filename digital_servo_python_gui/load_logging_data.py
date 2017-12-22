@@ -4,9 +4,10 @@ Created on Mon Apr 14 11:46:04 2014
 
 @author: jnd
 """
+from __future__ import print_function
 
 import time
-from PyQt4 import QtGui, Qt
+from PyQt5 import QtGui, Qt
 import numpy as np
 import sys
 

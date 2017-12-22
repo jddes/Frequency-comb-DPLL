@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1495591210">
+<GenRun Id="synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1502729630">
   <File Type="RDS-DCP" Name="red_pitaya_top.dcp"/>
   <File Type="RUN-CONSTRS" Name="$PDATADIR/runs/synth_1/constrs_in.xml"/>
   <File Type="RDS-UTIL-PB" Name="red_pitaya_top_utilization_synth.pb"/>
@@ -70,6 +70,12 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
+    <File Path="$PSRCDIR/sources_1/DigitalPLL/IIR_LPF.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
     <File Path="$PSRCDIR/sources_1/DigitalPLL/triangular_frequency_counter.vhd">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
@@ -134,6 +140,24 @@
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/simple_dualport_ram_with_init.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/simple_dualport_ram.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/FSM_addr_packed.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
@@ -258,7 +282,52 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/simple_dualport_ram.vhd">
+    <File Path="$PSRCDIR/sources_1/internal_vco.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1_async.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pwm.sv">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pwm.sv"/>
+        <Attr Name="ImportTime" Val="1453373286"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_ams.v">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_ams.v"/>
+        <Attr Name="ImportTime" Val="1453373286"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_hk.v">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_hk.v"/>
+        <Attr Name="ImportTime" Val="1453373286"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/addr_packed.vhd">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/mux_internal_vco.vhd">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
@@ -304,15 +373,6 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_hk.v">
-      <FileInfo>
-        <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_hk.v"/>
-        <Attr Name="ImportTime" Val="1453373286"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
     <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_top.v">
       <FileInfo>
         <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_top.v"/>
@@ -322,19 +382,26 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/internal_vco.vhd">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
     <File Path="$PSRCDIR/sources_1/ip/LO_DDS.xcix">
       <FileInfo>
         <Attr Name="ImportPath" Val="$PPRDIR/../../../digital_servo_fpga_firmware/dpll_firmware_redpitaya/dpll_firmware_redpitaya.srcs/sources_1/ip/LO_DDS.xcix"/>
         <Attr Name="ImportTime" Val="1470676703"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1.vhd">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/output_multiplexer.vhd">
+      <FileInfo>
+        <Attr Name="AutoDisabled" Val="1"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
@@ -393,16 +460,6 @@
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pwm.sv">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pwm.sv"/>
-        <Attr Name="ImportTime" Val="1453373286"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
     <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pid.v">
       <FileInfo>
         <Attr Name="AutoDisabled" Val="1"/>
@@ -417,16 +474,6 @@
       <FileInfo>
         <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_asg.v"/>
-        <Attr Name="ImportTime" Val="1453373286"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
-    <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_ams.v">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_ams.v"/>
         <Attr Name="ImportTime" Val="1453373286"/>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
@@ -484,13 +531,6 @@
       </FileInfo>
     </File>
     <File Path="$PSRCDIR/sources_1/DigitalPLL/integrate_and_dump.vhd">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
-        <Attr Name="UsedIn" Val="synthesis"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
-    <File Path="$PSRCDIR/sources_1/DigitalPLL/IIR_LPF.vhd">
       <FileInfo>
         <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="synthesis"/>
@@ -576,10 +616,12 @@
     <Step Id="synth_design"/>
   </Strategy>
   <BlockFileSet Type="BlockSrcs" Name="angle_CORDIC"/>
+  <BlockFileSet Type="BlockSrcs" Name="input_multiplier"/>
   <BlockFileSet Type="BlockSrcs" Name="fir_compiler_minimumphase_N_times_clk"/>
   <BlockFileSet Type="BlockSrcs" Name="system_identification_outputgain_mult"/>
-  <BlockFileSet Type="BlockSrcs" Name="input_multiplier"/>
   <BlockFileSet Type="BlockSrcs" Name="fifo_generator_0"/>
   <BlockFileSet Type="BlockSrcs" Name="pll_32x32_mult_ii"/>
   <BlockFileSet Type="BlockSrcs" Name="pll_wide_mult"/>
+  <BlockFileSet Type="BlockSrcs" Name="FIFO_addr_packed"/>
+  <BlockFileSet Type="BlockSrcs" Name="clk_10MHz_sync"/>
 </GenRun>

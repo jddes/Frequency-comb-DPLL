@@ -4,6 +4,7 @@ Created on Fri Dec 13 16:24:57 2013
 
 @author: jnd
 """
+from __future__ import print_function
 
 # This class implements a thin wrapper around the ElementTree/Element classes, which does XML parsing/writing.
 # This allows us change the implementation if we want, without having to rewrite the UI code.
@@ -17,18 +18,18 @@ class SLLSystemParameters():
     
     def __init__(self):
 
-        self.loadDefaults()
+        self.populateDefaults()
 
         return
         
-    def loadDefaults(self):
+    def populateDefaults(self):
         # Create the tree structure:
         self.root = ET.Element('SuperLaserLandPLL_settings')
         self.tree = ET.ElementTree(self.root)
         
         # Default values for all the parameters:
         self.root.append(ET.Element('Reference_frequency', DDC0='31.25e6', DDC1='31.25e6'))
-        self.root.append(ET.Element('Beat_frequency_modulation_range', DAC0='2e8', DAC1='0.5e6', DAC2='9e6'))
+        self.root.append(ET.Element('VCO gain', DAC0='2e8', DAC1='0.5e6', DAC2='9e6'))
         self.root.append(ET.Element('Output_limits_low', DAC0='-1.0', DAC1='-0', DAC2='0'))
         self.root.append(ET.Element('Output_limits_high', DAC0='1.0', DAC1='1', DAC2='55'))
         self.root.append(ET.Element('Input_Output_gain', ADC0='1', ADC1='1', DAC0='1', DAC1='1'))
@@ -39,17 +40,36 @@ class SLLSystemParameters():
         
         self.root.append(ET.Element('PWM0_settings', standard='3.3', levels='256', default='0.0', minval='0.0', maxval='3.3'))
         
-        
         self.root.append(ET.Element('Main_window_settings', refresh_delay='500', N_samples_adc='1.75e3', N_samples_ddc='1e6', Integration_limit='5e6'))
+        self.root.append(ET.Element('Triangular_averaging', DAC1='1', DAC0='1'))
+
+        self.root.append(ET.Element('Dither_frequency', DAC1='5.1e3', DAC0='1e3'))
+        self.root.append(ET.Element('Dither_integration_time', DAC1='0.1', DAC0='0.1'))
+        self.root.append(ET.Element('Dither_amplitude', DAC1='1e.3', DAC0='1e-3'))
+        self.root.append(ET.Element('Dither_mode', DAC1='2', DAC0='2'))
+        
+        self.root.append(ET.Element('VCO_settings', VCO_offset='0.00', VCO_amplitude='0.5', VCO_connection='0'))
+        self.root.append(ET.Element('RP_settings', Fan_state='0', PLL2_connection='0'))
+        self.root.append(ET.Element('Filter_select', DAC1='0', DAC0='0'))
+        self.root.append(ET.Element('Angle_select', DAC1='0', DAC0='0'))
+
+        
+
+
+
         
     def loadFromFile(self, strFilename):
-        try:
-            self.tree = ET.parse(strFilename)
-            self.root = self.tree.getroot()
-        except IOError:
-            print "IOError when trying to parse configuration file %s. using default values" % (strFilename)
-            self.loadDefaults()
-        return
+        self.tree = ET.parse(strFilename)
+        self.root = self.tree.getroot()
+
+        # we used to do error checking at this level, but now it is implemented one layer higher in the hierarchy (currently in XEM_GUI3.py)
+        # try:
+            # self.tree = ET.parse(strFilename)
+            # self.root = self.tree.getroot()
+        # except IOError:
+        #     print("IOError when trying to parse configuration file %s. using default values" % (strFilename))
+        #     self.populateDefaults()
+        # return
     
     def saveToFile(self, strFilename):
         self.tree.write(strFilename)
@@ -74,14 +94,14 @@ class SLLSystemParameters():
         # Set the DAC output limits:
         limit_low = float(self.getValue('Output_limits_low', 'DAC0'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC0'))    # the limit is in volts
-        sl.set_dac_limits(0, sl.convertDACVoltsToCounts(0, limit_low), sl.convertDACVoltsToCounts(0, limit_high), bSendToFPGA)
+        sl.set_dac_limits(0, sl.convertDACVoltsToCounts(0, limit_low), sl.convertDACVoltsToCounts(0, limit_high))
         limit_low = float(self.getValue('Output_limits_low', 'DAC1'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC1'))    # the limit is in volts
-        sl.set_dac_limits(1, sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high), bSendToFPGA)
+        sl.set_dac_limits(1, sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high))
         # print('low = %d, high = %d' % (sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high)))
         limit_low = float(self.getValue('Output_limits_low', 'DAC2'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC2'))    # the limit is in volts
-        sl.set_dac_limits(2, sl.convertDACVoltsToCounts(2, limit_low), sl.convertDACVoltsToCounts(2, limit_high), bSendToFPGA)
+        sl.set_dac_limits(2, sl.convertDACVoltsToCounts(2, limit_low), sl.convertDACVoltsToCounts(2, limit_high))
         
         ##
         ## HB, 4/27/2015, Added PWM support on DOUT0

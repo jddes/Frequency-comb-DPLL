@@ -104,15 +104,19 @@ module axi_slave #(
   output reg                sys_ren_o      ,  //!< system bus read enable.
   input      [ AXI_DW-1: 0] sys_rdata_i    ,  //!< system bus read data.
   input                     sys_err_i      ,  //!< system bus error indicator.
-  input                     sys_ack_i         //!< system bus acknowledge signal.
-);
+  input                     sys_ack_i      ,  //!< system bus acknowledge signal.
+  output                    rd_do_out      ,
+  output                    wr_do_out      ,
+  output                    ack_timout_out ,
+  output                    ack_combine_out
+  );
 
 //---------------------------------------------------------------------------------
 //  AXI slave Module
 //---------------------------------------------------------------------------------
 
 wire                 ack         ;
-reg   [      6-1: 0] ack_cnt     ;
+reg   [     10-1: 0] ack_cnt     ;
 
 reg                  rd_do       ;
 reg   [ AXI_IW-1: 0] rd_arid     ;
@@ -130,6 +134,13 @@ wire                 wr_errorw   ;
 
 assign wr_errorw = (axi_awlen_i != 4'h0) || (axi_awsize_i != 3'b010); // error if write burst and more/less than 4B transfer
 assign rd_errorw = (axi_arlen_i != 4'h0) || (axi_arsize_i != 3'b010); // error if read burst and more/less than 4B transfer
+
+assign rd_do_out = rd_do;
+assign wr_do_out = wr_do;
+assign ack_timout_out = ack_cnt[9];
+assign ack_combine_out = ack;
+
+
 
 always @(posedge axi_clk_i)
 if (axi_rstn_i == 1'b0) begin
@@ -184,27 +195,27 @@ if (axi_rstn_i == 1'b0) begin
    axi_rresp_o   <= 2'h0 ;
 end else begin
    axi_bvalid_o  <= wr_do && ack  ;
-   axi_bresp_o   <= {(wr_error || ack_cnt[5]),1'b0} ;  // 2'b10 SLVERR    2'b00 OK
+   axi_bresp_o   <= {(wr_error || ack_cnt[9]),1'b0} ;  // 2'b10 SLVERR    2'b00 OK
    axi_rlast_o   <= rd_do && ack  ;
    axi_rvalid_o  <= rd_do && ack  ;
-   axi_rresp_o   <= {(rd_error || ack_cnt[5]),1'b0} ;  // 2'b10 SLVERR    2'b00 OK
+   axi_rresp_o   <= {(rd_error || ack_cnt[9]),1'b0} ;  // 2'b10 SLVERR    2'b00 OK
    axi_rdata_o   <= sys_rdata_i   ;
 end
 
 // acknowledge protection
 always @(posedge axi_clk_i)
 if (axi_rstn_i == 1'b0) begin
-   ack_cnt   <= 6'h0 ;
+   ack_cnt   <= 10'h0 ;
 end else begin
    if ((axi_arvalid_i && axi_arready_o) || (axi_awvalid_i && axi_awready_o))  // rd || wr request
-      ack_cnt <= 6'h1 ;
+      ack_cnt <= 10'h1 ;
    else if (ack)
-      ack_cnt <= 6'h0 ;
+      ack_cnt <= 10'h0 ;
    else if (|ack_cnt)
-      ack_cnt <= ack_cnt + 6'h1 ;
+      ack_cnt <= ack_cnt + 10'h1 ;
 end
 
-assign ack = sys_ack_i || ack_cnt[5] || (rd_do && rd_errorw) || (wr_do && wr_errorw); // bus acknowledge or timeout or error
+assign ack = sys_ack_i || ack_cnt[9] || (rd_do && rd_errorw) || (wr_do && wr_errorw); // bus acknowledge or timeout or error
 
 //------------------------------------------
 //  Simple slave interface

@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='D:/Projets_Xilinx/RedPitayaLink/fpga/project/redpitaya.runs/impl_1'
+HD_PWD='D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/impl_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

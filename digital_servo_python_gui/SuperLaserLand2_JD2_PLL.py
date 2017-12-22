@@ -3,6 +3,7 @@ XEM6010 Phase-lock box communication interface, PLL sub-module
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import numpy as np
     
@@ -15,7 +16,7 @@ class Loop_filters_module(object):
     BUS_OFFSET_gain_d        = 0x4
     BUS_OFFSET_coef_d_filt   = 0x5
     
-    def __init__(self, bus_base_address, N_DIVIDE_P, N_DIVIDE_I, N_DIVIDE_II, N_DIVIDE_D, N_DIVIDE_DF, bUpdateFPGA = True):
+    def __init__(self, bus_base_address, N_DIVIDE_P, N_DIVIDE_I, N_DIVIDE_II, N_DIVIDE_D, N_DIVIDE_DF):
         self.bus_base_address = bus_base_address
         self.N_DIVIDE_P = N_DIVIDE_P
         self.N_DIVIDE_I = N_DIVIDE_I
@@ -32,8 +33,6 @@ class Loop_filters_module(object):
         self.N_delay_i = 6 # TODO: put the correct values here
         self.N_delay_ii = 7 # TODO: put the correct values here
         self.N_delay_d = 7 # TODO: put the correct values here
-        
-        self.bUpdateFPGA = bUpdateFPGA
         
     def get_p_limits(self):
         # These are the real, hardware limits for the multipler operands
@@ -90,8 +89,6 @@ class Loop_filters_module(object):
         # settings register: 1 bit: bLock
         bDebugOutput = False
         
-        
-        
         if gain_p > (2**31 - 1)/2.**self.N_DIVIDE_P:
             if bDebugOutput:
                 print('Error: P Gain clamped.')
@@ -130,8 +127,7 @@ class Loop_filters_module(object):
         self.gain_d = gain_d_int/2.**self.N_DIVIDE_D
         self.coef_d = coef_d_int/2.**self.N_DIVIDE_DF
         
-        #if bDebugOutput:
-        if True:
+        if bDebugOutput:
             print('P_gain = %e, in integer: P_gain = %d = 2^%.2f' % (self.gain_p, gain_p_int, np.log2(gain_p_int+0.1)))
             print('I_gain = %e, in integer: I_gain = %d = 2^%.2f' % (self.gain_i, gain_i_int, np.log2(gain_i_int+0.1)))
             print('II_gain = %e, in integer: II_gain = %d = 2^%.2f' % (self.gain_ii, gain_ii_int, np.log2(gain_ii_int+0.1)))
@@ -141,38 +137,49 @@ class Loop_filters_module(object):
         # Send P gain
         int_bits15_to_0 = gain_p_int & 0xFFFF
         int_bits31_to_16 = (gain_p_int & 0xFFFF0000) >> 16
-        if self.bUpdateFPGA == True:
-            sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_p, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_p, int_bits15_to_0, int_bits31_to_16)
 #        print('int_bits15_to_0 = %d, int_bits31_to_16 = %d' % (int_bits15_to_0, int_bits31_to_16))
         
         # Send I gain
         int_bits15_to_0 = gain_i_int & 0xFFFF
         int_bits31_to_16 = (gain_i_int & 0xFFFF0000) >> 16
-        if self.bUpdateFPGA == True:
-            sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_i, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_i, int_bits15_to_0, int_bits31_to_16)
         #print('address = %x' % (self.bus_base_address + self.BUS_OFFSET_gain_i))
         
         # Send II gain
         int_bits15_to_0 = gain_ii_int & 0xFFFF
         int_bits31_to_16 = (gain_ii_int & 0xFFFF0000) >> 16
-        if self.bUpdateFPGA == True:
-            sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_ii, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_ii, int_bits15_to_0, int_bits31_to_16)
             
         # Send D gain
         int_bits15_to_0 = gain_d_int & 0xFFFF
         int_bits31_to_16 = (gain_d_int & 0xFFFF0000) >> 16
-        if self.bUpdateFPGA == True:
-            sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_d, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_d, int_bits15_to_0, int_bits31_to_16)
             
         # Send DF gain
         int_bits15_to_0 = coef_d_int & 0xFFFF
         int_bits31_to_16 = (coef_d_int & 0xFFFF0000) >> 16
-        if self.bUpdateFPGA == True:
-            sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, int_bits15_to_0, int_bits31_to_16)
         
         # Send lock/unlock setting
-        if self.bUpdateFPGA == True:
-            sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_settings, bLock, 0)
+        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_settings, bLock, 0)
+
+    def get_pll_settings(self, sl):
+        gain_p_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_p)
+        gain_i_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_i)
+        gain_ii_raw = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_ii)
+        gain_d_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_d)
+        coef_d_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_coef_d_filt)
+        bLock       = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_settings)
+
+        self.gain_p  = gain_p_raw/2.**self.N_DIVIDE_P
+        self.gain_i  = gain_i_raw/2.**self.N_DIVIDE_I
+        self.gain_ii = gain_ii_raw/2.**self.N_DIVIDE_II
+        self.gain_d  = gain_d_raw/2.**self.N_DIVIDE_D
+        self.coef_d  = coef_d_raw/2.**self.N_DIVIDE_DF
+        self.bLock   = bLock
+        return (self.gain_p,  self.gain_i, self.gain_ii, self.gain_d, self.coef_d, self.bLock)
+
 
 class PLL0_module(Loop_filters_module):
     
@@ -184,8 +191,8 @@ class PLL0_module(Loop_filters_module):
     N_DIVIDE_D = 0
     N_DIVIDE_DF = 18
     
-    def __init__(self, sl, bUpdateFPGA):
-        super(PLL0_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF, bUpdateFPGA)
+    def __init__(self, sl):
+        super(PLL0_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF)
         
 class PLL1_module(Loop_filters_module):
     
@@ -198,8 +205,8 @@ class PLL1_module(Loop_filters_module):
     N_DIVIDE_DF = 18
 
     
-    def __init__(self, sl, bUpdateFPGA):
-        super(PLL1_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF, bUpdateFPGA)
+    def __init__(self, sl):
+        super(PLL1_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF)
         
         
 class PLL2_module(Loop_filters_module):
@@ -213,6 +220,6 @@ class PLL2_module(Loop_filters_module):
     N_DIVIDE_DF = 18
 
     
-    def __init__(self, sl, bUpdateFPGA):
-        super(PLL2_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF, bUpdateFPGA)
+    def __init__(self, sl):
+        super(PLL2_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF)
         

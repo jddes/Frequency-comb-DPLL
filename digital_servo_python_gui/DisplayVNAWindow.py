@@ -3,16 +3,19 @@ XEM6010 Phase-lock box GUI, VNA (Vector Network Analyzer) controls
 by JD Deschenes, October 2013
 
 """
+from __future__ import print_function
 
 import time
-from PyQt4 import QtGui, Qt
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import QtGui, Qt
+#import PyQt5.Qwt5 as Qwt
 import numpy as np
 
 
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 from DisplayTransferFunctionWindow import DisplayTransferFunctionWindow
 import weakref
+
+import sys # only used for sys.stdout.flush() because Syper's console sometimes doesn't show all print() outputs before crashing...
 
 class DisplayVNAWindow(QtGui.QWidget):
     number_of_windows = 0   # Number of results windows we have opened
@@ -25,9 +28,17 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.sl = weakref.proxy(sl)
         self.initUI()
         
-
-            
+    def getSystemIdentificationSettings(self):
+        # Read the System identification settings from the Red Pitaya the set the correct states when opening the VNA window
+        print("TO DO")
+        #return (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         
+    def getDitherSettings(self):
+        # Read the dither settings from the Red Pitaya the set the correct states when opening the VNA window
+        print("TO DO")
+        #return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither)
+
+
     def runSytemIdentification(self):
     
         # Check if another function is currently using the DDR2 logger:
@@ -94,23 +105,25 @@ class DisplayVNAWindow(QtGui.QWidget):
             self.sl.setVNA_mode_register(0, 1, 0)
             return
             
+        #print('runSytemIdentification(): before read')
         ## Read out the results from the FPGA:
         try:
             (transfer_function_complex, frequency_axis) = self.sl.read_VNA_samples_from_DDR2()
-            print 'len(transfer_function_complex) = %d, len(frequency_axis) = %d' % (len(transfer_function_complex), len(frequency_axis))
-            print np.real(transfer_function_complex)
-            print np.imag(transfer_function_complex)
+            print('len(transfer_function_complex) = %d, len(frequency_axis) = %d' % (len(transfer_function_complex), len(frequency_axis)))
+            print(np.real(transfer_function_complex))
+            print(np.imag(transfer_function_complex))
         except:
             self.sl.bDDR2InUse = False
-            print "Exception reading VNA samples from DDR2"
+            print("Exception reading VNA samples from DDR2")
             raise
             
         # Signal to other functions that they can use the DDR2 logger
         self.sl.bDDR2InUse = False
+
+        #print('runSytemIdentification(): after read')
         
         ## Scale the transfer function to physical units:
         # Current units are (VNA input counts)/(VNA output counts)
-        # TODO: I am not sure that the following conversion will work with DAC2, because there is an additional 2^4 factor inside the FPGA firmware along the VNA output path
         output_volts_per_counts = self.sl.convertDACCountsToVolts(self.qcombo_transfer_output.currentIndex(), 1)
         print('output_volts_per_counts = %s' % output_volts_per_counts)
         
@@ -126,12 +139,18 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         elif self.qcombo_transfer_input.currentIndex() == 2 or self.qcombo_transfer_input.currentIndex() == 3:
             # Input units to the VNA were frequency counts
-            # Huge dirty hack because convertDDCCountsToHz expects a numpy array and we only have a scalar to give it
-            if self.qcombo_transfer_input.currentIndex() == 2:
-                ddc_freq_sign = cmp(self.sl.ddc0_frequency_in_hz, 0) # we wanted to do sign() here but python has no sign function
-            else:
-                ddc_freq_sign = cmp(self.sl.ddc1_frequency_in_hz, 0) # we wanted to do sign() here but python has no sign function
             
+            if self.qcombo_transfer_input.currentIndex() == 2:
+                ddc_freq_for_compare = self.sl.ddc0_frequency_in_hz
+            else:
+                ddc_freq_for_compare = self.sl.ddc1_frequency_in_hz
+            # we wanted to do sign() here but python has no sign function
+            if ddc_freq_for_compare >= 0.:
+                ddc_freq_sign = 1.
+            else:
+                ddc_freq_sign = -1.
+            
+            # Dirty hack because convertDDCCountsToHz expects a numpy array and we only have a scalar to give it
             Hz_per_VNA_input_counts = -ddc_freq_sign * np.mean(self.sl.convertDDCCountsToHz(   np.array((1,))   ))
 #            Hz_per_VNA_input_counts = self.sl.convertDDCCountsToHz(1)
             print('Hz_per_VNA_input_counts = %s' % Hz_per_VNA_input_counts)
@@ -143,6 +162,9 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qprogress_ident.setValue(0)
         # Scale the actual measured transfer function:
         transfer_function_complex = transfer_function_complex * physical_input_units_per_input_counts / output_volts_per_counts        
+
+        print('runSytemIdentification(): before creating a window())')
+        sys.stdout.flush()
         
         ## Create a new window to show the transfer function
         # modified 02-10-2016: we plot everything on the same graph instead, so we open only 1 window
@@ -155,115 +177,14 @@ class DisplayVNAWindow(QtGui.QWidget):
                 self.response_windows[0] = DisplayTransferFunctionWindow(self.number_of_windows)
                                 
         
+        print('runSytemIdentification(): before addCurve())')
+        sys.stdout.flush()
+
         self.response_windows[0].addCurve(frequency_axis, transfer_function_complex, physical_units_name)
-
+        print('runSytemIdentification(): after addCurve())')
         
         
 
-        
-        
-
-        
-    def updateTransferFunctionDisplay(self):
-        if hasattr(self, 'transfer_function_dictionary') == False:
-            return
-        # Get which curve we should be displaying:
-        (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude) = self.readSystemIdentificationSettings()
-        
-
-        try:
-            H_measured_openloop = -self.transfer_function_dictionary[ (input_select, output_select, 0) ]
-            freq_axis_openloop = self.transfer_freq_axis_dictionary[ (input_select, output_select, 0) ]
-        except:
-            H_measured_openloop = np.array((1, 1))
-            freq_axis_openloop = np.array((1, 1))
-        try:
-            H_measured_fll = -self.transfer_function_dictionary[ (input_select, output_select, 1) ]
-            freq_axis_fll = self.transfer_freq_axis_dictionary[ (input_select, output_select, 1) ]
-        except:
-            H_measured_fll = np.array((1, 1))
-            freq_axis_fll = np.array((1, 1))
-        
-        
-        # Predicted closed-loop response:
-        # Add the PLL loop filter's transfer function
-        ###### TODO: Have the sl object return the loop filters' transfer function instead of re-deriving it everywhere.
-        P_gain = 0
-        I_gain = 0
-        
-        N_delay_p = 5 # TODO: put the correct values here
-        N_delay_i = 6 # TODO: put the correct values here
-        H_cumsum = 1/(1-np.exp(-1j*2*np.pi*freq_axis_openloop/self.sl.fs))
-        phase_ramp = 2*np.pi * freq_axis_openloop/self.sl.fs
-
-        H_controller = P_gain * np.exp(-1j*N_delay_p * phase_ramp) + I_gain * H_cumsum * np.exp(-1j*N_delay_i * phase_ramp)
-        
-        H_measured_openloop = H_measured_openloop * np.exp(1j*2*np.pi*3*freq_axis_openloop/self.sl.fs) # we cancel 3 samples delay because these come from the VNA itself
-        H_measured_fll = H_measured_fll * np.exp(1j*2*np.pi*3*freq_axis_fll/self.sl.fs) # we cancel 3 samples delay because these come from the VNA itself
-        H_predicted_fll = H_measured_openloop / (1 + H_measured_openloop * H_controller)
-            
-            
-        if len(freq_axis_openloop) > 2:
-            self.curve_openloop.setData(freq_axis_openloop, 20*np.log10(np.abs(H_measured_openloop * H_controller)))
-            self.curve_openloop_closed.setData(freq_axis_openloop, 20*np.log10(np.abs(1 / (1 + H_measured_openloop * H_controller))))
-            
-        # Handle the units
-        # magnitude is currently in linear a linear scale units/units.
-        # The units choices for the graph are:
-        # self.qcombo_transfer_units.addItems(['dBunits/units', 'Hz/fullscale', 'Hz/V'])
-        if self.qcombo_transfer_units.currentIndex() == 0:
-            # dB units/units
-            if len(freq_axis_openloop) > 2:
-                self.curve_transfer_openloop.setData(freq_axis_openloop, 20*np.log10(np.abs(H_measured_openloop)))
-                self.curve_transfer_closedloop_predicted.setData(freq_axis_openloop, 20*np.log10(np.abs(H_predicted_fll)))
-            if len(freq_axis_fll) > 2:
-                self.curve_transfer_closedloop.setData(freq_axis_fll, 20*np.log10(np.abs(H_measured_fll)))
-            
-            self.qplt_transfer.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
-            self.qplt_transfer.setAxisTitle(Qwt.QwtPlot.yLeft, 'Gain [dBunits/units]')
-            
-        elif self.qcombo_transfer_units.currentIndex() == 1:
-            # Hz/fullscale
-            # 2**10 is the number of fractional bits on the phase, while 2**16 is the fullscale output range in counts
-            conversion_factor = self.sl.fs / 2**10 * 2**16
-            if len(freq_axis_openloop) > 2:
-                self.curve_transfer_openloop.setData(freq_axis_openloop, conversion_factor*(np.abs(H_measured_openloop)))
-                self.curve_transfer_closedloop_predicted.setData(freq_axis_openloop, conversion_factor*(np.abs(H_predicted_fll)))
-            if len(freq_axis_fll) > 2:
-                self.curve_transfer_closedloop.setData(freq_axis_fll, conversion_factor*(np.abs(H_measured_fll)))
-            
-#            if len(H_closedloop) > 2:
-#                self.curve_transfer_gainwithcontroller.setData(freq_axis, np.abs(H_closedloop) * conversion_factor)
-#            else:
-#                self.curve_transfer_gainwithcontroller.setData(freq_axis, magnitude * conversion_factor)
-            self.qplt_transfer.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
-            self.qplt_transfer.setAxisTitle(Qwt.QwtPlot.yLeft, 'Gain [Hz/fullscale]')
-            
-        elif self.qcombo_transfer_units.currentIndex() == 2:
-            # Hz/V, assumes 1V fullscale DAC output (which might be incorrect depending on which DAC and the output PGA gain setting)
-            # 2**10 is the number of fractional bits on the phase, while 2**16 is the fullscale output range in counts
-            # The 1 at the end represents 1V/fullscale
-            conversion_factor = self.sl.fs / 2**10 * 2**16 * 1
-            if len(freq_axis_openloop) > 2:
-                self.curve_transfer_openloop.setData(freq_axis_openloop, conversion_factor*(np.abs(H_measured_openloop)))
-                self.curve_transfer_closedloop_predicted.setData(freq_axis_openloop, conversion_factor*(np.abs(H_predicted_fll)))
-            if len(freq_axis_fll) > 2:
-                self.curve_transfer_closedloop.setData(freq_axis_fll, conversion_factor*(np.abs(H_measured_fll)))
-#            if len(H_closedloop) > 2:
-#                self.curve_transfer_gainwithcontroller.setData(freq_axis, np.abs(H_closedloop) * conversion_factor)
-#            else:
-#                self.curve_transfer_gainwithcontroller.setData(freq_axis, magnitude * conversion_factor)
-            self.qplt_transfer.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
-            self.qplt_transfer.setAxisTitle(Qwt.QwtPlot.yLeft, 'Gain [Hz/V]')
-        
-        # The phase is unaffected by the units, it is always in radians:
-        self.curve_transfer_phase.setData(freq_axis_openloop, np.angle(H_measured_openloop))
-
-        # Refresh the display:
-        self.qplt_transfer.replot()
-        self.qplt_openloop.replot()
-            
-        return
         
     def readSystemIdentificationSettings(self):
         # Input select
@@ -382,8 +303,10 @@ class DisplayVNAWindow(QtGui.QWidget):
         trigger_dither = bEnableDither
         if bEnableDither == False:
             stop_flag = 1
+            self.qbtn_dither.setText("Activate dither")
         else:
             stop_flag = 0
+            self.qbtn_dither.setText("Stop dither")
         bSquareWave = bSquareWave
         self.sl.setVNA_mode_register(trigger_dither, stop_flag, bSquareWave)
         print('(trigger_dither, stop_flag, bSquareWave) = %d, %d, %d' % (trigger_dither, stop_flag, bSquareWave))
@@ -436,7 +359,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qedit_freq_end.setMaximumWidth(60)
 #        self.qedit_freq_end.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
         
-        freq_number_label = Qt.QLabel('Number of freq:')
+        freq_number_label = Qt.QLabel('Number of freq [max 3276]:')
         self.qedit_freq_number = Qt.QLineEdit('160')
         self.qedit_freq_number.setMaximumWidth(60)
 #        self.qedit_freq_number.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)

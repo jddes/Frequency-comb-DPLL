@@ -125,10 +125,7 @@ begin
             -- Write
             if sys_wen = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"000" => amplitude                     <= sys_wdata(amplitude'range);
-                    --when x"004" => frequency(48-1 downto 48-16)  <= sys_wdata(16-1 downto 0);   -- frequency 16 MSBs
-                    --when x"008" => frequency(32-1 downto 0)      <= sys_wdata;                  -- frequency 32 LSBs
-
+                    when x"00000" => amplitude <= sys_wdata(amplitude'range);
                     when others => 
                 end case;
             end if;
@@ -136,10 +133,7 @@ begin
             -- Read
             if sys_ren = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"000" => sys_rdata <= std_logic_vector(resize(  signed(amplitude), 32));
-                    --when x"004" => sys_rdata <= std_logic_vector(resize(unsigned(frequency(32-1 downto 0)), 32));
-                    --when x"008" => sys_rdata <= std_logic_vector(resize(  signed(frequency(48-1 downto 48-16)), 32));
-
+                    when x"00000" => sys_rdata <= std_logic_vector(resize(  signed(amplitude), 32));
                     when others => sys_rdata <=  (others => '0');
                 end case;
             end if;

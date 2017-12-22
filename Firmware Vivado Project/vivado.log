@@ -1,148 +1,40 @@
 #-----------------------------------------------------------
-# Vivado v2015.2 (64-bit)
-# SW Build 1266856 on Fri Jun 26 16:35:25 MDT 2015
-# IP Build 1264090 on Wed Jun 24 14:22:01 MDT 2015
-# Start of session at: Sun Jun 12 14:40:03 2016
-# Process ID: 2360
-# Log file: /media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/vivado.log
-# Journal file: /media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/vivado.jou
+# Vivado v2015.4 (64-bit)
+# SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
+# IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
+# Start of session at: Fri Aug 04 14:58:00 2017
+# Process ID: 2500
+# Current directory: C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent11412 C:\Users\Alex\Documents\GitHub\OnlineVersion2\Firmware Vivado Project\redpitaya.xpr
+# Log file: C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/vivado.log
+# Journal file: C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project\vivado.jou
 #-----------------------------------------------------------
 start_gui
-open_project /media/sf_D_DRIVE/Projets_Xilinx/RedPitaya/fpga/project/redpitaya.xpr
+open_project {C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.xpr}
+INFO: [Project 1-313] Project file moved from 'C:/Users/Alex/Documents/GitHub/v2/Frequency-comb-DPLL-DPLL-python3/Firmware_Vivado_Project' since last save.
 Scanning sources...
 Finished scanning sources
 INFO: [IP_Flow 19-234] Refreshing IP repositories
 INFO: [IP_Flow 19-1704] No user IP repositories specified
-INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/opt/Xilinx/Vivado/2015.2/data/ip'.
-open_project: Time (s): cpu = 00:00:15 ; elapsed = 00:00:26 . Memory (MB): peak = 5626.988 ; gain = 62.242 ; free physical = 1208 ; free virtual = 5004
-close_project
-****** Webtalk v2015.2 (64-bit)
-  **** SW Build 1266856 on Fri Jun 26 16:35:25 MDT 2015
-  **** IP Build 1264090 on Wed Jun 24 14:22:01 MDT 2015
-    ** Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2015.4/data/ip'.
+open_project: Time (s): cpu = 00:00:20 ; elapsed = 00:00:09 . Memory (MB): peak = 885.156 ; gain = 296.172
+reset_run impl_1 -prev_step 
+launch_runs impl_1 -to_step write_bitstream
+[Fri Aug 04 14:58:24 2017] Launched impl_1...
+Run output will be captured here: C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/impl_1/runme.log
+reset_run impl_1 -prev_step 
+WARNING: [Vivado 12-1017] Problems encountered:
+1. PID not specified
 
-source /media/sf_D_DRIVE/Projets_Xilinx/RedPitaya/fpga/project/redpitaya.hw/webtalk/labtool_webtalk.tcl -notrace
-INFO: [Common 17-186] '/media/sf_D_DRIVE/Projets_Xilinx/RedPitaya/fpga/project/redpitaya.hw/webtalk/usage_statistics_ext_labtool.xml' has been successfully sent to Xilinx on Sun Jun 12 14:48:48 2016. For additional details about this file, please refer to the WebTalk help file at /opt/Xilinx/Vivado/2015.2/doc/webtalk_introduction.html.
-INFO: [Common 17-206] Exiting Webtalk at Sun Jun 12 14:48:48 2016...
-open_project {/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.xpr}
-INFO: [Project 1-313] Project file moved from '/media/sf_D/Projects/RedPitaya/fpga/project' since last save.
-WARNING: [filemgmt 20-922] The BXML file is of a newer version (0.33) then the current supported version (0.32).
-Data could be potentially be lost
-Scanning sources...
-Finished scanning sources
-WARNING: [filemgmt 20-922] The BXML file is of a newer version (0.33) then the current supported version (0.32).
-Data could be potentially be lost
-WARNING: [filemgmt 20-922] The BXML file is of a newer version (0.33) then the current supported version (0.32).
-Data could be potentially be lost
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CompiledLibDirModelSim
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CompiledLibDirQuesta
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CompiledLibDirIES
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CompiledLibDirVCS
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CompiledLibDirRiviera
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CompiledLibDirActivehdl
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name CreateRefXciForCoreContainers
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name IPUserFilesDir
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name IPStaticSourceDir
-CRITICAL WARNING: [Project 1-505] Unrecognized Option Name EnableBDX
-WARNING: [Project 1-231] Project 'redpitaya.xpr' was created with a future version and may or may not perform reliably with this version of Vivado. It has been opened in read-only mode for the protection of unrecognized data. Use 'File | Save Project As...' if you wish to alter a copy of the project.
-INFO: [IP_Flow 19-234] Refreshing IP repositories
-INFO: [IP_Flow 19-1704] No user IP repositories specified
-INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/opt/Xilinx/Vivado/2015.2/data/ip'.
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_carry_and.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_carry_latch_and.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_carry_latch_or.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_carry_or.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_carry.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_command_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_mask_static.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_mask.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_sel_mask_static.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_sel_mask.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_sel_static.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_sel.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator_static.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_comparator.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_mux_enc.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_mux.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/generic_baseblocks_v2_1/hdl/verilog/generic_baseblocks_v2_1_nto1_mux.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/fifo_generator_v13_0/simulation/fifo_generator_vhdl_beh.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/fifo_generator_v13_0/hdl/fifo_generator_v13_0_rfs.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_data_fifo_v2_1/hdl/verilog/axi_data_fifo_v2_1_axic_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_data_fifo_v2_1/hdl/verilog/axi_data_fifo_v2_1_fifo_gen.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_data_fifo_v2_1/hdl/verilog/axi_data_fifo_v2_1_axic_srl_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_data_fifo_v2_1/hdl/verilog/axi_data_fifo_v2_1_axic_reg_srl_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_data_fifo_v2_1/hdl/verilog/axi_data_fifo_v2_1_ndeep_srl.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_data_fifo_v2_1/hdl/verilog/axi_data_fifo_v2_1_axi_data_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_infrastructure_v1_1/hdl/verilog/axi_infrastructure_v1_1_0_header.vh' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_infrastructure_v1_1/hdl/verilog/axi_infrastructure_v1_1_axi2vector.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_infrastructure_v1_1/hdl/verilog/axi_infrastructure_v1_1_axic_srl_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_infrastructure_v1_1/hdl/verilog/axi_infrastructure_v1_1_vector2axi.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_register_slice_v2_1/hdl/verilog/axi_register_slice_v2_1_axic_register_slice.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_register_slice_v2_1/hdl/verilog/axi_register_slice_v2_1_axi_register_slice.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_a_axi3_conv.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_axi3_conv.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_axilite_conv.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_r_axi3_conv.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_w_axi3_conv.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b_downsizer.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_decerr_slave.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_simple_fifo.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_wrap_cmd.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_incr_cmd.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_wr_cmd_fsm.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_rd_cmd_fsm.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_cmd_translator.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_b_channel.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_r_channel.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_aw_channel.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s_ar_channel.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_b2s.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/axi_protocol_converter_v2_1/hdl/verilog/axi_protocol_converter_v2_1_axi_protocol_converter.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/lib_cdc_v1_0/hdl/src/vhdl/cdc_sync.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/proc_sys_reset_v5_0/hdl/src/vhdl/upcnt_n.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/proc_sys_reset_v5_0/hdl/src/vhdl/sequence_psr.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/proc_sys_reset_v5_0/hdl/src/vhdl/lpf.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/proc_sys_reset_v5_0/hdl/src/vhdl/proc_sys_reset.vhd' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_local_params.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_arb_wr.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_arb_rd.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_arb_wr_4.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_arb_rd_4.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_arb_hp2_3.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_arb_hp0_1.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_ssw_hp.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_sparse_mem.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_reg_params.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_reg_init.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_reg_map.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_ocm_mem.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_intr_wr_mem.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_intr_rd_mem.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_fmsw_gp.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_regc.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_ocmc.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_interconnect_model.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_gen_reset.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_gen_clock.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_ddrc.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_axi_slave.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_axi_master.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_afi_slave.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_apis.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_unused_ports.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_axi_gp.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_axi_acp.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_5_axi_hp.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [IP_Flow 19-2345] File '/media/sf_D_DRIVE/Université/Dropbox/22_H2015/Red Pitaya/RedPitaya/fpga/project/redpitaya.srcs/sources_1/bd/system/ipshared/xilinx.com/processing_system7_bfm_v2_0/hdl/processing_system7_bfm_v2_0_processing_system7_bfm.v' has unknown USED_IN value(s): ipstatic 
-WARNING: [BD 41-1663] The design 'system.bd' is locked for any modification. Locked reason(s):
-* Project read-only. Please run 'save_project_as' before making any change to the bd-design. 
+reset_run impl_1 -prev_step 
+WARNING: [Vivado 12-1017] Problems encountered:
+1. PID not specified
 
-WARNING: [BD 41-1661] One or more IPs have been locked in the design 'system.bd'. Please run report_ip_status for more details and recommendations on how to fix this issue.
-List of locked IPs:
-system_xlconstant_0
-system_xadc_0
-system_processing_system7_0
-system_axi_protocol_converter_0_0
-system_proc_sys_reset_0
-
-open_project: Time (s): cpu = 00:00:05 ; elapsed = 00:00:14 . Memory (MB): peak = 5668.844 ; gain = 15.879 ; free physical = 1163 ; free virtual = 4967
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream
+[Fri Aug 04 14:59:01 2017] Launched synth_1...
+Run output will be captured here: C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/synth_1/runme.log
+[Fri Aug 04 14:59:01 2017] Launched impl_1...
+Run output will be captured here: C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/impl_1/runme.log
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Aug 04 15:16:40 2017...
