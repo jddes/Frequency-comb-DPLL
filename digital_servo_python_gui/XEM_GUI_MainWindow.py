@@ -651,7 +651,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
                     # Read the current manual offset value:
                     current_manual_offset_in_slider_units = float(self.q_dac_offset[kDAC].value())
                     # Convert the DAC DC offset to the slider units:
-                    current_dac_offset_in_slider_units = float(current_dac_offset_in_counts - self.sl.DACs_limit_low[kDAC])/float(self.sl.DACs_limit_high[kDAC] - self.sl.DACs_limit_low[kDAC])*1e6
+                    current_dac_offset_in_slider_units = self.dac_offset_in_slider_units(current_dac_offset_in_counts, kDAC)
                     
                     # Set up a ramp with 20 steps:
                     desired_ramp = np.linspace(current_manual_offset_in_slider_units, current_dac_offset_in_slider_units, 20)
@@ -714,7 +714,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
         self.bFirstTimeLockCheckBoxClicked = False
  
-            
+
+    def dac_offset_in_slider_units(self, dac_offset_in_counts, DAC_num):
+        return float(dac_offset_in_counts - self.sl.DACs_limit_low[DAC_num])/float(self.sl.DACs_limit_high[DAC_num] - self.sl.DACs_limit_low[DAC_num])*1e6
+
     def initUI(self):
         
 #        second_half_offset = 50

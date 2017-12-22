@@ -11,7 +11,8 @@ class user_friendly_QLineEdit(Qt.QLineEdit):
         super(user_friendly_QLineEdit, self).__init__(text)
 
         self.textChanged.connect(self.change_my_color)
-        self.returnPressed.connect(self.reset_my_color)
+        self.editingFinished.connect(self.reset_my_color)
+        self.setValidator(QtGui.QDoubleValidator())
         
         self.reset_my_color()
         
