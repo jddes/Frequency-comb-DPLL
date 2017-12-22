@@ -119,7 +119,8 @@ architecture Behavioral of PLL_loop_filters_with_saturation is
 	signal i_railed_positive, i_railed_negative : std_logic := '0';
 
 	-- II branch signals
-	signal ii_mult_output                                             : std_logic_vector(32+32-1 downto 0) := (others => '0');
+	signal ii_mult_output, ii_mult_output_reg                         : std_logic_vector(32+32-1 downto 0) := (others => '0');
+	
 	signal second_stage_railed_positive, second_stage_railed_negative : std_logic := '0';
 	signal ii_accumulator                                             : std_logic_vector(N_OUTPUT+N_DIVIDE_II-1 downto 0) := (others => '0');
 	signal ii_accumulator_resized                                     : std_logic_vector(ii_accumulator'length-N_DIVIDE_II-1 downto 0) := (others => '0');
@@ -252,6 +253,13 @@ begin
 		p                 => ii_mult_output
 	);
 
+	-- register stage between the multiplier and the integrator to help with timing closure:
+	process (clk)
+	begin
+		if rising_edge(clk) then
+			ii_mult_output_reg <= ii_mult_output;
+		end if;
+	end process;
 
 	-- Integrator with saturation (exact integer arithmetic, other than the saturation behavior).  Also has anti-windup.
 	integrator_with_saturation_inst2 : entity work.integrator_with_saturation
@@ -263,7 +271,7 @@ begin
 		sclr                => synchronous_clear,
 		railed_positive     => sum_railed_positive,
 		railed_negative     => sum_railed_negative,
-		data_in             => ii_mult_output,
+		data_in             => ii_mult_output_reg,
 		data_out            => ii_accumulator,
 		railed_positive_out => second_stage_railed_positive,
 		railed_negative_out => second_stage_railed_negative

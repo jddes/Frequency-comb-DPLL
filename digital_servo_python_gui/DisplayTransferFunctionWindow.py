@@ -110,8 +110,8 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
 #        data_highfreq = np.loadtxt(u'transfer_functions\\09_21_2016_14_40_32_no_004_cal_thru.txt', skiprows=1)
 #        data_lowfreq = np.loadtxt(u'transfer_functions\\09_21_2016_14_44_34_no_006_cal_thru.txt', skiprows=1)
 #        
-        data_highfreq = np.loadtxt(u'transfer_functions\\04_28_2017_16_11_37_no_000_cal_thru_high.txt', skiprows=1)
-        data_lowfreq = np.loadtxt(u'transfer_functions\\04_28_2017_16_11_00_no_000_cal_thru_low.txt', skiprows=1)
+        data_highfreq = np.loadtxt(u'04_28_2017_16_11_37_no_000_cal_thru_high.txt', skiprows=1)
+        data_lowfreq = np.loadtxt(u'04_28_2017_16_11_00_no_000_cal_thru_low.txt', skiprows=1)
         
         # convert the data to complex and merge the two sets:
         use_lowfreq = (data_lowfreq[:, 0] < 300e3)

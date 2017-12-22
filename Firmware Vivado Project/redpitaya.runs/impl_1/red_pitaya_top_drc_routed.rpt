@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Sat Aug 12 16:34:49 2017
+| Date         : Mon Aug 14 13:07:32 2017
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_drc
 ------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ Table of Contents
       Design limits: <entire design considered>
            Ruledeck: default
              Max violations: <unlimited>
-             Violations found: 133
+             Violations found: 137
 
 2. REPORT DETAILS
 -----------------
@@ -222,6 +222,26 @@ Related violations: <none>
 PLIO-7#1 Warning
 Placement Constraints Check for IO constraints  
 An IO Bus FIXED_IO_mio[53:0] with more than one IO standard is found. Components associated with this bus are: LVCMOS33 (FIXED_IO_mio[15], FIXED_IO_mio[14], FIXED_IO_mio[13], FIXED_IO_mio[12], FIXED_IO_mio[11], FIXED_IO_mio[10], FIXED_IO_mio[9], FIXED_IO_mio[8], FIXED_IO_mio[7], FIXED_IO_mio[6], FIXED_IO_mio[5], FIXED_IO_mio[4], FIXED_IO_mio[3], FIXED_IO_mio[2], FIXED_IO_mio[1] (the first 15 of 16 listed)); LVCMOS25 (FIXED_IO_mio[53], FIXED_IO_mio[52], FIXED_IO_mio[51], FIXED_IO_mio[50], FIXED_IO_mio[49], FIXED_IO_mio[48], FIXED_IO_mio[47], FIXED_IO_mio[46], FIXED_IO_mio[45], FIXED_IO_mio[44], FIXED_IO_mio[43], FIXED_IO_mio[42], FIXED_IO_mio[41], FIXED_IO_mio[40], FIXED_IO_mio[39] (the first 15 of 38 listed)); 
+Related violations: <none>
+
+PLIO-8#1 Warning
+Placement Constraints Check for IO constraints  
+Terminal dac_pwm_o[0] has IOB constraint set to TRUE, but it is either not connected to a FLOP element or the connected FLOP element could not be brought into the I/O.
+Related violations: <none>
+
+PLIO-8#2 Warning
+Placement Constraints Check for IO constraints  
+Terminal dac_pwm_o[1] has IOB constraint set to TRUE, but it is either not connected to a FLOP element or the connected FLOP element could not be brought into the I/O.
+Related violations: <none>
+
+PLIO-8#3 Warning
+Placement Constraints Check for IO constraints  
+Terminal dac_pwm_o[2] has IOB constraint set to TRUE, but it is either not connected to a FLOP element or the connected FLOP element could not be brought into the I/O.
+Related violations: <none>
+
+PLIO-8#4 Warning
+Placement Constraints Check for IO constraints  
+Terminal dac_pwm_o[3] has IOB constraint set to TRUE, but it is either not connected to a FLOP element or the connected FLOP element could not be brought into the I/O.
 Related violations: <none>
 
 REQP-1577#1 Warning
