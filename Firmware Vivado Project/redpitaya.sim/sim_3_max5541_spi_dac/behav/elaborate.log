@@ -1,0 +1,15 @@
+Vivado Simulator 2015.4
+Copyright 1986-1999, 2001-2015 Xilinx, Inc. All Rights Reserved.
+Running: D:/Xilinx/Vivado/2015.4/bin/unwrapped/win64.o/xelab.exe -wto 55fbcb833fab42aea5d71afd7d8d1644 --debug typical --relax --mt 2 -L work -L secureip --snapshot max5541_spi_dac_interface_testbench_behav work.max5541_spi_dac_interface_testbench -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling package std.standard
+Compiling package ieee.std_logic_1164
+Compiling package ieee.numeric_std
+Compiling architecture behavioral of entity work.MAX5541_SPI_DAC_interface [\MAX5541_SPI_DAC_interface(7,16,...]
+Compiling architecture behavior of entity work.max5541_spi_dac_interface_testbe...
+Built simulation snapshot max5541_spi_dac_interface_testbench_behav

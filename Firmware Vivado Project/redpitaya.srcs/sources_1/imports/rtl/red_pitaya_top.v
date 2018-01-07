@@ -697,13 +697,19 @@ red_pitaya_hk i_hk (
   .led_o           (  led_o_hk                   ),  // LED output
   // global configuration
   .digital_loop    (  digital_loop_hk            ),
-  // Expansion connector
-  .exp_p_dat_i     (  exp_p_in_hk                ),  // input data
-  .exp_p_dat_o     (  exp_p_out_hk               ),  // output data
-  .exp_p_dir_o     (  exp_p_dir_hk               ),  // 1-output enable
-  .exp_n_dat_i     (  exp_n_in_hk                ),
-  .exp_n_dat_o     (  exp_n_out_hk               ),
-  .exp_n_dir_o     (  exp_n_dir_hk               ),
+  // Expansion connector (disabled)
+  // .exp_p_dat_i     (  exp_p_in_hk                ),  // input data
+  // .exp_p_dat_o     (  exp_p_out_hk               ),  // output data
+  // .exp_p_dir_o     (  exp_p_dir_hk               ),  // 1-output enable
+  // .exp_n_dat_i     (  exp_n_in_hk                ),
+  // .exp_n_dat_o     (  exp_n_out_hk               ),
+  // .exp_n_dir_o     (  exp_n_dir_hk               ),
+  .exp_p_dat_i     (  ),  // input data
+  .exp_p_dat_o     (  ),  // output data
+  .exp_p_dir_o     (  ),  // 1-output enable
+  .exp_n_dat_i     (  ),
+  .exp_n_dat_o     (  ),
+  .exp_n_dir_o     (  ),
    // System bus
   .sys_addr        (  sys_addr                   ),  // address
   .sys_wdata       (  sys_wdata                  ),  // write data
@@ -725,13 +731,20 @@ red_pitaya_hk i_hk (
 // // end
 
 
-assign exp_n_out = {8'b10000000};
-assign exp_p_out = {8'b00000000};
-assign exp_n_dir = {8'b11111111};
-assign exp_p_dir = {8'b11111111};
+// assign exp_n_out[8-1:0] = {5'b10000000};
+// assign exp_p_out[8-1:0] = {8'b00000000};
 
-IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
-IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out_hk), .T(~exp_n_dir) );
+// Set the direction of each IO pins:
+assign exp_n_dir[8-1:0] = {8'b00000001};  // pins 1-7 set as inputs, pin 0 set as output
+assign exp_p_dir[8-1:0] = {8'b00000011};  // pins 2-7 set as inputs, pins 0-1 set as outputs
+
+// Use this to map the digital IO to the house keeping module:
+// IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
+// IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out_hk), .T(~exp_n_dir) );
+// Use this to use the digital IO connectors differently:
+// Drive "exp_p_out" and "exp_n_out" and set "exp_n_dir" and "exp_p_dir" accordingly
+IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
+IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
 
 //---------------------------------------------------------------------------------
 // VCO and output mux
@@ -957,6 +970,37 @@ clk_10MHz_sync
 
 assign daisy_p_o = {clk_out_10, 1'bz};  //Important : if you want to use only one of the signals (p or n), terminate the other one with a 50 Ohm. To do so
 assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SMA connector at the end (one for the "p" and one for the "n" signal).
+
+
+//---------------------------------------------------------------------------------
+//  SPI communication with a MAX5541 16-bits, SPI DAC.
+
+  reg [16-1:0] dac_ramp_test;
+  wire data_loaded_clk_enable;
+  wire max5541_scl;
+  wire max5541_sda;
+  wire max5541_csb;
+
+  // we simply play a ramp in a loop for now:
+  always @(posedge adc_clk) begin
+    if (data_loaded_clk_enable == 1'b1) begin
+      dac_ramp_test <= dac_ramp_test + 16'd1;
+    end
+  end
+
+  max5541_spi_dac_interface max5541_spi_dac_interface_inst
+  (
+    .clk(adc_clk),
+    .data_in(dac_ramp_test),
+    .data_loaded_clk_enable(data_loaded_clk_enable),
+    .scl(max5541_scl),
+    .sda(max5541_sda),
+    .csb(max5541_csb)
+  );
+  // Map the SPI port to specific IO pins:
+  assign exp_p_out[0] = max5541_scl;
+  assign exp_n_out[0] = max5541_sda;
+  assign exp_p_out[1] = max5541_csb;
 
 endmodule
 

@@ -1,0 +1,7 @@
+Running: xsim.dir/max5541_spi_dac_interface_testbench_behav/xsimk.exe -simmode gui -wdb max5541_spi_dac_interface_testbench_behav.wdb -simrunnum 0 -socket 3113
+Design successfully loaded
+Design Loading Memory Usage: 22488 KB (Peak: 22488 KB)
+Design Loading CPU Usage: 109 ms
+Simulation completed
+Simulation Memory Usage: 23260 KB (Peak: 23260 KB)
+Simulation CPU Usage: 109 ms

@@ -142,8 +142,8 @@ set_property PACKAGE_PIN L10 [get_ports {vinn_i[4]}]
 ### Expansion connector
 set_property IOSTANDARD LVCMOS33 [get_ports {exp_p_io[*]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {exp_n_io[*]}]
-set_property SLEW       FAST     [get_ports {exp_p_io[*]}]
-set_property SLEW       FAST     [get_ports {exp_n_io[*]}]
+set_property SLEW       SLOW     [get_ports {exp_p_io[*]}]
+set_property SLEW       SLOW     [get_ports {exp_n_io[*]}]
 set_property DRIVE      8        [get_ports {exp_p_io[*]}]
 set_property DRIVE      8        [get_ports {exp_n_io[*]}]
 

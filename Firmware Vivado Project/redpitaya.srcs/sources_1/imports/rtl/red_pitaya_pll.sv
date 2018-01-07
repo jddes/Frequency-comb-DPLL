@@ -25,7 +25,7 @@ module red_pitaya_pll (
   output logic pll_locked
 );
 
-logic clk_fb;
+logic clk_fb, clk_fb_after_bufg;
 
 PLLE2_ADV #(
    .BANDWIDTH            ("OPTIMIZED"),
@@ -63,7 +63,7 @@ PLLE2_ADV #(
    .CLKOUT4      (clk_adc_2x),
    .CLKOUT5      (clk_pwm   ),
    // Input clock control
-   .CLKFBIN      (clk_fb    ),
+   .CLKFBIN      (clk_fb_after_bufg ),
    .CLKIN1       (clk       ),
    .CLKIN2       (1'b0      ),
    // Tied to always select the primary input clock
@@ -81,5 +81,10 @@ PLLE2_ADV #(
    .PWRDWN       (1'b0      ),
    .RST          (!rstn     )
 );
+
+
+// Modified by JDD 2018-01-05: Added a BUFG in the PLL feedback path
+// to try to cancel the phase offset of the bufg after the PLL module and meet timing on the ADC input signals
+BUFG bufg_adc_clk    (.O (clk_fb_after_bufg   ), .I (clk_fb   ));
 
 endmodule: red_pitaya_pll

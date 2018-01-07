@@ -1,0 +1,1 @@
+-wto "55fbcb833fab42aea5d71afd7d8d1644" --debug "typical" --relax --mt "2" -L "work" -L "secureip" --snapshot "max5541_spi_dac_interface_testbench_behav" "work.max5541_spi_dac_interface_testbench" -log "elaborate.log" 
