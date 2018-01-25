@@ -1,0 +1,199 @@
+Vivado Simulator 2015.4
+Copyright 1986-1999, 2001-2015 Xilinx, Inc. All Rights Reserved.
+Running: D:/Xilinx/Vivado/2015.4/bin/unwrapped/win64.o/xelab.exe -wto 55fbcb833fab42aea5d71afd7d8d1644 --debug typical --relax --mt 2 -L work -L xbip_utils_v3_0_5 -L axi_utils_v2_0_1 -L xbip_pipe_v3_0_1 -L xbip_bram18k_v3_0_1 -L mult_gen_v12_0_10 -L xbip_dsp48_wrapper_v3_0_4 -L xbip_dsp48_addsub_v3_0_1 -L xbip_dsp48_multadd_v3_0_1 -L dds_compiler_v6_0_11 -L xil_defaultlib -L cmpy_v6_0_10 -L c_reg_fd_v12_0_1 -L xbip_addsub_v3_0_1 -L c_addsub_v12_0_8 -L cordic_v6_0_9 -L secureip --snapshot ddc_external_ref_generator_testbench_behav work.ddc_external_ref_generator_testbench -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling package std.standard
+Compiling package ieee.std_logic_1164
+Compiling package ieee.numeric_std
+Compiling package std.textio
+Compiling package xbip_utils_v3_0_5.xbip_utils_v3_0_5_pkg
+Compiling package xbip_utils_v3_0_5.xcc_utils_v3_0
+Compiling package dds_compiler_v6_0_11.dds_compiler_v6_0_11_viv_comp
+Compiling package ieee.std_logic_arith
+Compiling package ieee.std_logic_signed
+Compiling package dds_compiler_v6_0_11.pkg_dds_compiler_v6_0_11
+Compiling package dds_compiler_v6_0_11.dds_compiler_v6_0_11_hdl_comps
+Compiling package xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv_comp
+Compiling package axi_utils_v2_0_1.axi_utils_v2_0_1_pkg
+Compiling package ieee.math_real
+Compiling package axi_utils_v2_0_1.global_util_pkg
+Compiling package axi_utils_v2_0_1.axi_utils_comps
+Compiling package unisim.vcomponents
+Compiling package ieee.vital_timing
+Compiling package ieee.vital_primitives
+Compiling package unisim.vpkg
+Compiling package ieee.std_logic_unsigned
+Compiling package dds_compiler_v6_0_11.pkg_betas
+Compiling package dds_compiler_v6_0_11.pkg_alphas
+Compiling package mult_gen_v12_0_10.mult_gen_v12_0_10_viv_comp
+Compiling package mult_gen_v12_0_10.mult_gen_v12_0_10_pkg
+Compiling package mult_gen_v12_0_10.dsp_pkg
+Compiling package cmpy_v6_0_10.cmpy_v6_0_10_viv_comp
+Compiling package cmpy_v6_0_10.cmpy_v6_0_10_pkg
+Compiling package cordic_v6_0_9.cordic_v6_0_9_viv_comp
+Compiling package cordic_v6_0_9.cordic_pack
+Compiling package cordic_v6_0_9.cordic_hdl_comps
+Compiling package c_addsub_v12_0_8.c_addsub_v12_0_8_viv_comp
+Compiling package xbip_addsub_v3_0_1.xbip_addsub_v3_0_1_viv_comp
+Compiling package c_addsub_v12_0_8.c_addsub_v12_0_8_pkg
+Compiling package c_addsub_v12_0_8.c_addsub_v12_0_8_pkg_legacy
+Compiling package c_reg_fd_v12_0_1.c_reg_fd_v12_0_1_viv_comp
+Compiling package xbip_dsp48_multadd_v3_0_1.xbip_dsp48_multadd_v3_0_1_viv_co...
+Compiling package xbip_dsp48_multadd_v3_0_1.xbip_dsp48_multadd_v3_0_1_pkg
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(9,1,0,0,1,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,0,0,0,1,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_rdy [\dds_compiler_v6_0_11_rdy(1,0,1,...]
+Compiling architecture dsp48e1_v of entity unisim.DSP48E1 [\DSP48E1(0,0,1,0,"NO_RESET","DIR...]
+Compiling architecture dsp48e_v of entity unisim.DSP48E [\DSP48E("SAFE",0,1,0,false,"MATC...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dsp48_wrap [\dsp48_wrap("zynq",0,1,1,we_not_...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.accum [\accum("zynq",1,3,"0,0,0,0,0,0,0...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(6,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(4,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.sin_cos [\sin_cos("zynq",0,9,1,16,16,14,6...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(0,1,0,0,1,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(0,1,0,0,0,...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_core [\dds_compiler_v6_0_11_core("zynq...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_viv [\dds_compiler_v6_0_11_viv("zynq"...]
+Compiling architecture xilinx of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11 [\dds_compiler_v6_0_11("zynq",0,9...]
+Compiling architecture lo_dds_arch of entity xil_defaultlib.LO_DDS [lo_dds_default]
+Compiling architecture behavioral of entity work.first_order_IIR_highpass_filter [first_order_iir_highpass_filter_...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.delay_line [\delay_line("zynq",true,0,0,43,0...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.op_resize [\op_resize(16,16,0,0,0,25,18)\]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.dsp [\dsp("zynq",16,0,16,0,0,0,1,0,0,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.mult_gen_v12_0_10_viv [\mult_gen_v12_0_10_viv(0,0,1,"zy...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.mult_gen_v12_0_10 [\mult_gen_v12_0_10(0,0,1,"zynq",...]
+Compiling architecture input_multiplier_arch of entity xil_defaultlib.input_multiplier [input_multiplier_default]
+Compiling architecture behavioral of entity work.boxcar_4_pts_filter [\boxcar_4_pts_filter(16)\]
+Compiling architecture behavioral of entity work.boxcar_2_pts_filter [\boxcar_2_pts_filter(18)\]
+Compiling architecture behavioral of entity work.boxcar_2_pts_filter [\boxcar_2_pts_filter(19)\]
+Compiling architecture behavioral of entity work.programmable_delay_line [\programmable_delay_line(32,18)\]
+Compiling architecture behavioral of entity work.adjustable_boxcar_filter_v2 [\adjustable_boxcar_filter_v2(5,1...]
+Compiling architecture behavioral of entity work.boxcar_2_pts_filter [\boxcar_2_pts_filter(16)\]
+Compiling architecture behavioral of entity work.ddc_frontend_lowpass_filter_no_fir [\ddc_frontend_lowpass_filter_no_...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.delay_line [\delay_line("zynq",false,1,0,1,1...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.delay_line [\delay_line("zynq",false,0,0,17,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.delay_line [\delay_line("zynq",false,0,0,25,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.delay_line [\delay_line("zynq",false,0,0,16,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.delay_line [\delay_line("zynq",false,0,0,25,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.delay_line [\delay_line("zynq",false,0,0,18,...]
+Compiling architecture dsp48e1_v of entity unisim.DSP48E1 [\DSP48E1(2,1,0,2,"NO_RESET","DIR...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.delay_line [\delay_line("zynq",false,0,0,43,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.op_resize [\op_resize(17,16,0,0,0,25,18)\]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.dsp [\dsp("zynq",17,0,16,0,0,0,3,0,0,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_3_dsp48_mult [\cmpy_3_dsp48_mult("zynq",17,16,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.delay_line [\delay_line("zynq",false,0,0,25,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.delay_line [\delay_line("zynq",false,0,0,18,...]
+Compiling architecture dsp48e1_v of entity unisim.DSP48E1 [\DSP48E1(1,1,0,1,"NO_RESET","DIR...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.dsp [\dsp("zynq",17,0,16,0,0,0,3,0,0,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_3_dsp48_mult [\cmpy_3_dsp48_mult("zynq",17,16,...]
+Compiling architecture xilinx of entity mult_gen_v12_0_10.dsp [\dsp("zynq",17,0,16,0,0,0,3,0,0,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_3_dsp48_mult [\cmpy_3_dsp48_mult("zynq",17,16,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.input_negation [\input_negation("zynq",16,16,0,0...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.delay_line [\delay_line("zynq",false,0,0,1,0...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.delay_line [\delay_line("zynq",false,0,0,33,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_3_dsp48 [\cmpy_3_dsp48(0,"zynq",16,16,32,...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_v6_0_10_synth [\cmpy_v6_0_10_synth(0,"zynq","xc...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_v6_0_10_viv [\cmpy_v6_0_10_viv(0,"zynq","xc7z...]
+Compiling architecture xilinx of entity cmpy_v6_0_10.cmpy_v6_0_10 [\cmpy_v6_0_10(0,"zynq","xc7z010"...]
+Compiling architecture complex_mult_16x16_arch of entity work.complex_mult_16x16 [complex_mult_16x16_default]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(19,1,0,0,0...]
+Compiling architecture structural of entity c_reg_fd_v12_0_1.c_reg_fd_v12_0_1_viv [\c_reg_fd_v12_0_1_viv(22,"","",0...]
+Compiling architecture muxcy_v of entity unisim.MUXCY [muxcy_default]
+Compiling architecture xorcy_v of entity unisim.XORCY [xorcy_default]
+Compiling architecture rtl of entity c_addsub_v12_0_8.c_addsub_v12_0_8_lut6_legacy [\c_addsub_v12_0_8_lut6_legacy(22...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_fabric_legacy [\c_addsub_v12_0_8_fabric_legacy(...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_legacy [\c_addsub_v12_0_8_legacy("zynq",...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_viv [\c_addsub_v12_0_8_viv(0,"zynq",0...]
+Compiling architecture synth of entity cordic_v6_0_9.addsub [\addsub("zynq",1,0,0,1,0,0,20,0,...]
+Compiling architecture rtl of entity c_addsub_v12_0_8.c_addsub_v12_0_8_lut6_legacy [\c_addsub_v12_0_8_lut6_legacy(22...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_fabric_legacy [\c_addsub_v12_0_8_fabric_legacy(...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_legacy [\c_addsub_v12_0_8_legacy("zynq",...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_viv [\c_addsub_v12_0_8_viv(0,"zynq",0...]
+Compiling architecture synth of entity cordic_v6_0_9.addsub [\addsub("zynq",0,0,0,1,0,0,20,0,...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay [\delay(1,"zynq",0,0,1,19,0,19,0)...]
+Compiling architecture structural of entity c_reg_fd_v12_0_1.c_reg_fd_v12_0_1_viv [\c_reg_fd_v12_0_1_viv(21,"","",0...]
+Compiling architecture rtl of entity c_addsub_v12_0_8.c_addsub_v12_0_8_lut6_legacy [\c_addsub_v12_0_8_lut6_legacy(21...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_fabric_legacy [\c_addsub_v12_0_8_fabric_legacy(...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_legacy [\c_addsub_v12_0_8_legacy("zynq",...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_viv [\c_addsub_v12_0_8_viv(0,"zynq",0...]
+Compiling architecture synth of entity cordic_v6_0_9.addsub [\addsub("zynq",2,0,0,1,0,0,19,0,...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay [\delay(1,"zynq",0,0,1,1,0,1,0)(1...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay_bit [\delay_bit(2,"zynq",0,0,1)(1,4)\]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_inp_config [\cordic_inp_config("zynq",2,1,1,...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_pha_acc_slice_par [\cordic_pha_acc_slice_par("zynq"...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay [\delay(1,"zynq",0,0,1,2,0,2,0)(1...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay_bit [\delay_bit(1,"zynq",0,0,1)(1,4)\]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_ctrl_slice_par [\cordic_ctrl_slice_par("zynq",3,...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_dat_acc_slice_par [\cordic_dat_acc_slice_par("zynq"...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng_slice_par [\cordic_eng_slice_par("zynq",1,3...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_eng [\cordic_eng("zynq",2,1,3,0,0,0,1...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay [\delay(2,"zynq",0,0,1,19,0,19,0)...]
+Compiling architecture structural of entity c_reg_fd_v12_0_1.c_reg_fd_v12_0_1_viv [\c_reg_fd_v12_0_1_viv(21,"","",0...]
+Compiling architecture rtl of entity c_addsub_v12_0_8.c_addsub_v12_0_8_lut6_legacy [\c_addsub_v12_0_8_lut6_legacy(21...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_fabric_legacy [\c_addsub_v12_0_8_fabric_legacy(...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_legacy [\c_addsub_v12_0_8_legacy("zynq",...]
+Compiling architecture synth of entity c_addsub_v12_0_8.c_addsub_v12_0_8_viv [\c_addsub_v12_0_8_viv(0,"zynq",0...]
+Compiling architecture synth of entity cordic_v6_0_9.addsub [\addsub("zynq",0,0,1,1,1,0,19,0,...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_round [\cordic_round("zynq",1,0,0,20,16...]
+Compiling architecture struct_all of entity cordic_v6_0_9.delay_bit [\delay_bit(0,"zynq",0,0,1)(1,4)\]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_out_config [\cordic_out_config("zynq",2,1,1,...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_v6_0_9_synth [\cordic_v6_0_9_synth(2,1,1,0,"zy...]
+Compiling architecture synth of entity cordic_v6_0_9.cordic_v6_0_9_viv [\cordic_v6_0_9_viv(2,1,1,0,"zynq...]
+Compiling architecture xilinx of entity cordic_v6_0_9.cordic_v6_0_9 [\cordic_v6_0_9(2,1,1,0,"zynq",0,...]
+Compiling architecture angle_cordic_14bits_arch of entity work.angle_CORDIC_14bits [angle_cordic_14bits_default]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(7,1,0,0,1,...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_rdy [\dds_compiler_v6_0_11_rdy(1,0,1,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.sin_cos [\sin_cos("zynq",0,9,0,11,16,14,4...]
+Compiling architecture dsp48e1_v of entity unisim.DSP48E1 [\DSP48E1(1,0,1,1,"NO_RESET","DIR...]
+Compiling architecture synth of entity xbip_dsp48_wrapper_v3_0_4.xbip_dsp48e1_wrapper_v3_0 [\xbip_dsp48e1_wrapper_v3_0(1,1,1...]
+Compiling architecture synth of entity xbip_dsp48_multadd_v3_0_1.xbip_dsp48_multadd_synth [\xbip_dsp48_multadd_synth(0,0,"z...]
+Compiling architecture synth of entity xbip_dsp48_multadd_v3_0_1.xbip_dsp48_multadd_v3_0_1_viv [\xbip_dsp48_multadd_v3_0_1_viv(0...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity xbip_pipe_v3_0_1.xbip_pipe_v3_0_1_viv [\xbip_pipe_v3_0_1_viv(1,1,0,0,0,...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_eff [\dds_compiler_v6_0_11_eff("zynq"...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_core [\dds_compiler_v6_0_11_core("zynq...]
+Compiling architecture synth of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11_viv [\dds_compiler_v6_0_11_viv("zynq"...]
+Compiling architecture xilinx of entity dds_compiler_v6_0_11.dds_compiler_v6_0_11 [\dds_compiler_v6_0_11("zynq",0,9...]
+Compiling architecture ref_generator_dds_2_arch of entity work.Ref_generator_DDS_2 [ref_generator_dds_2_default]
+Compiling architecture behavioral of entity work.DDC_external_ref_generator [ddc_external_ref_generator_defau...]
+Compiling architecture behavior of entity work.ddc_external_ref_generator_testb...
+Waiting for 1 sub-compilation(s) to finish...
+Built simulation snapshot ddc_external_ref_generator_testbench_behav

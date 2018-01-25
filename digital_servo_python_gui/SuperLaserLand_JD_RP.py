@@ -17,10 +17,12 @@ import sys
 import os, errno    # for makesurepathexists()
 
 import traceback
-
+import weakref
 
 from SuperLaserLand2_JD2_PLL import PLL0_module, PLL1_module, PLL2_module
 import RP_PLL
+
+import pdb
 
 class SuperLaserLand_JD_RP:
 	# Data members:
@@ -209,6 +211,9 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_ref_freq0_msbs                             = 0x8001
 	BUS_ADDR_ddc_filter_select                          = 0x8002
 	BUS_ADDR_ddc_angle_select                           = 0x8004
+	BUS_ADDR_IQ_monitor_gain 							= 0x8005
+	# BUS_AADR_IQ_monitor_gain 							= 0x8005
+
 	
 	# DDC 1 settings. This one is more complicated since we have included dfr phase generation and synchronized frequency changes.
 	BUS_ADDR_nominal_ref_freq1_lsbs                     = 0x8010
@@ -256,10 +261,12 @@ class SuperLaserLand_JD_RP:
 
 	# mux to select which signal goes in pll2 : the output of the DEMOD1, PLL1 or DEMOD2
 	BUS_ADDR_mux_pll2                                   = 0x9000
+	# to set the frequency ratio between the output and input of DDC1
+	BUS_ADDR_ddc1_k 									= 0x9002
 
 	BUS_ADDR_openLoopGain 								= [0x9010, 0x9011, 0x9012]
 
-
+	
 
 	############################################################
 	
@@ -273,7 +280,7 @@ class SuperLaserLand_JD_RP:
 	SELECT_COUNTER       = 5
 	SELECT_DAC0          = 6
 	SELECT_DAC1          = 7
-	SELECT_DAC2          = 8
+	SELECT_IQ0           = 8
 	SELECT_CRASH_MONITOR = 2**4
 	SELECT_IN10          = 2**4 + 2**3
 	############################################################
@@ -293,7 +300,12 @@ class SuperLaserLand_JD_RP:
 		self.ddc1_angle_select = 0
 		self.residuals0_phase_or_freq = 0
 		self.residuals1_phase_or_freq = 0
-		self.controller = controller
+		self.bUseExternalLOforDDC0 = 0
+		self.IQ_monitor_gain = 127	# default value from dpll_wrapper.v
+		self.ddc1_k = 127	# default value from dpll_wrapper.v
+
+
+		self.controller = weakref.proxy(controller)
 
 		self.dev = RP_PLL.RP_PLL_device(self.controller)
 
@@ -526,11 +538,12 @@ class SuperLaserLand_JD_RP:
 			
 		self.setup_write(self.SELECT_DAC1, Num_samples)
 		
-	def setup_DAC2_write(self, Num_samples):
+
+	def setup_IQ0_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_DAC2_write')
 			
-		self.setup_write(self.SELECT_DAC2, Num_samples)
+		self.setup_write(self.SELECT_IQ0, Num_samples)
 		
 	def compute_integration_time_for_syst_ident(self, System_settling_time, first_modulation_frequency_in_hz):
 		# There are four constraints on this value:
@@ -1035,7 +1048,20 @@ class SuperLaserLand_JD_RP:
 #        print('Throughput = %f MB/sec' % (self.last_throughput/1024/1024))
 			
 		return buffer_all
+
+	def read_IQ0_samples_from_DDR2(self):
+		if self.bVerbose == True:
+			print('read_IQ0_samples_from_DDR2')
 			
+		if self.bCommunicationLogging == True:
+			self.log_file.write('read_IQ0_samples_from_DDR2()\n')
+		
+		data_buffer = self.read_raw_bytes_from_DDR2()
+		samples_I = np.frombuffer(data_buffer[0::2].copy(order='C'), dtype=np.int8)
+		samples_Q = np.frombuffer(data_buffer[1::2].copy(order='C'), dtype=np.int8)
+		samples_out = samples_I + 1j*samples_Q;	# also does implicit conversion to float
+		return samples_out
+
 			
 	def read_adc_samples_from_DDR2(self):
 		if self.bVerbose == True:
@@ -1050,9 +1076,7 @@ class SuperLaserLand_JD_RP:
 			ref_exp = np.array([1.0,])
 			return (samples_out, ref_exp)
 
-		
-
-		# There is one additional thing we need to take care:
+		# There is one additional thing we need to take care of:
 		# Samples #4 and 5 (counting from 0) contain the DDC reference exponential for this data packet:
 		ref_exp_expected_position = 6
 		magic_bytes_expected_position = ref_exp_expected_position+2
@@ -2047,7 +2071,12 @@ class SuperLaserLand_JD_RP:
 			freq_axis_ref = np.linspace(0*self.fs, 1*self.fs, 2*len(frequency_axis))
 			spc_filter = np.interp(abs(frequency_axis-abs(f_reference)), freq_axis_ref, np.abs(spc_ref))
 			spc_filter = 20*np.log10(np.abs(spc_filter) + 1e-7)
+
+		else:
+			spc_filter = np.ones(frequency_axis.shape, dtype=float)	# just a placeholoder so we don't crash the next function in the processing chain
+			print("Error: invalid filter selector = %d for ddc%d.  This probably indicates a bug while writing or reading this register." % (filter_select, input_number))
 			
+
 		return spc_filter
 		
 
@@ -2396,11 +2425,15 @@ class SuperLaserLand_JD_RP:
 		print('triggering prbs...')
 		return
 		
+
+	def select_ddc0_LO_source(self, bUseExternalLOforDDC0):
+		self.bUseExternalLOforDDC0 = bUseExternalLOforDDC0
+		self.set_ddc_filter_select_register()
+
 	def set_ddc_filter(self, adc_number, filter_select, angle_select = 0):
 		if self.bVerbose == True:
 			print('set_ddc_filter')
 			
-		
 		if adc_number == 0:
 			self.ddc0_filter_select = filter_select
 			self.ddc0_angle_select = angle_select
@@ -2414,7 +2447,6 @@ class SuperLaserLand_JD_RP:
 		if self.bVerbose == True:
 			print('set_residuals_phase_or_freq')
 			
-		
 		if adc_number == 0:
 			self.residuals0_phase_or_freq = phase_or_freq
 		elif adc_number == 1:
@@ -2426,23 +2458,39 @@ class SuperLaserLand_JD_RP:
 		if self.bVerbose == True:
 			print('set_ddc_filter_select_register')
 
-			
 		# takes the internal states and dumps them to the fpga:
-		register_value = self.ddc0_filter_select + (self.ddc1_filter_select<<2) + (self.residuals0_phase_or_freq<<4) + (self.residuals1_phase_or_freq<<5)
+		register_value =   (self.ddc0_filter_select
+						 + (self.ddc1_filter_select<<2)
+						 + (self.residuals0_phase_or_freq<<4)
+						 + (self.residuals1_phase_or_freq<<5)
+						 + (self.bUseExternalLOforDDC0<<6))
+
+
 		self.send_bus_cmd_16bits(self.BUS_ADDR_ddc_filter_select, register_value)
 		#print('set_ddc_filter_select_register: FILTER_SELECT %d' % register_value)
 		
 		register_value = self.ddc0_angle_select + (self.ddc1_angle_select<<4) 
 		self.send_bus_cmd_16bits(self.BUS_ADDR_ddc_angle_select, register_value)
 		#print('set_ddc_filter_select_register: ANGLE_SELECT %d' % register_value)
-		
+
+	# Valid values are between 127 and 2^15-1
+	def set_IQ_monitor_gain(self, IQ_monitor_gain):
+		self.IQ_monitor_gain = IQ_monitor_gain
+		self.send_bus_cmd_16bits(self.BUS_ADDR_IQ_monitor_gain, IQ_monitor_gain)
+
+	# Valid values are between 1 and 2^24-1
+	# Frequency ratio at the output of DDC1 will be equal to ddc1_k/2^18 (max of (2^24-1)/2^18 ~ 2^6 ~ 64 of multiplication ratio
+	def set_ddc1_frequency_ratio(self, ddc1_k):
+		self.ddc1_k = ddc1_k
+		self.send_bus_cmd_32bits(self.BUS_ADDR_ddc1_k, ddc1_k)
+
 	def get_ddc_filter_select(self):
 		if self.bVerbose == True:
 			print('get_ddc_filter_select')
 
 		data = self.read_RAM_dpll_wrapper(self.BUS_ADDR_ddc_filter_select)
-		self.ddc0_filter_select = int(data%(2**2))
-		self.ddc1_filter_select = int((data - self.ddc0_filter_select)/(2**2))
+		self.ddc0_filter_select = (data   ) & int('11', 2)
+		self.ddc1_filter_select = (data>>2) & int('11', 2)
 
 		return (self.ddc1_filter_select, self.ddc0_filter_select)
 
@@ -2451,8 +2499,8 @@ class SuperLaserLand_JD_RP:
 			print('get_ddc_angle_select')
 
 		data = self.read_RAM_dpll_wrapper(self.BUS_ADDR_ddc_angle_select)
-		self.ddc0_angle_select = int(data%(2**4))
-		self.ddc1_angle_select = int((data - self.ddc0_angle_select)/(2**4))
+		self.ddc0_angle_select = (data   ) & int('11', 2)
+		self.ddc1_angle_select = (data>>2) & int('11', 2)
 
 		return (self.ddc1_angle_select, self.ddc0_angle_select)
 		

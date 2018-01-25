@@ -15,6 +15,7 @@ import time
 
 from RP_PLL import RP_PLL_device # needed to update FPGA firmware and CPU (Zynq) software
 import socket
+import weakref
 
 class initialConfiguration(QtGui.QDialog):
 	
@@ -40,7 +41,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.strSelectedMAC = ''
 		self.strSelectedIP = ''
 		
-		self.controller = controller
+		self.controller = weakref.proxy(controller)
 
 		# create the UDP discovery object:
 		self.udp_discovery = UDPRedPitayaDiscovery.UDPRedPitayaDiscovery(self.strBroadcastAddress)

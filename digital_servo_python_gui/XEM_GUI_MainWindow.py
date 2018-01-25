@@ -37,6 +37,8 @@ import traceback
 import pyqtgraph as pg
 from ThermometerWidget import ThermometerWidget # to replace Qwt's thermometer widget
 
+import pdb
+
 def smooth(x,window_len=11,window='hanning'):
 	"""smooth the data using a window with requested size.
 	
@@ -165,7 +167,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.timerIDDither.timeout.connect(self.timerDitherEvent)
 		self.startTimers()
 		self.displayDAC()   # This populates the current DAC values with the actual value
-		self.qchk_refresh.setChecked(True)
+		self.qchk_refresh.setChecked(False)
 		self.refreshChk_event()
 
 	def pushActualValues(self):
@@ -199,7 +201,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
 	def killTimers(self):
-		print("%s kill timers" % self.strTitle)
+		print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
 		self.timerIDDither.stop()
 
 		if self.qchk_refresh.isChecked():
@@ -207,7 +209,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.refreshChk_event()
 		
 	def startTimers(self):
-		print("%s start timers" % self.strTitle)
+		print("XEM_GUI_MainWindow::startTimers(): %s" % self.strTitle)
 		# Need to init timerID
 		self.timerID = 0
 
@@ -522,8 +524,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		setup_func_dict = {'ADC0': self.sl.setup_ADC0_write,
 						   'ADC1': self.sl.setup_ADC1_write,
 						   'DAC0': self.sl.setup_DAC0_write,
-						   'DAC1': self.sl.setup_DAC1_write,
-						   'DAC2': self.sl.setup_DAC2_write}
+						   'DAC1': self.sl.setup_DAC1_write}
 		
 			
 		try:
@@ -1269,7 +1270,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Input select        
 		self.qlabel_adc_plot_input = Qt.QLabel('Input:')
 		self.qcombo_adc_plot = Qt.QComboBox()
-		self.qcombo_adc_plot.addItems(['ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'])
+		self.qcombo_adc_plot.addItems(['ADC 0', 'ADC 1', 'DAC 0', 'DAC 1'])
 		self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
 		
 		# Set a few global PyQtGraph settings before creating plots:
@@ -1937,12 +1938,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					self.sl.setup_DAC0_write(N_points)
 				elif k == 1:
 					self.sl.setup_DAC1_write(N_points)
-				elif k == 2:
-					self.sl.setup_DAC2_write(N_points)
 					
 				self.sl.trigger_write()
 				self.sl.wait_for_write()
 				(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+
+				elapsed_time = time.clock() - start_time
+				if self.bDisplayTiming == True:
+					print('Elapsed time (read dac values) = %f ms' % (1000*elapsed_time))
 				
 				
 				if k == 0 or k == 1:
@@ -1965,7 +1968,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				
 				elapsed_time = time.clock() - start_time
 				if self.bDisplayTiming == True:
-					print('Elapsed time (displayDAC) = %f ms' % (1000*elapsed_time))
+					print('Elapsed time (displayDAC total) = %f ms' % (1000*elapsed_time))
 			
 		# Signal to other functions that they can use the DDR2 logger
 		self.sl.bDDR2InUse = False
@@ -2246,6 +2249,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def displayADC(self):
 				
 		start_time = time.clock()
+		#pdb.set_trace()
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
@@ -2268,8 +2272,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		setup_func_dict = {0: self.sl.setup_ADC0_write,
 						   1: self.sl.setup_ADC1_write,
 						   2: self.sl.setup_DAC0_write,
-						   3: self.sl.setup_DAC1_write,
-						   4: self.sl.setup_DAC2_write}
+						   3: self.sl.setup_DAC1_write}
 		
 			
 		try:
@@ -2283,6 +2286,18 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			samples_out = samples_out.astype(dtype=np.float)/2**15
 			self.raw_adc_samples = samples_out
+
+			# if we are on DDC0, we use the direct IQ monitor port for complex baseband:
+
+			if currentSelector == 0:
+				start_time = time.clock()
+				self.sl.setup_IQ0_write(N_points)
+				self.sl.trigger_write()
+				self.sl.wait_for_write()
+				complex_baseband_direct = self.sl.read_IQ0_samples_from_DDR2()
+			
+				if self.bDisplayTiming == True:
+					print('Elapsed time (read IQ) = %f' % (time.clock()-start_time))
 				
 		except:
 			# ADC read failed.
@@ -2395,12 +2410,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
-				print('displayADC(): Invalid complex exponential. Probably because of the USB bug.')
-				return
+				# print('displayADC(): Invalid complex exponential. Probably because of the USB bug.')
+				ref_exp0 = 1 + 0j
+				#return
 		
 			# The signal is from ADC0 or ADC1
 			N_max_IQ = 10e3 # Max number of points to display in the IQ graph
-			complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
+			if currentSelector == 0:
+				# DDC0: use direct IQ monitor
+				complex_baseband = complex_baseband_direct
+
+			else:
+				# DDC1: post-process raw ADC data into complex baseband here in Python
+				complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
 			
 			if self.bDisplayTiming == True:
 				print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
@@ -2502,8 +2524,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
 			self.curve_IQ.setData(np.real(complex_baseband), np.imag(complex_baseband))
 			
-			self.qplt_IQ.setXRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
-			self.qplt_IQ.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
+			if currentSelector == 0:
+				# DDC0: no automatic gain control on the IQ display, the user needs to set it manually to fit the 8 bits data
+				self.qplt_IQ.setXRange(-128, 128)
+				self.qplt_IQ.setYRange(-128, 128)	
+			else:
+				# DDC1: automatic gain control on the IQ display
+				self.qplt_IQ.setXRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
+				self.qplt_IQ.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)				
+
 			# Refresh the display:
 			# self.qplt_IQ.replot()
 			

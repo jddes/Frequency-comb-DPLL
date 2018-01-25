@@ -1,0 +1,12 @@
+Language File-Name                     IP                  Library              File-Path                                                                            
+VHDL,    xbip_utils_v3_0_vh_rfs.vhd,   complex_mult_16x16, xbip_utils_v3_0_5,   ../../../ipstatic/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd                   
+VHDL,    axi_utils_v2_0_vh_rfs.vhd,    complex_mult_16x16, axi_utils_v2_0_1,    ../../../ipstatic/axi_utils_v2_0_1/hdl/axi_utils_v2_0_vh_rfs.vhd                     
+VHDL,    xbip_pipe_v3_0_vh_rfs.vhd,    complex_mult_16x16, xbip_pipe_v3_0_1,    ../../../ipstatic/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd                     
+VHDL,    xbip_pipe_v3_0.vhd,           complex_mult_16x16, xbip_pipe_v3_0_1,    ../../../ipstatic/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0.vhd                            
+VHDL,    xbip_bram18k_v3_0_vh_rfs.vhd, complex_mult_16x16, xbip_bram18k_v3_0_1, ../../../ipstatic/xbip_bram18k_v3_0_1/hdl/xbip_bram18k_v3_0_vh_rfs.vhd               
+VHDL,    xbip_bram18k_v3_0.vhd,        complex_mult_16x16, xbip_bram18k_v3_0_1, ../../../ipstatic/xbip_bram18k_v3_0_1/hdl/xbip_bram18k_v3_0.vhd                      
+VHDL,    mult_gen_v12_0_vh_rfs.vhd,    complex_mult_16x16, mult_gen_v12_0_10,   ../../../ipstatic/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd                    
+VHDL,    mult_gen_v12_0.vhd,           complex_mult_16x16, mult_gen_v12_0_10,   ../../../ipstatic/mult_gen_v12_0_10/hdl/mult_gen_v12_0.vhd                           
+VHDL,    cmpy_v6_0_vh_rfs.vhd,         complex_mult_16x16, cmpy_v6_0_10,        ../../../ipstatic/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd                              
+VHDL,    cmpy_v6_0.vhd,                complex_mult_16x16, cmpy_v6_0_10,        ../../../ipstatic/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd                                     
+VHDL,    complex_mult_16x16.vhd,       complex_mult_16x16, work,                ../../../../redpitaya.srcs/sources_1/ip/complex_mult_16x16/sim/complex_mult_16x16.vhd

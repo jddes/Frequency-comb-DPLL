@@ -1,0 +1,1 @@
+vopt -64 +acc -l elaborate.log -L secureip -L xbip_utils_v3_0_5 -L axi_utils_v2_0_1 -L xbip_pipe_v3_0_1 -L xbip_bram18k_v3_0_1 -L mult_gen_v12_0_10 -L cmpy_v6_0_10 -L work -work work work.complex_mult_16x16 -o complex_mult_16x16_opt

@@ -105,7 +105,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.timerID = self.startTimer(500)
 
     def killTimers(self):
-        print("%s kill timers" % self.strTitle)
+        
+        print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
         
         #if self.timerID.isActive():
         self.killTimer(self.timerID)
@@ -122,14 +123,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 print('Connection to temp control established.')
             except:
                 time_after = time.clock()
-                print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
+                #print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
                 self.client = None
                 self.last_update = time.clock()
                 self.setpoint_change = 0.
         else:
             self.client = None
         end_time = time.clock()
-        print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
+        #print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
     
 
     def initBuffer(self):

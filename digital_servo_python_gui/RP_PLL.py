@@ -54,7 +54,7 @@ class RP_PLL_device():
         self.sock = socket_placeholder()
         self.valid_socket = 0
 
-    def OpenTCPConnection(self, HOST, PORT=5000):
+    def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True):
         print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
         self.HOST = HOST
         self.PORT = PORT
@@ -62,7 +62,7 @@ class RP_PLL_device():
         # self.sock.setblocking(1)
         self.sock.settimeout(2)
         self.sock.connect((self.HOST, self.PORT))
-        self.valid_socket = 1
+        self.valid_socket = valid_socket_for_general_comms
 
     # from http://stupidpythonideas.blogspot.ca/2013/05/sockets-are-byte-streams-not-message.html
     def recvall(self, count):
@@ -120,7 +120,7 @@ class RP_PLL_device():
     #######################################################
 
     def write_Zynq_register_uint32(self, address_uint32, data_uint32):
-#        print "write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32)
+        # print("write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32))
         if address_uint32 % 4:
             # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
             print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
@@ -133,7 +133,7 @@ class RP_PLL_device():
             self.disconnectEvent()
 
     def write_Zynq_register_int32(self, address_uint32, data_int32):
-#        print "write_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+        # print("write_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
         if address_uint32 % 4:
             # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
             print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
@@ -147,7 +147,7 @@ class RP_PLL_device():
 
     def read_Zynq_register_uint32(self, address_uint32):
         try:
-            # print "read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+            #  print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
             self.sock.sendall(packet_to_send)
             data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
@@ -163,7 +163,7 @@ class RP_PLL_device():
 
     def read_Zynq_register_int32(self, address_uint32):
         try:
-            # print "read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+            # print("read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
             self.sock.sendall(packet_to_send)
             data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
@@ -178,7 +178,7 @@ class RP_PLL_device():
         return register_value_as_tuple[0]
 
     def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
-        # print "read_Zynq_register_uint64()"
+        print("read_Zynq_register_uint64()")
         results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
         results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
 

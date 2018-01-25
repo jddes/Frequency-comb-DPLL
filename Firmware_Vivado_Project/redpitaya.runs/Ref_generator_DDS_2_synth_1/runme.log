@@ -1,0 +1,483 @@
+
+*** Running vivado
+    with args -log Ref_generator_DDS_2.vds -m64 -mode batch -messageDb vivado.pb -notrace -source Ref_generator_DDS_2.tcl
+
+
+****** Vivado v2015.4 (64-bit)
+  **** SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
+  **** IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
+    ** Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
+
+source Ref_generator_DDS_2.tcl -notrace
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2015.4/data/ip'.
+WARNING: [IP_Flow 19-3664] IP 'Ref_generator_DDS_2' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2.dcp'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'Ref_generator_DDS_2' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_stub.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'Ref_generator_DDS_2' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_stub.vhdl'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'Ref_generator_DDS_2' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_sim_netlist.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'Ref_generator_DDS_2' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_sim_netlist.vhdl'. Please regenerate to continue.
+Command: synth_design -top Ref_generator_DDS_2 -part xc7z010clg400-1 -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 288.879 ; gain = 117.309
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'Ref_generator_DDS_2' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:69]
+WARNING: [Synth 8-5640] Port 'debug_axi_pinc_in' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+WARNING: [Synth 8-5640] Port 'debug_axi_poff_in' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+WARNING: [Synth 8-5640] Port 'debug_axi_resync_in' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+WARNING: [Synth 8-5640] Port 'debug_axi_chan_in' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+WARNING: [Synth 8-5640] Port 'debug_core_nd' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+WARNING: [Synth 8-5640] Port 'debug_phase' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+WARNING: [Synth 8-5640] Port 'debug_phase_nd' is missing in component declaration [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:73]
+INFO: [Synth 8-3491] module 'dds_compiler_v6_0_11' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0.vhd:122' bound to instance 'U0' of component 'dds_compiler_v6_0_11' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:169]
+INFO: [Synth 8-638] synthesizing module 'dds_compiler_v6_0_11' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0.vhd:232]
+INFO: [Synth 8-3491] module 'dds_compiler_v6_0_11_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45951' bound to instance 'i_synth' of component 'dds_compiler_v6_0_11_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0.vhd:239]
+INFO: [Synth 8-638] synthesizing module 'dds_compiler_v6_0_11_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46075]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:2064]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:2490]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1313]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1318]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1323]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1328]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1333]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1338]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1343]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1355]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1363]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1370]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1375]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1380]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1385]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1390]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1394]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1398]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1403]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1408]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1418]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1427]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1432]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1436]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1440]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1447]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1454]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1459]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1463]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1468]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1473]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1480]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1484]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1488]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1493]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1497]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1501]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1505]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1523]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1553]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1558]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1567]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1610]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1615]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1618]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1621]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1624]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1804]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1839]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1842]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:1845]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:3144]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:2490]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:3612]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:3627]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:3631]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:3636]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:2954]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:3033]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv' (1#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized0' (1#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-638] synthesizing module 'dds_compiler_v6_0_11_core' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44821]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:2954]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:2064]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:2490]
+INFO: [Synth 8-638] synthesizing module 'dds_compiler_v6_0_11_rdy' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44565]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:2954]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_rdy' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44647]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized2' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized2' (1#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'dds_compiler_v6_0_11_rdy' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44565]
+INFO: [Synth 8-3491] module 'sin_cos' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:37740' bound to instance 'i_rom' of component 'sin_cos' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45642]
+INFO: [Synth 8-638] synthesizing module 'sin_cos' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:37774]
+INFO: [Synth 8-5534] Detected attribute (* rom_style = "distributed" *) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38081]
+INFO: [Synth 8-5534] Detected attribute (* rom_style = "block" *) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38082]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_addr_reg_a' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38632]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized4' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized4' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_addr_reg_b' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38675]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized6' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized6' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_rom_reg_a' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38765]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized8' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized8' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_rom_reg_b' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38777]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized10' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized10' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_op_reg_a' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38833]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized12' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized12' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_op_reg_b' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:38845]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized14' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:594]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_utils_v3_0_5/hdl/xbip_utils_v3_0_vh_rfs.vhd:597]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized14' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'sin_cos' (3#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:37774]
+INFO: [Synth 8-3491] module 'dds_compiler_v6_0_11_eff' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:43876' bound to instance 'i_eff' of component 'dds_compiler_v6_0_11_eff' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45736]
+INFO: [Synth 8-638] synthesizing module 'dds_compiler_v6_0_11_eff' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:43902]
+INFO: [Synth 8-3491] module 'xbip_dsp48_multadd_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:1096' bound to instance 'MULT_PI_U' of component 'xbip_dsp48_multadd_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44114]
+INFO: [Synth 8-638] synthesizing module 'xbip_dsp48_multadd_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:1131]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:414]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:417]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:420]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:423]
+INFO: [Synth 8-3491] module 'xbip_dsp48_multadd_synth' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:852' bound to instance 'i_synth_model' of component 'xbip_dsp48_multadd_synth' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:1165]
+INFO: [Synth 8-638] synthesizing module 'xbip_dsp48_multadd_synth' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:885]
+INFO: [Synth 8-638] synthesizing module 'xbip_dsp48e1_wrapper_v3_0' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1659]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1685]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1688]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1691]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1694]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1697]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1700]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1703]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1706]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1709]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1712]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1715]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1718]
+INFO: [Common 17-14] Message 'Synth 8-312' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+INFO: [Synth 8-113] binding component instance 'i_primitive' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1896]
+INFO: [Synth 8-256] done synthesizing module 'xbip_dsp48e1_wrapper_v3_0' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_wrapper_v3_0_4/hdl/xbip_dsp48_wrapper_v3_0_vh_rfs.vhd:1659]
+INFO: [Synth 8-256] done synthesizing module 'xbip_dsp48_multadd_synth' (5#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:885]
+INFO: [Synth 8-256] done synthesizing module 'xbip_dsp48_multadd_v3_0_1_viv' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:1131]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'STG3_SIN_DELAY' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44144]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized16' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized16' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'STG3_COS_DELAY' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44157]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized18' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized18' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'STG3_DX_PI' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44191]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized20' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized20' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_dsp48_multadd_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:1096' bound to instance 'S1_SIN_U' of component 'xbip_dsp48_multadd_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44206]
+INFO: [Synth 8-3491] module 'xbip_dsp48_multadd_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_dsp48_multadd_v3_0_1/hdl/xbip_dsp48_multadd_v3_0_vh_rfs.vhd:1096' bound to instance 'S1_COS_U' of component 'xbip_dsp48_multadd_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44232]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'PREL_FINAL_SIN_DELAY' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44293]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized22' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized22' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'PREL_FINAL_COS_DELAY' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44307]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized24' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized24' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'dds_compiler_v6_0_11_eff' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:43902]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_final_sin' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45775]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized26' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized26' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_final_cos' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45787]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized28' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized28' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_sin_op' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45815]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized30' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized30' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-3491] module 'xbip_pipe_v3_0_1_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:284' bound to instance 'i_cos_op' of component 'xbip_pipe_v3_0_1_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:45831]
+INFO: [Synth 8-638] synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized32' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+INFO: [Synth 8-256] done synthesizing module 'xbip_pipe_v3_0_1_viv__parameterized32' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/xbip_pipe_v3_0_1/hdl/xbip_pipe_v3_0_vh_rfs.vhd:309]
+WARNING: [Synth 8-3848] Net RFD in module/entity dds_compiler_v6_0_11_core does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44809]
+INFO: [Synth 8-256] done synthesizing module 'dds_compiler_v6_0_11_core' (8#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44821]
+WARNING: [Synth 8-3848] Net m_axis_data_tlast in module/entity dds_compiler_v6_0_11_viv does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46032]
+WARNING: [Synth 8-3848] Net m_axis_data_tuser in module/entity dds_compiler_v6_0_11_viv does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46033]
+WARNING: [Synth 8-3848] Net m_axis_phase_tdata in module/entity dds_compiler_v6_0_11_viv does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46037]
+WARNING: [Synth 8-3848] Net m_axis_phase_tlast in module/entity dds_compiler_v6_0_11_viv does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46038]
+WARNING: [Synth 8-3848] Net m_axis_phase_tuser in module/entity dds_compiler_v6_0_11_viv does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46039]
+WARNING: [Synth 8-3848] Net s_phase_tlast in module/entity dds_compiler_v6_0_11_viv does not have driver. [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46287]
+INFO: [Synth 8-256] done synthesizing module 'dds_compiler_v6_0_11_viv' (9#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:46075]
+INFO: [Synth 8-256] done synthesizing module 'dds_compiler_v6_0_11' (10#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0.vhd:232]
+INFO: [Synth 8-256] done synthesizing module 'Ref_generator_DDS_2' (11#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/synth/Ref_generator_DDS_2.vhd:69]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:16 ; elapsed = 00:00:17 . Memory (MB): peak = 347.539 ; gain = 175.969
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+INFO: [Synth 8-3295] tying undriven pin S1_SIN_U:C[4] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44206]
+INFO: [Synth 8-3295] tying undriven pin S1_SIN_U:C[3] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44206]
+INFO: [Synth 8-3295] tying undriven pin S1_SIN_U:C[2] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44206]
+INFO: [Synth 8-3295] tying undriven pin S1_SIN_U:C[1] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44206]
+INFO: [Synth 8-3295] tying undriven pin S1_SIN_U:C[0] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44206]
+INFO: [Synth 8-3295] tying undriven pin S1_COS_U:C[4] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44232]
+INFO: [Synth 8-3295] tying undriven pin S1_COS_U:C[3] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44232]
+INFO: [Synth 8-3295] tying undriven pin S1_COS_U:C[2] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44232]
+INFO: [Synth 8-3295] tying undriven pin S1_COS_U:C[1] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44232]
+INFO: [Synth 8-3295] tying undriven pin S1_COS_U:C[0] to constant 0 [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/dds_compiler_v6_0_11/hdl/dds_compiler_v6_0_vh_rfs.vhd:44232]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:16 ; elapsed = 00:00:18 . Memory (MB): peak = 347.539 ; gain = 175.969
+---------------------------------------------------------------------------------
+INFO: [Netlist 29-17] Analyzing 3 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Device 21-403] Loading part xc7z010clg400-1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_ooc.xdc] for cell 'U0'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/Ref_generator_DDS_2_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/Ref_generator_DDS_2_synth_1/dont_touch.xdc]
+Completed Processing XDC Constraints
+
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 547.641 ; gain = 0.000
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:21 ; elapsed = 00:00:27 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7z010clg400-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:21 ; elapsed = 00:00:27 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property DONT_TOUCH = true for U0. (constraint file  auto generated constraint, line ).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:21 ; elapsed = 00:00:27 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+INFO: [Synth 8-5547] Trying to map ROM "sin_cos_lut" into Block RAM due to explicit "ram_style" or "rom_style" specification
+INFO: [Synth 8-5547] Trying to map ROM "sin_cos_lut" into Block RAM due to explicit "ram_style" or "rom_style" specification
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:21 ; elapsed = 00:00:27 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 80 (col length:40)
+BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:21 ; elapsed = 00:00:27 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+Start Cross Boundary Optimization
+---------------------------------------------------------------------------------
+INFO: [Synth 8-5547] Trying to map ROM "p_0_out" into Block RAM due to explicit "ram_style" or "rom_style" specification
+INFO: [Synth 8-5547] Trying to map ROM "p_0_out" into Block RAM due to explicit "ram_style" or "rom_style" specification
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 547.641 ; gain = 376.070
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (U0/i_synth/\has_s_phase.s_phase_tlast_checks.event_s_phase_tlast_unexpected_reg )
+INFO: [Synth 8-3332] Sequential element (\has_s_phase.s_phase_tlast_checks.event_s_phase_tlast_unexpected_reg ) is unused and will be removed from module dds_compiler_v6_0_11_viv.
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 547.641 ; gain = 376.070
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:00:22 ; elapsed = 00:00:28 . Memory (MB): peak = 547.641 ; gain = 376.070
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:31 ; elapsed = 00:00:38 . Memory (MB): peak = 626.051 ; gain = 454.480
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 627.926 ; gain = 456.355
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |DSP48E1  |     3|
+|2     |LUT2     |     1|
+|3     |LUT3     |     5|
+|4     |LUT4     |     3|
+|5     |LUT5     |    19|
+|6     |RAMB18E1 |     1|
+|7     |SRL16E   |     1|
+|8     |FDRE     |   189|
++------+---------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 0 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:13 ; elapsed = 00:00:28 . Memory (MB): peak = 647.305 ; gain = 235.980
+Synthesis Optimization Complete : Time (s): cpu = 00:00:32 ; elapsed = 00:00:38 . Memory (MB): peak = 647.305 ; gain = 475.734
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 4 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/Ref_generator_DDS_2/Ref_generator_DDS_2_ooc.xdc] for cell 'U0'
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+INFO: [Common 17-83] Releasing license: Synthesis
+116 Infos, 119 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:31 ; elapsed = 00:00:37 . Memory (MB): peak = 647.305 ; gain = 440.766
+INFO: [Coretcl 2-1174] Renamed 26 cell refs.
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.014 . Memory (MB): peak = 647.305 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Tue Jan 09 20:59:50 2018...

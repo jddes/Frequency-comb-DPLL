@@ -19,6 +19,7 @@ from user_friendly_QLineEdit import user_friendly_QLineEdit
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 
+import pdb
 
 class ConfigRPSettingsUI(Qt.QWidget):
 	"""docstring for ConfigRP"""
@@ -31,7 +32,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setStyleSheet(custom_style_sheet)
 		self.custom_shorthand = custom_shorthand
 
-		self.controller = controller #link to the top class
+		self.controller = weakref.proxy(controller) #link to the top class
 
 		self.initUI()
 		self.loadParameters()
@@ -175,6 +176,41 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		self.qgroupbox_MUX_pll2.setLayout(MUX_pll2)
 
+		###################################################################################
+		self.qgroupbox_other_DDC_settings = Qt.QGroupBox('Other DDC settings')
+		self.qgroupbox_other_DDC_settings.setAutoFillBackground(True)
+		other_DDC_settings = Qt.QGridLayout()
+
+		self.qradio_ddc0_use_internal_ref = Qt.QRadioButton('DDC 0: Use internal ref freq')
+		self.qradio_ddc0_use_external_ref = Qt.QRadioButton('DDC 0: Use external ref freq')
+		self.qradio_ddc0_use_external_ref.setChecked(True)
+		self.qradio_ddc0_use_internal_ref.clicked.connect(self.use_external_ref_changed)
+		self.qradio_ddc0_use_external_ref.clicked.connect(self.use_external_ref_changed)
+
+		self.qlabel_freq_ratio = Qt.QLabel('Frequency ratio numerator: ')
+		self.qedit_freq_ratio = user_friendly_QLineEdit('262144')
+		self.qedit_freq_ratio.returnPressed.connect(self.setFrequencyRatio)
+		self.qedit_freq_ratio.setMaximumWidth(60)
+		self.qlabel_freq_ratio2 = Qt.QLabel('Denominator: 262144')
+
+		self.qlabel_IQ_gain = Qt.QLabel('IQ display gain [127, 32767]: ')
+		self.qedit_IQ_gain = user_friendly_QLineEdit('127')
+		self.qedit_IQ_gain.returnPressed.connect(self.setIQGain)
+		self.qedit_IQ_gain.setMaximumWidth(60)
+
+		other_DDC_settings.addWidget(self.qradio_ddc0_use_internal_ref, 	0, 0, 1, 3)
+		other_DDC_settings.addWidget(self.qradio_ddc0_use_external_ref, 	1, 0, 1, 3)
+		other_DDC_settings.addWidget(self.qlabel_freq_ratio, 	            2, 0, 1, 1)
+		other_DDC_settings.addWidget(self.qedit_freq_ratio, 	            2, 1, 1, 1)
+		other_DDC_settings.addWidget(self.qlabel_freq_ratio2, 	            2, 2, 1, 1)
+		other_DDC_settings.addWidget(self.qlabel_IQ_gain, 	                3, 0, 1, 1)
+		other_DDC_settings.addWidget(self.qedit_IQ_gain, 	                3, 1, 1, 1)
+
+		other_DDC_settings.setRowStretch(3, 0)
+
+		self.qgroupbox_other_DDC_settings.setLayout(other_DDC_settings)
+
+
 
 		###################################################################################
 		self.qgroupbox_read_data = Qt.QGroupBox('Read data from dpll (channel 2)')
@@ -236,6 +272,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		group.addWidget(self.qgroupbox_MUX_vco, 0, 0, 2, 4)
 		group.addWidget(self.qgroupbox_MUX_pll2, 3, 0, 2, 4)
+		group.addWidget(self.qgroupbox_other_DDC_settings, 5, 0, 1, 4)
 		group.addWidget(self.qgroupbox_read_data, 6, 0, 2, 4)
 		group.addWidget(self.qgroupbox_fanUI, 8, 0, 1, 1)
 		group.addWidget(self.qbtn_reconnect, 8, 1, 1, 2)
@@ -253,6 +290,24 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setWindowTitle(self.custom_shorthand + ': RP Configuration')    
 		#self.show()
 		#self.show()
+
+	def use_external_ref_changed(self):
+		if self.qradio_ddc0_use_external_ref.isChecked():
+			self.sl.select_ddc0_LO_source(bUseExternalLOforDDC0 = True)
+		else:
+			self.sl.select_ddc0_LO_source(bUseExternalLOforDDC0 = False)
+
+	def setFrequencyRatio(self):
+		ddc1_k = int(round(eval(self.qedit_freq_ratio.text())))
+		self.sl.set_ddc1_frequency_ratio(ddc1_k)
+
+	def setIQGain(self):
+		print("configurationRPSettingsUI: setIQGain()")
+		# pdb.set_trace()
+		gain_value = int(round(eval(self.qedit_IQ_gain.text())))
+		print("gain_value = %s" % gain_value)
+		self.sl.set_IQ_monitor_gain(IQ_monitor_gain=gain_value)
+
 
 	#Function to read the value in the RAM Block (channel 2) to an address
 	#The data we should read are the data sent to dpll_wrapper module (channel 0)

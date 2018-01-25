@@ -1,0 +1,4 @@
+
+*** Running vivado
+    with args -log Ref_generator_DDS.vds -m64 -mode batch -messageDb vivado.pb -notrace -source Ref_generator_DDS.tcl
+

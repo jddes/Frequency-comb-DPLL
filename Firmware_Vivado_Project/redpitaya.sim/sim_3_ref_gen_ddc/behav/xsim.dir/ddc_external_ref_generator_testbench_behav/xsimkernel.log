@@ -1,0 +1,4 @@
+Running: xsim.dir/ddc_external_ref_generator_testbench_behav/xsimk.exe -simmode gui -wdb ddc_external_ref_generator_testbench_behav.wdb -simrunnum 0 -socket 7760
+Design successfully loaded
+Design Loading Memory Usage: 31540 KB (Peak: 31540 KB)
+Design Loading CPU Usage: 108 ms
