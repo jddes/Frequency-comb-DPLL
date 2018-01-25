@@ -17,7 +17,7 @@ Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:10 . Memory (MB): peak = 344.945 ; gain = 173.422
+Starting RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 343.828 ; gain = 172.316
 ---------------------------------------------------------------------------------
 WARNING: [Synth 8-1565] actual for formal port srst is neither a static name nor a globally static expression [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd:64]
 WARNING: [Synth 8-1565] actual for formal port din is neither a static name nor a globally static expression [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd:65]
@@ -1437,18 +1437,18 @@ INFO: [Synth 8-638] synthesizing module 'DDC_wideband_filters' [D:/Repo/Frequenc
 	Parameter WRAPPED_PHASE_WIDTH bound to: 10 - type: integer 
 INFO: [Synth 8-5534] Detected attribute (* keep = "TRUE" *) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:127]
 INFO: [Synth 8-5534] Detected attribute (* keep = "TRUE" *) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:128]
-INFO: [Synth 8-3491] module 'LO_DDS' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/LO_DDS_stub.v:7' bound to instance 'LO_DDS_inst' of component 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:164]
-INFO: [Synth 8-638] synthesizing module 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/LO_DDS_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'LO_DDS' (57#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/LO_DDS_stub.v:7]
+INFO: [Synth 8-3491] module 'LO_DDS' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/LO_DDS_stub.v:7' bound to instance 'LO_DDS_inst' of component 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:164]
+INFO: [Synth 8-638] synthesizing module 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/LO_DDS_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'LO_DDS' (57#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/LO_DDS_stub.v:7]
 INFO: [Synth 8-638] synthesizing module 'first_order_IIR_highpass_filter' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/first_order_IIR_highpass_filter.vhd:44]
 	Parameter N_DATA_BITS bound to: 16 - type: integer 
 	Parameter N_INTERNAL_BITS bound to: 48 - type: integer 
 	Parameter N_LOG2_TIME_CONSTANT_IN_SAMPLES bound to: 11 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'first_order_IIR_highpass_filter' (58#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/first_order_IIR_highpass_filter.vhd:44]
-INFO: [Synth 8-3491] module 'input_multiplier' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/input_multiplier_stub.v:7' bound to instance 'input_multiplier_I' of component 'input_multiplier' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:214]
-INFO: [Synth 8-638] synthesizing module 'input_multiplier' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/input_multiplier_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'input_multiplier' (59#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/input_multiplier_stub.v:7]
-INFO: [Synth 8-3491] module 'input_multiplier' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/input_multiplier_stub.v:7' bound to instance 'input_multiplier_Q' of component 'input_multiplier' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:222]
+INFO: [Synth 8-3491] module 'input_multiplier' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/input_multiplier_stub.v:7' bound to instance 'input_multiplier_I' of component 'input_multiplier' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:214]
+INFO: [Synth 8-638] synthesizing module 'input_multiplier' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/input_multiplier_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'input_multiplier' (59#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/input_multiplier_stub.v:7]
+INFO: [Synth 8-3491] module 'input_multiplier' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/input_multiplier_stub.v:7' bound to instance 'input_multiplier_Q' of component 'input_multiplier' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:222]
 INFO: [Synth 8-638] synthesizing module 'ddc_frontend_lowpass_filter' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/ddc_frontend_lowpass_filter.vhd:62]
 	Parameter INPUT_SIZE bound to: 16 - type: integer 
 INFO: [Synth 8-638] synthesizing module 'boxcar_4_pts_filter' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/boxcar_4_pts_filter.vhd:41]
@@ -1474,14 +1474,14 @@ INFO: [Synth 8-256] done synthesizing module 'boxcar_2_pts_filter__parameterized
 INFO: [Synth 8-638] synthesizing module 'N_times_clk_FIR_wrapper' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd:24]
 	Parameter N_BITS_IN bound to: 16 - type: integer 
 	Parameter N_BITS_OUT bound to: 16 - type: integer 
-INFO: [Synth 8-3491] module 'fir_compiler_minimumphase_N_times_clk' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/fir_compiler_minimumphase_N_times_clk_stub.v:7' bound to instance 'fir_compiler_minimumphase_N_times_clk_inst' of component 'fir_compiler_minimumphase_N_times_clk' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd:87]
-INFO: [Synth 8-638] synthesizing module 'fir_compiler_minimumphase_N_times_clk' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/fir_compiler_minimumphase_N_times_clk_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'fir_compiler_minimumphase_N_times_clk' (64#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/fir_compiler_minimumphase_N_times_clk_stub.v:7]
+INFO: [Synth 8-3491] module 'fir_compiler_minimumphase_N_times_clk' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/fir_compiler_minimumphase_N_times_clk_stub.v:7' bound to instance 'fir_compiler_minimumphase_N_times_clk_inst' of component 'fir_compiler_minimumphase_N_times_clk' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd:87]
+INFO: [Synth 8-638] synthesizing module 'fir_compiler_minimumphase_N_times_clk' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/fir_compiler_minimumphase_N_times_clk_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'fir_compiler_minimumphase_N_times_clk' (64#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/fir_compiler_minimumphase_N_times_clk_stub.v:7]
 INFO: [Synth 8-256] done synthesizing module 'N_times_clk_FIR_wrapper' (65#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd:24]
 INFO: [Synth 8-256] done synthesizing module 'ddc_frontend_lowpass_filter' (66#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/ddc_frontend_lowpass_filter.vhd:62]
-INFO: [Synth 8-3491] module 'angle_CORDIC' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/angle_CORDIC_stub.v:7' bound to instance 'CORDIC_inst' of component 'angle_CORDIC' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:278]
-INFO: [Synth 8-638] synthesizing module 'angle_CORDIC' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/angle_CORDIC_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'angle_CORDIC' (67#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/angle_CORDIC_stub.v:7]
+INFO: [Synth 8-3491] module 'angle_CORDIC' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/angle_CORDIC_stub.v:7' bound to instance 'CORDIC_inst' of component 'angle_CORDIC' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd:278]
+INFO: [Synth 8-638] synthesizing module 'angle_CORDIC' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/angle_CORDIC_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'angle_CORDIC' (67#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/angle_CORDIC_stub.v:7]
 INFO: [Synth 8-638] synthesizing module 'quantizer' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/quantizer.vhd:36]
 	Parameter DI_WIDTH bound to: 16 - type: integer 
 	Parameter DO_WIDTH bound to: 10 - type: integer 
@@ -1563,21 +1563,21 @@ INFO: [Synth 8-638] synthesizing module 'PLL_loop_filters_with_saturation' [D:/R
 	Parameter N_DIVIDE_II bound to: 35 - type: integer 
 	Parameter N_DIVIDE_D bound to: 0 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
-INFO: [Synth 8-3491] module 'pll_wide_mult' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_wide_mult_stub.v:7' bound to instance 'pll_wide_mult_p' of component 'pll_wide_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:156]
-INFO: [Synth 8-638] synthesizing module 'pll_wide_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_wide_mult_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'pll_wide_mult' (75#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_wide_mult_stub.v:7]
+INFO: [Synth 8-3491] module 'pll_wide_mult' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_wide_mult_stub.v:7' bound to instance 'pll_wide_mult_p' of component 'pll_wide_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:156]
+INFO: [Synth 8-638] synthesizing module 'pll_wide_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_wide_mult_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'pll_wide_mult' (75#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_wide_mult_stub.v:7]
 INFO: [Synth 8-638] synthesizing module 'resize_with_saturation' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
 	Parameter N_INPUT bound to: 29 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'resize_with_saturation' (76#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
-INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_i_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:213]
-INFO: [Synth 8-638] synthesizing module 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'pll_32x32_mult_ii' (77#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7]
+INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_i_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:213]
+INFO: [Synth 8-638] synthesizing module 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'pll_32x32_mult_ii' (77#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7]
 INFO: [Synth 8-638] synthesizing module 'resize_with_saturation__parameterized0' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
 	Parameter N_INPUT bound to: 40 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'resize_with_saturation__parameterized0' (77#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
-INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_ii_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:247]
+INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_ii_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:247]
 INFO: [Synth 8-638] synthesizing module 'integrator_with_saturation' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/integrator_with_saturation.vhd:54]
 	Parameter N_INPUT bound to: 64 - type: integer 
 	Parameter N_OUTPUT bound to: 51 - type: integer 
@@ -1590,7 +1590,7 @@ INFO: [Synth 8-638] synthesizing module 'IIR_LPF' [D:/Repo/Frequency-comb-DPLL/F
 	Parameter N_DATA bound to: 14 - type: integer 
 INFO: [Synth 8-5534] Detected attribute (* use_dsp48 = "yes" *) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/IIR_LPF.vhd:43]
 INFO: [Synth 8-256] done synthesizing module 'IIR_LPF' (79#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/IIR_LPF.vhd:38]
-INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_wide_mult_d' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:327]
+INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_wide_mult_d' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:327]
 INFO: [Synth 8-638] synthesizing module 'resize_with_saturation__parameterized2' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
 	Parameter N_INPUT bound to: 43 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
@@ -1638,17 +1638,17 @@ INFO: [Synth 8-638] synthesizing module 'PLL_loop_filters_with_saturation__param
 	Parameter N_DIVIDE_II bound to: 29 - type: integer 
 	Parameter N_DIVIDE_D bound to: 0 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
-INFO: [Synth 8-3491] module 'pll_wide_mult' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_wide_mult_stub.v:7' bound to instance 'pll_wide_mult_p' of component 'pll_wide_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:156]
+INFO: [Synth 8-3491] module 'pll_wide_mult' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_wide_mult_stub.v:7' bound to instance 'pll_wide_mult_p' of component 'pll_wide_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:156]
 INFO: [Synth 8-638] synthesizing module 'resize_with_saturation__parameterized4' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
 	Parameter N_INPUT bound to: 31 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'resize_with_saturation__parameterized4' (80#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
-INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_i_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:213]
+INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_i_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:213]
 INFO: [Synth 8-638] synthesizing module 'resize_with_saturation__parameterized5' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
 	Parameter N_INPUT bound to: 46 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'resize_with_saturation__parameterized5' (80#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
-INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_ii_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:247]
+INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_32x32_mult_ii_inst' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:247]
 INFO: [Synth 8-638] synthesizing module 'integrator_with_saturation__parameterized0' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/integrator_with_saturation.vhd:54]
 	Parameter N_INPUT bound to: 64 - type: integer 
 	Parameter N_OUTPUT bound to: 45 - type: integer 
@@ -1657,7 +1657,7 @@ INFO: [Synth 8-638] synthesizing module 'resize_with_saturation__parameterized6'
 	Parameter N_INPUT bound to: 16 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'resize_with_saturation__parameterized6' (80#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
-INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_wide_mult_d' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:327]
+INFO: [Synth 8-3491] module 'pll_32x32_mult_ii' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/pll_32x32_mult_ii_stub.v:7' bound to instance 'pll_wide_mult_d' of component 'pll_32x32_mult_ii' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd:327]
 INFO: [Synth 8-638] synthesizing module 'resize_with_saturation__parameterized7' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/resize_with_saturation.vhd:47]
 	Parameter N_INPUT bound to: 43 - type: integer 
 	Parameter N_OUTPUT bound to: 16 - type: integer 
@@ -1698,14 +1698,14 @@ INFO: [Synth 8-638] synthesizing module 'system_identification_with_dither2' [D:
 	Parameter INPUT_WIDTH bound to: 16 - type: integer 
 	Parameter FREQUENCY_WIDTH bound to: 48 - type: integer 
 	Parameter MODULATION_OUTPUT_WIDTH bound to: 16 - type: integer 
-INFO: [Synth 8-3491] module 'LO_DDS' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/LO_DDS_stub.v:7' bound to instance 'LO_DDS_inst' of component 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd:178]
+INFO: [Synth 8-3491] module 'LO_DDS' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/LO_DDS_stub.v:7' bound to instance 'LO_DDS_inst' of component 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd:178]
 INFO: [Synth 8-638] synthesizing module 'system_identification_macc_behav' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_macc_behav.vhd:24]
 	Parameter DATA_WIDTH_IN bound to: 16 - type: integer 
 	Parameter DATA_WIDTH_OUT bound to: 64 - type: integer 
 INFO: [Synth 8-256] done synthesizing module 'system_identification_macc_behav' (82#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_macc_behav.vhd:24]
-INFO: [Synth 8-3491] module 'system_identification_outputgain_mult' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/system_identification_outputgain_mult_stub.v:7' bound to instance 'output_mult_inst' of component 'system_identification_outputgain_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd:242]
-INFO: [Synth 8-638] synthesizing module 'system_identification_outputgain_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/system_identification_outputgain_mult_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'system_identification_outputgain_mult' (83#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/system_identification_outputgain_mult_stub.v:7]
+INFO: [Synth 8-3491] module 'system_identification_outputgain_mult' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/system_identification_outputgain_mult_stub.v:7' bound to instance 'output_mult_inst' of component 'system_identification_outputgain_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd:242]
+INFO: [Synth 8-638] synthesizing module 'system_identification_outputgain_mult' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/system_identification_outputgain_mult_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'system_identification_outputgain_mult' (83#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/system_identification_outputgain_mult_stub.v:7]
 WARNING: [Synth 8-3936] Found unconnected internal register 'macc_clear_srl_reg' and it is trimmed from '3' to '2' bits. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd:255]
 INFO: [Synth 8-256] done synthesizing module 'system_identification_with_dither2' (84#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_with_dither2.vhd:102]
 INFO: [Synth 8-226] default block is never used [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/system_identification_vna_with_dither_wrapper.vhd:154]
@@ -1782,17 +1782,17 @@ INFO: [Synth 8-638] synthesizing module 'parallel_bus_register_32bits_or_less__p
 INFO: [Synth 8-256] done synthesizing module 'parallel_bus_register_32bits_or_less__parameterized33' (88#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/parallel_bus_register.vhd:46]
 INFO: [Synth 8-256] done synthesizing module 'dither_lockin_wrapper__parameterized0' (88#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dither_lockin_wrapper.vhd:59]
 INFO: [Synth 8-638] synthesizing module 'registers_read' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/registers_read.vhd:45]
-INFO: [Synth 8-3491] module 'fifo_generator_0' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/fifo_generator_0_stub.v:7' bound to instance 'fifo_generator_0_inst' of component 'fifo_generator_0' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/registers_read.vhd:93]
-INFO: [Synth 8-638] synthesizing module 'fifo_generator_0' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/fifo_generator_0_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'fifo_generator_0' (89#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/fifo_generator_0_stub.v:7]
+INFO: [Synth 8-3491] module 'fifo_generator_0' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/fifo_generator_0_stub.v:7' bound to instance 'fifo_generator_0_inst' of component 'fifo_generator_0' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/registers_read.vhd:93]
+INFO: [Synth 8-638] synthesizing module 'fifo_generator_0' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/fifo_generator_0_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'fifo_generator_0' (89#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/fifo_generator_0_stub.v:7]
 INFO: [Synth 8-256] done synthesizing module 'registers_read' (90#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/registers_read.vhd:45]
 WARNING: [Synth 8-3848] Net counter1_fifo_has_too_little_samples in module/entity dpll_wrapper does not have driver. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:1433]
 WARNING: [Synth 8-3848] Net counter0_fifo_has_too_little_samples in module/entity dpll_wrapper does not have driver. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:1432]
 INFO: [Synth 8-256] done synthesizing module 'dpll_wrapper' (91#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:6]
 INFO: [Synth 8-638] synthesizing module 'addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd:21]
-INFO: [Synth 8-3491] module 'FIFO_addr_packed' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/FIFO_addr_packed_stub.v:7' bound to instance 'FIFO_inst' of component 'FIFO_addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd:61]
-INFO: [Synth 8-638] synthesizing module 'FIFO_addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/FIFO_addr_packed_stub.v:7]
-INFO: [Synth 8-256] done synthesizing module 'FIFO_addr_packed' (92#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/FIFO_addr_packed_stub.v:7]
+INFO: [Synth 8-3491] module 'FIFO_addr_packed' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/FIFO_addr_packed_stub.v:7' bound to instance 'FIFO_inst' of component 'FIFO_addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd:61]
+INFO: [Synth 8-638] synthesizing module 'FIFO_addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/FIFO_addr_packed_stub.v:7]
+INFO: [Synth 8-256] done synthesizing module 'FIFO_addr_packed' (92#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/FIFO_addr_packed_stub.v:7]
 INFO: [Synth 8-3491] module 'FSM_addr_packed' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/FSM_addr_packed.vhd:8' bound to instance 'FSM_inst' of component 'FSM_addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/addr_packed.vhd:75]
 INFO: [Synth 8-638] synthesizing module 'FSM_addr_packed' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/FSM_addr_packed.vhd:24]
 INFO: [Synth 8-638] synthesizing module 'simple_dualport_ram_with_init' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/simple_dualport_ram_with_init.vhd:39]
@@ -1833,7 +1833,7 @@ INFO: [Synth 8-3491] module 'internal_vco' declared at 'D:/Repo/Frequency-comb-D
 INFO: [Synth 8-638] synthesizing module 'internal_vco' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/internal_vco.vhd:35]
 	Parameter DATA_WIDTH bound to: 16 - type: integer 
 	Parameter AMPLITUDE_WIDTH bound to: 16 - type: integer 
-INFO: [Synth 8-3491] module 'LO_DDS' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/LO_DDS_stub.v:7' bound to instance 'LO_DDS_inst' of component 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/internal_vco.vhd:74]
+INFO: [Synth 8-3491] module 'LO_DDS' declared at 'D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/LO_DDS_stub.v:7' bound to instance 'LO_DDS_inst' of component 'LO_DDS' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/internal_vco.vhd:74]
 INFO: [Synth 8-256] done synthesizing module 'internal_vco' (101#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/internal_vco.vhd:35]
 INFO: [Synth 8-256] done synthesizing module 'mux_internal_vco' (102#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/mux_internal_vco.vhd:38]
 INFO: [Synth 8-638] synthesizing module 'red_pitaya_scope' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_scope.v:50]
@@ -1857,8 +1857,8 @@ INFO: [Synth 8-638] synthesizing module 'red_pitaya_pwm' [D:/Repo/Frequency-comb
 	Parameter FULL bound to: 8'b10011100 
 INFO: [Synth 8-256] done synthesizing module 'red_pitaya_pwm' (107#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pwm.sv:13]
 WARNING: [Synth 8-387] label required on module instance [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_top.v:949]
-INFO: [Synth 8-638] synthesizing module 'clk_10MHz_sync' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/clk_10MHz_sync_stub.v:6]
-INFO: [Synth 8-256] done synthesizing module 'clk_10MHz_sync' (108#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/realtime/clk_10MHz_sync_stub.v:6]
+INFO: [Synth 8-638] synthesizing module 'clk_10MHz_sync' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/clk_10MHz_sync_stub.v:6]
+INFO: [Synth 8-256] done synthesizing module 'clk_10MHz_sync' (108#1) [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/realtime/clk_10MHz_sync_stub.v:6]
 WARNING: [Synth 8-3848] Net exp_p_in_hk in module/entity red_pitaya_top does not have driver. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_top.v:684]
 WARNING: [Synth 8-3848] Net exp_n_in_hk in module/entity red_pitaya_top does not have driver. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_top.v:684]
 WARNING: [Synth 8-3848] Net digital_loop in module/entity red_pitaya_top does not have driver. [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_top.v:306]
@@ -1876,7 +1876,7 @@ WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_p_i[0]
 WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_n_i[1]
 WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_n_i[0]
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:38 ; elapsed = 00:00:42 . Memory (MB): peak = 524.676 ; gain = 353.152
+Finished RTL Elaboration : Time (s): cpu = 00:00:39 ; elapsed = 00:00:42 . Memory (MB): peak = 523.789 ; gain = 352.277
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -1987,9 +1987,9 @@ WARNING: [Synth 8-3295] tying undriven pin output_summing_dac1_auxilary:in3[14] 
 WARNING: [Synth 8-3295] tying undriven pin output_summing_dac1_auxilary:in3[13] to constant 0 [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:1331]
 INFO: [Common 17-14] Message 'Synth 8-3295' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:39 ; elapsed = 00:00:43 . Memory (MB): peak = 524.676 ; gain = 353.152
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:40 ; elapsed = 00:00:42 . Memory (MB): peak = 523.789 ; gain = 352.277
 ---------------------------------------------------------------------------------
-WARNING: [filemgmt 56-147] Overwrite of existing file isn't enabled.  Please specify -force to overwrite file  [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/LO_DDS/LO_DDS.dcp]
+WARNING: [filemgmt 56-147] Overwrite of existing file isn't enabled.  Please specify -force to overwrite file  [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/LO_DDS/LO_DDS.dcp]
 INFO: [Netlist 29-17] Analyzing 67 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Device 21-403] Loading part xc7z010clg400-1
@@ -1997,58 +1997,58 @@ INFO: [Project 1-570] Preparing netlist for logic optimization
 
 Processing XDC Constraints
 Initializing timing engine
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/CORDIC_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/CORDIC_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_I'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_I'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_Q'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_Q'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_I'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_I'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_Q'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_Q'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_i_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_i_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_ii_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_ii_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_5/system_identification_outputgain_mult_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_5/system_identification_outputgain_mult_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_7/fifo_generator_0_in_context.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_7/fifo_generator_0_in_context.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_8/FIFO_addr_packed_in_context.xdc] for cell 'addr_packed_inst/FIFO_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_8/FIFO_addr_packed_in_context.xdc] for cell 'addr_packed_inst/FIFO_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_9/clk_10MHz_sync_in_context.xdc] for cell 'nolabel_line949'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_9/clk_10MHz_sync_in_context.xdc] for cell 'nolabel_line949'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/LO_DDS_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/LO_DDS_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'mux_vco/internal_vco_inst/LO_DDS_inst'
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/dcp_10/LO_DDS_in_context.xdc] for cell 'mux_vco/internal_vco_inst/LO_DDS_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/CORDIC_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp/angle_CORDIC_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/CORDIC_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_I'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_I'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_Q'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/input_multiplier_Q'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_I'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_I'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_Q'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_2/input_multiplier_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/input_multiplier_Q'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_i_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_i_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_ii_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_32x32_mult_ii_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_d'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_i_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_32x32_mult_ii_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_3/pll_32x32_mult_ii_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_d'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL0_loop_filters/pll_wide_mult_p'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_4/pll_wide_mult_in_context.xdc] for cell 'dpll_wrapper_inst/PLL1_loop_filters/pll_wide_mult_p'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_5/system_identification_outputgain_mult_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_5/system_identification_outputgain_mult_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_I/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_6/fir_compiler_minimumphase_N_times_clk_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/ddc_frontend_lowpass_filter_inst_Q/N_times_clk_FIR_wrapper_inst/fir_compiler_minimumphase_N_times_clk_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_7/fifo_generator_0_in_context.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_7/fifo_generator_0_in_context.xdc] for cell 'dpll_wrapper_inst/registers_read_inst/fifo_generator_0_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_8/FIFO_addr_packed_in_context.xdc] for cell 'addr_packed_inst/FIFO_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_8/FIFO_addr_packed_in_context.xdc] for cell 'addr_packed_inst/FIFO_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_9/clk_10MHz_sync_in_context.xdc] for cell 'nolabel_line949'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_9/clk_10MHz_sync_in_context.xdc] for cell 'nolabel_line949'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/LO_DDS_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/DDC1_inst/LO_DDS_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'mux_vco/internal_vco_inst/LO_DDS_inst'
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/dcp_10/LO_DDS_in_context.xdc] for cell 'mux_vco/internal_vco_inst/LO_DDS_inst'
 Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
 Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0_board.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
 Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/bd/system/ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xdc] for cell 'i_ps/system_i/system_i/proc_sys_reset'
@@ -2077,7 +2077,7 @@ INFO: [Project 1-111] Unisim Transformation Summary:
   IOBUF => IOBUF (IBUF, OBUFT): 16 instances
   SRL16 => SRL16E: 1 instances
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.025 . Memory (MB): peak = 742.379 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.025 . Memory (MB): peak = 741.453 ; gain = 0.000
 WARNING: [Timing 38-316] Clock period '10.000' specified during out-of-context implementation of instance 'addr_packed_inst/FIFO_inst' at clock pin 'clk' is different from the actual clock period '8.000', this can result in different implementation results.
 WARNING: [Timing 38-316] Clock period '1000.000' specified during out-of-context implementation of instance 'dpll_wrapper_inst/DDC0_inst/CORDIC_inst' at clock pin 'aclk' is different from the actual clock period '8.000', this can result in different implementation results.
 WARNING: [Timing 38-316] Clock period '10.000' specified during out-of-context implementation of instance 'dpll_wrapper_inst/DDC0_inst/LO_DDS_inst' at clock pin 'aclk' is different from the actual clock period '8.000', this can result in different implementation results.
@@ -2103,16 +2103,16 @@ WARNING: [Timing 38-316] Clock period '10.000' specified during out-of-context i
 WARNING: [Timing 38-316] Clock period '10.000' specified during out-of-context implementation of instance 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/LO_DDS_inst' at clock pin 'aclk' is different from the actual clock period '8.000', this can result in different implementation results.
 WARNING: [Timing 38-316] Clock period '100.000' specified during out-of-context implementation of instance 'dpll_wrapper_inst/system_identification_vna_inst/system_identification_vna_inst/output_mult_inst' at clock pin 'CLK' is different from the actual clock period '8.000', this can result in different implementation results.
 WARNING: [Timing 38-316] Clock period '10.000' specified during out-of-context implementation of instance 'mux_vco/internal_vco_inst/LO_DDS_inst' at clock pin 'aclk' is different from the actual clock period '8.000', this can result in different implementation results.
-WARNING: [filemgmt 56-147] Overwrite of existing file isn't enabled.  Please specify -force to overwrite file  [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-8636-/LO_DDS/LO_DDS.dcp]
+WARNING: [filemgmt 56-147] Overwrite of existing file isn't enabled.  Please specify -force to overwrite file  [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/synth_1/.Xil/Vivado-12544-/LO_DDS/LO_DDS.dcp]
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:48 ; elapsed = 00:00:57 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished Constraint Validation : Time (s): cpu = 00:00:49 ; elapsed = 00:00:56 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7z010clg400-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:48 ; elapsed = 00:00:57 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:49 ; elapsed = 00:00:56 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
@@ -2130,7 +2130,7 @@ Applied set_property DONT_TOUCH = true for i_ps/system_i/system_i/xadc. (constra
 Applied set_property DONT_TOUCH = true for i_ps/system_i/system_i/xlconstant. (constraint file  auto generated constraint, line ).
 Applied set_property DONT_TOUCH = true for mux_vco/internal_vco_inst/LO_DDS_inst. (constraint file  auto generated constraint, line ).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:49 ; elapsed = 00:00:57 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:49 ; elapsed = 00:00:57 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-4471] merging register 'awdata_in_reg_reg' into 'axi_awvalid_o_reg' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/axi_master.v:117]
 INFO: [Synth 8-4471] merging register 'wdata_in_reg_reg' into 'axi_wvalid_o_reg' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/axi_master.v:191]
@@ -2281,7 +2281,7 @@ INFO: [Synth 8-3354] encoded FSM with state register 'fsm_state_output_serialize
 ---------------------------------------------------------------------------------------------------
 INFO: [Synth 8-3354] encoded FSM with state register 'FSM_state_reg' using encoding 'sequential' in module 'FSM_addr_packed'
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:55 ; elapsed = 00:01:04 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:55 ; elapsed = 00:01:03 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -4164,7 +4164,7 @@ BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
 ---------------------------------------------------------------------------------
 Finished Part Resource Summary
 ---------------------------------------------------------------------------------
-Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:56 ; elapsed = 00:01:04 . Memory (MB): peak = 743.539 ; gain = 572.016
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:55 ; elapsed = 00:01:04 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
 Start Cross Boundary Optimization
 ---------------------------------------------------------------------------------
@@ -4350,9 +4350,9 @@ WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_p_i[0]
 WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_n_i[1]
 WARNING: [Synth 8-3331] design red_pitaya_top has unconnected port daisy_n_i[0]
 ---------------------------------------------------------------------------------
-Finished Cross Boundary Optimization : Time (s): cpu = 00:01:04 ; elapsed = 00:01:13 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished Cross Boundary Optimization : Time (s): cpu = 00:01:04 ; elapsed = 00:01:12 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
-Finished Parallel Reinference  : Time (s): cpu = 00:01:04 ; elapsed = 00:01:13 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished Parallel Reinference  : Time (s): cpu = 00:01:04 ; elapsed = 00:01:12 . Memory (MB): peak = 742.480 ; gain = 570.969
 
 Report RTL Partitions: 
 +------+--------------------+------------+----------+
@@ -4753,9 +4753,9 @@ CRITICAL WARNING: [Synth 8-3352] multi-driven net Q with 1st driver pin 'i_3/pwm
 CRITICAL WARNING: [Synth 8-3352] multi-driven net Q with 2nd driver pin 'GND' [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pwm.sv:45]
 CRITICAL WARNING: [Synth 8-5559] multi-driven net Q is connected to constant driver, other driver is ignored [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/imports/rtl/red_pitaya_pwm.sv:45]
 ---------------------------------------------------------------------------------
-Finished Area Optimization : Time (s): cpu = 00:01:18 ; elapsed = 00:01:27 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished Area Optimization : Time (s): cpu = 00:01:16 ; elapsed = 00:01:25 . Memory (MB): peak = 742.480 ; gain = 570.969
 ---------------------------------------------------------------------------------
-Finished Parallel Area Optimization  : Time (s): cpu = 00:01:18 ; elapsed = 00:01:27 . Memory (MB): peak = 743.539 ; gain = 572.016
+Finished Parallel Area Optimization  : Time (s): cpu = 00:01:16 ; elapsed = 00:01:25 . Memory (MB): peak = 742.480 ; gain = 570.969
 
 Report RTL Partitions: 
 +------+--------------------+------------+----------+
@@ -4778,10 +4778,10 @@ info: Source pin 'i_3/nolabel_line949/clk_in1' of generated clock is hierarchica
 info: Moving clock source from hierarchical pin 'i_3/nolabel_line949/clk_in1' to 'i_3/i_4/\led_counter_reg[25] /C'
 INFO: Moved 3 constraints on hierarchical pins to their respective driving/loading pins
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:29 ; elapsed = 00:01:39 . Memory (MB): peak = 948.215 ; gain = 776.691
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:27 ; elapsed = 00:01:36 . Memory (MB): peak = 947.391 ; gain = 775.879
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:01:32 ; elapsed = 00:01:42 . Memory (MB): peak = 998.043 ; gain = 826.520
+Finished Timing Optimization : Time (s): cpu = 00:01:30 ; elapsed = 00:01:39 . Memory (MB): peak = 997.109 ; gain = 825.598
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -4800,16 +4800,16 @@ INFO: [Synth 8-4480] The timing for the instance \addr_packed_inst/FSM_inst/ram_
 INFO: [Synth 8-4480] The timing for the instance \i_scope/i_wr0/fifo_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
 INFO: [Synth 8-4480] The timing for the instance \i_scope/i_wr1/fifo_reg  (implemented as a block RAM) might be sub-optimal as no optional output register could be merged into the block ram. Providing additional output register may help in improving timing.
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:01:39 ; elapsed = 00:01:50 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Technology Mapping : Time (s): cpu = 00:01:36 ; elapsed = 00:01:46 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
-Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:39 ; elapsed = 00:01:50 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:36 ; elapsed = 00:01:46 . Memory (MB): peak = 1026.668 ; gain = 855.156
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
 | |RTL Partition |Replication |Instances |
 +-+--------------+------------+----------+
 +-+--------------+------------+----------+
-Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:39 ; elapsed = 00:01:50 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:36 ; elapsed = 00:01:46 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 Start IO Insertion
 ---------------------------------------------------------------------------------
@@ -4870,7 +4870,7 @@ Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-4560] design has 9 instantiated BUFGs while the available bufg limit from the part is 8
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:01:41 ; elapsed = 00:01:51 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished IO Insertion : Time (s): cpu = 00:01:38 ; elapsed = 00:01:48 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -4883,7 +4883,7 @@ Report Check Netlist:
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:01:41 ; elapsed = 00:01:51 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:38 ; elapsed = 00:01:48 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -4895,25 +4895,25 @@ Report RTL Partitions:
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:43 ; elapsed = 00:01:53 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:40 ; elapsed = 00:01:50 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:01:43 ; elapsed = 00:01:53 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:40 ; elapsed = 00:01:50 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:01:44 ; elapsed = 00:01:54 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:40 ; elapsed = 00:01:50 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:01:44 ; elapsed = 00:01:54 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:40 ; elapsed = 00:01:50 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP and Shift Register Reporting
@@ -5225,11 +5225,11 @@ Report Instance Areas:
 |183   |    ram_inst                                          |simple_dualport_ram                                           |    16|
 +------+------------------------------------------------------+--------------------------------------------------------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:01:44 ; elapsed = 00:01:54 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:40 ; elapsed = 00:01:50 . Memory (MB): peak = 1026.668 ; gain = 855.156
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 21 critical warnings and 3812 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:58 ; elapsed = 00:01:36 . Memory (MB): peak = 1028.625 ; gain = 564.203
-Synthesis Optimization Complete : Time (s): cpu = 00:01:44 ; elapsed = 00:01:54 . Memory (MB): peak = 1028.625 ; gain = 857.102
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:53 ; elapsed = 00:01:34 . Memory (MB): peak = 1026.668 ; gain = 563.137
+Synthesis Optimization Complete : Time (s): cpu = 00:01:40 ; elapsed = 00:01:50 . Memory (MB): peak = 1026.668 ; gain = 855.156
 INFO: [Project 1-571] Translating synthesized netlist
 INFO: [Netlist 29-17] Analyzing 1182 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
@@ -5246,6 +5246,6 @@ INFO: [Project 1-111] Unisim Transformation Summary:
 INFO: [Common 17-83] Releasing license: Synthesis
 933 Infos, 283 Warnings, 21 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:01:46 ; elapsed = 00:01:55 . Memory (MB): peak = 1028.625 ; gain = 791.352
-report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.081 . Memory (MB): peak = 1028.625 ; gain = 0.000
-INFO: [Common 17-206] Exiting Vivado at Mon Aug 14 12:55:53 2017...
+synth_design: Time (s): cpu = 00:01:42 ; elapsed = 00:01:52 . Memory (MB): peak = 1026.668 ; gain = 790.832
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.085 . Memory (MB): peak = 1026.668 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Thu Jan 25 15:00:22 2018...
