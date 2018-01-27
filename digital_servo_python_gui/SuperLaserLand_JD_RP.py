@@ -173,6 +173,9 @@ class SuperLaserLand_JD_RP:
 	
 	# Addresses for the output DAC offsets:
 	BUS_ADDR_DAC_offset                                = [0x6000, 0x6001, 0x6002]
+
+	# Setting this register to 1 connects the DDC1 external reference tone to DAC1 instead of the normal outputs
+	BUS_ADDR_bCheckExtRefDemod							= 0x6005
 	
 	# Programmable gain amplifier settings (order: ADC0, ADC1, DAC0, DAC1, 3 bits each)
 	BUS_ADDR_pga_gains                                  = 0x6100
@@ -263,6 +266,12 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_mux_pll2                                   = 0x9000
 	# to set the frequency ratio between the output and input of DDC1
 	BUS_ADDR_ddc1_k 									= 0x9002
+	# determines where DAC0 will lock when using the cascade lock (DAC0-lockpoint) used as the error signal for PLL1's loop filters
+	BUS_ADDR_pll0_cascade_lock_point 					= 0x9003
+
+	
+
+
 
 	BUS_ADDR_openLoopGain 								= [0x9010, 0x9011, 0x9012]
 
@@ -2484,6 +2493,15 @@ class SuperLaserLand_JD_RP:
 		self.ddc1_k = ddc1_k
 		self.send_bus_cmd_32bits(self.BUS_ADDR_ddc1_k, ddc1_k)
 
+
+	def setCascadeLockPoint(self, lock_point_in_counts):
+		self.send_bus_cmd_16bits(self.BUS_ADDR_pll0_cascade_lock_point, lock_point_in_counts)
+
+
+	def setDAC1ToExtRefDebuggingOutputOrNot(self, bCheckExtRefDemod):
+		self.send_bus_cmd_16bits(self.BUS_ADDR_bCheckExtRefDemod, bCheckExtRefDemod)
+
+
 	def get_ddc_filter_select(self):
 		if self.bVerbose == True:
 			print('get_ddc_filter_select')
@@ -2594,6 +2612,15 @@ class SuperLaserLand_JD_RP:
 		if value == 4026531839:
 			print('Warning! You received the default value when asking for data at address {}.'.format(hex(int(addr))))
 		return value
+
+	def read_RAM_dpll_wrapper_signed(self,addr):
+		bus_address = (2 << 20) + addr*4
+		value = self.dev.read_Zynq_register_int32(bus_address)
+		if value == 4026531839 - 2**32:
+			print('Warning! You received the default value when asking for data at address {}.'.format(hex(int(addr))))
+		return value
+
+		
 
 	def read_pll2_mux(self):
 		if self.bVerbose == True:

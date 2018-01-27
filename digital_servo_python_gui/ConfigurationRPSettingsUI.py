@@ -122,13 +122,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 	def initUI(self):
 
-		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select connection to VCO')
+		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select VCO connection')
 		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
 		MUX_vco = Qt.QGridLayout()
 
 		self.qradio_VCO_to_DAC0 = Qt.QRadioButton('VCO connected to DAC A')
 		self.qradio_VCO_to_DAC1 = Qt.QRadioButton('VCO connected to DAC B')
-		self.qradio_no_VCO = Qt.QRadioButton('No VCO connected')
+		self.qradio_no_VCO = Qt.QRadioButton('VCO not connected')
 		self.qradio_no_VCO.setChecked(True)
 		self.qradio_VCO_to_DAC0.clicked.connect(self.mux_vco_Action)
 		self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
@@ -137,12 +137,14 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude [0-1]')
 		self.qedit_int_vco_amplitude = user_friendly_QLineEdit('0.5')
 		self.qedit_int_vco_amplitude.returnPressed.connect(self.setInternalVCO_amplitude)
-		self.qedit_int_vco_amplitude.setMaximumWidth(60)
+		self.qedit_int_vco_amplitude.setMaximumWidth(100)
 
 		self.qlabel_int_vco_offset = Qt.QLabel('Internal VCO offset [0-1]')
 		self.qedit_int_vco_offset = user_friendly_QLineEdit('0.0')
 		self.qedit_int_vco_offset.returnPressed.connect(self.setInternalVCO_offset)
-		self.qedit_int_vco_offset.setMaximumWidth(60)
+		self.qedit_int_vco_offset.setMaximumWidth(100)
+
+		self.qlabel_vco_reminder = Qt.QLabel('VCO gain: 954 Hz/counts, 0 counts maps to fs/4 = 31.25 MHz')
 
 		MUX_vco.addWidget(self.qradio_VCO_to_DAC0,	 0, 0)	
 		MUX_vco.addWidget(self.qradio_VCO_to_DAC1,	 1, 0)
@@ -151,8 +153,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		MUX_vco.addWidget(self.qedit_int_vco_offset, 1,2)
 		MUX_vco.addWidget(self.qlabel_int_vco_amplitude, 2,1)
 		MUX_vco.addWidget(self.qedit_int_vco_amplitude, 2,2)
-		MUX_vco.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
-		MUX_vco.setRowStretch(2, 2)
+		MUX_vco.addWidget(self.qlabel_vco_reminder, 3,0, 1, 3)
+
+		# MUX_vco.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
+		# MUX_vco.setRowStretch(3, 2)
 
 		self.qgroupbox_MUX_vco.setLayout(MUX_vco)
 
@@ -162,19 +166,29 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		MUX_pll2 = Qt.QGridLayout()
 
 		self.qradio_ddc1_to_pll2 = Qt.QRadioButton('DDC_a output to PLL_b input')
-		self.qradio_pll1_to_pll2 = Qt.QRadioButton('PLL_a output to PLL_b input')
+		self.qradio_pll1_to_pll2 = Qt.QRadioButton('DAC_a output to PLL_b input (cascade lock)')
 		self.qradio_ddc2_to_pll2 = Qt.QRadioButton('DDC_b output to PLL_b input')
 		self.qradio_ddc2_to_pll2.setChecked(True)
 		self.qradio_pll1_to_pll2.clicked.connect(self.mux_pll2_Action)
 		self.qradio_ddc1_to_pll2.clicked.connect(self.mux_pll2_Action)
 		self.qradio_ddc2_to_pll2.clicked.connect(self.mux_pll2_Action)
 
-		MUX_pll2.addWidget(self.qradio_ddc1_to_pll2, 	0, 0)
-		MUX_pll2.addWidget(self.qradio_pll1_to_pll2, 	1, 0)
-		MUX_pll2.addWidget(self.qradio_ddc2_to_pll2, 	2, 0)
+		self.qlabel_cascade_lock_offset = Qt.QLabel('DAC_a lockpoint in counts:')
+		self.qedit_cascade_lock_offset = user_friendly_QLineEdit('-4.456e3')
+		self.qedit_cascade_lock_offset.setMaximumWidth(100)
+		self.qedit_cascade_lock_offset.returnPressed.connect(self.setCascadeLockPoint)
+
+		MUX_pll2.addWidget(self.qradio_ddc1_to_pll2, 	    0, 0)
+		MUX_pll2.addWidget(self.qradio_pll1_to_pll2, 	    1, 0)
+		MUX_pll2.addWidget(self.qlabel_cascade_lock_offset, 1, 1)
+		MUX_pll2.addWidget(self.qedit_cascade_lock_offset, 	1, 2)
+		MUX_pll2.addWidget(self.qradio_ddc2_to_pll2, 	    2, 0)
+		MUX_pll2.addWidget(self.qradio_ddc2_to_pll2, 	    2, 0)
 		MUX_pll2.setRowStretch(2, 0)
 
 		self.qgroupbox_MUX_pll2.setLayout(MUX_pll2)
+
+
 
 		###################################################################################
 		self.qgroupbox_other_DDC_settings = Qt.QGroupBox('Other DDC settings')
@@ -183,20 +197,26 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		self.qradio_ddc0_use_internal_ref = Qt.QRadioButton('DDC 0: Use internal ref freq')
 		self.qradio_ddc0_use_external_ref = Qt.QRadioButton('DDC 0: Use external ref freq')
-		self.qradio_ddc0_use_external_ref.setChecked(True)
+		self.qradio_ddc0_use_internal_ref.setChecked(True)
 		self.qradio_ddc0_use_internal_ref.clicked.connect(self.use_external_ref_changed)
 		self.qradio_ddc0_use_external_ref.clicked.connect(self.use_external_ref_changed)
 
-		self.qlabel_freq_ratio = Qt.QLabel('Frequency ratio numerator: ')
+		self.qlabel_freq_ratio = Qt.QLabel('Frequency ratio numerator "k": ')
 		self.qedit_freq_ratio = user_friendly_QLineEdit('262144')
 		self.qedit_freq_ratio.returnPressed.connect(self.setFrequencyRatio)
-		self.qedit_freq_ratio.setMaximumWidth(60)
-		self.qlabel_freq_ratio2 = Qt.QLabel('Denominator: 262144')
+		self.qedit_freq_ratio.setMaximumWidth(100)
+		self.qlabel_freq_ratio2 = Qt.QLabel('Actual ratio: k/262144')
 
-		self.qlabel_IQ_gain = Qt.QLabel('IQ display gain [127, 32767]: ')
-		self.qedit_IQ_gain = user_friendly_QLineEdit('127')
+		self.qlabel_IQ_gain = Qt.QLabel('IQ display gain [255, 32767]: ')
+		self.qedit_IQ_gain = user_friendly_QLineEdit('255')
 		self.qedit_IQ_gain.returnPressed.connect(self.setIQGain)
-		self.qedit_IQ_gain.setMaximumWidth(60)
+		self.qedit_IQ_gain.setMaximumWidth(100)
+
+		self.qchk_extref_to_dac1 = Qt.QCheckBox('Override normal DAC1 output and replace with regenerated ext ref')
+		self.qchk_extref_to_dac1.clicked.connect(self.setDAC1ToExtRefDebuggingOutputOrNot)
+		
+
+
 
 		other_DDC_settings.addWidget(self.qradio_ddc0_use_internal_ref, 	0, 0, 1, 3)
 		other_DDC_settings.addWidget(self.qradio_ddc0_use_external_ref, 	1, 0, 1, 3)
@@ -205,8 +225,9 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		other_DDC_settings.addWidget(self.qlabel_freq_ratio2, 	            2, 2, 1, 1)
 		other_DDC_settings.addWidget(self.qlabel_IQ_gain, 	                3, 0, 1, 1)
 		other_DDC_settings.addWidget(self.qedit_IQ_gain, 	                3, 1, 1, 1)
+		other_DDC_settings.addWidget(self.qchk_extref_to_dac1, 	            4, 0, 1, 3)
 
-		other_DDC_settings.setRowStretch(3, 0)
+		other_DDC_settings.setRowStretch(4, 0)
 
 		self.qgroupbox_other_DDC_settings.setLayout(other_DDC_settings)
 
@@ -290,6 +311,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setWindowTitle(self.custom_shorthand + ': RP Configuration')    
 		#self.show()
 		#self.show()
+
+	def setDAC1ToExtRefDebuggingOutputOrNot(self):
+		if self.qchk_extref_to_dac1.isChecked():
+			print("setDAC1ToExtRefDebuggingOutputOrNot(): bCheckExtRefDemod=1")
+			self.sl.setDAC1ToExtRefDebuggingOutputOrNot(bCheckExtRefDemod=1)
+		else:
+			print("setDAC1ToExtRefDebuggingOutputOrNot(): bCheckExtRefDemod=0")
+			self.sl.setDAC1ToExtRefDebuggingOutputOrNot(bCheckExtRefDemod=0)
+
+	def setCascadeLockPoint(self):
+		lock_point = int(round(eval(self.qedit_cascade_lock_offset.text())))
+		self.sl.setCascadeLockPoint(lock_point)
 
 	def use_external_ref_changed(self):
 		if self.qradio_ddc0_use_external_ref.isChecked():

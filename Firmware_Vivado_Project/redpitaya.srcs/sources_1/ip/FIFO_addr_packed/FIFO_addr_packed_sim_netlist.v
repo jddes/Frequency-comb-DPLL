@@ -1,10 +1,10 @@
 // Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-// Date        : Tue Jan 09 22:51:45 2018
+// Date        : Thu Jan 25 21:20:32 2018
 // Host        : jdbureau running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode funcsim {D:/Repo/Frequency-comb-DPLL/Firmware Vivado
-//               Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_sim_netlist.v}
+// Command     : write_verilog -force -mode funcsim
+//               D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/FIFO_addr_packed/FIFO_addr_packed_sim_netlist.v
 // Design      : FIFO_addr_packed
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.

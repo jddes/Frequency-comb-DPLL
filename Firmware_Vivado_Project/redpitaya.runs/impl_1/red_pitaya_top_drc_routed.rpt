@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Wed Jan 24 01:12:16 2018
+| Date         : Fri Jan 26 01:04:51 2018
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_drc
 ------------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ Related violations: <none>
 
 BUFC-1#14 Warning
 Input Buffer Connections  
-Input buffer i_iobufp[2]/IBUF (in i_iobufp[2] macro) has no loads. An input buffer must drive an internal load.
+Input buffer i_iobufp[1]/IBUF (in i_iobufp[1] macro) has no loads. An input buffer must drive an internal load.
 Related violations: <none>
 
 BUFC-1#15 Warning
@@ -121,22 +121,22 @@ Related violations: <none>
 
 DPIP-1#1 Warning
 Input pipelining  
-DSP dpll_wrapper_inst/DDC0_inst/ARG input dpll_wrapper_inst/DDC0_inst/ARG/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP dpll_wrapper_inst/DDC0_inst/ARG__0 input dpll_wrapper_inst/DDC0_inst/ARG__0/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#2 Warning
 Input pipelining  
-DSP dpll_wrapper_inst/DDC0_inst/ARG input dpll_wrapper_inst/DDC0_inst/ARG/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP dpll_wrapper_inst/DDC0_inst/ARG__0 input dpll_wrapper_inst/DDC0_inst/ARG__0/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#3 Warning
 Input pipelining  
-DSP dpll_wrapper_inst/DDC0_inst/ARG__0 input dpll_wrapper_inst/DDC0_inst/ARG__0/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP dpll_wrapper_inst/DDC0_inst/ARG__0__0 input dpll_wrapper_inst/DDC0_inst/ARG__0__0/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#4 Warning
 Input pipelining  
-DSP dpll_wrapper_inst/DDC0_inst/ARG__0 input dpll_wrapper_inst/DDC0_inst/ARG__0/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP dpll_wrapper_inst/DDC0_inst/ARG__0__0 input dpll_wrapper_inst/DDC0_inst/ARG__0__0/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#5 Warning
@@ -221,12 +221,12 @@ Related violations: <none>
 
 DPOP-2#1 Warning
 MREG Output pipelining  
-DSP dpll_wrapper_inst/DDC0_inst/ARG multiplier stage dpll_wrapper_inst/DDC0_inst/ARG/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+DSP dpll_wrapper_inst/DDC0_inst/ARG__0 multiplier stage dpll_wrapper_inst/DDC0_inst/ARG__0/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
 Related violations: <none>
 
 DPOP-2#2 Warning
 MREG Output pipelining  
-DSP dpll_wrapper_inst/DDC0_inst/ARG__0 multiplier stage dpll_wrapper_inst/DDC0_inst/ARG__0/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+DSP dpll_wrapper_inst/DDC0_inst/ARG__0__0 multiplier stage dpll_wrapper_inst/DDC0_inst/ARG__0__0/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
 Related violations: <none>
 
 DPOP-2#3 Warning

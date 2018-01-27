@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/system_identification_outputgain_mult_synth_1'
+HD_PWD='D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/system_identification_outputgain_mult_synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

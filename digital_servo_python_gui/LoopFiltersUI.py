@@ -177,6 +177,10 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qchk_bKpCrossing = Qt.QCheckBox('fi refer to kp crossover')
 		self.qchk_bKpCrossing.setChecked(False)
 		self.qchk_bKpCrossing.clicked.connect(self.textboxChanged)
+
+		self.qchk_bNegativeSign = Qt.QCheckBox('Negative sign')
+		self.qchk_bNegativeSign.setChecked(False)
+		self.qchk_bNegativeSign.clicked.connect(self.textboxChanged)
 		
 		self.qchk_lockSlider = Qt.QCheckBox('Lock D sliders')
 		self.qchk_lockSlider.setChecked(False)
@@ -198,7 +202,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qslider_fdf.setOrientation(Qt.Qt.Horizontal)
 
 		# Set bounds:
-		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 		# The fi and fii sliders will contain the value in 100*log10(f) units (similar to dBHz, but with a different scaling - this is because we can only use integer units)
 		self.qslider_fi.setMinimum(100*np.log10(fmin))
 		self.qslider_fii.setMinimum(100*np.log10(fmin))
@@ -240,7 +244,7 @@ class LoopFiltersUI(Qt.QWidget):
 		grid.addLayout(vbox,                    0, 0, 2, 2)
 		grid.addWidget(self.qslider_kp,         0, 2, 3, 1)
 
-		grid.addWidget(self.qplot_tf,           0, 3, 9, 1)
+		grid.addWidget(self.qplot_tf,           0, 3,10, 1)
 		grid.setColumnStretch(3, 1)
 		grid.setRowStretch(8, 1)
 
@@ -263,6 +267,8 @@ class LoopFiltersUI(Qt.QWidget):
 
 		
 		grid.addWidget(self.qchk_bKpCrossing,   7, 0, 1, 3)
+		grid.addWidget(self.qchk_bNegativeSign, 8, 0, 1, 3)
+		
 		
 		
 		
@@ -297,7 +303,7 @@ class LoopFiltersUI(Qt.QWidget):
 		bKp = bool(sp.getValue(strPLL, 'chkKp').lower() == 'true')
 		bKd = bool(sp.getValue(strPLL, 'chkKd').lower() == 'true')
 		bLock = bool(sp.getValue(strPLL, 'chkLock').lower() == 'true')
-		kKpCrossing = bool(sp.getValue(strPLL, 'chkKpCrossing').lower() == 'true')
+		bKpCrossing = bool(sp.getValue(strPLL, 'chkKpCrossing').lower() == 'true')
 #        print('loadParameters(): kp = %f, fi = %f, fii = %f' % (kp, fi, fii))
 		
 		# Update the values in the UI to reflect the internal values:
@@ -325,7 +331,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qchk_kp.setChecked(bKp)
 		self.qchk_kd.setChecked(bKd)
 		self.qchk_lock.setChecked(bLock)
-		self.qchk_bKpCrossing.setChecked(kKpCrossing)
+		self.qchk_bKpCrossing.setChecked(bKpCrossing)
 		
 #        print('loadParameters(): Calling textboxChanged()')
 		self.textboxChanged()
@@ -341,6 +347,11 @@ class LoopFiltersUI(Qt.QWidget):
 			bLock = 1
 		else:
 			bLock = 0
+
+		if self.qchk_bNegativeSign.isChecked():
+			bNegativeSign = 1
+		else:
+			bNegativeSign = 0
 			
 		if self.qchk_kp.isChecked():
 			try:
@@ -385,7 +396,7 @@ class LoopFiltersUI(Qt.QWidget):
 		gain_min = -30
 		gain_max = 100
 			
-		return (kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock)
+		return (kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign)
 		
 	def kpSliderEvent(self):
 #        print('kpSliderEvent()')
@@ -473,7 +484,7 @@ class LoopFiltersUI(Qt.QWidget):
 #        traceback.print_stack()
 	
 		# Read the settings from the textboxes
-		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 		# Update the sliders to match:
 		# We block the signals from the sliders so we don't cause infinite recursion
 #        self.qslider_fi.setValue((100*np.log10(fi)))
@@ -503,7 +514,7 @@ class LoopFiltersUI(Qt.QWidget):
 #        traceback.print_stack()
 	
 		# Read the settings from the textboxes
-		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 		# Update the sliders to match:
 		# We block the signals from the sliders so we don't cause infinite recursion
 #        self.qslider_fi.setValue((100*np.log10(fi)))
@@ -564,25 +575,25 @@ class LoopFiltersUI(Qt.QWidget):
 #            # red background
 #            self.qedit_fdf.setStyleSheet("color: white; background-color: %s" % Qt.QColor(QtCore.Qt.red).name())
 		
-		if self.kp_min <= P_gain and P_gain <= self.kp_max:
+		if self.kp_min <= abs(P_gain) and abs(P_gain) <= self.kp_max:
 			self.qlabel_kp.setStyleSheet("background-color: #F0F0F0")
 		else:
 			# red background
 			self.qlabel_kp.setStyleSheet("background-color: #FF0000")
 
-		if self.ki_min <= I_gain and I_gain <= self.ki_max:
+		if self.ki_min <= abs(I_gain) and abs(I_gain) <= self.ki_max:
 			self.qlabel_fi.setStyleSheet("background-color: #F0F0F0")
 		else:
 			# red background
 			self.qlabel_fi.setStyleSheet("background-color: #FF0000")
 			
-		if self.kii_min <= II_gain and II_gain <= self.kii_max:
+		if self.kii_min <= abs(II_gain) and abs(II_gain) <= self.kii_max:
 			self.qlabel_fii.setStyleSheet("background-color: #F0F0F0")
 		else:
 			# red background
 			self.qlabel_fii.setStyleSheet("background-color: #FF0000")
 			
-		if self.kd_min <= D_gain and D_gain <= self.kd_max:
+		if self.kd_min <= abs(D_gain) and abs(D_gain) <= self.kd_max:
 			self.qlabel_fd.setStyleSheet("background-color: #F0F0F0")
 		else:
 			# red background
@@ -617,7 +628,7 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		# Get the firmware gain limits and show them in the tooltips
 		self.getLimits()
-		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 		
 		# to prevent divides by zero:
 		if fi == 0.0:
@@ -659,7 +670,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qedit_fdf.setToolTip('Differentiator filter roll-off frequency in Hz: [{:.2e}, {:.2e}]'.format(fdf_min, fdf_max))
 	
 	def getActualControllerDesign(self):
-		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 		
 		if self.qchk_bKpCrossing.isChecked() == False:
 			# I is relative to 1/kc
@@ -689,6 +700,13 @@ class LoopFiltersUI(Qt.QWidget):
 			P_gain = 0
 		if self.qchk_kd.isChecked() == False:
 			D_gain = 0
+
+		# flip signs if desired:
+		if bNegativeSign:
+			P_gain  = -P_gain
+			I_gain  = -I_gain
+			II_gain = -II_gain
+			D_gain  = -D_gain
 			
 			
 		return (P_gain, I_gain, II_gain, D_gain, D_coef, bLock)
@@ -706,6 +724,16 @@ class LoopFiltersUI(Qt.QWidget):
 	def getFilterSettings(self):
 
 		(P_gain, I_gain, II_gain, D_gain, D_coef, bLock) = self.sl.pll[self.filter_number].get_pll_settings(self.sl)
+
+		# Handle negative gains: we split the gain value and the overall sign
+		if P_gain < 0 or I_gain < 0 or II_gain < 0 or D_gain < 0:
+			self.qchk_bNegativeSign.setChecked(True) #We don't want to define fi, fii and fd with kp if kp is off
+		else:
+			self.qchk_bNegativeSign.setChecked(False) #We don't want to define fi, fii and fd with kp if kp is off
+		P_gain  = abs(P_gain)
+		I_gain  = abs(I_gain)
+		II_gain = abs(II_gain)
+		D_gain  = abs(D_gain)
 		
 		# print("P_gain %f" % P_gain)
 		# print("I_gain %f" % I_gain)
@@ -837,7 +865,7 @@ class LoopFiltersUI(Qt.QWidget):
 		
 	def lockSlider(self):
 		if self.qchk_lockSlider.isChecked() == True:
-			(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+			(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 			self.slider_locked = True
 			self.slider_inhibit = False
 			self.slider_ratio = float(fdf)/float(fd)
@@ -851,7 +879,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.updateTooltips()
 		#self.checkFirmwareLimits()
 		# Read the settings from the textboxes
-		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
 		# print("kp %f" % kp)
 		# print("fi %f" % fi)
 		# print("fii %f" % fii)

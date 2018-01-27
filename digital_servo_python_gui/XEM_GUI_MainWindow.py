@@ -2419,7 +2419,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if currentSelector == 0:
 				# DDC0: use direct IQ monitor
 				complex_baseband = complex_baseband_direct
-
+				# pdb.set_trace()
 			else:
 				# DDC1: post-process raw ADC data into complex baseband here in Python
 				complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
@@ -2431,8 +2431,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# Compute the SNR on the amplitude of the baseband signal:    
 			amplitude = np.abs(complex_baseband)
-			mean_amplitude = np.mean(np.abs(complex_baseband))
-			baseband_snr = 20*np.log10(np.mean(amplitude)/np.std(amplitude))
+			mean_amplitude = np.mean(amplitude)
+			std_dev_amplitude = np.std(amplitude)
+			if mean_amplitude == 0:
+				mean_amplitude = 1.	# to avoid a NaN in the log operation
+				std_dev_amplitude = 1e3
+			baseband_snr = 20*np.log10(mean_amplitude/std_dev_amplitude)
 			# to get a more stable reading of the SNR without resorting to rounding:
 			# we put a simple first-order IIR filter:
 			filter_alpha = np.exp(-1./10.)
@@ -2442,7 +2446,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if not(np.isnan(temp_filtered_baseband_snr)):
 				self.filtered_baseband_snr = temp_filtered_baseband_snr
 			else:
-				print("Error 'nan' on filtered_baseband_snr")
+				print("Error 'nan' in filtered_baseband_snr")
 
 			self.qthermo_baseband_snr.setValue(baseband_snr)
 			self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))

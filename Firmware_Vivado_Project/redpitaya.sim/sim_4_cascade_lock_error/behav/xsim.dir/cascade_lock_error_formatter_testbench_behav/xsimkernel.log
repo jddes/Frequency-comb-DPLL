@@ -1,0 +1,7 @@
+Running: xsim.dir/cascade_lock_error_formatter_testbench_behav/xsimk.exe -simmode gui -wdb cascade_lock_error_formatter_testbench_behav.wdb -simrunnum 0 -socket 24271
+Design successfully loaded
+Design Loading Memory Usage: 22320 KB (Peak: 22320 KB)
+Design Loading CPU Usage: 77 ms
+Simulation completed
+Simulation Memory Usage: 22748 KB (Peak: 22748 KB)
+Simulation CPU Usage: 92 ms

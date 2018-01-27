@@ -26,7 +26,7 @@ use IEEE.NUMERIC_STD.ALL;
     Generic(
         INPUT_DATA_WIDTH    : positive := 16;
         WRAPPED_PHASE_WIDTH : positive := 10;
-        N_SHIFT_BASEBAND : integer := 15-8 -- this with IQ_monitor_gain's max value sets the max gain to 2^-8, mapping a full-range 16-bits signal into 8 bits
+        N_SHIFT_BASEBAND : integer := 7+8 -- this with IQ_monitor_gain's min value of 2^7 sets the minimum gain to 2^-8, mapping a full-range 16-bits signal into 8 bits
     );
     Port ( 
         rst                 : in  std_logic;
@@ -133,10 +133,10 @@ architecture Behavioral of DDC_wideband_filters is
     signal Q_filtered         : std_logic_vector(INPUT_DATA_WIDTH-1 downto 0);
 
     -- IQ monitor signals:
-    signal I_filtered_mon  : signed(IQ_monitor_gain'length+I_filtered'length+1-N_SHIFT_BASEBAND-1 downto 0) := (others => '0');
-    signal I_filtered_mon2 : std_logic_vector(IQ_monitor_gain'length+I_filtered'length+1-N_SHIFT_BASEBAND-1 downto 0) := (others => '0');
-    signal Q_filtered_mon  : signed(IQ_monitor_gain'length+I_filtered'length+1-N_SHIFT_BASEBAND-1 downto 0) := (others => '0');
-    signal Q_filtered_mon2 : std_logic_vector(IQ_monitor_gain'length+I_filtered'length+1-N_SHIFT_BASEBAND-1 downto 0) := (others => '0');
+    signal I_filtered_mon  : signed(IQ_monitor_gain'length+I_filtered'length+1-1 downto 0) := (others => '0');
+    signal I_filtered_mon2 : std_logic_vector(IQ_monitor_gain'length+I_filtered'length+1-1 downto 0) := (others => '0');
+    signal Q_filtered_mon  : signed(IQ_monitor_gain'length+I_filtered'length+1-1 downto 0) := (others => '0');
+    signal Q_filtered_mon2 : std_logic_vector(IQ_monitor_gain'length+I_filtered'length+1-1 downto 0) := (others => '0');
     
     -- Phase unwrapping signals
     signal wrapped_phase_cordic            : std_logic_vector(WRAPPED_PHASE_WIDTH+2-1 downto 0);
@@ -298,16 +298,14 @@ begin
     begin
         if rising_edge(clk) then
             -- Apply gain of IQ_monitor_gain/2^N_SHIFT_BASEBAND:
-            I_filtered_mon <= resize(shift_right(
+            I_filtered_mon <= shift_right(
                                             resize(signed(I_filtered)*signed(IQ_monitor_gain), I_filtered'length+IQ_monitor_gain'length+1)
                                             + to_signed(2**(N_SHIFT_BASEBAND-1)              , I_filtered'length+IQ_monitor_gain'length+1)
-                                                , N_SHIFT_BASEBAND)
-                                                    , I_filtered_mon'length);
-            Q_filtered_mon <= resize(shift_right(
+                                                , N_SHIFT_BASEBAND);
+            Q_filtered_mon <= shift_right(
                                             resize(signed(Q_filtered)*signed(IQ_monitor_gain), I_filtered'length+IQ_monitor_gain'length+1)
                                             + to_signed(2**(N_SHIFT_BASEBAND-1)              , I_filtered'length+IQ_monitor_gain'length+1)
-                                                , N_SHIFT_BASEBAND)
-                                                    , I_filtered_mon'length);
+                                                , N_SHIFT_BASEBAND);
             -- Add extra pipeline register to help timing:
             I_filtered_mon2 <= std_logic_vector(I_filtered_mon);
             Q_filtered_mon2 <= std_logic_vector(Q_filtered_mon);

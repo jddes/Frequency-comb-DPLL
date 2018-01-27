@@ -2,214 +2,214 @@
 # Vivado v2015.4 (64-bit)
 # SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
 # IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
-# Start of session at: Tue Jan 09 19:36:35 2018
-# Process ID: 18084
-# Current directory: D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/complex_mult_16x16_synth_1
+# Start of session at: Thu Jan 25 21:19:31 2018
+# Process ID: 10552
+# Current directory: D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/complex_mult_16x16_synth_1
 # Command line: vivado.exe -log complex_mult_16x16.vds -mode batch -messageDb vivado.pb -notrace -source complex_mult_16x16.tcl
-# Log file: D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/complex_mult_16x16_synth_1/complex_mult_16x16.vds
-# Journal file: D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/complex_mult_16x16_synth_1\vivado.jou
+# Log file: D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/complex_mult_16x16_synth_1/complex_mult_16x16.vds
+# Journal file: D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/complex_mult_16x16_synth_1\vivado.jou
 #-----------------------------------------------------------
 source complex_mult_16x16.tcl -notrace
 INFO: [IP_Flow 19-234] Refreshing IP repositories
 INFO: [IP_Flow 19-1704] No user IP repositories specified
 INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2015.4/data/ip'.
-WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16.dcp'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_stub.v'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_stub.vhdl'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_sim_netlist.v'. Please regenerate to continue.
-WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_sim_netlist.vhdl'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16.dcp'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_stub.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_stub.vhdl'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_sim_netlist.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'complex_mult_16x16' generated file not found 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_sim_netlist.vhdl'. Please regenerate to continue.
 Command: synth_design -top complex_mult_16x16 -part xc7z010clg400-1 -mode out_of_context
 Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:09 . Memory (MB): peak = 286.082 ; gain = 114.707
+Starting RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 284.848 ; gain = 112.906
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-638] synthesizing module 'complex_mult_16x16' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/synth/complex_mult_16x16.vhd:71]
-INFO: [Synth 8-3491] module 'cmpy_v6_0_10' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:119' bound to instance 'U0' of component 'cmpy_v6_0_10' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/synth/complex_mult_16x16.vhd:150]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:183]
-INFO: [Synth 8-3491] module 'cmpy_v6_0_10_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12048' bound to instance 'i_synth' of component 'cmpy_v6_0_10_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:190]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_viv' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12123]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:903]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:907]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:911]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:915]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:919]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:923]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:927]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:936]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:944]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:948]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:952]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:956]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:961]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1019]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1206]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1399]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1400]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1450]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3847]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3863]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3738]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3740]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3748]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1309]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1399]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1400]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1450]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3847]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3863]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1309]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1377]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1378]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1380]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1395]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1396]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1410]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1411]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1412]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1414]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1415]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1428]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1399]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1400]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1450]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3847]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3863]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1309]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1440]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1441]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1059]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1097]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1156]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1157]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12436]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-5534] Detected attribute (* keep = "true" *) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1755]
-INFO: [Synth 8-5534] Detected attribute (* shreg_extract = "yes" *) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1782]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line' (1#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_synth' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:11637]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:780]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1206]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
-WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
+INFO: [Synth 8-638] synthesizing module 'complex_mult_16x16' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/synth/complex_mult_16x16.vhd:71]
+INFO: [Synth 8-3491] module 'cmpy_v6_0_10' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:119' bound to instance 'U0' of component 'cmpy_v6_0_10' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/synth/complex_mult_16x16.vhd:150]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:183]
+INFO: [Synth 8-3491] module 'cmpy_v6_0_10_viv' declared at 'd:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12048' bound to instance 'i_synth' of component 'cmpy_v6_0_10_viv' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:190]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_viv' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12123]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:903]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:907]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:911]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:915]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:919]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:923]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:927]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:936]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:944]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:948]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:952]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:956]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:961]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1019]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1206]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1399]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1400]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1450]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3847]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3863]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3738]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3740]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3748]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1399]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1400]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1450]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3847]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3863]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1377]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1378]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1380]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1395]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1396]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1410]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1411]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1412]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1414]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1415]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1428]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1467]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1469]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1470]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1484]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1485]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1487]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1488]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1399]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1400]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1450]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3847]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:3863]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1309]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1440]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1441]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1059]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1097]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1156]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1157]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12436]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-5534] Detected attribute (* keep = "true" *) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1755]
+INFO: [Synth 8-5534] Detected attribute (* shreg_extract = "yes" *) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1782]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line' (1#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_synth' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:11637]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:780]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1206]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1239]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1240]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1374]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:1466]
 INFO: [Common 17-14] Message 'Synth 8-312' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
-INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4948]
-INFO: [Synth 8-638] synthesizing module 'input_negation' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1927]
-INFO: [Synth 8-256] done synthesizing module 'input_negation' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1927]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized0' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized1' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized2' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-5534] Detected attribute (* shreg_extract = "yes" *) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1812]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized2' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized3' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized3' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48_mult' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4618]
-INFO: [Synth 8-638] synthesizing module 'dsp' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
-INFO: [Synth 8-638] synthesizing module 'op_resize' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4028]
-INFO: [Synth 8-256] done synthesizing module 'op_resize' (3#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4028]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-5534] Detected attribute (* shreg_extract = "yes" *) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4385]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized0' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-113] binding component instance 'iDSP48E1' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:11052]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized1' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'dsp' (5#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48_mult' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
-INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48_mult__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
-INFO: [Synth 8-506] null port 'C' ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4592]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4618]
-INFO: [Synth 8-638] synthesizing module 'dsp__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized2' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized2' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized3' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized3' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-113] binding component instance 'iDSP48E1' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:11052]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized4' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized4' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'dsp__parameterized0' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48_mult__parameterized0' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized4' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized4' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized5' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized5' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized6' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized6' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48_mult__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
-INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4618]
-INFO: [Synth 8-638] synthesizing module 'dsp__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized5' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized5' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-113] binding component instance 'iDSP48E1' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:11052]
-INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized6' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized6' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
-INFO: [Synth 8-256] done synthesizing module 'dsp__parameterized1' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48_mult__parameterized1' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized7' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized7' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized8' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized8' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4948]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_synth' (8#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:11637]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_viv' (9#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12123]
-INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10' (10#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:183]
-INFO: [Synth 8-256] done synthesizing module 'complex_mult_16x16' (11#1) [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/synth/complex_mult_16x16.vhd:71]
+INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4948]
+INFO: [Synth 8-638] synthesizing module 'input_negation' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1927]
+INFO: [Synth 8-256] done synthesizing module 'input_negation' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1927]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized0' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized1' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized2' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-5534] Detected attribute (* shreg_extract = "yes" *) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1812]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized2' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized3' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized3' (2#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48_mult' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4618]
+INFO: [Synth 8-638] synthesizing module 'dsp' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
+INFO: [Synth 8-638] synthesizing module 'op_resize' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4028]
+INFO: [Synth 8-256] done synthesizing module 'op_resize' (3#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4028]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-5534] Detected attribute (* shreg_extract = "yes" *) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4385]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized0' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-113] binding component instance 'iDSP48E1' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:11052]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized1' (4#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'dsp' (5#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48_mult' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
+INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48_mult__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
+INFO: [Synth 8-506] null port 'C' ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4592]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4618]
+INFO: [Synth 8-638] synthesizing module 'dsp__parameterized0' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized2' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized2' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized3' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized3' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-113] binding component instance 'iDSP48E1' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:11052]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized4' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized4' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'dsp__parameterized0' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48_mult__parameterized0' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized4' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized4' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized5' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized5' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized6' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized6' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_3_dsp48_mult__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4615]
+INFO: [Synth 8-3919] null assignment ignored [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4618]
+INFO: [Synth 8-638] synthesizing module 'dsp__parameterized1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized5' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized5' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-113] binding component instance 'iDSP48E1' to cell 'DSP48E1' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:11052]
+INFO: [Synth 8-638] synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized6' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'mult_gen_v12_0_10_delay_line__parameterized6' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4160]
+INFO: [Synth 8-256] done synthesizing module 'dsp__parameterized1' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:9916]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48_mult__parameterized1' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4603]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized7' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized7' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-638] synthesizing module 'cmpy_v6_0_10_delay_line__parameterized8' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_delay_line__parameterized8' (6#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1587]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_3_dsp48' (7#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:4948]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_synth' (8#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:11637]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10_viv' (9#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:12123]
+INFO: [Synth 8-256] done synthesizing module 'cmpy_v6_0_10' (10#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0.vhd:183]
+INFO: [Synth 8-256] done synthesizing module 'complex_mult_16x16' (11#1) [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/synth/complex_mult_16x16.vhd:71]
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:39 ; elapsed = 00:00:42 . Memory (MB): peak = 345.832 ; gain = 174.457
+Finished RTL Elaboration : Time (s): cpu = 00:00:52 ; elapsed = 00:00:55 . Memory (MB): peak = 344.160 ; gain = 172.219
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -219,7 +219,7 @@ Report Check Netlist:
 |1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
 +------+------------------+-------+---------+-------+------------------+
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:39 ; elapsed = 00:00:42 . Memory (MB): peak = 345.832 ; gain = 174.457
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:52 ; elapsed = 00:00:55 . Memory (MB): peak = 344.160 ; gain = 172.219
 ---------------------------------------------------------------------------------
 INFO: [Netlist 29-17] Analyzing 3 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
@@ -228,35 +228,35 @@ INFO: [Project 1-570] Preparing netlist for logic optimization
 
 Processing XDC Constraints
 Initializing timing engine
-Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
-Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
-Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/complex_mult_16x16_synth_1/dont_touch.xdc]
-Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.runs/complex_mult_16x16_synth_1/dont_touch.xdc]
+Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
+Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/complex_mult_16x16_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/complex_mult_16x16_synth_1/dont_touch.xdc]
 Completed Processing XDC Constraints
 
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.018 . Memory (MB): peak = 544.563 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.022 . Memory (MB): peak = 543.680 ; gain = 0.000
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished Constraint Validation : Time (s): cpu = 00:00:58 ; elapsed = 00:01:05 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7z010clg400-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:58 ; elapsed = 00:01:05 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
 ---------------------------------------------------------------------------------
 Applied set_property DONT_TOUCH = true for U0. (constraint file  auto generated constraint, line ).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:44 ; elapsed = 00:00:52 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:58 ; elapsed = 00:01:05 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:59 ; elapsed = 00:01:06 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -285,17 +285,17 @@ BRAMs: 120 (col length: RAMB18 40 RAMB36 20)
 ---------------------------------------------------------------------------------
 Finished Part Resource Summary
 ---------------------------------------------------------------------------------
-Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:45 ; elapsed = 00:00:52 . Memory (MB): peak = 544.563 ; gain = 373.188
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:59 ; elapsed = 00:01:06 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
 Start Cross Boundary Optimization
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-4471] merging register 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_3.reg_mult3_preadd_d/dN.std_srl.shift_reg_reg[0][24:0]' into 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_1.reg_mult1_preadd_d/dN.std_srl.shift_reg_reg[0][24:0]' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1820]
-INFO: [Synth 8-4471] merging register 'i_synth/three_mult_structure.use_dsp.i_dsp48/mult3_preadder_d_minus_a.mult3/mult/use_prim.iAdelx[0].iAdely[0].use_delay_line.Adelay/d1.dout_i_reg[24:0]' into 'i_synth/three_mult_structure.use_dsp.i_dsp48/mult1_preadder_d_plus_a.mult1/mult/use_prim.iAdelx[0].iAdely[0].use_delay_line.Adelay/d1.dout_i_reg[24:0]' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4235]
-INFO: [Synth 8-4471] merging register 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_3.reg_mult3_preadd_d/dN.std_srl.shift_reg_reg[1][24:0]' into 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_1.reg_mult1_preadd_d/dN.std_srl.shift_reg_reg[1][24:0]' [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1820]
+INFO: [Synth 8-4471] merging register 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_3.reg_mult3_preadd_d/dN.std_srl.shift_reg_reg[0][24:0]' into 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_1.reg_mult1_preadd_d/dN.std_srl.shift_reg_reg[0][24:0]' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1820]
+INFO: [Synth 8-4471] merging register 'i_synth/three_mult_structure.use_dsp.i_dsp48/mult3_preadder_d_minus_a.mult3/mult/use_prim.iAdelx[0].iAdely[0].use_delay_line.Adelay/d1.dout_i_reg[24:0]' into 'i_synth/three_mult_structure.use_dsp.i_dsp48/mult1_preadder_d_plus_a.mult1/mult/use_prim.iAdelx[0].iAdely[0].use_delay_line.Adelay/d1.dout_i_reg[24:0]' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/mult_gen_v12_0_10/hdl/mult_gen_v12_0_vh_rfs.vhd:4235]
+INFO: [Synth 8-4471] merging register 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_3.reg_mult3_preadd_d/dN.std_srl.shift_reg_reg[1][24:0]' into 'i_synth/three_mult_structure.use_dsp.i_dsp48/dsp_preadder_1.reg_mult1_preadd_d/dN.std_srl.shift_reg_reg[1][24:0]' [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/cmpy_v6_0_10/hdl/cmpy_v6_0_vh_rfs.vhd:1820]
 ---------------------------------------------------------------------------------
-Finished Cross Boundary Optimization : Time (s): cpu = 00:00:45 ; elapsed = 00:00:53 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:59 ; elapsed = 00:01:06 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
-Finished Parallel Reinference  : Time (s): cpu = 00:00:45 ; elapsed = 00:00:53 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished Parallel Reinference  : Time (s): cpu = 00:00:59 ; elapsed = 00:01:06 . Memory (MB): peak = 543.680 ; gain = 371.738
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
@@ -358,9 +358,9 @@ INFO: [Synth 8-3332] Sequential element (\i_synth/three_mult_structure.use_dsp.i
 INFO: [Synth 8-3332] Sequential element (\i_synth/three_mult_structure.use_dsp.i_dsp48/mult3_preadder_d_minus_a.mult3/mult/use_prim.iBdelx[0].iBdely[0].need_delay_line.Bdelay/dN.std_srl.shift_reg_reg[1][16] ) is unused and will be removed from module cmpy_v6_0_10_viv.
 INFO: [Synth 8-3332] Sequential element (\i_synth/three_mult_structure.use_dsp.i_dsp48/mult3_preadder_d_minus_a.mult3/mult/use_prim.iBdelx[0].iBdely[0].need_delay_line.Bdelay/dN.std_srl.shift_reg_reg[1][15] ) is unused and will be removed from module cmpy_v6_0_10_viv.
 ---------------------------------------------------------------------------------
-Finished Area Optimization : Time (s): cpu = 00:00:45 ; elapsed = 00:00:53 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished Area Optimization : Time (s): cpu = 00:00:59 ; elapsed = 00:01:06 . Memory (MB): peak = 543.680 ; gain = 371.738
 ---------------------------------------------------------------------------------
-Finished Parallel Area Optimization  : Time (s): cpu = 00:00:45 ; elapsed = 00:00:53 . Memory (MB): peak = 544.563 ; gain = 373.188
+Finished Parallel Area Optimization  : Time (s): cpu = 00:00:59 ; elapsed = 00:01:06 . Memory (MB): peak = 543.680 ; gain = 371.738
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
@@ -374,10 +374,10 @@ Start Timing Optimization
 Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:56 ; elapsed = 00:01:04 . Memory (MB): peak = 625.777 ; gain = 454.402
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 625.082 ; gain = 453.141
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:00:56 ; elapsed = 00:01:04 . Memory (MB): peak = 626.770 ; gain = 455.395
+Finished Timing Optimization : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 625.090 ; gain = 453.148
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -389,16 +389,16 @@ Report RTL Partitions:
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:00:56 ; elapsed = 00:01:04 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Technology Mapping : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
-Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:00:56 ; elapsed = 00:01:04 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 
 Report RTL Partitions: 
 +-+--------------+------------+----------+
 | |RTL Partition |Replication |Instances |
 +-+--------------+------------+----------+
 +-+--------------+------------+----------+
-Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:56 ; elapsed = 00:01:04 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 Start IO Insertion
 ---------------------------------------------------------------------------------
@@ -415,7 +415,7 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:00:56 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished IO Insertion : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 
 Report Check Netlist: 
@@ -428,7 +428,7 @@ Report Check Netlist:
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:00:56 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Renaming Generated Instances : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 
 Report RTL Partitions: 
@@ -440,25 +440,25 @@ Report RTL Partitions:
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:56 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:00:56 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Renaming Generated Ports : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:57 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:00:57 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Renaming Generated Nets : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -481,17 +481,17 @@ Report Cell Usage:
 |5     |FDRE      |   114|
 +------+----------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:00:57 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Finished Writing Synthesis Report : Time (s): cpu = 00:01:09 ; elapsed = 00:01:16 . Memory (MB): peak = 645.504 ; gain = 473.563
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 0 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:15 ; elapsed = 00:00:54 . Memory (MB): peak = 647.078 ; gain = 238.961
-Synthesis Optimization Complete : Time (s): cpu = 00:00:57 ; elapsed = 00:01:05 . Memory (MB): peak = 647.078 ; gain = 475.703
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:13 ; elapsed = 00:01:04 . Memory (MB): peak = 645.504 ; gain = 237.734
+Synthesis Optimization Complete : Time (s): cpu = 00:01:09 ; elapsed = 00:01:17 . Memory (MB): peak = 645.504 ; gain = 473.563
 INFO: [Project 1-571] Translating synthesized netlist
 INFO: [Netlist 29-17] Analyzing 3 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
-Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
-Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
+Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [d:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ip/complex_mult_16x16/complex_mult_16x16_ooc.xdc] for cell 'U0'
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
@@ -499,7 +499,7 @@ No Unisim elements were transformed.
 INFO: [Common 17-83] Releasing license: Synthesis
 154 Infos, 105 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:00:56 ; elapsed = 00:01:03 . Memory (MB): peak = 647.078 ; gain = 440.746
+synth_design: Time (s): cpu = 00:01:07 ; elapsed = 00:01:15 . Memory (MB): peak = 645.504 ; gain = 440.633
 INFO: [Coretcl 2-1174] Renamed 15 cell refs.
-report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.014 . Memory (MB): peak = 647.078 ; gain = 0.000
-INFO: [Common 17-206] Exiting Vivado at Tue Jan 09 19:37:42 2018...
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 645.504 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Thu Jan 25 21:20:50 2018...

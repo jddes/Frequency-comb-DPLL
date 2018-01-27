@@ -101,12 +101,12 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.startTimers()
 
     def startTimers(self):
-        print("%s start timers" % self.strTitle)
+        # print("startTimers(): %s" % self.strTitle)
         self.timerID = self.startTimer(500)
 
     def killTimers(self):
         
-        print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
+        # print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
         
         #if self.timerID.isActive():
         self.killTimer(self.timerID)

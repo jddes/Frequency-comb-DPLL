@@ -727,14 +727,14 @@ red_pitaya_hk i_hk (
 // // end
 
 wire test_clock_out;
-wire ext_clk_in_DIO1P;
-assign exp_n_out = {6'b0, test_clock_out, 1'b0}; // we use exp_n_out[1] for clock output
+wire ext_clk_in;
+assign exp_n_out = {5'b0, test_clock_out, 2'b00}; // we use exp_n_out[2] for clock output
 assign exp_p_out = {8'b00000000}; 
 assign exp_n_dir = {8'b11111110}; // 1 means output, 0 means input
-assign exp_p_dir = {8'b11111101}; // 1 means output, 0 means input
+assign exp_p_dir = {8'b11111011}; // 1 means output, 0 means input
 
 
-assign ext_clk_in_DIO1P = exp_p_in[1]; // we use exp_p_in[1] for clock input
+assign ext_clk_in = exp_p_in[2]; // we use exp_p_in[2] (also called DIO2_P) for clock input
 
 // Use these two lines if using the "HouseKeeping" red pitaya module
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
@@ -1018,7 +1018,7 @@ wire test_clock_out_pll;
       // Feedback Clocks: 1-bit (each) output: Clock feedback ports
       .CLKFBOUT(pll_clk_feedback), // 1-bit output: Feedback clock
       .LOCKED(),     // 1-bit output: LOCK
-      .CLKIN1(ext_clk_in_DIO1P),     // 1-bit input: Input clock
+      .CLKIN1(ext_clk_in),     // 1-bit input: Input clock
       // Control Ports: 1-bit (each) input: PLL control ports
       .PWRDWN(1'b0),     // 1-bit input: Power-down
       .RST(1'b0),           // 1-bit input: Reset

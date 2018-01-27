@@ -23,16 +23,16 @@ class Loop_filters_module(object):
         self.N_DIVIDE_II = N_DIVIDE_II
         self.N_DIVIDE_D = N_DIVIDE_D
         self.N_DIVIDE_DF = N_DIVIDE_DF
-        self.gain_p = 0.
-        self.gain_i = 0.
+        self.gain_p  = 0.
+        self.gain_i  = 0.
         self.gain_ii = 0.
-        self.gain_d = 0.
-        self.coef_d = 0.
+        self.gain_d  = 0.
+        self.coef_d  = 0.
         
-        self.N_delay_p = 5 # TODO: put the correct values here
-        self.N_delay_i = 6 # TODO: put the correct values here
+        self.N_delay_p  = 5 # TODO: put the correct values here
+        self.N_delay_i  = 6 # TODO: put the correct values here
         self.N_delay_ii = 7 # TODO: put the correct values here
-        self.N_delay_d = 7 # TODO: put the correct values here
+        self.N_delay_d  = 7 # TODO: put the correct values here
         
     def get_p_limits(self):
         # These are the real, hardware limits for the multipler operands
@@ -135,42 +135,47 @@ class Loop_filters_module(object):
             print('DF_gain = %e, in integer: DF_gain = %d = 2^%.2f' % (self.coef_d, coef_d_int, np.log2(coef_d_int+0.1)))
         
         # Send P gain
-        int_bits15_to_0 = gain_p_int & 0xFFFF
-        int_bits31_to_16 = (gain_p_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_p, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_p_int & 0xFFFF
+        # int_bits31_to_16 = (gain_p_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_p, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_p, gain_p_int)
 #        print('int_bits15_to_0 = %d, int_bits31_to_16 = %d' % (int_bits15_to_0, int_bits31_to_16))
         
         # Send I gain
-        int_bits15_to_0 = gain_i_int & 0xFFFF
-        int_bits31_to_16 = (gain_i_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_i, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_i_int & 0xFFFF
+        # int_bits31_to_16 = (gain_i_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_i, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_i, gain_i_int)
         #print('address = %x' % (self.bus_base_address + self.BUS_OFFSET_gain_i))
         
         # Send II gain
-        int_bits15_to_0 = gain_ii_int & 0xFFFF
-        int_bits31_to_16 = (gain_ii_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_ii, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_ii_int & 0xFFFF
+        # int_bits31_to_16 = (gain_ii_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_ii, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_ii, gain_ii_int)
             
         # Send D gain
-        int_bits15_to_0 = gain_d_int & 0xFFFF
-        int_bits31_to_16 = (gain_d_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_d, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_d_int & 0xFFFF
+        # int_bits31_to_16 = (gain_d_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_d, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_d, gain_d_int)
             
         # Send DF gain
-        int_bits15_to_0 = coef_d_int & 0xFFFF
-        int_bits31_to_16 = (coef_d_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = coef_d_int & 0xFFFF
+        # int_bits31_to_16 = (coef_d_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, coef_d_int)
         
         # Send lock/unlock setting
         sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_settings, bLock, 0)
 
     def get_pll_settings(self, sl):
-        gain_p_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_p)
-        gain_i_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_i)
-        gain_ii_raw = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_ii)
-        gain_d_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_d)
-        coef_d_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_coef_d_filt)
-        bLock       = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_settings)
+        gain_p_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_p)
+        gain_i_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_i)
+        gain_ii_raw = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_ii)
+        gain_d_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_d)
+        coef_d_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_coef_d_filt)
+        bLock       = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_settings)
 
         self.gain_p  = gain_p_raw/2.**self.N_DIVIDE_P
         self.gain_i  = gain_i_raw/2.**self.N_DIVIDE_I

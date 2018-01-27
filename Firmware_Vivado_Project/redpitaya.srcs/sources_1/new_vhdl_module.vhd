@@ -5,13 +5,12 @@ use ieee.numeric_std.all;
 
 entity new_vhdl_module  is
 Generic (
-	GENERIC1			: integer := 3000;
+	GENERIC1		: integer := 3000;
 	GENERIC2 		: integer := 64;
 	GENERIC3 		: integer := 64
 );
 port (
-	rst 								: in  std_logic;
-	clk									: in  std_logic
+	clk	: in  std_logic
 
 
 
