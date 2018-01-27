@@ -762,7 +762,7 @@ wire signed [16-1:0] pll0_cascade_lock_point;
 wire signed [10-1:0] pll0_cascade_lock_error_signal;
 parallel_bus_register_32bits_or_less # (
     .REGISTER_SIZE(16),
-    .REGISTER_DEFAULT_VALUE(0),
+    .REGISTER_DEFAULT_VALUE(16'sd-4456),
     .ADDRESS(16'h9003)
 )
 parallel_bus_register_cascade_lockpoint  (
