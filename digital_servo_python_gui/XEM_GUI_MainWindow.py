@@ -277,7 +277,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #                print('DAC gain in V/Counts = %f' % self.sl.getDACGainInVoltsPerCounts(k))
 				# getFreqDiscriminatorGain is in DDC Counts/Hz
 				# getDACGainInVoltsPerCounts is in V/(DAC Counts)
-				VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts * self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k) #.sl.getFreqDiscriminatorGain() and self.sl.getDACGainInVoltsPerCounts(k) are constant (different for each k)
+
+				# Handle the special case of a cascade lock:
+				if k == 1 and self.sl.mux_pll2 == 2:
+					VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts
+					self.qlabel_vco_gain.setText('VCO Gain ratio (DAC1/DAC0) [V/V]:')
+				else:
+					# Normal case: DDC error goes to the loop filters
+					VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts * self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k) #.sl.getFreqDiscriminatorGain() and self.sl.getDACGainInVoltsPerCounts(k) are constant (different for each k)
+					self.qlabel_vco_gain.setText('VCO Gain (DAC0) [Hz/V]:')
 
 				#print('k %f' % self.sl.getDACGainInVoltsPerCounts(k))
 				# print('VCO_gain_in_counts_per_counts = %f' % VCO_gain_in_counts_per_counts)

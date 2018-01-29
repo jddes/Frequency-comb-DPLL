@@ -312,6 +312,7 @@ class SuperLaserLand_JD_RP:
 		self.bUseExternalLOforDDC0 = 0
 		self.IQ_monitor_gain = 127	# default value from dpll_wrapper.v
 		self.ddc1_k = 127	# default value from dpll_wrapper.v
+		self.mux_pll2 = 0	# default value from dpll_wrapper.v
 
 
 		self.controller = weakref.proxy(controller)
@@ -2531,6 +2532,7 @@ class SuperLaserLand_JD_RP:
 	def set_mux_pll2(self, register_value):
 		if self.bVerbose == True:
 			print('set_mux_pll2')
+		self.mux_pll2 = register_value
 		self.send_bus_cmd_16bits(self.BUS_ADDR_mux_pll2, register_value)
 		
 	
@@ -2626,6 +2628,7 @@ class SuperLaserLand_JD_RP:
 		if self.bVerbose == True:
 			print('read_pll2_mux')
 		mux_value = self.read_RAM_dpll_wrapper(self.BUS_ADDR_mux_pll2)
+		self.mux_pll2 = mux_value
 		return mux_value
 
 	def save_openLoop_gain(self, dac_number, value):

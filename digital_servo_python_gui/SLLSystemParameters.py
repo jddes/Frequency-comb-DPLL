@@ -61,15 +61,6 @@ class SLLSystemParameters():
     def loadFromFile(self, strFilename):
         self.tree = ET.parse(strFilename)
         self.root = self.tree.getroot()
-
-        # we used to do error checking at this level, but now it is implemented one layer higher in the hierarchy (currently in XEM_GUI3.py)
-        # try:
-            # self.tree = ET.parse(strFilename)
-            # self.root = self.tree.getroot()
-        # except IOError:
-        #     print("IOError when trying to parse configuration file %s. using default values" % (strFilename))
-        #     self.populateDefaults()
-        # return
     
     def saveToFile(self, strFilename):
         self.tree.write(strFilename)

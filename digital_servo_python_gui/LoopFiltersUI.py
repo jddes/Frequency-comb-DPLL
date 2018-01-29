@@ -33,20 +33,6 @@ class LoopFiltersUI(Qt.QWidget):
 		self.kc = 1
 		self.bDisplayLockChkBox = bDisplayLockChkBox
 
-		# # Was valid when we pass pll as a parameter (pll parameter was the same as self.pll)
-		# if type(pll) == type(0):
-		#     # For debugging only:
-		#     self.kp_min = 1e-6
-		#     self.kp_max = 1e6
-		#     self.ki_min = 1e-6
-		#     self.ki_max = 1e6
-		#     self.kii_min = 1e-6
-		#     self.kii_max = 1e6
-		# else:
-		#     # Keep a local reference to the related PLL object
-		#     self.pll = pll
-		#     self.getLimits()
-		
 
 		self.getLimits()
 		
