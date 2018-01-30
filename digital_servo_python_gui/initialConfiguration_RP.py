@@ -114,7 +114,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.qradio_usefromlist.setChecked(True)
 
 		self.qlabel_manual_entry = Qt.QLabel('Manual IP entry')
-		self.qedit_manual_entry = Qt.QLineEdit('')
+		self.qedit_manual_entry = Qt.QLineEdit('192.168.0.150')
 
 
 		gridIP.addWidget(self.qradio_usefromtextbox, 0, 0)
@@ -208,7 +208,11 @@ class initialConfiguration(QtGui.QDialog):
 		except AttributeError:
 			pass
 		# send a broadcast packet to start building the list:
-		self.udp_discovery.send_broadcast()
+		try:
+			self.udp_discovery.send_broadcast()
+		except Exception as e:
+			print('Exception when sending UDP broadcast packet')
+			print(e)
 		
 	def MAC_to_display_string(self, strMAC, strIP):
 		# build the string that we will display to the user in the combo box:
@@ -233,7 +237,15 @@ class initialConfiguration(QtGui.QDialog):
 		
 	def timerEvent(self, e):
 		# check if there are any answers to the broadcast packet
-		(strIP, strMAC) = self.udp_discovery.check_answers()
+		try:
+			(strIP, strMAC) = self.udp_discovery.check_answers()
+		except AttributeError:
+			return
+		except Exception as e:
+			print('Exception when checking answers to broadcast packet')
+			print(e)
+			return
+
 
 		# iterate over answers
 		while (strIP is not None):
@@ -382,8 +394,11 @@ class initialConfiguration(QtGui.QDialog):
 		self.close()
 		
 	def closeEvent(self, e):
-		print('close')
-		del self.udp_discovery
+		try:
+			del self.udp_discovery
+		except AttributeError:
+			# Means that we deleted the object already
+			pass
 		return
 
 def main():

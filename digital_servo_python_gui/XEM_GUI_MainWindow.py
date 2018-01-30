@@ -245,16 +245,50 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.q_dac_offset[k].setValue(q_dac_offset)
 				self.q_dac_offset[k].blockSignals(False)
 
-				try:
-					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
-				except:
-					VCO_gain_in_Hz_per_Volts = 1e9
+				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
+				# try:
+				# 	VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
+				# except:
+				# 	VCO_gain_in_Hz_per_Volts = 1e9
 
 				# Update the display:                
 				current_output_in_volts = self.sl.convertDACCountsToVolts(k, counts_offset)
 				current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
 				self.qlabel_dac_offset_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 
+	def getVCOGainFromUI(self, output_number):
+
+		try:
+			VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[output_number].text())
+		except:
+			VCO_gain_in_Hz_per_Volts = 1e9
+
+		return VCO_gain_in_Hz_per_Volts
+
+	def setSliderStepSize(self, output_number, VCO_gain_in_Hz_per_Volts):
+		# Units for the slider are millionth of fullscale (goes from 0 to 1e6), which maps to [DAC_limit_low, DAC_limit_high]
+		# The times three is because the scroll wheel actually does 3 small_steps (this is settings in Windows and can change from one computer to the next..)
+		if output_number == 1 and self.sl.read_pll2_mux() == 2:
+			print('Cascade lock operation: slider step size is hardcoded here!')
+			VCO_gain_in_Hz_per_Volts = 62e6	# use hard-coded value because the textbox is used for a different setting (gain ratio instead of VCO gain)
+			small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+			large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+		else:
+			# Normal operation
+			small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+			large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+
+		if small_step < 1:
+			small_step = 1
+		if small_step > 1e6:
+			small_step = 1e6
+		if large_step < 1:
+			large_step = 1
+		if large_step > 1e6:
+			large_step = 1e6
+			
+		self.q_dac_offset[output_number].setSingleStep(small_step)
+		self.q_dac_offset[output_number].setPageStep(large_step)
 
 	def setVCOGain_event(self):
 #        print('setVCOGain_event(): Entering')
@@ -269,26 +303,33 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# large steps (clicking in the open area of the scrollbar) to be about 5 MHz
 		for k in range(3):
 			if self.output_controls[k]:
-				try:
-					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
-				except:
-					VCO_gain_in_Hz_per_Volts = 1e9
+				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
+				# try:
+				# 	VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
+				# except:
+				# 	VCO_gain_in_Hz_per_Volts = 1e9
 					
 #                print('DAC gain in V/Counts = %f' % self.sl.getDACGainInVoltsPerCounts(k))
 				# getFreqDiscriminatorGain is in DDC Counts/Hz
 				# getDACGainInVoltsPerCounts is in V/(DAC Counts)
 
 				# Handle the special case of a cascade lock:
-				if k == 1 and self.sl.mux_pll2 == 2:
-					VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts
+				if k == 1 and self.sl.read_pll2_mux() == 2:
 					self.qlabel_vco_gain.setText('VCO Gain ratio (DAC1/DAC0) [V/V]:')
+					try:
+						VCO_gain_ratio_in_Volts_per_Volts = float(self.qedit_vco_gain[k].text())
+					except:
+						VCO_gain_ratio_in_Volts_per_Volts = 1e9
+					# print('VCO scaling for cascade lock operation: slider step size is hardcoded here!')
+					VCO_gain_in_counts_per_counts = VCO_gain_ratio_in_Volts_per_Volts/2**6	# the division by 2**6 is due to the division in firmware in cascade_lock_error_formatter.vhd (BITS_SHIFT = 16 bits - 10 bits = 6 bits)
+					
+					
 				else:
 					# Normal case: DDC error goes to the loop filters
+					# print('VCO scaling for normal PLL operation')
 					VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts * self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k) #.sl.getFreqDiscriminatorGain() and self.sl.getDACGainInVoltsPerCounts(k) are constant (different for each k)
 					self.qlabel_vco_gain.setText('VCO Gain (DAC0) [Hz/V]:')
 
-				#print('k %f' % self.sl.getDACGainInVoltsPerCounts(k))
-				# print('VCO_gain_in_counts_per_counts = %f' % VCO_gain_in_counts_per_counts)
 				if k == 0 or k == 1:
 					self.qloop_filters[k].kc = VCO_gain_in_counts_per_counts
 					self.qloop_filters[k].checkFirmwareLimits()
@@ -303,24 +344,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 				self.sl.save_openLoop_gain(k, VCO_gain_in_counts_per_counts) #Save the value of the open-loop gain in the FPGA to allow reconnection (usefull to read Loop-Filter gain value)
 				
-				# Units for the slider are millionth of fullscale (goes from 0 to 1e6), which maps to [DAC_limit_low, DAC_limit_high]
-				# The times three is because the scroll wheel actually does 3 small_steps (this is settings in Windows and can change from one computer to the next..)
-				small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-				large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-	
-				if small_step < 1:
-					small_step = 1
-				if small_step > 1e6:
-					small_step = 1e6
-				if large_step < 1:
-					large_step = 1
-				if large_step > 1e6:
-					large_step = 1e6
-					
-	#                print('small_step = %f' % small_step)
-	#                print('large_step = %f' % large_step)
-				self.q_dac_offset[k].setSingleStep(small_step)
-				self.q_dac_offset[k].setPageStep(large_step)
+				self.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
 
 		# This function needs the VCO gain to compute the control effort so we have to update it if we have changed.
 		self.setDACOffset_event()
@@ -330,6 +354,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if self.output_controls[k]:
 				VCO_gain_in_counts_per_counts = self.sl.get_openLoop_gain(k)
 				VCO_gain_in_Hz_per_Volts = VCO_gain_in_counts_per_counts / (self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k))
+				# prevent divide-by-0 bug:
+				if VCO_gain_in_Hz_per_Volts == 0:
+					VCO_gain_in_Hz_per_Volts = 1.
 
 				self.qedit_vco_gain[k].blockSignals(True)
 				self.qedit_vco_gain[k].setText('{:.1e}'.format(VCO_gain_in_Hz_per_Volts))
@@ -345,20 +372,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					self.qloop_filters[1].checkFirmwareLimits()
 					self.qloop_filters[1].updateGraph()
 
-				small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-				large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-	
-				if small_step < 1:
-					small_step = 1
-				if small_step > 1e6:
-					small_step = 1e6
-				if large_step < 1:
-					large_step = 1
-				if large_step > 1e6:
-					large_step = 1e6
 
-				self.q_dac_offset[k].setSingleStep(small_step)
-				self.q_dac_offset[k].setPageStep(large_step)
+				self.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
 	##
 	## HB, 4/27/2015, Added PWM support on DOUT0
 	##
@@ -699,7 +714,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# we are doing an unlocked->locked transition.
 		
 			# We first check if the detected VCO gain seems right:
-			if self.sl.dither_enable[self.selected_ADC]:
+			mux_pll2 = self.sl.read_pll2_mux()
+			if self.sl.dither_enable[self.selected_ADC] and not (mux_pll2 == 0 or mux_pll2 == 2):
 				# check if gain is OK
 				try:
 					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[self.selected_ADC].text())
@@ -1776,29 +1792,31 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					# np.mean() returns a numpy.float, but the conversions functions expect an ndarray
 	#                print(type(samples))
 					samples = np.ndarray((1,), dtype=np.float, buffer=samples)
-	#                print(type(samples))
-					
-	#                rep1 = self.sl.scaleDitherResultsToHz(np.real(samples), k)
-	#                rep2 = self.sl.scaleDitherResultsToHzPerVolts(np.imag(samples), k)
-	#                print('Real part = %f Hz' % self.sl.scaleDitherResultsToHz(np.real(samples[0]), k))
-	#                print('Real part = %f Hz/V' % self.sl.scaleDitherResultsToHzPerVolts(np.real(samples[0]), k))
-					
-					# TODO: fancier things with the real and imaginary part, to try to detect invalid readings?  Is this necessary?
-					# TODO: Compare many different readings to try to sort out any incorrect ones?
-					VCO_detected_gain_in_Hz_per_Volts = self.sl.scaleDitherResultsToHzPerVolts(samples, k)
-					self.VCO_detected_gain_in_Hz_per_Volts[k] = VCO_detected_gain_in_Hz_per_Volts
-					self.qlabel_detected_vco_gain[k].setText('%.1e' % VCO_detected_gain_in_Hz_per_Volts)
-					elapsed_time = time.clock() - start_time
-	#                print('Elapsed time (timerDitherEvent) = %f ms' % (1000*elapsed_time))
-					
-					# If the detected gain is negative, the loop will be unstable when closed, so we switch to a red background so that the user can flip the sign
-					if VCO_detected_gain_in_Hz_per_Volts > 0:
-#                        self.qedit_fi.setStyleSheet("background-color: %s" % Qt.QColor(Qt.Qt.white).name())
-						self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: green")
+
+					# print('timerDitherEvent(): k = %d, self.sl.mux_pll2 = %d' % (k, self.sl.mux_pll2))
+					mux_pll2 = self.sl.read_pll2_mux()
+					if k == 1 and (mux_pll2 == 0 or mux_pll2 == 2):
+						# another special case: the firmware that has external reference input capability doesn't demodulate the frequency (the usual DDC1 module has simply been removed)
+						self.qlabel_detected_vco_gain[k].setText('N/A')
 					else:
-						# red background
-#                        self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: %s" % Qt.QColor(Qt.Qt.red).name())
-						self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: red")
+						# Normal case
+
+						# TODO: fancier things with the real and imaginary part, to try to detect invalid readings?  Is this necessary?
+						# TODO: Compare many different readings to try to sort out any incorrect ones?
+						VCO_detected_gain_in_Hz_per_Volts = self.sl.scaleDitherResultsToHzPerVolts(samples, k)
+						self.VCO_detected_gain_in_Hz_per_Volts[k] = VCO_detected_gain_in_Hz_per_Volts
+						self.qlabel_detected_vco_gain[k].setText('%.1e' % VCO_detected_gain_in_Hz_per_Volts)
+						elapsed_time = time.clock() - start_time
+		#                print('Elapsed time (timerDitherEvent) = %f ms' % (1000*elapsed_time))
+						
+						# If the detected gain is negative, the loop will be unstable when closed, so we switch to a red background so that the user can flip the sign
+						if VCO_detected_gain_in_Hz_per_Volts > 0:
+	#                        self.qedit_fi.setStyleSheet("background-color: %s" % Qt.QColor(Qt.Qt.white).name())
+							self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: green")
+						else:
+							# red background
+	#                        self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: %s" % Qt.QColor(Qt.Qt.red).name())
+							self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: red")
 		
 		return
 		
@@ -2003,7 +2021,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if self.selected_ADC == 0:
 				self.sl.setup_DDC0_write(N_points)
 			elif self.selected_ADC == 1:
+				
+				# This version of the firmware does not have the correct DDC for plotting phase noise of ADC 1:
+				# we simply disable this plot
+				self.qplt_DDC0_spc.setVisible(False)
+				self.sl.bDDR2InUse = False
+				return
+
+
 				self.sl.setup_DDC1_write(N_points)
+
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			if self.bDisplayTiming == True:
