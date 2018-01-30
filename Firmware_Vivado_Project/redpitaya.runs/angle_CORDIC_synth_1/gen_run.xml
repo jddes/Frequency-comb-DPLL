@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="angle_CORDIC_synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1517282561">
+<GenRun Id="angle_CORDIC_synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1517303596">
   <File Type="RDS-DCP" Name="angle_CORDIC.dcp"/>
   <File Type="RUN-CONSTRS" Name="$PDATADIR/runs/angle_CORDIC_synth_1/constrs_in.xml"/>
   <File Type="RDS-UTIL-PB" Name="angle_CORDIC_utilization_synth.pb"/>

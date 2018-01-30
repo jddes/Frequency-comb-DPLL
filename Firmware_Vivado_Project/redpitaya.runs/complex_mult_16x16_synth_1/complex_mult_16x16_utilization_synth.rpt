@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Mon Jan 29 22:25:20 2018
+| Date         : Tue Jan 30 04:15:54 2018
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_utilization -file complex_mult_16x16_utilization_synth.rpt -pb complex_mult_16x16_utilization_synth.pb
 | Design       : complex_mult_16x16

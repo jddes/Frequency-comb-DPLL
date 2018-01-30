@@ -726,15 +726,40 @@ red_pitaya_hk i_hk (
 // //   end
 // // end
 
+// Custom IO connections on the digital expansion connector (E1)
 wire test_clock_out;
 wire ext_clk_in;
-assign exp_n_out = {5'b0, test_clock_out, 2'b00}; // we use exp_n_out[2] for clock output
-assign exp_p_out = {8'b00000000}; 
-assign exp_n_dir = {8'b11111110}; // 1 means output, 0 means input
-assign exp_p_dir = {8'b11111011}; // 1 means output, 0 means input
+wire max5541_scl;
+wire max5541_sda;
+wire max5541_csb;
+wire opamp_30V_enable = 1'b1;
+
+  // For the 'exp_p_dir' and 'exp_n_dir' signals, 1 means output, 0 means input:
+  localparam DIRECTION_OUT = 1'b1;
+  localparam DIRECTION_IN  = 1'b0;
+
+  // Set contents of output pins and the direction
+  assign exp_p_out[0] = max5541_csb;      assign exp_p_dir[0] = DIRECTION_OUT; 
+  assign exp_p_out[1] = 1'b0;             assign exp_p_dir[1] = DIRECTION_IN; 
+  assign exp_p_out[2] = 1'b0;             assign exp_p_dir[2] = DIRECTION_IN; 
+  assign exp_p_out[3] = test_clock_out;   assign exp_p_dir[3] = DIRECTION_OUT; 
+  assign exp_p_out[4] = 1'b0;             assign exp_p_dir[4] = DIRECTION_IN; 
+  assign exp_p_out[5] = 1'b0;             assign exp_p_dir[5] = DIRECTION_IN; 
+  assign exp_p_out[6] = 1'b0;             assign exp_p_dir[6] = DIRECTION_IN; 
+  assign exp_p_out[7] = 1'b0;             assign exp_p_dir[7] = DIRECTION_IN; 
+
+  assign exp_n_out[0] = max5541_scl;      assign exp_n_dir[0] = DIRECTION_OUT; 
+  assign exp_n_out[1] = max5541_sda;      assign exp_n_dir[1] = DIRECTION_OUT; 
+  assign exp_n_out[2] = 1'b0;             assign exp_n_dir[2] = DIRECTION_IN; 
+  assign exp_n_out[3] = opamp_30V_enable; assign exp_n_dir[3] = DIRECTION_OUT; 
+  assign exp_n_out[4] = 1'b0;             assign exp_n_dir[4] = DIRECTION_IN; 
+  assign exp_n_out[5] = 1'b0;             assign exp_n_dir[5] = DIRECTION_IN; 
+  assign exp_n_out[6] = 1'b0;             assign exp_n_dir[6] = DIRECTION_IN; 
+  assign exp_n_out[7] = 1'b0;             assign exp_n_dir[7] = DIRECTION_IN; 
 
 
-assign ext_clk_in = exp_p_in[2]; // we use exp_p_in[2] (also called DIO2_P) for clock input
+  // Set connection of input pins
+  assign ext_clk_in = exp_p_in[2]; // we use exp_p_in[2] (also called DIO2_P) for clock input
 
 // Use these two lines if using the "HouseKeeping" red pitaya module
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
@@ -1041,6 +1066,31 @@ wire test_clock_out_pll;
       .R(1'b0),   // 1-bit reset
       .S(1'b0)    // 1-bit set
    );
+
+
+//---------------------------------------------------------------------------------
+//  SPI communication with a MAX5541 16-bits, SPI DAC.
+  reg [16-1:0] dac_ramp_test;
+  wire data_loaded_clk_enable;
+
+
+  // we simply play a ramp in a loop for now:
+  always @(posedge adc_clk) begin
+    if (data_loaded_clk_enable == 1'b1) begin
+      dac_ramp_test <= dac_ramp_test + 16'd1;
+    end
+  end
+
+  max5541_spi_dac_interface max5541_spi_dac_interface_inst
+  (
+    .clk(adc_clk),
+    .data_in(dac_ramp_test),
+    .data_loaded_clk_enable(data_loaded_clk_enable),
+    .scl(max5541_scl),
+    .sda(max5541_sda),
+    .csb(max5541_csb)
+  );
+
 
 
 endmodule

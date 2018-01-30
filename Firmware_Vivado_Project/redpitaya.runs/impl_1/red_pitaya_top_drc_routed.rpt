@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Mon Jan 29 22:31:05 2018
+| Date         : Tue Jan 30 04:23:13 2018
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_drc
 ------------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ Related violations: <none>
 
 REQP-1577#1 Warning
 Clock output buffering  
-MMCME2_ADV connectivity violation. The signal nolabel_line959/inst/clkfbout_clk_10MHz_sync on the nolabel_line959/inst/mmcm_adv_inst/CLKFBOUT pin of nolabel_line959/inst/mmcm_adv_inst does not drive the same kind of BUFFER load as the other CLKOUT pins. Routing from the different buffer types will not be phase aligned.
+MMCME2_ADV connectivity violation. The signal nolabel_line984/inst/clkfbout_clk_10MHz_sync on the nolabel_line984/inst/mmcm_adv_inst/CLKFBOUT pin of nolabel_line984/inst/mmcm_adv_inst does not drive the same kind of BUFFER load as the other CLKOUT pins. Routing from the different buffer types will not be phase aligned.
 Related violations: <none>
 
 RTSTAT-10#1 Warning
