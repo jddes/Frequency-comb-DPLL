@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Thu Jan 25 21:20:10 2018
+| Date         : Mon Jan 29 22:24:36 2018
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_utilization -file fir_compiler_minimumphase_N_times_clk_utilization_synth.rpt -pb fir_compiler_minimumphase_N_times_clk_utilization_synth.pb
 | Design       : fir_compiler_minimumphase_N_times_clk

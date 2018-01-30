@@ -188,7 +188,7 @@ class Loop_filters_module(object):
 
 class PLL0_module(Loop_filters_module):
     
-    # Values that are fixed in the firmware (VHDL/Verilog code)
+    # Values that are fixed in the firmware (VHDL/Verilog code, file dpll_wrapper.v)
     bus_base_address = 0x7000
     N_DIVIDE_P = 24-11 # changed 2017-05-02 by JDD from 24 to 24-11 to recenter gain for RedPitaya connected to a laser with 8e8 Hz/V of VCO gain and 20 kHz of 1st order cutoff
     N_DIVIDE_I = 24
@@ -201,15 +201,14 @@ class PLL0_module(Loop_filters_module):
         
 class PLL1_module(Loop_filters_module):
     
-    # Values that are fixed in the firmware (VHDL/Verilog code)
+    # Values that are fixed in the firmware (VHDL/Verilog code, file dpll_wrapper.v)
     bus_base_address = 0x7010
     N_DIVIDE_P = 11
-    N_DIVIDE_I = 19
-    N_DIVIDE_II = 28
+    N_DIVIDE_I = 18+(16-9)      # changed by JDD 2018-01-29 to give better range on a cascade lock.
+    N_DIVIDE_II = 29+(16-0)     # changed by JDD 2018-01-29 to give better range on a cascade lock.
     N_DIVIDE_D = 0
     N_DIVIDE_DF = 18
 
-    
     def __init__(self, sl):
         super(PLL1_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF)
         

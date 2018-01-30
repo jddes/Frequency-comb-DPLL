@@ -380,7 +380,7 @@ multiplexer_NbitsxMsignals_to_Nbits
     .in5({1'b1, debugging_counter[15:0]}),  // counter, simply for debugging the DDR2 Logger/USB link
     .in6({1'b1, DACout0[SIGNAL_SIZE-1:SIGNAL_SIZE-16]}), 
     .in7({1'b1, DACout1[SIGNAL_SIZE-1:SIGNAL_SIZE-16]}), 
-    .in8({1'b1, {monitor_I, monitor_Q}}),
+    .in8({1'b1, {monitor_Q, monitor_I}}),
     //.in9({crash_monitor_output_to_logger_clk_enable, crash_monitor_output_to_logger}),
     .in9({0'b0, 8'b0}),
     .selector(selector[4:0]), 
@@ -762,7 +762,7 @@ wire signed [16-1:0] pll0_cascade_lock_point;
 wire signed [10-1:0] pll0_cascade_lock_error_signal;
 parallel_bus_register_32bits_or_less # (
     .REGISTER_SIZE(16),
-    .REGISTER_DEFAULT_VALUE(16'sd-4456),
+    .REGISTER_DEFAULT_VALUE(-16'sd4456),
     .ADDRESS(16'h9003)
 )
 parallel_bus_register_cascade_lockpoint  (
@@ -1059,8 +1059,8 @@ assign pll1_gain_changed = pll1_gain_changedp | pll1_gain_changedi | pll1_gain_c
 // Finally the PLL itself:
 PLL_loop_filters_with_saturation # (
     .N_DIVIDE_P(11),
-    .N_DIVIDE_I(18),
-    .N_DIVIDE_II(29),
+    .N_DIVIDE_I(18+(16-9)),     // changed by JDD 2018-01-29 to give better range on a cascade lock.
+    .N_DIVIDE_II(29+(16-0)),    // changed by JDD 2018-01-29 to give better range on a cascade lock.
     .N_DIVIDE_D(0),
     .N_OUTPUT(16)
 )
@@ -1281,7 +1281,7 @@ dither_lockin_wrapper #
     .CMD_BUS_BITS(16),
     .N_BITS_INPUT(10),
     .N_BITS_OUTPUT(16),
-    .COUNTER_BITS(27),              // 27 bits gives ~ 134 Millions clock cycles, or 1.34 seconds at 100 MHz clock rate
+    .COUNTER_BITS(32),              // 32 bits gives ~ 4e9 clock cycles, or 34 seconds at 125 MHz clock rate
     .SYNC_DELAY(60),                    // should be approximately equal to the known system delay, from output to input, so that most of the signal shows up in the real part
     .INTEGRATORS_BITS(16*3) // should be set to a high enough value to hold the result without wrapping (total size required is log2((N_periods_integration_minus_one+1) * 4*(modulation_period_divided_by_4_minus_one+1)) + N_BITS_INPUT)
             // but should also be a multiple of 16 bits, since this is the size of the Opal Kelly wires which will be used to read out the result.
@@ -1308,7 +1308,7 @@ dither_lockin_wrapper #
     .CMD_BUS_BITS(16),
     .N_BITS_INPUT(10),
     .N_BITS_OUTPUT(16),
-    .COUNTER_BITS(27),              // 27 bits gives ~ 134 Millions clock cycles, or 1.34 seconds at 100 MHz clock rate
+    .COUNTER_BITS(32),              // 32 bits gives ~ 4e9 clock cycles, or 34 seconds at 125 MHz clock rate
     .SYNC_DELAY(60),                    // should be approximately equal to the known system delay, from output to input, so that most of the signal shows up in the real part
     .INTEGRATORS_BITS(16*3) // should be set to a high enough value to hold the result without wrapping (total size required is log2((N_periods_integration_minus_one+1) * 4*(modulation_period_divided_by_4_minus_one+1)) + N_BITS_INPUT)
             // but should also be a multiple of 16 bits, since this is the size of the Opal Kelly wires which will be used to read out the result.
