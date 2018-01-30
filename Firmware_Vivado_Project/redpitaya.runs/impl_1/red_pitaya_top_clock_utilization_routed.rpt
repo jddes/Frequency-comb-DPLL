@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date              : Tue Jan 30 04:23:21 2018
+| Date              : Tue Jan 30 05:30:26 2018
 | Host              : jdbureau running 64-bit major release  (build 9200)
 | Command           : report_clock_utilization -file red_pitaya_top_clock_utilization_routed.rpt
 | Design            : red_pitaya_top
@@ -52,8 +52,8 @@ Table of Contents
 +-------+----------------------------------------------------------------------------------+----------------------------------------------------------+-------+-------+-------+
 |     1 | bufg_dac_clk_2p                                                                  | dac_clk_2p                                               |     1 |     1 |    no |
 |     2 | bufg_dac_clk_2x                                                                  | dac_clk_2x                                               |     1 |     1 |    no |
-|     3 | nolabel_line984/inst/clkout1_buf                                                 | nolabel_line984/inst/clk_out1                            |     1 |     1 |    no |
-|     4 | nolabel_line984/inst/clkf_buf                                                    | nolabel_line984/inst/clkfbout_buf_clk_10MHz_sync         |     1 |     1 |    no |
+|     3 | nolabel_line988/inst/clkout1_buf                                                 | nolabel_line988/inst/clk_out1                            |     1 |     1 |    no |
+|     4 | nolabel_line988/inst/clkf_buf                                                    | nolabel_line988/inst/clkfbout_buf_clk_10MHz_sync         |     1 |     1 |    no |
 |     5 | test_clock_out_pll_BUFG_inst                                                     | test_clock_out_pll_BUFG                                  |     1 |     1 |    no |
 |     6 | bufg_dac_clk_1x                                                                  | dac_clk_1x                                               |    45 |    27 |    no |
 |     7 | bufg_ser_clk                                                                     | pwm_clk                                                  |   707 |   211 |    no |
@@ -67,7 +67,7 @@ Table of Contents
 +-------+------------------------------------+------------+-------------+----------------------------------------------+------+-------+-------+
 | Index | Src of Rt-thru BUFHCE              | Clk-Region | Site        | Net Name                                     | BELs | Sites | Fixed |
 +-------+------------------------------------+------------+-------------+----------------------------------------------+------+-------+-------+
-|     1 | nolabel_line984/inst/mmcm_adv_inst | X1Y0       | BUFHCE_X1Y3 | nolabel_line984/inst/clk_out1_clk_10MHz_sync |    2 |     2 |    no |
+|     1 | nolabel_line988/inst/mmcm_adv_inst | X1Y0       | BUFHCE_X1Y3 | nolabel_line988/inst/clk_out1_clk_10MHz_sync |    2 |     2 |    no |
 +-------+------------------------------------+------------+-------------+----------------------------------------------+------+-------+-------+
 
 
@@ -76,8 +76,8 @@ Table of Contents
 +-------+------------------------------------+----------------------------------------------+------+-------+-------+
 | Index | MMCM Cell                          | Net Name                                     | BELs | Sites | Fixed |
 +-------+------------------------------------+----------------------------------------------+------+-------+-------+
-|     1 | nolabel_line984/inst/mmcm_adv_inst | nolabel_line984/inst/clkfbout_clk_10MHz_sync |    1 |     1 |    no |
-|     2 | nolabel_line984/inst/mmcm_adv_inst | nolabel_line984/inst/clk_out1_clk_10MHz_sync |    2 |     2 |    no |
+|     1 | nolabel_line988/inst/mmcm_adv_inst | nolabel_line988/inst/clkfbout_clk_10MHz_sync |    1 |     1 |    no |
+|     2 | nolabel_line988/inst/mmcm_adv_inst | nolabel_line988/inst/clk_out1_clk_10MHz_sync |    2 |     2 |    no |
 +-------+------------------------------------+----------------------------------------------+------+-------+-------+
 
 
@@ -154,7 +154,7 @@ Table of Contents
 +-------------+--------------+-------+-----------+----------+---------+-----------+---------+---------+------+-------+----------+--------------------------------------------------+
 | Source Type | BUFHCE Site  | Fixed | MMCM Pins | PLL Pins | GT Pins | BRAM Pins | ILOGICs | OLOGICs |  FFs | LUTMs | DSP48E1s |                  Clock Net Name                  |
 +-------------+--------------+-------+-----------+----------+---------+-----------+---------+---------+------+-------+----------+--------------------------------------------------+
-| BUFG        | BUFHCE_X1Y0  |   no  |         1 |        0 |       0 |         0 |       0 |       0 |    0 |     0 |        0 | nolabel_line984/inst/clkfbout_buf_clk_10MHz_sync |
+| BUFG        | BUFHCE_X1Y0  |   no  |         1 |        0 |       0 |         0 |       0 |       0 |    0 |     0 |        0 | nolabel_line988/inst/clkfbout_buf_clk_10MHz_sync |
 | BUFG        | BUFHCE_X1Y11 |   no  |         0 |        0 |       0 |         0 |       0 |       4 |  349 |    16 |        8 | pwm_clk                                          |
 | BUFG        | BUFHCE_X1Y2  |   no  |         1 |        0 |       0 |        40 |      28 |       0 | 2769 |    45 |       11 | adc_clk                                          |
 +-------------+--------------+-------+-----------+----------+---------+-----------+---------+---------+------+-------+----------+--------------------------------------------------+
@@ -194,15 +194,15 @@ set_property LOC BUFGCTRL_X0Y3 [get_cells bufg_dac_clk_1x]
 set_property LOC BUFGCTRL_X0Y4 [get_cells bufg_dac_clk_2p]
 set_property LOC BUFGCTRL_X0Y5 [get_cells bufg_dac_clk_2x]
 set_property LOC BUFGCTRL_X0Y1 [get_cells i_ps/system_i/system_i/processing_system7/inst/buffer_fclk_clk_3.FCLK_CLK_3_BUFG]
-set_property LOC BUFGCTRL_X0Y6 [get_cells nolabel_line984/inst/clkout1_buf]
-set_property LOC BUFGCTRL_X0Y7 [get_cells nolabel_line984/inst/clkf_buf]
+set_property LOC BUFGCTRL_X0Y6 [get_cells nolabel_line988/inst/clkout1_buf]
+set_property LOC BUFGCTRL_X0Y7 [get_cells nolabel_line988/inst/clkf_buf]
 set_property LOC BUFGCTRL_X0Y2 [get_cells bufg_ser_clk]
 set_property LOC BUFGCTRL_X0Y16 [get_cells test_clock_out_pll_BUFG_inst]
 
 # Location of IO Clock Primitives
 
 # Location of MMCM Clock Primitives
-set_property LOC MMCME2_ADV_X0Y0 [get_cells nolabel_line984/inst/mmcm_adv_inst]
+set_property LOC MMCME2_ADV_X0Y0 [get_cells nolabel_line988/inst/mmcm_adv_inst]
 
 # Location of BUFH Clock Primitives
 
@@ -224,7 +224,7 @@ set_property LOC IOB_X0Y26 [get_ports adc_clk_p_i]
 # Clock net "adc_clk" driven by instance "bufg_adc_clk" located at site "BUFGCTRL_X0Y0"
 #startgroup
 create_pblock {CLKAG_adc_clk}
-add_cells_to_pblock [get_pblocks  {CLKAG_adc_clk}] [get_cells -filter { PRIMITIVE_GROUP != I/O && IS_PRIMITIVE==1 && PRIMITIVE_LEVEL !=INTERNAL && NAME!=nolabel_line984/inst/mmcm_adv_inst} -of_object [get_pins -filter {DIRECTION==IN} -of_objects [get_nets -hierarchical -filter {PARENT=="adc_clk"}]]]
+add_cells_to_pblock [get_pblocks  {CLKAG_adc_clk}] [get_cells -filter { PRIMITIVE_GROUP != I/O && IS_PRIMITIVE==1 && PRIMITIVE_LEVEL !=INTERNAL && NAME!=nolabel_line988/inst/mmcm_adv_inst} -of_object [get_pins -filter {DIRECTION==IN} -of_objects [get_nets -hierarchical -filter {PARENT=="adc_clk"}]]]
 resize_pblock [get_pblocks {CLKAG_adc_clk}] -add {CLOCKREGION_X0Y0:CLOCKREGION_X0Y0 CLOCKREGION_X0Y1:CLOCKREGION_X0Y1 CLOCKREGION_X1Y0:CLOCKREGION_X1Y0 CLOCKREGION_X1Y1:CLOCKREGION_X1Y1}
 #endgroup
 
@@ -263,18 +263,18 @@ add_cells_to_pblock [get_pblocks  {CLKAG_i_ps/system_i/system_i/processing_syste
 resize_pblock [get_pblocks {CLKAG_i_ps/system_i/system_i/processing_system7/inst/FCLK_CLK3}] -add {CLOCKREGION_X0Y0:CLOCKREGION_X0Y0 CLOCKREGION_X0Y1:CLOCKREGION_X0Y1}
 #endgroup
 
-# Clock net "nolabel_line984/inst/clk_out1_clk_10MHz_sync" driven by instance "nolabel_line984/inst/mmcm_adv_inst" located at site "MMCME2_ADV_X0Y0"
+# Clock net "nolabel_line988/inst/clk_out1_clk_10MHz_sync" driven by instance "nolabel_line988/inst/mmcm_adv_inst" located at site "MMCME2_ADV_X0Y0"
 #startgroup
-create_pblock {CLKAG_nolabel_line984/inst/clk_out1_clk_10MHz_sync}
-add_cells_to_pblock [get_pblocks  {CLKAG_nolabel_line984/inst/clk_out1_clk_10MHz_sync}] [get_cells -filter { PRIMITIVE_GROUP != I/O && IS_PRIMITIVE==1 && PRIMITIVE_LEVEL !=INTERNAL && NAME!=nolabel_line984/inst/clkout1_buf} -of_object [get_pins -filter {DIRECTION==IN} -of_objects [get_nets -hierarchical -filter {PARENT=="nolabel_line984/inst/clk_out1_clk_10MHz_sync"}]]]
-resize_pblock [get_pblocks {CLKAG_nolabel_line984/inst/clk_out1_clk_10MHz_sync}] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
+create_pblock {CLKAG_nolabel_line988/inst/clk_out1_clk_10MHz_sync}
+add_cells_to_pblock [get_pblocks  {CLKAG_nolabel_line988/inst/clk_out1_clk_10MHz_sync}] [get_cells -filter { PRIMITIVE_GROUP != I/O && IS_PRIMITIVE==1 && PRIMITIVE_LEVEL !=INTERNAL && NAME!=nolabel_line988/inst/clkout1_buf} -of_object [get_pins -filter {DIRECTION==IN} -of_objects [get_nets -hierarchical -filter {PARENT=="nolabel_line988/inst/clk_out1_clk_10MHz_sync"}]]]
+resize_pblock [get_pblocks {CLKAG_nolabel_line988/inst/clk_out1_clk_10MHz_sync}] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
 #endgroup
 
-# Clock net "nolabel_line984/inst/clk_out1_clk_10MHz_sync" driven by instance "nolabel_line984/inst/mmcm_adv_inst" located at site "MMCME2_ADV_X0Y0"
+# Clock net "nolabel_line988/inst/clk_out1_clk_10MHz_sync" driven by instance "nolabel_line988/inst/mmcm_adv_inst" located at site "MMCME2_ADV_X0Y0"
 #startgroup
-create_pblock {CLKAG_nolabel_line984/inst/clk_out1_clk_10MHz_sync}
-add_cells_to_pblock [get_pblocks  {CLKAG_nolabel_line984/inst/clk_out1_clk_10MHz_sync}] [get_cells -filter { PRIMITIVE_GROUP != I/O && IS_PRIMITIVE==1 && PRIMITIVE_LEVEL !=INTERNAL && NAME!=nolabel_line984/inst/clkout1_buf} -of_object [get_pins -filter {DIRECTION==IN} -of_objects [get_nets -hierarchical -filter {PARENT=="nolabel_line984/inst/clk_out1_clk_10MHz_sync"}]]]
-resize_pblock [get_pblocks {CLKAG_nolabel_line984/inst/clk_out1_clk_10MHz_sync}] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
+create_pblock {CLKAG_nolabel_line988/inst/clk_out1_clk_10MHz_sync}
+add_cells_to_pblock [get_pblocks  {CLKAG_nolabel_line988/inst/clk_out1_clk_10MHz_sync}] [get_cells -filter { PRIMITIVE_GROUP != I/O && IS_PRIMITIVE==1 && PRIMITIVE_LEVEL !=INTERNAL && NAME!=nolabel_line988/inst/clkout1_buf} -of_object [get_pins -filter {DIRECTION==IN} -of_objects [get_nets -hierarchical -filter {PARENT=="nolabel_line988/inst/clk_out1_clk_10MHz_sync"}]]]
+resize_pblock [get_pblocks {CLKAG_nolabel_line988/inst/clk_out1_clk_10MHz_sync}] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
 #endgroup
 
 # Clock net "pwm_clk" driven by instance "bufg_ser_clk" located at site "BUFGCTRL_X0Y2"

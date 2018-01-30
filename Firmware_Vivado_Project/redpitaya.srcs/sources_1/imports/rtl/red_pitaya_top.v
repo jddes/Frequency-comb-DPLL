@@ -739,23 +739,27 @@ wire opamp_30V_enable = 1'b1;
   localparam DIRECTION_IN  = 1'b0;
 
   // Set contents of output pins and the direction
-  assign exp_p_out[0] = max5541_csb;      assign exp_p_dir[0] = DIRECTION_OUT; 
-  assign exp_p_out[1] = 1'b0;             assign exp_p_dir[1] = DIRECTION_IN; 
-  assign exp_p_out[2] = 1'b0;             assign exp_p_dir[2] = DIRECTION_IN; 
-  assign exp_p_out[3] = test_clock_out;   assign exp_p_dir[3] = DIRECTION_OUT; 
-  assign exp_p_out[4] = 1'b0;             assign exp_p_dir[4] = DIRECTION_IN; 
-  assign exp_p_out[5] = 1'b0;             assign exp_p_dir[5] = DIRECTION_IN; 
-  assign exp_p_out[6] = 1'b0;             assign exp_p_dir[6] = DIRECTION_IN; 
-  assign exp_p_out[7] = 1'b0;             assign exp_p_dir[7] = DIRECTION_IN; 
+  assign exp_p_out[0] = max5541_csb;      //assign exp_p_dir[0] = DIRECTION_OUT; 
+  assign exp_p_out[1] = 1'b0;             //assign exp_p_dir[1] = DIRECTION_IN; 
+  assign exp_p_out[2] = 1'b0;             //assign exp_p_dir[2] = DIRECTION_IN; 
+  assign exp_p_out[3] = test_clock_out;   //assign exp_p_dir[3] = DIRECTION_OUT; 
+  assign exp_p_out[4] = 1'b0;             //assign exp_p_dir[4] = DIRECTION_IN; 
+  assign exp_p_out[5] = 1'b0;             //assign exp_p_dir[5] = DIRECTION_IN; 
+  assign exp_p_out[6] = 1'b0;             //assign exp_p_dir[6] = DIRECTION_IN; 
+  assign exp_p_out[7] = 1'b0;             //assign exp_p_dir[7] = DIRECTION_IN; 
 
-  assign exp_n_out[0] = max5541_scl;      assign exp_n_dir[0] = DIRECTION_OUT; 
-  assign exp_n_out[1] = max5541_sda;      assign exp_n_dir[1] = DIRECTION_OUT; 
-  assign exp_n_out[2] = 1'b0;             assign exp_n_dir[2] = DIRECTION_IN; 
-  assign exp_n_out[3] = opamp_30V_enable; assign exp_n_dir[3] = DIRECTION_OUT; 
-  assign exp_n_out[4] = 1'b0;             assign exp_n_dir[4] = DIRECTION_IN; 
-  assign exp_n_out[5] = 1'b0;             assign exp_n_dir[5] = DIRECTION_IN; 
-  assign exp_n_out[6] = 1'b0;             assign exp_n_dir[6] = DIRECTION_IN; 
-  assign exp_n_out[7] = 1'b0;             assign exp_n_dir[7] = DIRECTION_IN; 
+  assign exp_n_out[0] = max5541_scl;      //assign exp_n_dir[0] = DIRECTION_OUT; 
+  assign exp_n_out[1] = max5541_sda;      //assign exp_n_dir[1] = DIRECTION_OUT; 
+  assign exp_n_out[2] = 1'b0;             //assign exp_n_dir[2] = DIRECTION_IN; 
+  assign exp_n_out[3] = opamp_30V_enable; //assign exp_n_dir[3] = DIRECTION_OUT; 
+  assign exp_n_out[4] = 1'b0;             //assign exp_n_dir[4] = DIRECTION_IN; 
+  assign exp_n_out[5] = 1'b0;             //assign exp_n_dir[5] = DIRECTION_IN; 
+  assign exp_n_out[6] = 1'b0;             //assign exp_n_dir[6] = DIRECTION_IN; 
+  assign exp_n_out[7] = 1'b0;             //assign exp_n_dir[7] = DIRECTION_IN; 
+
+  // Set the direction of each IO pins:
+  assign exp_p_dir[8-1:0] = {8'b00001001};
+  assign exp_n_dir[8-1:0] = {8'b00001011};
 
 
   // Set connection of input pins

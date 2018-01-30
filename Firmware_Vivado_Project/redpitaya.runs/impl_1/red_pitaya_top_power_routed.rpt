@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date             : Tue Jan 30 04:23:21 2018
+| Date             : Tue Jan 30 05:30:26 2018
 | Host             : jdbureau running 64-bit major release  (build 9200)
 | Command          : 
 | Design           : red_pitaya_top
@@ -30,8 +30,8 @@ Table of Contents
 ----------
 
 +--------------------------+-------+
-| Total On-Chip Power (W)  | 2.551 |
-| Dynamic (W)              | 2.390 |
+| Total On-Chip Power (W)  | 2.553 |
+| Dynamic (W)              | 2.392 |
 | Device Static (W)        | 0.160 |
 | Effective TJA (C/W)      | 11.5  |
 | Max Ambient (C)          | 55.6  |
@@ -64,11 +64,11 @@ Table of Contents
 | MMCM                     |     0.106 |        1 |         2 |           50.00 |
 | PLL                      |     0.145 |        2 |         2 |          100.00 |
 | DSPs                     |     0.088 |       69 |        80 |           86.25 |
-| I/O                      |     0.265 |       93 |       100 |           93.00 |
+| I/O                      |     0.267 |       93 |       100 |           93.00 |
 | XADC                     |     0.004 |        1 |       --- |             --- |
 | PS7                      |     1.292 |        1 |       --- |             --- |
 | Static Power             |     0.160 |          |           |                 |
-| Total                    |     2.551 |          |           |                 |
+| Total                    |     2.553 |          |           |                 |
 +--------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -144,8 +144,8 @@ Table of Contents
 | adc_clk                 | adc_clk_p_i                                                           |             8.0 |
 | clk_fb                  | pll/clk_fb                                                            |             8.0 |
 | clk_fpga_3              | i_ps/system_i/system_i/processing_system7/inst/FCLK_CLK_unbuffered[3] |             5.0 |
-| clk_out1_clk_10MHz_sync | nolabel_line984/inst/clk_out1_clk_10MHz_sync                          |           100.0 |
-| clkfbout_clk_10MHz_sync | nolabel_line984/inst/clkfbout_clk_10MHz_sync                          |             8.0 |
+| clk_out1_clk_10MHz_sync | nolabel_line988/inst/clk_out1_clk_10MHz_sync                          |           100.0 |
+| clkfbout_clk_10MHz_sync | nolabel_line988/inst/clkfbout_clk_10MHz_sync                          |             8.0 |
 | pll_adc_clk             | adc_clk                                                               |             8.0 |
 | pll_adc_clk             | pll/pll_adc_clk                                                       |             8.0 |
 | pll_clk_adc_2x          | pll/pll_clk_adc_2x                                                    |             4.0 |
@@ -165,7 +165,7 @@ Table of Contents
 +-------------------------------------------------------------------------------+-----------+
 | Name                                                                          | Power (W) |
 +-------------------------------------------------------------------------------+-----------+
-| red_pitaya_top                                                                |     2.390 |
+| red_pitaya_top                                                                |     2.392 |
 |   addr_packed_inst                                                            |     0.005 |
 |     FIFO_inst                                                                 |     0.003 |
 |       U0                                                                      |     0.003 |
@@ -1226,7 +1226,7 @@ Table of Contents
 |   i_ams                                                                       |    <0.001 |
 |   i_hk                                                                        |     0.001 |
 |   i_iobufn[0]                                                                 |     0.000 |
-|   i_iobufn[1]                                                                 |     0.000 |
+|   i_iobufn[1]                                                                 |    <0.001 |
 |   i_iobufn[2]                                                                 |     0.000 |
 |   i_iobufn[3]                                                                 |     0.000 |
 |   i_iobufn[4]                                                                 |     0.000 |
@@ -1236,7 +1236,7 @@ Table of Contents
 |   i_iobufp[0]                                                                 |     0.000 |
 |   i_iobufp[1]                                                                 |     0.000 |
 |   i_iobufp[2]                                                                 |     0.000 |
-|   i_iobufp[3]                                                                 |     0.000 |
+|   i_iobufp[3]                                                                 |     0.002 |
 |   i_iobufp[4]                                                                 |     0.000 |
 |   i_iobufp[5]                                                                 |     0.000 |
 |   i_iobufp[6]                                                                 |     0.000 |
@@ -1349,7 +1349,7 @@ Table of Contents
 |                 i_rtl.i_quarter_table.i_piped_map.i_original_cos_ls           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_piped_map.i_original_cos_ms           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_rom_reg_b                             |    <0.001 |
-|   nolabel_line984                                                             |     0.106 |
+|   nolabel_line988                                                             |     0.106 |
 |     inst                                                                      |     0.106 |
 |   pll                                                                         |     0.097 |
 |   pwm[0]                                                                      |     0.002 |

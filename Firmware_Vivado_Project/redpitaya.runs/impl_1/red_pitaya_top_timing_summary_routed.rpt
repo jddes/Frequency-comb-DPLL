@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Tue Jan 30 04:23:17 2018
+| Date         : Tue Jan 30 05:30:22 2018
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_timing_summary -warn_on_violation -max_paths 10 -file red_pitaya_top_timing_summary_routed.rpt -rpx red_pitaya_top_timing_summary_routed.rpx
 | Design       : red_pitaya_top
@@ -83,7 +83,7 @@ Table of Contents
 
 6. checking no_output_delay
 ---------------------------
- There are 25 ports with no output delay specified. (HIGH)
+ There are 29 ports with no output delay specified. (HIGH)
 
  There are 0 ports with no output delay but user has a false path constraint
 
@@ -152,7 +152,7 @@ clk_fpga_0                    {0.000 4.000}        8.000           125.000
 clk_fpga_1                    {0.000 2.000}        4.000           250.000         
 clk_fpga_2                    {0.000 10.000}       20.000          50.000          
 clk_fpga_3                    {0.000 2.500}        5.000           200.000         
-nolabel_line984/inst/clk_in1  {0.000 4.000}        8.000           125.000         
+nolabel_line988/inst/clk_in1  {0.000 4.000}        8.000           125.000         
   clk_out1_clk_10MHz_sync     {0.000 50.000}       100.000         10.000          
   clkfbout_clk_10MHz_sync     {0.000 4.000}        8.000           125.000         
 rx_clk                        {0.000 2.000}        4.000           250.000         
@@ -173,7 +173,7 @@ adc_clk                                                                         
   pll_dac_clk_2p                                                                                                                                                                1.845        0.000                       0                     3  
   pll_dac_clk_2x                                                                                                                                                                1.845        0.000                       0                     3  
 clk_fpga_3                          0.001        0.000                      0                 1730        0.090        0.000                      0                 1730        1.000        0.000                       0                   850  
-nolabel_line984/inst/clk_in1                                                                                                                                                    2.000        0.000                       0                     1  
+nolabel_line988/inst/clk_in1                                                                                                                                                    2.000        0.000                       0                     1  
   clk_out1_clk_10MHz_sync                                                                                                                                                      97.845        0.000                       0                     2  
   clkfbout_clk_10MHz_sync                                                                                                                                                       5.845        0.000                       0                     3  
 
@@ -5246,8 +5246,8 @@ High Pulse Width  Fast    SRLC32E/CLK  n/a            0.980         2.500       
 
 
 ---------------------------------------------------------------------------------------------------
-From Clock:  nolabel_line984/inst/clk_in1
-  To Clock:  nolabel_line984/inst/clk_in1
+From Clock:  nolabel_line988/inst/clk_in1
+  To Clock:  nolabel_line988/inst/clk_in1
 
 Setup :           NA  Failing Endpoints,  Worst Slack           NA  ,  Total Violation           NA
 Hold  :           NA  Failing Endpoints,  Worst Slack           NA  ,  Total Violation           NA
@@ -5257,18 +5257,18 @@ PW    :            0  Failing Endpoints,  Worst Slack        2.000ns,  Total Vio
 
 Pulse Width Checks
 --------------------------------------------------------------------------------------
-Clock Name:         nolabel_line984/inst/clk_in1
+Clock Name:         nolabel_line988/inst/clk_in1
 Waveform(ns):       { 0.000 4.000 }
 Period(ns):         8.000
-Sources:            { nolabel_line984/inst/clk_in1 }
+Sources:            { nolabel_line988/inst/clk_in1 }
 
 Check Type        Corner  Lib Pin            Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location         Pin
-Min Period        n/a     MMCME2_ADV/CLKIN1  n/a            1.249         8.000       6.751      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKIN1
-Max Period        n/a     MMCME2_ADV/CLKIN1  n/a            100.000       8.000       92.000     MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKIN1
-Low Pulse Width   Slow    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKIN1
-Low Pulse Width   Fast    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKIN1
-High Pulse Width  Slow    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKIN1
-High Pulse Width  Fast    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKIN1
+Min Period        n/a     MMCME2_ADV/CLKIN1  n/a            1.249         8.000       6.751      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKIN1
+Max Period        n/a     MMCME2_ADV/CLKIN1  n/a            100.000       8.000       92.000     MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKIN1
+Low Pulse Width   Slow    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKIN1
+Low Pulse Width   Fast    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKIN1
+High Pulse Width  Slow    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKIN1
+High Pulse Width  Fast    MMCME2_ADV/CLKIN1  n/a            2.000         4.000       2.000      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKIN1
 
 
 
@@ -5287,12 +5287,12 @@ Pulse Width Checks
 Clock Name:         clk_out1_clk_10MHz_sync
 Waveform(ns):       { 0.000 50.000 }
 Period(ns):         100.000
-Sources:            { nolabel_line984/inst/mmcm_adv_inst/CLKOUT0 }
+Sources:            { nolabel_line988/inst/mmcm_adv_inst/CLKOUT0 }
 
 Check Type  Corner  Lib Pin             Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location         Pin
-Min Period  n/a     BUFG/I              n/a            2.155         100.000     97.845     BUFGCTRL_X0Y6    nolabel_line984/inst/clkout1_buf/I
-Min Period  n/a     MMCME2_ADV/CLKOUT0  n/a            1.249         100.000     98.751     MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKOUT0
-Max Period  n/a     MMCME2_ADV/CLKOUT0  n/a            213.360       100.000     113.360    MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKOUT0
+Min Period  n/a     BUFG/I              n/a            2.155         100.000     97.845     BUFGCTRL_X0Y6    nolabel_line988/inst/clkout1_buf/I
+Min Period  n/a     MMCME2_ADV/CLKOUT0  n/a            1.249         100.000     98.751     MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKOUT0
+Max Period  n/a     MMCME2_ADV/CLKOUT0  n/a            213.360       100.000     113.360    MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKOUT0
 
 
 
@@ -5311,14 +5311,14 @@ Pulse Width Checks
 Clock Name:         clkfbout_clk_10MHz_sync
 Waveform(ns):       { 0.000 4.000 }
 Period(ns):         8.000
-Sources:            { nolabel_line984/inst/mmcm_adv_inst/CLKFBOUT }
+Sources:            { nolabel_line988/inst/mmcm_adv_inst/CLKFBOUT }
 
 Check Type  Corner  Lib Pin              Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location         Pin
-Min Period  n/a     BUFG/I               n/a            2.155         8.000       5.845      BUFGCTRL_X0Y7    nolabel_line984/inst/clkf_buf/I
-Min Period  n/a     MMCME2_ADV/CLKFBOUT  n/a            1.249         8.000       6.751      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKFBOUT
-Min Period  n/a     MMCME2_ADV/CLKFBIN   n/a            1.249         8.000       6.751      MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKFBIN
-Max Period  n/a     MMCME2_ADV/CLKFBIN   n/a            100.000       8.000       92.000     MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKFBIN
-Max Period  n/a     MMCME2_ADV/CLKFBOUT  n/a            213.360       8.000       205.360    MMCME2_ADV_X0Y0  nolabel_line984/inst/mmcm_adv_inst/CLKFBOUT
+Min Period  n/a     BUFG/I               n/a            2.155         8.000       5.845      BUFGCTRL_X0Y7    nolabel_line988/inst/clkf_buf/I
+Min Period  n/a     MMCME2_ADV/CLKFBOUT  n/a            1.249         8.000       6.751      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKFBOUT
+Min Period  n/a     MMCME2_ADV/CLKFBIN   n/a            1.249         8.000       6.751      MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKFBIN
+Max Period  n/a     MMCME2_ADV/CLKFBIN   n/a            100.000       8.000       92.000     MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKFBIN
+Max Period  n/a     MMCME2_ADV/CLKFBOUT  n/a            213.360       8.000       205.360    MMCME2_ADV_X0Y0  nolabel_line988/inst/mmcm_adv_inst/CLKFBOUT
 
 
 

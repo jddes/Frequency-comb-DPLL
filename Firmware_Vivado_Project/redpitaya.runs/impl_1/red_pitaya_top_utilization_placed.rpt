@@ -1,7 +1,7 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Tue Jan 30 04:22:08 2018
+| Date         : Tue Jan 30 05:29:10 2018
 | Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_utilization -file red_pitaya_top_utilization_placed.rpt -pb red_pitaya_top_utilization_placed.pb
 | Design       : red_pitaya_top
