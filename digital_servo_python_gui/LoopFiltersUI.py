@@ -12,6 +12,7 @@ import numpy as np
 import weakref
 
 import traceback
+import pdb
 
 from user_friendly_QLineEdit import user_friendly_QLineEdit
 
@@ -657,6 +658,12 @@ class LoopFiltersUI(Qt.QWidget):
 	
 	def getActualControllerDesign(self):
 		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock, bNegativeSign) = self.getSettings()
+
+		# pdb.set_trace()
+
+		if self.kc == 0:
+			# avoid divide-by-0 errors:
+			self.kc = 1
 		
 		if self.qchk_bKpCrossing.isChecked() == False:
 			# I is relative to 1/kc

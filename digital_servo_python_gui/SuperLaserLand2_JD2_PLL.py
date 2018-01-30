@@ -87,7 +87,7 @@ class Loop_filters_module(object):
         # gain_i  (32 bits signed, actual gain is gain_i/ 2**N_DIVIDE_I)
         # gain_ii (32 bits signed, actual gain is gain_ii/2**N_DIVIDE_II)
         # settings register: 1 bit: bLock
-        bDebugOutput = False
+        bDebugOutput = True
         
         if gain_p > (2**31 - 1)/2.**self.N_DIVIDE_P:
             if bDebugOutput:
@@ -128,11 +128,11 @@ class Loop_filters_module(object):
         self.coef_d = coef_d_int/2.**self.N_DIVIDE_DF
         
         if bDebugOutput:
-            print('P_gain = %e, in integer: P_gain = %d = 2^%.2f' % (self.gain_p, gain_p_int, np.log2(gain_p_int+0.1)))
-            print('I_gain = %e, in integer: I_gain = %d = 2^%.2f' % (self.gain_i, gain_i_int, np.log2(gain_i_int+0.1)))
-            print('II_gain = %e, in integer: II_gain = %d = 2^%.2f' % (self.gain_ii, gain_ii_int, np.log2(gain_ii_int+0.1)))
-            print('D_gain = %e, in integer: D_gain = %d = 2^%.2f' % (self.gain_d, gain_d_int, np.log2(gain_d_int+0.1)))
-            print('DF_gain = %e, in integer: DF_gain = %d = 2^%.2f' % (self.coef_d, coef_d_int, np.log2(coef_d_int+0.1)))
+            print('P_gain = %e, in integer: P_gain = %d = 2^%.2f' % (self.gain_p, gain_p_int, np.log2(abs(gain_p_int)+0.1)))
+            print('I_gain = %e, in integer: I_gain = %d = 2^%.2f' % (self.gain_i, gain_i_int, np.log2(abs(gain_i_int)+0.1)))
+            print('II_gain = %e, in integer: II_gain = %d = 2^%.2f' % (self.gain_ii, gain_ii_int, np.log2(abs(gain_ii_int)+0.1)))
+            print('D_gain = %e, in integer: D_gain = %d = 2^%.2f' % (self.gain_d, gain_d_int, np.log2(abs(gain_d_int)+0.1)))
+            print('DF_gain = %e, in integer: DF_gain = %d = 2^%.2f' % (self.coef_d, coef_d_int, np.log2(abs(coef_d_int)+0.1)))
         
         # Send P gain
         # int_bits15_to_0 = gain_p_int & 0xFFFF

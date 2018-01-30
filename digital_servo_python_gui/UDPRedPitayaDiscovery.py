@@ -15,6 +15,7 @@ import socket
 import select
 import time
 
+import traceback
 
 class UDPRedPitayaDiscovery():
     
@@ -31,6 +32,7 @@ class UDPRedPitayaDiscovery():
         
     def __del__(self):
         print("UDPRedPitayaDiscovery::__del__()")
+        # traceback.print_stack()
         
     def startListening(self):
         # Initialization:
