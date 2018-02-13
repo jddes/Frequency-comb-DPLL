@@ -67,8 +67,11 @@ architecture Behavioral of ddc_frontend_lowpass_filter is
 	
 	-- signals for the narrowband filter (16 pts boxcar)
 	constant LOG2_MAXIMUM_SIZE_16_PTS : integer := 5;
+	constant LOG2_MAXIMUM_SIZE_64_PTS : integer := 7;	-- 1+log2(64)
 	constant N_16_PTS : std_logic_vector(LOG2_MAXIMUM_SIZE_16_PTS-1 downto 0) := std_logic_vector(to_unsigned(16, LOG2_MAXIMUM_SIZE_16_PTS));
-	signal data_narrowband : std_logic_vector(16+5+2-1 downto 0);
+	constant N_64_PTS : std_logic_vector(LOG2_MAXIMUM_SIZE_64_PTS-1 downto 0) := std_logic_vector(to_unsigned(63, LOG2_MAXIMUM_SIZE_64_PTS));
+	-- signal data_narrowband : std_logic_vector(16+5+2-1 downto 0);
+	signal data_narrowband : std_logic_vector(16+7+2-1 downto 0);
 	
 	
 	
@@ -93,7 +96,7 @@ architecture Behavioral of ddc_frontend_lowpass_filter is
 	signal data_output_register : std_logic_vector(INPUT_SIZE-1 downto 0) := (others => '0');
 	-- Divides the output of the filter by 2^BIT_SHIFT_AFTER_FILTER to keep gain approximately equal to 1.
 	constant BIT_SHIFT_AFTER_WIDEBAND_FILTER : positive := 4;
-	constant BIT_SHIFT_AFTER_NARROWBAND_FILTER : positive := 2+4;
+	constant BIT_SHIFT_AFTER_NARROWBAND_FILTER : positive := 2+6;	-- Changed by JDD 2018-02-14 from 2+4 to 2+6
 begin
 
    boxcar_4_pts_filter_inst: entity work.boxcar_4_pts_filter
@@ -126,16 +129,16 @@ begin
           data_output => data_interm3
         );
 		  
-	boxcar_filter_16_pts_inst : entity work.adjustable_boxcar_filter_v2
+	boxcar_filter_64_pts_inst : entity work.adjustable_boxcar_filter_v2
 	generic map (
-		LOG2_MAXIMUM_SIZE => LOG2_MAXIMUM_SIZE_16_PTS,
+		LOG2_MAXIMUM_SIZE => LOG2_MAXIMUM_SIZE_64_PTS,
 		DATA_WIDTH => data_interm1'length
 	) port map (
 		rst => rst,
 		clk => clk,
 		
 		input_data => data_interm1,
-		filter_size => N_16_PTS,
+		filter_size => N_64_PTS,
 		output_data => data_narrowband
 	);
 	
