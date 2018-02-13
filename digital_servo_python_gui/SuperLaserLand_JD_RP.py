@@ -1989,8 +1989,8 @@ class SuperLaserLand_JD_RP:
 			lpf = np.convolve(np.ones(4, dtype=float)/4., lpf)
 			
 		elif filter_select == 1:
-			N_filter = 20
-			lpf = np.convolve(np.ones(4, dtype=float)/4., np.ones(16, dtype=float)/16.)
+			N_filter = 4+64
+			lpf = np.convolve(np.ones(4, dtype=float)/4., np.ones(64, dtype=float)/64.)
 		elif filter_select == 2:
 			N_filter = 16+2
 			lpf = np.array([4533, 11833, 14589, 7610, -2628, -5400, -350, 3293, 1086, -1867, -1080, 956, 800, -462, -650, 338])/(2.**15-1)
