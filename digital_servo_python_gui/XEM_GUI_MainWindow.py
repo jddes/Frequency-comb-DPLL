@@ -270,7 +270,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# The times three is because the scroll wheel actually does 3 small_steps (this is settings in Windows and can change from one computer to the next..)
 		if output_number == 1 and self.sl.read_pll2_mux() == 2:
 			print('Cascade lock operation: slider step size is hardcoded here!')
-			VCO_gain_in_Hz_per_Volts = 62e6	# use hard-coded value because the textbox is used for a different setting (gain ratio instead of VCO gain)
+			VCO_gain_in_Hz_per_Volts = 700e6	# use hard-coded value because the textbox is used for a different setting (gain ratio instead of VCO gain)
 			small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
 			large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
 		else:
