@@ -42,7 +42,7 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
     def addCurve(self, frequency_axis, transfer_function, vertical_units):
         #print('DisplayTransferFunctionWindow:addCurve()')
 
-        transfer_function_uncalibrated = copy.copy(transfer_function) * (10**((-5.06--6.+0.16)/20.))  # adjustment based on low-frequency RedPitaya's transfer function
+        transfer_function_uncalibrated = copy.copy(transfer_function)
         #print('DisplayTransferFunctionWindow:addCurve(): 2')
         self.writeOutputFile(transfer_function_uncalibrated, frequency_axis, vertical_units, bCalibrated=False) # we always save the uncalibrated TF regardless of whether we apply cal or not
         #print('DisplayTransferFunctionWindow:addCurve(): 3')
@@ -50,6 +50,7 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         # Load and apply calibration data based on the measurement of the Red Pitaya's transfer function:
         if vertical_units == 'V/V':
             # the copy.copy() is not strictly needed since applying the calibration would create a copy, but this potentially avoids a mistake later if I bypass the calibration
+            transfer_function_uncalibrated = transfer_function_uncalibrated * (10**((-5.06--6.+0.16)/20.))  # adjustment based on low-frequency RedPitaya's transfer function
             transfer_function_calibrated = self.loadAndApplyCalibration(transfer_function_uncalibrated, frequency_axis)
             self.transfer_function_list.append(transfer_function_calibrated)
             self.writeOutputFile(transfer_function_calibrated, frequency_axis, vertical_units, bCalibrated=True)
