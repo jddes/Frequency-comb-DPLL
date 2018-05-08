@@ -2152,7 +2152,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				if integration_higher_bound <= 2/len(spc)*fs_new:
 					integration_higher_bound = 2/len(spc)*fs_new
 				integration_higher_index = int(round(integration_higher_bound/fs_new*len(spc)))
-#                print('integration up to %d out of %d' % (integration_higher_index, len(spc)))
+#				print('integration up to %d out of %d' % (integration_higher_index, len(spc)))
 				frequency_axis_integral = frequency_axis[1:integration_higher_index]
 				
 				# Integrate the phase noise PSD, from the highest frequency to the lowest
