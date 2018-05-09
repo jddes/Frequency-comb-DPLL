@@ -1,0 +1,26 @@
+#-----------------------------------------------------------
+# Vivado v2015.4 (64-bit)
+# SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
+# IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
+# Start of session at: Tue May 08 17:15:47 2018
+# Process ID: 2360
+# Current directory: D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent2616 D:\Users\Alex\OneDrive\Documents_1D\GitHub\Frequency-comb-DPLL\Firmware Vivado Project\redpitaya.xpr
+# Log file: D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/vivado.log
+# Journal file: D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project {D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr}
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project'
+ERROR: [Common 17-48] File not found: D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr
+exopen_project {D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr}
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project'
+ERROR: [Common 17-48] File not found: D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr
+open_project {D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr}
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project'
+ERROR: [Common 17-48] File not found: D:/Users/Alex/OneDrive/Documents_1D/GitHub/Frequency-comb-DPLL/Firmware Vivado Project/redpitaya.xpr
+exit
+INFO: [Common 17-206] Exiting Vivado at Tue May 08 17:20:38 2018...

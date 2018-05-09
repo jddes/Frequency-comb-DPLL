@@ -256,6 +256,7 @@ class SuperLaserLand_JD_RP:
 
 	# mux to select which signal goes in pll2 : the output of the DEMOD1, PLL1 or DEMOD2
 	BUS_ADDR_mux_pll2                                   = 0x9000
+	BUS_ADDR_cascade_offset                             = 0x9001 
 
 	BUS_ADDR_openLoopGain 								= [0x9010, 0x9011, 0x9012]
 
@@ -2489,6 +2490,26 @@ class SuperLaserLand_JD_RP:
 		self.vco_offset_in_volt = offset
 		return offset
 
+	def set_internal_cascade_offset(self,cascade_offset):
+		#if self.bVerbose == True:
+		print('set_internal_cascade_offset')
+		self.cascade_offset_in_volt = cascade_offset
+		cascade_offset = round(cascade_offset*(2**9-1)) #9 bits, because offset is signed
+		print(cascade_offset)
+		self.send_bus_cmd_16bits(self.BUS_ADDR_cascade_offset, cascade_offset)
+		print(self.cascade_offset_in_volt)
+
+
+	def get_internal_cascade_offset(self):
+		#if self.bVerbose == True:
+		print('get_internal_cascade_offset')
+		raw = self.read_RAM_dpll_wrapper(self.BUS_ADDR_cascade_offset)
+		print('get_internal_cascade_offset_done')
+		if raw > ((1<<9)-1):
+			raw = -(0b1111111111-raw+1) 	#Because the value is consider as an signed integer
+		cascade_offset = raw/(2**9-1)
+		self.cascade_offset_in_volt = cascade_offset
+		return cascade_offset
 
 
 	# scales the output tone produced by the VCO right before the ADC.

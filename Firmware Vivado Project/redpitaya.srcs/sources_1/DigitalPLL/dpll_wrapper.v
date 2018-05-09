@@ -680,6 +680,25 @@ DDC_wideband_filters DDC1_inst (
 
 
 
+
+
+wire [10-1:0] loop_filter_1_cascade_offset;
+// Registers which controls the offset of the pll0 output to the pll1 input if selected:
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(10),
+    .REGISTER_DEFAULT_VALUE(0),
+    .ADDRESS(16'h9001)
+)
+parallel_bus_register_pll1_offset   (
+ .clk                               (clk1                         ), 
+ .bus_strobe                        (cmd_trig                     ), 
+ .bus_address                       (cmd_addr                     ), 
+ .bus_data                          ({cmd_data2in, cmd_data1in}   ), 
+ .register_output                   (loop_filter_1_cascade_offset ), 
+ .update_flag                       (                             )
+);
+
+
 wire [2-1:0] loop_filter_1_mux_selector;
 // Registers which controls the multiplexer for the PLL1 input:
 parallel_bus_register_32bits_or_less # (
@@ -697,13 +716,14 @@ parallel_bus_register_mux_pll1  (
 );
 
 multiplexer_3to1_async loop_filters_1_mux (
- .clk                               (clk1                       ),
- .selector_mux                      (loop_filter_1_mux_selector ),
- .in0_mux                           (DDC1_output                ), 
- .in1_mux                           (inst_frequency0            ),
- .in2_mux                           (pll0_output >> 5           ), //pll0_output is 15 bits and in2_mux is 10 bits
- .out_mux                           (inst_frequency1            )
+ .clk                               (  clk1                                              ),
+ .selector_mux                      (  loop_filter_1_mux_selector                        ),
+ .in0_mux                           (  DDC1_output                                       ), 
+ .in1_mux                           (  inst_frequency0                                   ),
+ .in2_mux                           (  (pll0_output >> 6) -loop_filter_1_cascade_offset  ), //pll0_output is 16 bits and in2_mux is 10 bits
+ .out_mux                           (  inst_frequency1                                   )
 );
+
 
 
      

@@ -43,6 +43,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		mux_vco = int((self.sp.getValue('VCO_settings', "VCO_connection")))
 		vco_amplitude = float((self.sp.getValue('VCO_settings', "VCO_amplitude")))
 		vco_offset = float((self.sp.getValue('VCO_settings', "VCO_offset")))
+		# need to load pll1_cascade_offset (otherwise it is 0)
 
 		if fan_state > 0:
 			self.qradio_fan_on.setChecked(True)
@@ -82,6 +83,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.mux_vco_Action()
 		self.mux_pll2_Action()
 		self.setInternalVCO_amplitude()
+		self.setInternalCascadeOffset()
 		self.setFan()
 
 	def getValues(self):
@@ -116,6 +118,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			self.qradio_ddc1_to_pll2.setChecked(True)
 		elif mux_pll2 == 2:
 			self.qradio_pll1_to_pll2.setChecked(True)
+
+		#get value for the pll1_cascade offset
+		cascade_offset = self.sl.get_internal_cascade_offset()
+		#cascade_offset = 0.123
+		self.qedit_pll1_to_pll2_offset.blockSignals(True)
+		self.qedit_pll1_to_pll2_offset.setText('{:.3f}'.format(cascade_offset))
+		self.qedit_pll1_to_pll2_offset.blockSignals(False)
 		
 
 
@@ -133,13 +142,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
 		self.qradio_no_VCO.clicked.connect(self.mux_vco_Action)
 
-		self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude [0-1]')
+		self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude [0, 1]')
 		self.qedit_int_vco_amplitude = user_friendly_QLineEdit('0.5')
 		self.qedit_int_vco_amplitude.returnPressed.connect(self.setInternalVCO_amplitude)
 		self.qedit_int_vco_amplitude.setMaximumWidth(60)
 
-		self.qlabel_int_vco_offset = Qt.QLabel('Internal VCO offset [0-1]')
-		self.qedit_int_vco_offset = user_friendly_QLineEdit('0.0')
+		self.qlabel_int_vco_offset = Qt.QLabel('Internal VCO offset [0, 1]')
+		self.qedit_int_vco_offset = user_friendly_QLineEdit('0.000')
 		self.qedit_int_vco_offset.returnPressed.connect(self.setInternalVCO_offset)
 		self.qedit_int_vco_offset.setMaximumWidth(60)
 
@@ -167,45 +176,54 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qradio_pll1_to_pll2.clicked.connect(self.mux_pll2_Action)
 		self.qradio_ddc1_to_pll2.clicked.connect(self.mux_pll2_Action)
 		self.qradio_ddc2_to_pll2.clicked.connect(self.mux_pll2_Action)
+		self.text_pll1_to_pll2 = Qt.QRadioButton('PLL_a output to PLL_b input')
+		self.qlabel_pll1_to_pll2_offset = Qt.QLabel('Voltage reference [-1, 1]')
+		self.qedit_pll1_to_pll2_offset = user_friendly_QLineEdit('0.000')
+		self.qedit_pll1_to_pll2_offset.returnPressed.connect(self.setInternalCascadeOffset)
+		self.qedit_pll1_to_pll2_offset.setMaximumWidth(60)
 
 		MUX_pll2.addWidget(self.qradio_ddc1_to_pll2, 	0, 0)
 		MUX_pll2.addWidget(self.qradio_pll1_to_pll2, 	1, 0)
 		MUX_pll2.addWidget(self.qradio_ddc2_to_pll2, 	2, 0)
-		MUX_pll2.setRowStretch(2, 0)
+		MUX_pll2.addWidget(self.qlabel_pll1_to_pll2_offset, 	1, 1)
+		MUX_pll2.addWidget(self.qedit_pll1_to_pll2_offset, 	1, 2)
+		MUX_pll2.addItem(Qt.QSpacerItem(1, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
+		MUX_pll2.setRowStretch(2, 2)
 
 		self.qgroupbox_MUX_pll2.setLayout(MUX_pll2)
 
 
 		###################################################################################
-		self.qgroupbox_read_data = Qt.QGroupBox('Read data from dpll (channel 2)')
-		self.qgroupbox_read_data.setAutoFillBackground(True)
-		read_data = Qt.QGridLayout()
+		# Test code to read bits from the reconnection process in the FPGA
+		# self.qgroupbox_read_data = Qt.QGroupBox('Read data from dpll (channel 2)')
+		# self.qgroupbox_read_data.setAutoFillBackground(True)
+		# read_data = Qt.QGridLayout()
 
-		self.qlabel_addr = Qt.QLabel('Address: 0x')
-		self.qedit_addr = user_friendly_QLineEdit('9000')
-		self.qedit_addr.setMaximumWidth(100)
+		# self.qlabel_addr = Qt.QLabel('Address: 0x')
+		# self.qedit_addr = user_friendly_QLineEdit('9000')
+		# self.qedit_addr.setMaximumWidth(100)
 
-		self.qlabel_data = Qt.QLabel('Data:')
-		self.qedit_data = user_friendly_QLineEdit('0')
-		self.qedit_data.setMaximumWidth(300)
+		# self.qlabel_data = Qt.QLabel('Data:')
+		# self.qedit_data = user_friendly_QLineEdit('0')
+		# self.qedit_data.setMaximumWidth(300)
 
-		self.qbtn_1 = QtGui.QPushButton('Read data')
-		self.qbtn_1.clicked.connect(self.read_RP)
+		# self.qbtn_1 = QtGui.QPushButton('Read data')
+		# self.qbtn_1.clicked.connect(self.read_RP)
 
 
-		read_data.addWidget(self.qlabel_addr, 	0, 0)
-		read_data.addWidget(self.qedit_addr, 	0, 1)
-		read_data.addWidget(self.qlabel_data, 	1, 0)
-		read_data.addWidget(self.qedit_data, 	1, 1, 1, 2)
-		read_data.addWidget(self.qbtn_1, 		0, 2)
+		# read_data.addWidget(self.qlabel_addr, 	0, 0)
+		# read_data.addWidget(self.qedit_addr, 	0, 1)
+		# read_data.addWidget(self.qlabel_data, 	1, 0)
+		# read_data.addWidget(self.qedit_data, 	1, 1, 1, 2)
+		# read_data.addWidget(self.qbtn_1, 		0, 2)
 
-		read_data.setRowStretch(1, 2)
+		# read_data.setRowStretch(1, 2)
 
-		self.qgroupbox_read_data.setLayout(read_data)
+		# self.qgroupbox_read_data.setLayout(read_data)
 
 		###################################################################################
 
-		self.qgroupbox_fanUI = Qt.QGroupBox('Turn on/off fan')
+		self.qgroupbox_fanUI = Qt.QGroupBox('Turn on/off fan (non-functional)')
 		self.qgroupbox_fanUI.setAutoFillBackground(True)
 		fanUI = Qt.QGridLayout()
 
@@ -236,7 +254,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		group.addWidget(self.qgroupbox_MUX_vco, 0, 0, 2, 4)
 		group.addWidget(self.qgroupbox_MUX_pll2, 3, 0, 2, 4)
-		group.addWidget(self.qgroupbox_read_data, 6, 0, 2, 4)
+		#group.addWidget(self.qgroupbox_read_data, 6, 0, 2, 4)
 		group.addWidget(self.qgroupbox_fanUI, 8, 0, 1, 1)
 		group.addWidget(self.qbtn_reconnect, 8, 1, 1, 2)
 
@@ -309,6 +327,16 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			int_vco_offset = 0.0
 		
 		self.sl.set_internal_VCO_offset(int_vco_offset)
+
+	def setInternalCascadeOffset(self):
+		try:
+			int_cascade_offset = float(self.qedit_pll1_to_pll2_offset.text())
+		except:
+			int_cascade_offset = 0.0
+		if int_cascade_offset < -1.0 or int_cascade_offset > 1.0:
+			int_cascade_offset = 0.0
+		
+		self.sl.set_internal_cascade_offset(int_cascade_offset)
 
 	def setInternalVCO_amplitude(self):
 		try:
