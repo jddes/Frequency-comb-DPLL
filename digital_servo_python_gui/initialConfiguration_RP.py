@@ -298,7 +298,7 @@ class initialConfiguration(QtGui.QDialog):
 #        self.bExternalClock = self.qradio_clk_external.isChecked()
 
 		#print(self.strSelectedIP)
-
+		
 		if self.qradio_pushValue.isChecked() :
 			# connect to the selected RedPitaya.
 			self.readSelectedFPGA()

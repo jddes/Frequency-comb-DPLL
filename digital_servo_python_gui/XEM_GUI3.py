@@ -511,7 +511,7 @@ class controller(object):
 		self.setCustomStyleSheet(strSelectedSerial)
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
-		self.sl.dev.OpenTCPConnection(ip_addr)
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
 		self.xem_gui_mainwindow2.getValues()
 		self.xem_gui_mainwindow.getValues()
