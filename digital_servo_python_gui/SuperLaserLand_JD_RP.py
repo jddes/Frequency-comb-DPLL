@@ -2612,4 +2612,13 @@ class SuperLaserLand_JD_RP:
 
 		self.dev.write_Zynq_register_uint32(bus_address, data)
 
+	def send_length_sequence(self,length):
+		print("to do")
+
+	def send_sequence(self,data):
+		print("to do")
+		
+	def set_run_sequence(self, run_sequence, pulse):
+		print("to do")
+
 # end class definition

@@ -23,6 +23,7 @@ from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
 from DisplayDividerAndResidualsStreamingSettingsWindow import DisplayDividerAndResidualsStreamingSettingsWindow
 
 from ConfigurationRPSettingsUI import ConfigRPSettingsUI
+from sequential_waveform import sequential_waveform
 
 from devicesData import devicesData
 
@@ -344,7 +345,7 @@ class controller(object):
 	#    vertical_units = 'V/V'
 	#    tf_window1 = DisplayTransferFunctionWindow(frequency_axis, transfer_function, window_number, vertical_units)
 	#    
-		
+		self.sequential_waveform = sequential_waveform(self.sl, self.sp, self, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand)
 	#    # Regroup the two windows into a single one:
 		self.main_windows = Qt.QWidget()
 		self.main_windows.setObjectName('MainWindow')
@@ -396,6 +397,7 @@ class controller(object):
 		tabs.addTab(self.xem_gui_mainwindow, "CEO Lock")
 		tabs.addTab(self.xem_gui_mainwindow2, "Optical Lock")
 		tabs.addTab(self.counters_window, "Counters")
+		tabs.addTab(self.sequential_waveform, "Sequential Waveform")
 		tabs.addTab(self.settings_window, "Settings")
 		#FEATURE
 		#tabs.addTab(dfr_timing_gui, "DFr trigger generator")
@@ -470,6 +472,7 @@ class controller(object):
 		self.RP_Settings.setStyleSheet(custom_style_sheet)
 		self.settings_window.setStyleSheet(custom_style_sheet)
 		self.main_windows.setStyleSheet(custom_style_sheet)
+		self.sequential_waveform.setStyleSheet(custom_style_sheet)
 
 
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
@@ -492,6 +495,7 @@ class controller(object):
 		self.divider_settings_window.pushDefaultValues()
 		self.dither_widget0.pushDefaultValues()
 		self.dither_widget1.pushDefaultValues()
+		self.sequential_waveform.pushDefaultValues()
 
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
@@ -500,12 +504,11 @@ class controller(object):
 			self.sl.dev.CloseTCPConnection()
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
-
-
 		self.xem_gui_mainwindow2.pushActualValues()
 		self.xem_gui_mainwindow.pushActualValues()
 		self.freq_error_window1.pushValues()
 		self.freq_error_window2.pushValues()
+		self.sequential_waveform.pushValues()
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
@@ -521,6 +524,7 @@ class controller(object):
 		self.divider_settings_window.getValues()
 		self.dither_widget0.getValues()
 		self.dither_widget1.getValues()
+		self.sequential_waveform.getValues()
 
 	def stopCommunication(self):
 		if self.sl.dev.valid_socket:
