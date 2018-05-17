@@ -41,6 +41,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.setObjectName('MainWindow')
         self.setStyleSheet(custom_style_sheet)
         self.sp = sp
+        self.timerID = None
         
         # Need to pass xem_gui_window as a parameter (to control DAC offset)
         if xem_gui_mainwindow:
@@ -109,7 +110,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
         
         #if self.timerID.isActive():
-        self.killTimer(self.timerID)
+        if self.timerID is not None:
+            self.killTimer(self.timerID)
         
 
     def openTCPConnection(self):
