@@ -98,6 +98,7 @@ class controller(object):
 	def connectionGUI(self):
 		
 		strBroadcastAddress = self.findMostLikelyLANBroadcastIPAddress()
+		#strBroadcastAddress = "192.168.0.255"
 		strFPGAFirmware=r'red_pitaya_top.bit'
 		strCPUFirmware=u'monitor-tcp'
 		self.initial_config = initialConfiguration(self.sl.dev, self, self.devices_data, strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
@@ -285,7 +286,7 @@ class controller(object):
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
 			
-		self.sl.dev.OpenTCPConnection(ip_addr, port=5000)
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
 		# Now we just need to reset the frontend to make sure we start everything in a nice state
 		self.sl.resetFrontend()
 		self.loadDefaultValueFromConfigFile(strSelectedSerial)
@@ -305,7 +306,7 @@ class controller(object):
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
-		self.sl.dev.OpenTCPConnection(ip_addr, port=5000)
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
 
 
@@ -318,7 +319,7 @@ class controller(object):
 		self.setCustomStyleSheet(strSelectedSerial)
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
-		self.sl.dev.OpenTCPConnection(ip_addr, port=5000)
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
 		self.xem_gui_mainwindow2.getValues()
 		self.xem_gui_mainwindow.getValues()
@@ -342,7 +343,7 @@ class controller(object):
 			print(e)
 
 	def startCommunication(self, ip_addr = "192.168.0.150", port=5000):
-		self.sl.dev.OpenTCPConnection(ip_addr, port=5000)
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
 		self.xem_gui_mainwindow2.startTimers()
 		self.xem_gui_mainwindow.startTimers()
 		self.freq_error_window1.startTimers()
