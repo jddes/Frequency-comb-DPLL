@@ -224,7 +224,9 @@ class controller(object):
 		# Enter main event loop
 		#self.app.exec_()
 		try:
+			print("before app.exec_()")
 			self.app.exec_()
+			print("after app.exec_()")
 		except:
 			print("XEM_GUI3.py: Exception during app.exec_()")
 
