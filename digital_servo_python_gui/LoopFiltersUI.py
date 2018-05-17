@@ -176,7 +176,7 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		self.qchk_bKpCrossing = Qt.QCheckBox('fi refer to kp crossover')
 		self.qchk_bKpCrossing.setChecked(False)
-		self.qchk_bKpCrossing.clicked.connect(self.textboxChanged)
+		self.qchk_bKpCrossing.clicked.connect(self.bKpCrossingPress)
 		
 		self.qchk_lockSlider = Qt.QCheckBox('Lock D sliders')
 		self.qchk_lockSlider.setChecked(False)
@@ -796,7 +796,7 @@ class LoopFiltersUI(Qt.QWidget):
 			self.qchk_kd.setChecked(True)
 
 		if bLock == 1:
-			self.qchk_lock.setChecked(True) #Nothing on the gui, but XEM_GUI_MainWindow use this qchk to check at the look
+			self.qchk_lock.setChecked(True) #Nothing on the gui, but XEM_GUI_MainWindow use this qchk to check at the lock
 		else:
 			self.qchk_lock.setChecked(False)
 
@@ -833,8 +833,32 @@ class LoopFiltersUI(Qt.QWidget):
 
 				
 		
+	def bKpCrossingPress(self):
+		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
+		if self.qchk_bKpCrossing.isChecked(): #Give new state
+			print('Was referring to 0db, now refer to kp')
+			print(fi)
+			I_gain = 1/self.kc * fi * (2*np.pi/self.sl.fs)
+			fi = (I_gain*self.kc*self.sl.fs/(2*np.pi))/10**(kp/20)
+			print(fi)
+		else:
+			print('Was referring to kp, now refer to 0db')
+			print(fi)
+			I_gain = 10**(kp/20)/self.kc * fi * (2*np.pi/self.sl.fs)
+			fi = float(I_gain)*float(self.kc)*float(self.sl.fs)/(float(2)*float(np.pi))
+			print(fi)
+		self.qedit_fi.blockSignals(True)
+		self.qedit_fi.setText('{:.3e}'.format(fi))
+		self.qedit_fi.blockSignals(False)
+		self.qslider_fi.blockSignals(True)
+		self.qslider_fi.setValue((100*np.log10(np.max((fi, fmin)))))
+		self.qslider_fi.blockSignals(False)
+		self.textboxChanged_withoutUpdateFPGA() # To update the sliders
+		self.textboxChanged()
 		
-		
+
+
+
 	def lockSlider(self):
 		if self.qchk_lockSlider.isChecked() == True:
 			(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
