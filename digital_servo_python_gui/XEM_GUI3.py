@@ -45,7 +45,12 @@ class controller(object):
 		# Start Qt:
 		self.app = QtCore.QCoreApplication.instance()
 		if self.app is None:
+			print("QCoreApplication not running yet. creating.")
+			self.bEventLoopWasRunningAlready = False
 			self.app = QtWidgets.QApplication(sys.argv)
+		else:
+			self.bEventLoopWasRunningAlready = True
+			print("QCoreApplication already running.")
 
 
 		self.main()
@@ -223,13 +228,16 @@ class controller(object):
 		self.connectionGUI()
 		
 		# Enter main event loop
-		#self.app.exec_()
+		# print("before app.exec_()")
+		# self.app.exec_()
+		# print("after app.exec_()")
 		try:
 			print("before app.exec_()")
 			self.app.exec_()
 			print("after app.exec_()")
-		except:
-			print("XEM_GUI3.py: Exception during app.exec_()")
+		except Exception as e:
+			print("XEM_GUI3.py: Exception during app.exec_():")
+			print(e)
 
 
 	def loadDefaultValueFromConfigFile(self, strSelectedSerial):
@@ -353,7 +361,14 @@ class controller(object):
 
 if __name__ == '__main__':
 	# pbd.run('controller()')
+	print("main: about to create controller instance")
 	controller_obj = controller()
-	controller_obj.stopCommunication()
-	del controller_obj
+	# This code here is to handle weird interaction between IPython's event handler:
+	# Depending on the setting for the graphical backend in Spyder (Tools/Preferences/IPython Console/Graphics/Backend = (Automatic or Inline),
+	# the Qt event loop might be already running, so the proper way to teardown our application,
+	# for example to enable re-using the same console to run another instance afterwards,
+	# is different.
+	if controller_obj.bEventLoopWasRunningAlready == False:
+		controller_obj.stopCommunication()
+		del controller_obj
 	
