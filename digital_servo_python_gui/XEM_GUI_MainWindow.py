@@ -156,6 +156,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def setDACOffset_event(self, e):
 
 	def getValues(self):
+		print("XEM_GUI_MainWindow::getValues()")
 		self.getVCOGain()
 		self.getDACoffset()
 		self.getVCOFreq()
@@ -202,6 +203,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def killTimers(self):
 		print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
+		traceback.print_stack()
 		self.timerIDDither.stop()
 
 		if self.qchk_refresh.isChecked():

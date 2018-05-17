@@ -39,7 +39,7 @@ class RP_PLL_device():
     MAX_SAMPLES_READ_BUFFER = 2**15 # should be equal to 2**ADDRESS_WIDTH from ram_data_logger.vhd
 
 
-    def __init__(self, controller):
+    def __init__(self, controller=None):
         self.sock = socket_placeholder()
         self.controller = controller
         self.valid_socket = 0
@@ -47,7 +47,8 @@ class RP_PLL_device():
         return
 
     def disconnectEvent(self):
-        self.controller.stopCommunication()
+        if self.controller is not None:
+            self.controller.stopCommunication()
 
     def CloseTCPConnection(self):
         print("RP_PLL_device::CloseTCPConnection()")
