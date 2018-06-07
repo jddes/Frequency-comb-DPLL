@@ -203,6 +203,11 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_integrator2_settings                       = 0x7021
 	
 	BUS_ADDR_dac2_setpoint                              = 0x7024
+
+	BUS_ADDR_lock_on_trigger_0                          = 0x7026
+	BUS_ADDR_lock_on_trigger_delay_0                    = 0x7027
+	BUS_ADDR_lock_on_trigger_1                          = 0x7028
+	BUS_ADDR_lock_on_trigger_delay_1                    = 0x7029
 	
 	# DDC 0 settings
 	BUS_ADDR_ref_freq0_lsbs                             = 0x8000
@@ -2590,5 +2595,26 @@ class SuperLaserLand_JD_RP:
 			data = 0b00000000
 
 		self.dev.write_Zynq_register_uint32(bus_address, data)
+
+
+	def setTriggerDelay(self, channel_number, trig_delay_in_seconds):
+		# see lock_on_trigger.vhd for the +5
+		delay_in_samples = int(round(trig_delay_in_seconds*self.fs-5))
+		if delay_in_samples <= 0:
+			delay_in_samples = 2
+
+		if channel_number == 0:
+			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_delay_0, delay_in_samples)
+		elif channel_number == 1:
+			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_delay_1, delay_in_samples)
+
+	def setLockOnTrigger(self, channel_number, bLockOnTrigger):
+		
+		if delay_in_samples <= 0:
+			delay_in_samples = 2
+		if channel_number == 0:
+			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_0, bLockOnTrigger)
+		elif channel_number == 1:
+			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_1, bLockOnTrigger)
 
 # end class definition

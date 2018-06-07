@@ -1,0 +1,27 @@
+#-----------------------------------------------------------
+# Vivado v2015.4 (64-bit)
+# SW Build 1412921 on Wed Nov 18 09:43:45 MST 2015
+# IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
+# Start of session at: Wed Jun 06 20:30:14 2018
+# Process ID: 15956
+# Current directory: D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/synth_1
+# Command line: vivado.exe -log red_pitaya_top.vds -mode batch -messageDb vivado.pb -notrace -source red_pitaya_top.tcl
+# Log file: D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/synth_1/red_pitaya_top.vds
+# Journal file: D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source red_pitaya_top.tcl -notrace
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Xilinx/Vivado/2015.4/data/ip'.
+Command: synth_design -top red_pitaya_top -part xc7z010clg400-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7z010'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z010'
+ERROR: [Synth 8-988] lock_on_trigger is already declared [D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:1040]
+INFO: [Synth 8-2350] module dpll_wrapper ignored due to previous errors [D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v:6]
+Failed to read verilog 'D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/dpll_wrapper.v'
+INFO: [Common 17-83] Releasing license: Synthesis
+6 Infos, 0 Warnings, 0 Critical Warnings and 2 Errors encountered.
+synth_design failed
+ERROR: [Common 17-69] Command failed: Synthesis failed - please see the console or run log file for details
+INFO: [Common 17-206] Exiting Vivado at Wed Jun 06 20:30:27 2018...

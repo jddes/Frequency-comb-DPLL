@@ -680,9 +680,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qchk_lock.setChecked(bLock)
 		if bLock:
 			#We are reconnecting to a RP which has a locked loop filter
-			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: green')            
+			self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: green')            
 		else:
-			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
+			self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: red')
 
 	def chkLockClickedEvent(self):
 		bLock = self.qchk_lock.isChecked()
@@ -741,7 +741,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				#     self.sl.setDitherLockInState(2, False)
 					
 			
-			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: green')            
+			self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: green')            
 			# Turn the lock on
 			if self.selected_ADC == 0:
 				self.qloop_filters[0].qchk_lock.setChecked(True)
@@ -864,7 +864,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				#     self.sl.setDitherLockInState(2, True)
 					
 			
-			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
+			self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: red')
 			
 
 		self.bFirstTimeLockCheckBoxClicked = False
@@ -958,11 +958,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Main button for turning the locks on/off:
 		self.qchk_lock = Qt.QCheckBox('Lock')
 		self.qchk_lock.setStyleSheet('')
-		self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
-#        self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: green')
+		self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: red')
+#        self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: green')
 		self.qchk_lock.clicked.connect(self.chkLockClickedEvent)
 		self.qchk_lock.setChecked(False)
-		
+
+		# Turning the lock on the next external trigger:
+		self.qchk_lock_on_trig = Qt.QCheckBox('Lock on trigger')
+#        self.qchk_lock.setStyleSheet('font-size: 14pt; color: white; background-color: green')
+		self.qchk_lock_on_trig.clicked.connect(self.chkLockOnTriggerClickedEvent)
+		self.qchk_lock_on_trig.setChecked(False)
+
+		self.lblTrigDelay = Qt.QLabel('Trigger delay [s]:')
+		self.txtTrigDelay = user_friendly_QLineEdit('50e-6')
+		self.txtTrigDelay.setMaximumWidth(60)
 		
 		# Button which opens the dither controls:
 		self.qbutton_dither_controls = Qt.QPushButton('')
@@ -1060,7 +1069,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 #        grid.addWidget(self.qlabel_bytes_skip,          0, 3)
 #        grid.addWidget(self.qedit_bytes_skip,           0, 4)
-		grid.addWidget(self.qchk_lock,                  0, 3, 1, 2)
+		grid.addWidget(self.qchk_lock,                  0, 3, 1, 1)
+		grid.addWidget(self.qchk_lock_on_trig,          0, 4, 1, 1)
+		
 		grid.addWidget(self.qlabel_ref_freq,            1, 3)
 		grid.addWidget(self.qedit_ref_freq,             1, 4)
 		
@@ -1107,8 +1118,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# grid2.addWidget(self.qedit_vco_gain[2],                         0, 2)
 			# grid2.addWidget(self.qlabel_detected_vco_gain[2],               1, 2)
-		
-		grid.addLayout(grid2, 0, 5, 2, 2)        
+
+
+		grid2.addWidget(self.lblTrigDelay,                                  2, 0)
+		grid2.addWidget(self.txtTrigDelay,                                  2, 1)
+
+		grid.addLayout(grid2, 0, 5, 3, 2)        
 		grid.addWidget(self.qsign_positive,             0, 7)
 		grid.addWidget(self.qsign_negative,             1, 7)
 		
@@ -1593,6 +1608,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def resizeEvent(self, event):
 #        print('resizeEvent')
 #        print(self.geometry())
+
+	def chkLockOnTriggerClickedEvent(self):
+		try:
+			trig_delay_in_seconds = float(eval(self.txtTrigDelay.text()))
+		except:
+			return
+
+		bLockOnTrigger = bool(self.qchk_lock_on_trig.isChecked())
+
+		self.sl.setTriggerDelay(selected_ADC, trig_delay_in_seconds)
+		self.sl.setLockOnTrigger(selected_ADC, bLockOnTrigger)
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)
 	def updatePhaseNoiseViews(self):

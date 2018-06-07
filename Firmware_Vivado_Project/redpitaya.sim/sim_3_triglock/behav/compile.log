@@ -1,0 +1,4 @@
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/lock_on_trigger.vhd" into library work
+INFO: [VRFC 10-307] analyzing entity lock_on_trigger
+INFO: [VRFC 10-163] Analyzing VHDL file "D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/lock_on_trigger_testbench.vhd" into library work
+INFO: [VRFC 10-307] analyzing entity lock_on_trigger_testbench

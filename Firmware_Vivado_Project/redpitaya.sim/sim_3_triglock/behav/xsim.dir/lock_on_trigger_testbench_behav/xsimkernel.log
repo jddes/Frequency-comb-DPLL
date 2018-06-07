@@ -1,0 +1,7 @@
+Running: xsim.dir/lock_on_trigger_testbench_behav/xsimk.exe -simmode gui -wdb lock_on_trigger_testbench_behav.wdb -simrunnum 0 -socket 1633
+Design successfully loaded
+Design Loading Memory Usage: 22476 KB (Peak: 22476 KB)
+Design Loading CPU Usage: 155 ms
+Simulation completed
+Simulation Memory Usage: 23284 KB (Peak: 23284 KB)
+Simulation CPU Usage: 155 ms
