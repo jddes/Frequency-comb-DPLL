@@ -874,7 +874,7 @@ parallel_bus_register_pll0_locktrigger_delay (
     );
 
     // lock on trigger feature:
-    lock_on_trig0 lock_on_trigger (
+    lock_on_trigger lock_on_trig0 (
     .clk(clk1),
     .trigger_in(trigger_in),
     .lock_on_next_trigger(pll0_lock_on_next_trigger),
@@ -1037,7 +1037,7 @@ parallel_bus_register_pll1_locktrigger_delay (
     );
 
     // lock on trigger feature:
-    lock_on_trig1 lock_on_trigger (
+    lock_on_trigger lock_on_trig1 (
     .clk(clk1),
     .trigger_in(trigger_in),
     .lock_on_next_trigger(pll1_lock_on_next_trigger),

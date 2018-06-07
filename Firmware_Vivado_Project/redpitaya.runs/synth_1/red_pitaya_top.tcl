@@ -104,6 +104,7 @@ read_vhdl -library work {
   D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/DDC_wideband_filters.vhd
   D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/aux_data_mux.vhd
   D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/adjustable_boxcar_filter.vhd
+  D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/DigitalPLL/lock_on_trigger.vhd
   D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/ram_data_logger.vhd
   D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/mux_internal_vco.vhd
   D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.srcs/sources_1/addr_packed.vhd
