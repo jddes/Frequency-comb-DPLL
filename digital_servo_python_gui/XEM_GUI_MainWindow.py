@@ -1617,8 +1617,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		bLockOnTrigger = bool(self.qchk_lock_on_trig.isChecked())
 
-		self.sl.setTriggerDelay(selected_ADC, trig_delay_in_seconds)
-		self.sl.setLockOnTrigger(selected_ADC, bLockOnTrigger)
+		self.sl.setTriggerDelay(self.selected_ADC, trig_delay_in_seconds)
+		self.sl.setLockOnTrigger(self.selected_ADC, bLockOnTrigger)
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)
 	def updatePhaseNoiseViews(self):
