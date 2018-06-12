@@ -2602,6 +2602,8 @@ class SuperLaserLand_JD_RP:
 		delay_in_samples = int(round(trig_delay_in_seconds*self.fs-5))
 		if delay_in_samples <= 0:
 			delay_in_samples = 2
+       
+		print('# sample delays set to: {}'.format(delay_in_samples))
 
 		if channel_number == 0:
 			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_delay_0, delay_in_samples)
@@ -2610,8 +2612,8 @@ class SuperLaserLand_JD_RP:
 
 	def setLockOnTrigger(self, channel_number, bLockOnTrigger):
 		
-		if delay_in_samples <= 0:
-			delay_in_samples = 2
+		#if delay_in_samples <= 0:
+		#	delay_in_samples = 2
 		if channel_number == 0:
 			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_0, bLockOnTrigger)
 		elif channel_number == 1:
