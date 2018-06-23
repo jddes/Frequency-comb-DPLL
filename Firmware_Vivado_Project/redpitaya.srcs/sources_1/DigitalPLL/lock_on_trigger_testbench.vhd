@@ -13,7 +13,7 @@ architecture behavior of lock_on_trigger_testbench is
 	signal clk : std_logic := '0';
 	signal trigger_in : std_logic := '0';
 	signal lock_on_next_trigger : std_logic := '0';
-	signal delay_before_lock : std_logic_vector(counter_bits-1 downto 0) := std_logic_vector(to_unsigned(100, COUNTER_BITS));
+	signal delay_before_lock : std_logic_vector(counter_bits-1 downto 0) := std_logic_vector(to_unsigned(0, COUNTER_BITS));
 	signal block_manual : std_logic := '0';
 	
 	-- Outputs
@@ -53,6 +53,10 @@ begin
 		wait for clk_period*100;
 		wait until rising_edge(clk);
 			block_manual <= '0';
+
+		wait for clk_period*100;
+		wait until rising_edge(clk);
+			delay_before_lock <= std_logic_vector(to_unsigned(100, COUNTER_BITS));
 
 		wait for clk_period*100;
 			lock_on_next_trigger <= '1';

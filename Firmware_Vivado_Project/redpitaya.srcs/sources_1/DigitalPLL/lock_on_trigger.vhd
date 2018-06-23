@@ -65,13 +65,15 @@ begin
                 when STATE_IDLE =>
                     if lock_on_next_trigger = '1' and lock_on_next_trigger_d1 = '0' then    -- rising edge detection
                         FSM_state <= STATE_WAIT_FOR_TRIGGER;
+                        bCounterLoad <= '1';
                     end if;
 
 
                 when STATE_WAIT_FOR_TRIGGER =>
+                    bCounterLoad <= '1';
                     if trigger_in_d2 = '1' then
                         FSM_state <= STATE_WAIT_FOR_DELAY;
-                        bCounterLoad <= '1';
+                        
                     end if;
                     if lock_on_next_trigger = '0' then  -- allow escaping when user demands it
                         FSM_state <= STATE_IDLE;
@@ -104,6 +106,7 @@ begin
         if rising_edge(clk) then
             if bCounterLoad = '1' then
                 wait_counter <= unsigned(delay_before_lock);
+                bCounterFinished <= '0';
             else
                 if wait_counter > 0 then
                     wait_counter <= wait_counter - 1;

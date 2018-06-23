@@ -208,6 +208,7 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_lock_on_trigger_delay_0                    = 0x7027
 	BUS_ADDR_lock_on_trigger_1                          = 0x7028
 	BUS_ADDR_lock_on_trigger_delay_1                    = 0x7029
+	BUS_ADDR_trigger_out                                = 0x7030
 	
 	# DDC 0 settings
 	BUS_ADDR_ref_freq0_lsbs                             = 0x8000
@@ -2598,7 +2599,7 @@ class SuperLaserLand_JD_RP:
 
 
 	def setTriggerDelay(self, channel_number, trig_delay_in_seconds):
-		# see lock_on_trigger.vhd for the +5
+		# see lock_on_trigger.vhd for the -5
 		delay_in_samples = int(round(trig_delay_in_seconds*self.fs-5))
 		if delay_in_samples <= 0:
 			delay_in_samples = 2
@@ -2612,11 +2613,13 @@ class SuperLaserLand_JD_RP:
 
 	def setLockOnTrigger(self, channel_number, bLockOnTrigger):
 		
-		#if delay_in_samples <= 0:
-		#	delay_in_samples = 2
 		if channel_number == 0:
 			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_0, bLockOnTrigger)
 		elif channel_number == 1:
 			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_1, bLockOnTrigger)
+
+	def setDebugTriggerOutput(self, bOutputTrigger):
+		
+		self.send_bus_cmd_16bits(self.BUS_ADDR_trigger_out, bOutputTrigger)
 
 # end class definition

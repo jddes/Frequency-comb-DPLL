@@ -18,6 +18,9 @@ module dpll_wrapper(
 
     // input trigger, used to turn on the lock when a rising edge is seen on a digital input:
     input  wire               trigger_in,
+    // for debugging purposes:
+    output wire [7-1:0]       debug_output,
+    output wire               trigger_output,
 
     // Data logger port:
     output wire [16-1:0]      LoggerData,
@@ -882,6 +885,7 @@ parallel_bus_register_pll0_locktrigger_delay (
     .bLock_manual(pll0_lock_register),
     .lock_output(pll0_lock)
     );
+    assign debug_output = {pll0_lock_on_trigger_delay[2:0], trigger_output, pll0_lock_on_next_trigger, pll0_lock_register, pll0_lock};
      
 parallel_bus_register_32bits_or_less # (
     .REGISTER_SIZE(32),
@@ -1033,6 +1037,21 @@ parallel_bus_register_pll1_locktrigger_delay (
     .bus_address(cmd_addr), 
     .bus_data({cmd_data2in, cmd_data1in}), 
     .register_output(pll1_lock_on_trigger_delay), 
+    .update_flag()
+    );
+
+// this is used to output a trigger from the Python software, for debugging purposes currently
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(1),
+    .REGISTER_DEFAULT_VALUE(0),
+    .ADDRESS(16'h7030)
+)
+parallel_bus_register_output_trigger (
+    .clk(clk1), 
+    .bus_strobe(cmd_trig), 
+    .bus_address(cmd_addr), 
+    .bus_data({cmd_data2in, cmd_data1in}), 
+    .register_output(trigger_output), 
     .update_flag()
     );
 

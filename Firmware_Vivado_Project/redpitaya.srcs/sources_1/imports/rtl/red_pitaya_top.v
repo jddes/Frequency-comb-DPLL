@@ -440,6 +440,7 @@ wire debug_out_3;
 wire debug_out_4;
 
 reg [26-1:0] led_counter;
+wire [7-1:0] debug_output;
 
 assign ADCraw0 = {adc_a, 2'b0};
 assign ADCraw1 = {adc_b, 2'b0};
@@ -462,6 +463,8 @@ dpll_wrapper dpll_wrapper_inst (
 
   // input trigger, used to turn on the lock when a rising edge is seen on a digital input:
   .trigger_in              (  trigger_in                 ),
+  .debug_output            (  debug_output               ), // this goes to the 7-led (the 8th is the heartbeat counter)
+  .trigger_output          (  trigger_output             ),
 
   // Data logger port:
   .LoggerData              (  LoggerData                 ),
@@ -530,7 +533,8 @@ always @(posedge adc_clk) begin
   end
 end
 
-assign led_o = {fifo_empty, fifo_full, led_counter[25], 4'b0};
+//assign led_o = {fifo_empty, fifo_full, led_counter[25], debug_output, 3'b0};
+assign led_o = {debug_output, led_counter[25]};
 
 // // ---------------------------------------------------------------------------------
 // // For testing the N-times clk FIR filter:
@@ -728,16 +732,18 @@ red_pitaya_hk i_hk (
 // // end
 
 wire trigger_in;
+wire trigger_output;
 assign trigger_in = exp_p_in[7];
+//assign trigger_in = trigger_output;  // loopback for debugging purposes
 
 
 assign exp_n_out = {8'b10000000};
 assign exp_p_out = {8'b00000000};
 assign exp_n_dir = {8'b11111111};
-assign exp_p_dir = {8'b11111111};
+assign exp_p_dir = {8'b01111111}; // 0 means input (disables the output driver on that pin)
 
-IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
-IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out_hk), .T(~exp_n_dir) );
+IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
+IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
 
 //---------------------------------------------------------------------------------
 // VCO and output mux

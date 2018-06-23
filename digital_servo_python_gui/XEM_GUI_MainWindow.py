@@ -972,7 +972,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.lblTrigDelay = Qt.QLabel('Trigger delay [s]:')
 		self.txtTrigDelay = user_friendly_QLineEdit('50e-6')
 		self.txtTrigDelay.setMaximumWidth(60)
-		
+		self.txtTrigDelay.returnPressed.connect(self.triggerDelayChangedEvent)
+
+		self.chkOutputTrigger = Qt.QCheckBox('Trigger out')
+		self.chkOutputTrigger.clicked.connect(self.chkOutputTriggerClickedEvent)
+
+
 		# Button which opens the dither controls:
 		self.qbutton_dither_controls = Qt.QPushButton('')
 		self.qbutton_dither_controls.clicked.connect(self.openDitherControls)
@@ -1126,7 +1131,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		grid.addLayout(grid2, 0, 5, 3, 2)        
 		grid.addWidget(self.qsign_positive,             0, 7)
 		grid.addWidget(self.qsign_negative,             1, 7)
-		
+		#grid.addWidget(self.chkOutputTrigger,             2, 7) # disabled feature: the trigger output is not connected to anything inside the FPGA code anyway
 
 		
 #         # Status reporting:
@@ -1609,16 +1614,27 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #        print('resizeEvent')
 #        print(self.geometry())
 
+	def chkOutputTriggerClickedEvent(self):
+		if self.chkOutputTrigger.isChecked():
+			trigger_output = 1
+		else:
+			trigger_output = 0
+		print("trigger_output = %d" % trigger_output)
+		self.sl.setDebugTriggerOutput(trigger_output)
+
 	def chkLockOnTriggerClickedEvent(self):
+		self.triggerDelayChangedEvent()	# make sure that the trigger delay value is up-to-date
+
+		bLockOnTrigger = bool(self.qchk_lock_on_trig.isChecked())
+		self.sl.setLockOnTrigger(self.selected_ADC, bLockOnTrigger)
+
+	def triggerDelayChangedEvent(self):
 		try:
 			trig_delay_in_seconds = float(eval(self.txtTrigDelay.text()))
 		except:
 			return
 
-		bLockOnTrigger = bool(self.qchk_lock_on_trig.isChecked())
-
 		self.sl.setTriggerDelay(self.selected_ADC, trig_delay_in_seconds)
-		self.sl.setLockOnTrigger(self.selected_ADC, bLockOnTrigger)
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)
 	def updatePhaseNoiseViews(self):
