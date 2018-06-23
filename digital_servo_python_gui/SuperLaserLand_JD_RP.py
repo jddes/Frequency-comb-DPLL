@@ -407,6 +407,9 @@ class SuperLaserLand_JD_RP:
 			print('send_bus_cmd_32bits')
 		#print(sys._getframe().f_back.f_code.co_name)
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, int(data_32bits))
+		
+		if bus_address == 0x7029:
+			print("Writing %d to %d" % (int(data_32bits), int(bus_address)*4))
 			
 		# data_lsbs = int(data_32bits) & 0xFFFF
 		# data_msbs = (int(data_32bits) & 0xFFFF0000) >> 16
@@ -2605,6 +2608,9 @@ class SuperLaserLand_JD_RP:
 			delay_in_samples = 2
        
 		print('# sample delays set to: {}'.format(delay_in_samples))
+		print('channel_number: {}'.format(channel_number))
+		print('self.BUS_ADDR_lock_on_trigger_delay_0: {}'.format(self.BUS_ADDR_lock_on_trigger_delay_0))
+		
 
 		if channel_number == 0:
 			self.send_bus_cmd_32bits(self.BUS_ADDR_lock_on_trigger_delay_0, delay_in_samples)
