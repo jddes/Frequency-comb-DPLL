@@ -39,23 +39,24 @@ ARCHITECTURE behavior OF dual_type_frequency_counter_testbench IS
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT dual_type_frequency_counter
-    PORT(
-         clk : IN  std_logic;
-         data_input : IN  std_logic_vector(9 downto 0);
-         N_gate_time : IN  std_logic_vector(31 downto 0);
-         N_times_faster_gate_time : IN  std_logic_vector(31 downto 0);
-         triangular_mode : IN  std_logic;
-         output_clk_enable_N_times_faster : OUT  std_logic;
-         data_output : OUT  std_logic_vector(63 downto 0);
-         output_clk_enable : OUT  std_logic
-        );
-    END COMPONENT;
+    --COMPONENT dual_type_frequency_counter
+    --PORT(
+    --     clk : IN  std_logic;
+    --     data_input : IN  std_logic_vector(9 downto 0);
+    --     N_gate_time : IN  std_logic_vector(31 downto 0);
+    --     N_times_faster_gate_time : IN  std_logic_vector(31 downto 0);
+    --     triangular_mode : IN  std_logic;
+    --     output_clk_enable_N_times_faster : OUT  std_logic;
+    --     data_output : OUT  std_logic_vector(63 downto 0);
+    --     output_clk_enable : OUT  std_logic
+    --    );
+    --END COMPONENT;
     
 
    --Inputs
+   signal rst : std_logic := '0';
    signal clk : std_logic := '0';
-   signal data_input : std_logic_vector(9 downto 0) := std_logic_vector(to_signed(511, 10));
+   signal data_input : std_logic_vector(9 downto 0) := std_logic_vector(to_signed(0, 10));
    signal N_gate_time : std_logic_vector(31 downto 0) := std_logic_vector(to_signed(100, 32));
    signal N_times_faster_gate_time : std_logic_vector(31 downto 0) := std_logic_vector(to_signed(10, 32));
    signal triangular_mode : std_logic := '1';
@@ -72,15 +73,16 @@ BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    dual_type_frequency_counter_inst: entity work.dual_type_frequency_counter PORT MAP (
-          clk => clk,
-          data_input => data_input,
-          N_gate_time => N_gate_time,
-          N_times_faster_gate_time => N_times_faster_gate_time,
-          triangular_mode => triangular_mode,
-          output_clk_enable_N_times_faster => output_clk_enable_N_times_faster,
-          data_output => data_output,
-          output_clk_enable => output_clk_enable
-        );
+        rst                              => rst,
+        clk                              => clk,
+        data_input                       => data_input,
+        N_gate_time                      => N_gate_time,
+        N_times_faster_gate_time         => N_times_faster_gate_time,
+        triangular_mode                  => triangular_mode,
+        output_clk_enable_N_times_faster => output_clk_enable_N_times_faster,
+        data_output                      => data_output,
+        output_clk_enable                => output_clk_enable
+    );
 
    -- Clock process definitions
    clk_process :process
@@ -95,27 +97,54 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
-      wait for 100 ns;	
 
       wait for clk_period*10;
 
-		wait for clk_period*1000;
-		wait until rising_edge(clk);
-		
-		wait for clk_period*10000;
+        -- Extract counter's step response and delay:
+        wait for clk_period*100*10;
+            wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(1, 10));
+        wait for clk_period*100*10;
+            wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(0, 10));
+        wait for clk_period*100*10;
+
+        -- Extract counter's weighing function using a sliding impulse wrt to the counter's averaging phase:
+        for I in 0 to 1000-1 loop
+            wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(1, 10));
+            wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(0, 10));
+            wait for clk_period*200;
+        end loop;
+
+
+        -- Test rectangular mode
 			triangular_mode <= '0';
-		wait for clk_period*10000;
 		wait until rising_edge(clk);
+        -- Extract counter's weighing function using a sliding impulse wrt to the counter's averaging phase:
 		while TRUE loop
-			wait for clk_period*16;
-			wait until rising_edge(clk);
-			data_input <= std_logic_vector(to_signed(1, 10));
-			wait until rising_edge(clk);
-			data_input <= std_logic_vector(to_signed(0, 10));
+            wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(1, 10));
+            wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(0, 10));
+            wait for clk_period*100;
 		end loop;
 
       wait;
    end process;
 
+   -- Stimulus process for reset signal (used to synchronize the counter's gate to a software event)
+    stim_proc_rst: process
+        begin        
+        -- assert reset
+        wait for 574.815 us-clk_period*1000;  
+        wait until rising_edge(clk);
+            rst <= '1';
+        wait for clk_period*1000;
+        wait until rising_edge(clk);
+            rst <= '0';
+
+        wait;
+    end process;
 END;

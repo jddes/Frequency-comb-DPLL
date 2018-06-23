@@ -79,28 +79,29 @@ BEGIN
    end process;
  
 
-   -- Stimulus process
-   stim_proc: process
-   begin		
-      -- hold reset state for 100 ns.
-      wait for 100 ns;	
+    -- Stimulus process
+    stim_proc: process
+    begin		
+        -- hold reset state for 100 ns.
+        wait for 100 ns;	
 
-      wait for clk_period*10;
-		wait for clk_period*1000;
-		wait until rising_edge(clk);
-		
-		wait for clk_period*1000;
-		wait until rising_edge(clk);
-		while TRUE loop
-			wait for clk_period*8;
-			wait until rising_edge(clk);
-			data_input <= std_logic_vector(to_signed(1, 10));
-			wait until rising_edge(clk);
-			data_input <= std_logic_vector(to_signed(0, 10));
-		end loop;
-      -- insert stimulus here 
+        wait for clk_period*10;
 
-      wait;
-   end process;
+
+
+        wait until rising_edge(clk);
+
+        wait for clk_period*1000;
+        wait until rising_edge(clk);
+            while TRUE loop
+                wait for clk_period*8;
+                wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(1, 10));
+                wait until rising_edge(clk);
+                data_input <= std_logic_vector(to_signed(0, 10));
+            end loop;
+
+        wait;
+    end process;
 
 END;

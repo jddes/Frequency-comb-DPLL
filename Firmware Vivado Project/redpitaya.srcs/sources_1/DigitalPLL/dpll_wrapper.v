@@ -566,6 +566,7 @@ wire triangular_mode;   // triangular_mode='1' means a triangular averaging of t
 //    );
       
 dual_type_frequency_counter dual_type_frequency_counter_inst0 (
+    .rst(rst_frontend0),
     .clk(clk1), 
     .data_input(inst_frequency0), 
     .N_gate_time(32'd125000000), 
@@ -731,6 +732,7 @@ wire counter1_out_clk_enable;
      
      
 dual_type_frequency_counter dual_type_frequency_counter_inst1 (
+    .rst(rst_frontend0),    // the 0 here is not a typo: we want the two counters to stay synchronized even during a reset
     .clk(clk1), 
     .data_input(inst_frequency1), 
     .N_gate_time(32'd125000000), 

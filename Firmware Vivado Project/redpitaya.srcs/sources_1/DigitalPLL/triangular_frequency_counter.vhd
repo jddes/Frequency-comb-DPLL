@@ -33,33 +33,36 @@ entity triangular_frequency_counter is
 	Generic (
 		N_BITS_INPUT : integer := 10					-- changing this will require changing the size of the integrators or lowering the maximum gate time
 	);
-    Port ( clk : in  STD_LOGIC;
-				rst_integration : in std_logic;
-				integration_halfway : in std_logic;										-- used to change the sign of the second integrator's input
-           data_input : in  STD_LOGIC_VECTOR (N_BITS_INPUT-1 downto 0);
-			  data_output_rect : out  STD_LOGIC_VECTOR (64-1 downto 0);
-			  output_clk_enable_rect : out  STD_LOGIC;
-           data_output_triangle : out  STD_LOGIC_VECTOR (64-1 downto 0);
-           output_clk_enable_triangle : out  STD_LOGIC);
+    Port ( 
+		clk                        : in  std_logic;
+		rst_integration            : in  std_logic;
+		integration_halfway        : in  std_logic;                                        -- used to change the sign of the second integrator's input
+		data_input                 : in  std_logic_vector (N_BITS_INPUT-1 downto 0);
+		data_output_rect           : out std_logic_vector (64-1 downto 0);
+		output_clk_enable_rect     : out std_logic;
+		data_output_triangle       : out std_logic_vector (64-1 downto 0);
+		output_clk_enable_triangle : out std_logic
+
+	);
 end triangular_frequency_counter;
 
 architecture Behavioral of triangular_frequency_counter is
 
 	-- 1st Integrator (from frequency to phase)
 	-- scaled appropriately for no wrapping for 200e6 accumulated samples:
-	signal phase_accumulator : signed(10+28-1 downto 0) := (others => '0');
+	signal phase_accumulator               : signed(10+28-1 downto 0) := (others => '0');
 	
 	-- 2nd Integrator, used to average over phase values
-	signal rst_integration_delayed : std_logic := '0';
-	signal bPositiveSign				: std_logic := '0';
-	signal phase_2nd_accumulator : signed(64-1 downto 0) := (others => '0');
+	signal rst_integration_delayed         : std_logic := '0';
+	signal bPositiveSign                   : std_logic := '0';
+	signal phase_2nd_accumulator           : signed(64-1 downto 0) := (others => '0');
 	
 	-- Output stages
-	signal output_register_rect : signed(64-1 downto 0) := (others => '0');
+	signal output_register_rect            : signed(64-1 downto 0) := (others => '0');
 	signal output_register_clk_enable_rect : std_logic := '0';
 	
-	signal output_register_tri : signed(64-1 downto 0) := (others => '0');
-	signal output_register_clk_enable_tri : std_logic := '0';
+	signal output_register_tri             : signed(64-1 downto 0) := (others => '0');
+	signal output_register_clk_enable_tri  : std_logic := '0';
 	
 begin
 
