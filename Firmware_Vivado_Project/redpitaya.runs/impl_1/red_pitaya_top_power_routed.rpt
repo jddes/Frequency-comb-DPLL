@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date             : Wed Jun 06 20:56:50 2018
-| Host             : laptopjd running 64-bit Service Pack 1  (build 7601)
+| Date             : Sat Jun 23 16:58:39 2018
+| Host             : jdbureau running 64-bit major release  (build 9200)
 | Command          : 
 | Design           : red_pitaya_top
 | Device           : xc7z010clg400-1
@@ -30,12 +30,12 @@ Table of Contents
 ----------
 
 +--------------------------+-------+
-| Total On-Chip Power (W)  | 2.508 |
-| Dynamic (W)              | 2.349 |
+| Total On-Chip Power (W)  | 2.492 |
+| Dynamic (W)              | 2.333 |
 | Device Static (W)        | 0.159 |
 | Effective TJA (C/W)      | 11.5  |
-| Max Ambient (C)          | 56.1  |
-| Junction Temperature (C) | 53.9  |
+| Max Ambient (C)          | 56.3  |
+| Junction Temperature (C) | 53.7  |
 | Confidence Level         | Low   |
 | Setting File             | ---   |
 | Simulation Activity File | ---   |
@@ -50,24 +50,24 @@ Table of Contents
 | On-Chip                  | Power (W) | Used     | Available | Utilization (%) |
 +--------------------------+-----------+----------+-----------+-----------------+
 | Clocks                   |     0.072 |       17 |       --- |             --- |
-| Slice Logic              |     0.094 |    24732 |       --- |             --- |
-|   LUT as Logic           |     0.074 |     7485 |     17600 |           42.53 |
+| Slice Logic              |     0.091 |    24733 |       --- |             --- |
+|   LUT as Logic           |     0.071 |     7495 |     17600 |           42.59 |
 |   CARRY4                 |     0.009 |     1388 |      4400 |           31.55 |
 |   Register               |     0.008 |    11660 |     35200 |           33.13 |
 |   LUT as Shift Register  |     0.002 |      221 |      6000 |            3.68 |
 |   LUT as Distributed RAM |    <0.001 |      208 |      6000 |            3.47 |
 |   F7/F8 Muxes            |    <0.001 |       25 |     17600 |            0.14 |
-|   Others                 |     0.000 |     1418 |       --- |             --- |
-| Signals                  |     0.126 |    20288 |       --- |             --- |
+|   Others                 |     0.000 |     1419 |       --- |             --- |
+| Signals                  |     0.127 |    20560 |       --- |             --- |
 | Block RAM                |     0.179 |       52 |        60 |           86.67 |
 | MMCM                     |     0.106 |        1 |         2 |           50.00 |
 | PLL                      |     0.097 |        1 |         2 |           50.00 |
 | DSPs                     |     0.107 |       76 |        80 |           95.00 |
-| I/O                      |     0.272 |       93 |       100 |           93.00 |
+| I/O                      |     0.258 |       93 |       100 |           93.00 |
 | XADC                     |     0.004 |        1 |       --- |             --- |
 | PS7                      |     1.292 |        1 |       --- |             --- |
 | Static Power             |     0.159 |          |           |                 |
-| Total                    |     2.508 |          |           |                 |
+| Total                    |     2.492 |          |           |                 |
 +--------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -77,9 +77,9 @@ Table of Contents
 +-----------+-------------+-----------+-------------+------------+
 | Source    | Voltage (V) | Total (A) | Dynamic (A) | Static (A) |
 +-----------+-------------+-----------+-------------+------------+
-| Vccint    |       1.000 |     0.583 |       0.570 |      0.013 |
+| Vccint    |       1.000 |     0.580 |       0.568 |      0.012 |
 | Vccaux    |       1.800 |     0.127 |       0.115 |      0.012 |
-| Vcco33    |       3.300 |     0.080 |       0.079 |      0.001 |
+| Vcco33    |       3.300 |     0.076 |       0.075 |      0.001 |
 | Vcco25    |       2.500 |     0.001 |       0.000 |      0.001 |
 | Vcco18    |       1.800 |     0.001 |       0.000 |      0.001 |
 | Vcco15    |       1.500 |     0.001 |       0.000 |      0.001 |
@@ -143,8 +143,8 @@ Table of Contents
 | adc_clk                 | adc_clk_p_i                                                           |             8.0 |
 | clk_fb                  | pll/clk_fb                                                            |             8.0 |
 | clk_fpga_3              | i_ps/system_i/system_i/processing_system7/inst/FCLK_CLK_unbuffered[3] |             5.0 |
-| clk_out1_clk_10MHz_sync | nolabel_line955/inst/clk_out1_clk_10MHz_sync                          |           100.0 |
-| clkfbout_clk_10MHz_sync | nolabel_line955/inst/clkfbout_clk_10MHz_sync                          |             8.0 |
+| clk_out1_clk_10MHz_sync | nolabel_line961/inst/clk_out1_clk_10MHz_sync                          |           100.0 |
+| clkfbout_clk_10MHz_sync | nolabel_line961/inst/clkfbout_clk_10MHz_sync                          |             8.0 |
 | pll_adc_clk             | adc_clk                                                               |             8.0 |
 | pll_adc_clk             | pll/pll_adc_clk                                                       |             8.0 |
 | pll_clk_adc_2x          | pll/pll_clk_adc_2x                                                    |             4.0 |
@@ -164,7 +164,7 @@ Table of Contents
 +-------------------------------------------------------------------------------+-----------+
 | Name                                                                          | Power (W) |
 +-------------------------------------------------------------------------------+-----------+
-| red_pitaya_top                                                                |     2.349 |
+| red_pitaya_top                                                                |     2.333 |
 |   addr_packed_inst                                                            |     0.005 |
 |     FIFO_inst                                                                 |     0.003 |
 |       U0                                                                      |     0.003 |
@@ -190,12 +190,12 @@ Table of Contents
 |                           prim_noinit.ram                                     |     0.002 |
 |     FSM_inst                                                                  |     0.002 |
 |       ram_inst                                                                |     0.001 |
-|   dpll_wrapper_inst                                                           |     0.464 |
-|     DDC0_inst                                                                 |     0.141 |
-|       CORDIC_inst                                                             |     0.022 |
-|         U0                                                                    |     0.022 |
-|           i_synth                                                             |     0.022 |
-|             i_synth                                                           |     0.022 |
+|   dpll_wrapper_inst                                                           |     0.461 |
+|     DDC0_inst                                                                 |     0.140 |
+|       CORDIC_inst                                                             |     0.021 |
+|         U0                                                                    |     0.021 |
+|           i_synth                                                             |     0.021 |
+|             i_synth                                                           |     0.021 |
 |               gen_cordic.cordic_engine                                        |     0.017 |
 |                 gen_para_arch.gen_iteration[0].eng                            |     0.002 |
 |                   cntrl                                                       |    <0.001 |
@@ -292,7 +292,7 @@ Table of Contents
 |                 gen_para_arch.gen_iteration[4].eng                            |     0.002 |
 |                   cntrl                                                       |    <0.001 |
 |                     engine_mode_dly                                           |    <0.001 |
-|                   data_slice                                                  |     0.002 |
+|                   data_slice                                                  |     0.001 |
 |                     x_plus_y_shift                                            |    <0.001 |
 |                       inst                                                    |    <0.001 |
 |                         i_baseblox.i_baseblox_addsub                          |    <0.001 |
@@ -315,7 +315,7 @@ Table of Contents
 |                 gen_para_arch.gen_iteration[5].eng                            |     0.002 |
 |                   cntrl                                                       |    <0.001 |
 |                     engine_mode_dly                                           |    <0.001 |
-|                   data_slice                                                  |     0.001 |
+|                   data_slice                                                  |     0.002 |
 |                     x_plus_y_shift                                            |    <0.001 |
 |                       inst                                                    |    <0.001 |
 |                         i_baseblox.i_baseblox_addsub                          |    <0.001 |
@@ -454,14 +454,14 @@ Table of Contents
 |                           i_q.i_simple.qreg                                   |    <0.001 |
 |                 gen_rotation.gen_translate.gen_phase_in_reg                   |    <0.001 |
 |                 gen_rotation.gen_translate.gen_phase_rot_reg                  |    <0.001 |
-|       LO_DDS_inst                                                             |     0.042 |
-|         U0                                                                    |     0.042 |
-|           i_synth                                                             |     0.042 |
-|             i_dds                                                             |     0.042 |
+|       LO_DDS_inst                                                             |     0.043 |
+|         U0                                                                    |     0.043 |
+|           i_synth                                                             |     0.043 |
+|             i_dds                                                             |     0.043 |
 |               I_PHASEGEN.i_conventional_accum.i_accum                         |     0.001 |
 |                 i_dsp48.i_struct.i_single_channel.I_DSP                       |     0.001 |
 |               I_PHASEGEN.i_conventional_accum.i_phase_final_speedup           |    <0.001 |
-|               I_SINCOS.i_std_rom.i_rom                                        |     0.040 |
+|               I_SINCOS.i_std_rom.i_rom                                        |     0.041 |
 |                 i_rtl.i_quarter_table.i_addr_reg_c                            |    <0.001 |
 |                 i_rtl.i_quarter_table.i_piped_map.i_cardinal_cos_ls           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_piped_map.i_cardinal_cos_ms           |    <0.001 |
@@ -515,18 +515,18 @@ Table of Contents
 |         boxcar_2_pts_filter_inst1                                             |    <0.001 |
 |         boxcar_2_pts_filter_inst2                                             |    <0.001 |
 |         boxcar_2_pts_filter_inst3                                             |    <0.001 |
-|         boxcar_4_pts_filter_inst                                              |     0.004 |
+|         boxcar_4_pts_filter_inst                                              |     0.003 |
 |         boxcar_filter_16_pts_inst                                             |     0.001 |
 |           delay_inst                                                          |     0.001 |
 |             RAM_reg_0_31_0_5                                                  |    <0.001 |
 |             RAM_reg_0_31_12_17                                                |    <0.001 |
 |             RAM_reg_0_31_6_11                                                 |    <0.001 |
-|       ddc_frontend_lowpass_filter_inst_Q                                      |     0.032 |
-|         N_times_clk_FIR_wrapper_inst                                          |     0.025 |
-|           fir_compiler_minimumphase_N_times_clk_inst                          |     0.022 |
-|             U0                                                                |     0.022 |
-|               i_synth                                                         |     0.022 |
-|                 g_transpose_single_rate.i_transpose_single_rate               |     0.022 |
+|       ddc_frontend_lowpass_filter_inst_Q                                      |     0.031 |
+|         N_times_clk_FIR_wrapper_inst                                          |     0.024 |
+|           fir_compiler_minimumphase_N_times_clk_inst                          |     0.021 |
+|             U0                                                                |     0.021 |
+|               i_synth                                                         |     0.021 |
+|                 g_transpose_single_rate.i_transpose_single_rate               |     0.021 |
 |                   g_cntrl_coef_addr.i_cntrl_coef_addr                         |    <0.001 |
 |                   g_paths[0].g_coef_mem_array[0].i_mem                        |    <0.001 |
 |                     g_individual.g_mem_b.i_mem_b                              |    <0.001 |
@@ -572,17 +572,17 @@ Table of Contents
 |       first_order_IIR_highpass_filter_inst                                    |     0.003 |
 |       inphase_limiter                                                         |    <0.001 |
 |       inphase_quantizer                                                       |     0.003 |
-|       input_multiplier_I                                                      |     0.001 |
-|         U0                                                                    |     0.001 |
-|           i_mult                                                              |     0.001 |
-|             gDSP.gDSP_only.iDSP                                               |     0.001 |
+|       input_multiplier_I                                                      |     0.002 |
+|         U0                                                                    |     0.002 |
+|           i_mult                                                              |     0.002 |
+|             gDSP.gDSP_only.iDSP                                               |     0.002 |
 |       input_multiplier_Q                                                      |     0.002 |
 |         U0                                                                    |     0.002 |
 |           i_mult                                                              |     0.002 |
 |             gDSP.gDSP_only.iDSP                                               |     0.002 |
 |       quadrature_limiter                                                      |    <0.001 |
 |       quadrature_quantizer                                                    |     0.003 |
-|     DDC1_inst                                                                 |     0.141 |
+|     DDC1_inst                                                                 |     0.140 |
 |       CORDIC_inst                                                             |     0.021 |
 |         U0                                                                    |     0.021 |
 |           i_synth                                                             |     0.021 |
@@ -849,10 +849,10 @@ Table of Contents
 |         U0                                                                    |     0.043 |
 |           i_synth                                                             |     0.043 |
 |             i_dds                                                             |     0.043 |
-|               I_PHASEGEN.i_conventional_accum.i_accum                         |    <0.001 |
-|                 i_dsp48.i_struct.i_single_channel.I_DSP                       |    <0.001 |
+|               I_PHASEGEN.i_conventional_accum.i_accum                         |     0.001 |
+|                 i_dsp48.i_struct.i_single_channel.I_DSP                       |     0.001 |
 |               I_PHASEGEN.i_conventional_accum.i_phase_final_speedup           |    <0.001 |
-|               I_SINCOS.i_std_rom.i_rom                                        |     0.042 |
+|               I_SINCOS.i_std_rom.i_rom                                        |     0.041 |
 |                 i_rtl.i_quarter_table.i_addr_reg_c                            |    <0.001 |
 |                 i_rtl.i_quarter_table.i_piped_map.i_cardinal_cos_ls           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_piped_map.i_cardinal_cos_ms           |    <0.001 |
@@ -864,7 +864,7 @@ Table of Contents
 |                 i_rtl.i_quarter_table.i_piped_map.i_original_sin_ms           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_rom_reg_a                             |    <0.001 |
 |                 i_rtl.i_quarter_table.i_rom_reg_b                             |    <0.001 |
-|       ddc_frontend_lowpass_filter_inst_I                                      |     0.031 |
+|       ddc_frontend_lowpass_filter_inst_I                                      |     0.030 |
 |         N_times_clk_FIR_wrapper_inst                                          |     0.024 |
 |           fir_compiler_minimumphase_N_times_clk_inst                          |     0.021 |
 |             U0                                                                |     0.021 |
@@ -963,17 +963,17 @@ Table of Contents
 |       first_order_IIR_highpass_filter_inst                                    |     0.003 |
 |       inphase_limiter                                                         |    <0.001 |
 |       inphase_quantizer                                                       |     0.003 |
-|       input_multiplier_I                                                      |     0.002 |
-|         U0                                                                    |     0.002 |
-|           i_mult                                                              |     0.002 |
-|             gDSP.gDSP_only.iDSP                                               |     0.002 |
+|       input_multiplier_I                                                      |     0.001 |
+|         U0                                                                    |     0.001 |
+|           i_mult                                                              |     0.001 |
+|             gDSP.gDSP_only.iDSP                                               |     0.001 |
 |       input_multiplier_Q                                                      |     0.002 |
 |         U0                                                                    |     0.002 |
 |           i_mult                                                              |     0.002 |
 |             gDSP.gDSP_only.iDSP                                               |     0.002 |
 |       quadrature_limiter                                                      |    <0.001 |
 |       quadrature_quantizer                                                    |     0.003 |
-|     PLL0_loop_filters                                                         |     0.031 |
+|     PLL0_loop_filters                                                         |     0.032 |
 |       IIR_LPF_inst                                                            |     0.002 |
 |       d_saturation_inst                                                       |    <0.001 |
 |       i_saturation_inst                                                       |    <0.001 |
@@ -981,18 +981,18 @@ Table of Contents
 |       integrator_with_saturation_inst2                                        |     0.002 |
 |       out_saturation_inst                                                     |    <0.001 |
 |       p_saturation_inst                                                       |    <0.001 |
-|       pll_32x32_mult_i_inst                                                   |     0.006 |
-|         U0                                                                    |     0.006 |
-|           i_mult                                                              |     0.006 |
-|             gDSP.gDSP_only.iDSP                                               |     0.006 |
+|       pll_32x32_mult_i_inst                                                   |     0.005 |
+|         U0                                                                    |     0.005 |
+|           i_mult                                                              |     0.005 |
+|             gDSP.gDSP_only.iDSP                                               |     0.005 |
 |               use_prim.appDSP48[1].bppDSP48[0].need_output_delay.output_delay |    <0.001 |
 |               use_prim.appDSP48[1].bppDSP48[1].need_output_delay.output_delay |    <0.001 |
 |               use_prim.iBdelx[1].iBdely[0].need_delay_line.Bdelay             |    <0.001 |
 |               use_prim.iBdelx[1].iBdely[1].need_delay_line.Bdelay             |    <0.001 |
-|       pll_32x32_mult_ii_inst                                                  |     0.006 |
-|         U0                                                                    |     0.006 |
-|           i_mult                                                              |     0.006 |
-|             gDSP.gDSP_only.iDSP                                               |     0.006 |
+|       pll_32x32_mult_ii_inst                                                  |     0.007 |
+|         U0                                                                    |     0.007 |
+|           i_mult                                                              |     0.007 |
+|             gDSP.gDSP_only.iDSP                                               |     0.007 |
 |               use_prim.appDSP48[0].bppDSP48[0].need_output_delay.output_delay |    <0.001 |
 |               use_prim.appDSP48[1].bppDSP48[0].need_output_delay.output_delay |    <0.001 |
 |               use_prim.appDSP48[1].bppDSP48[1].need_output_delay.output_delay |    <0.001 |
@@ -1012,11 +1012,11 @@ Table of Contents
 |             gDSP.gDSP_only.iDSP                                               |     0.002 |
 |               use_prim.appDSP48[0].bppDSP48[0].need_output_delay.output_delay |    <0.001 |
 |               use_prim.appDSP48[0].bppDSP48[1].need_output_delay.output_delay |    <0.001 |
-|     PLL1_loop_filters                                                         |     0.031 |
+|     PLL1_loop_filters                                                         |     0.032 |
 |       IIR_LPF_inst                                                            |     0.002 |
 |       d_saturation_inst                                                       |    <0.001 |
 |       i_saturation_inst                                                       |    <0.001 |
-|       ii_saturation_inst                                                      |     0.001 |
+|       ii_saturation_inst                                                      |    <0.001 |
 |       integrator_with_saturation_inst2                                        |     0.002 |
 |       out_saturation_inst                                                     |    <0.001 |
 |       p_saturation_inst                                                       |    <0.001 |
@@ -1028,10 +1028,10 @@ Table of Contents
 |               use_prim.appDSP48[1].bppDSP48[1].need_output_delay.output_delay |    <0.001 |
 |               use_prim.iBdelx[1].iBdely[0].need_delay_line.Bdelay             |    <0.001 |
 |               use_prim.iBdelx[1].iBdely[1].need_delay_line.Bdelay             |    <0.001 |
-|       pll_32x32_mult_ii_inst                                                  |     0.006 |
-|         U0                                                                    |     0.006 |
-|           i_mult                                                              |     0.006 |
-|             gDSP.gDSP_only.iDSP                                               |     0.006 |
+|       pll_32x32_mult_ii_inst                                                  |     0.007 |
+|         U0                                                                    |     0.007 |
+|           i_mult                                                              |     0.007 |
+|             gDSP.gDSP_only.iDSP                                               |     0.007 |
 |               use_prim.appDSP48[0].bppDSP48[0].need_output_delay.output_delay |    <0.001 |
 |               use_prim.appDSP48[1].bppDSP48[0].need_output_delay.output_delay |    <0.001 |
 |               use_prim.appDSP48[1].bppDSP48[1].need_output_delay.output_delay |    <0.001 |
@@ -1060,20 +1060,20 @@ Table of Contents
 |       parallel_bus_register_enable                                            |    <0.001 |
 |       parallel_bus_register_period                                            |    <0.001 |
 |     dither_lockin_wrapper1                                                    |     0.006 |
-|       dither_lockin_inst                                                      |     0.006 |
+|       dither_lockin_inst                                                      |     0.005 |
 |         quadrature_dither_generator_inst                                      |    <0.001 |
 |       parallel_bus_register_N_periods                                         |    <0.001 |
 |       parallel_bus_register_amplitude                                         |    <0.001 |
 |       parallel_bus_register_enable                                            |    <0.001 |
 |       parallel_bus_register_period                                            |    <0.001 |
-|     dual_type_frequency_counter_inst0                                         |     0.013 |
+|     dual_type_frequency_counter_inst0                                         |     0.012 |
 |       triangular_frequency_counter_inst1                                      |     0.006 |
 |       triangular_frequency_counter_inst2                                      |     0.006 |
 |     dual_type_frequency_counter_inst1                                         |     0.012 |
 |       triangular_frequency_counter_inst1                                      |     0.006 |
 |       triangular_frequency_counter_inst2                                      |     0.006 |
-|     lock_on_trig0                                                             |     0.001 |
-|     lock_on_trig1                                                             |     0.001 |
+|     lock_on_trig0                                                             |    <0.001 |
+|     lock_on_trig1                                                             |    <0.001 |
 |     loop_filters_1_mux                                                        |    <0.001 |
 |     multiplexer_NbitsxMsignals_to_Nbits_inst                                  |     0.002 |
 |     output_summing_dac0                                                       |     0.002 |
@@ -1092,6 +1092,7 @@ Table of Contents
 |     parallel_bus_register_manual_offset_dac1                                  |    <0.001 |
 |     parallel_bus_register_mux_pll1                                            |    <0.001 |
 |     parallel_bus_register_ok_reset                                            |    <0.001 |
+|     parallel_bus_register_output_trigger                                      |    <0.001 |
 |     parallel_bus_register_phase_ok_reset_frontend                             |    <0.001 |
 |     parallel_bus_register_pll0_coefdfilter                                    |    <0.001 |
 |     parallel_bus_register_pll0_gaind                                          |    <0.001 |
@@ -1139,15 +1140,15 @@ Table of Contents
 |                           ramloop[1].ram.r                                    |     0.002 |
 |                             prim_noinit.ram                                   |     0.002 |
 |     system_identification_vna_inst                                            |     0.059 |
-|       system_identification_vna_inst                                          |     0.058 |
-|         LO_DDS_inst                                                           |     0.046 |
-|           U0                                                                  |     0.046 |
-|             i_synth                                                           |     0.046 |
-|               i_dds                                                           |     0.046 |
-|                 I_PHASEGEN.i_conventional_accum.i_accum                       |     0.001 |
-|                   i_dsp48.i_struct.i_single_channel.I_DSP                     |     0.001 |
-|                 I_PHASEGEN.i_conventional_accum.i_phase_final_speedup         |     0.001 |
-|                 I_SINCOS.i_std_rom.i_rom                                      |     0.042 |
+|       system_identification_vna_inst                                          |     0.057 |
+|         LO_DDS_inst                                                           |     0.045 |
+|           U0                                                                  |     0.045 |
+|             i_synth                                                           |     0.045 |
+|               i_dds                                                           |     0.045 |
+|                 I_PHASEGEN.i_conventional_accum.i_accum                       |     0.002 |
+|                   i_dsp48.i_struct.i_single_channel.I_DSP                     |     0.002 |
+|                 I_PHASEGEN.i_conventional_accum.i_phase_final_speedup         |    <0.001 |
+|                 I_SINCOS.i_std_rom.i_rom                                      |     0.041 |
 |                   i_rtl.i_quarter_table.i_addr_reg_c                          |    <0.001 |
 |                   i_rtl.i_quarter_table.i_piped_map.i_cardinal_cos_ls         |    <0.001 |
 |                   i_rtl.i_quarter_table.i_piped_map.i_cardinal_cos_ms         |    <0.001 |
@@ -1165,25 +1166,25 @@ Table of Contents
 |             i_mult                                                            |    <0.001 |
 |               gDSP.gDSP_only.iDSP                                             |    <0.001 |
 |         system_identification_macc_cos_inst                                   |     0.004 |
-|         system_identification_macc_sin_inst                                   |     0.004 |
+|         system_identification_macc_sin_inst                                   |     0.005 |
 |   i_ams                                                                       |    <0.001 |
 |   i_hk                                                                        |     0.001 |
-|   i_iobufn[0]                                                                 |    <0.001 |
-|   i_iobufn[1]                                                                 |    <0.001 |
-|   i_iobufn[2]                                                                 |    <0.001 |
-|   i_iobufn[3]                                                                 |    <0.001 |
-|   i_iobufn[4]                                                                 |    <0.001 |
-|   i_iobufn[5]                                                                 |    <0.001 |
-|   i_iobufn[6]                                                                 |    <0.001 |
-|   i_iobufn[7]                                                                 |    <0.001 |
-|   i_iobufp[0]                                                                 |    <0.001 |
-|   i_iobufp[1]                                                                 |    <0.001 |
-|   i_iobufp[2]                                                                 |    <0.001 |
-|   i_iobufp[3]                                                                 |    <0.001 |
-|   i_iobufp[4]                                                                 |    <0.001 |
-|   i_iobufp[5]                                                                 |    <0.001 |
-|   i_iobufp[6]                                                                 |    <0.001 |
-|   i_iobufp[7]                                                                 |    <0.001 |
+|   i_iobufn[0]                                                                 |     0.000 |
+|   i_iobufn[1]                                                                 |     0.000 |
+|   i_iobufn[2]                                                                 |     0.000 |
+|   i_iobufn[3]                                                                 |     0.000 |
+|   i_iobufn[4]                                                                 |     0.000 |
+|   i_iobufn[5]                                                                 |     0.000 |
+|   i_iobufn[6]                                                                 |     0.000 |
+|   i_iobufn[7]                                                                 |     0.000 |
+|   i_iobufp[0]                                                                 |     0.000 |
+|   i_iobufp[1]                                                                 |     0.000 |
+|   i_iobufp[2]                                                                 |     0.000 |
+|   i_iobufp[3]                                                                 |     0.000 |
+|   i_iobufp[4]                                                                 |     0.000 |
+|   i_iobufp[5]                                                                 |     0.000 |
+|   i_iobufp[6]                                                                 |     0.000 |
+|   i_iobufp[7]                                                                 |     0.000 |
 |   i_ps                                                                        |     1.321 |
 |     axi_master[0]                                                             |     0.002 |
 |       axi_awfifo_reg_0_15_0_5                                                 |    <0.001 |
@@ -1291,9 +1292,9 @@ Table of Contents
 |                 i_rtl.i_quarter_table.i_piped_map.i_original_cos_ls           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_piped_map.i_original_cos_ms           |    <0.001 |
 |                 i_rtl.i_quarter_table.i_rom_reg_b                             |    <0.001 |
-|   nolabel_line955                                                             |     0.106 |
+|   nolabel_line961                                                             |     0.106 |
 |     inst                                                                      |     0.106 |
-|   pll                                                                         |     0.097 |
+|   pll                                                                         |     0.098 |
 |   ram_data_logger_i                                                           |     0.046 |
 |     ram_inst                                                                  |     0.045 |
 +-------------------------------------------------------------------------------+-----------+

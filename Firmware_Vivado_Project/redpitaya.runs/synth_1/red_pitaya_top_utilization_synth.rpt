@@ -1,8 +1,8 @@
 Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-| Date         : Wed Jun 06 20:52:08 2018
-| Host         : laptopjd running 64-bit Service Pack 1  (build 7601)
+| Date         : Sat Jun 23 16:54:50 2018
+| Host         : jdbureau running 64-bit major release  (build 9200)
 | Command      : report_utilization -file red_pitaya_top_utilization_synth.rpt -pb red_pitaya_top_utilization_synth.pb
 | Design       : red_pitaya_top
 | Device       : 7z010clg400-1
@@ -30,13 +30,13 @@ Table of Contents
 +----------------------------+------+-------+-----------+-------+
 |          Site Type         | Used | Fixed | Available | Util% |
 +----------------------------+------+-------+-----------+-------+
-| Slice LUTs*                | 7211 |     0 |     17600 | 40.97 |
-|   LUT as Logic             | 6920 |     0 |     17600 | 39.32 |
+| Slice LUTs*                | 7212 |     0 |     17600 | 40.98 |
+|   LUT as Logic             | 6921 |     0 |     17600 | 39.32 |
 |   LUT as Memory            |  291 |     0 |      6000 |  4.85 |
 |     LUT as Distributed RAM |  208 |     0 |           |       |
 |     LUT as Shift Register  |   83 |     0 |           |       |
-| Slice Registers            | 8525 |     0 |     35200 | 24.22 |
-|   Register as Flip Flop    | 8525 |     0 |     35200 | 24.22 |
+| Slice Registers            | 8526 |     0 |     35200 | 24.22 |
+|   Register as Flip Flop    | 8526 |     0 |     35200 | 24.22 |
 |   Register as Latch        |    0 |     0 |     35200 |  0.00 |
 | F7 Muxes                   |   25 |     0 |      8800 |  0.28 |
 | F8 Muxes                   |    0 |     0 |      4400 |  0.00 |
@@ -59,7 +59,7 @@ Table of Contents
 | 0     |          Yes |           - |          Set |
 | 0     |          Yes |           - |        Reset |
 | 362   |          Yes |         Set |            - |
-| 8163  |          Yes |       Reset |            - |
+| 8164  |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -118,7 +118,7 @@ Table of Contents
 +------------+------+-------+-----------+-------+
 |  Site Type | Used | Fixed | Available | Util% |
 +------------+------+-------+-----------+-------+
-| BUFGCTRL   |   13 |     0 |        32 | 40.63 |
+| BUFGCTRL   |   14 |     0 |        32 | 43.75 |
 | BUFIO      |    0 |     0 |         8 |  0.00 |
 | MMCME2_ADV |    0 |     0 |         2 |  0.00 |
 | PLLE2_ADV  |    1 |     0 |         2 | 50.00 |
@@ -151,14 +151,14 @@ Table of Contents
 +-----------+------+----------------------+
 |  Ref Name | Used |  Functional Category |
 +-----------+------+----------------------+
-| FDRE      | 8163 |         Flop & Latch |
-| LUT2      | 2825 |                  LUT |
-| LUT3      | 1808 |                  LUT |
-| LUT1      | 1495 |                  LUT |
-| LUT6      | 1113 |                  LUT |
+| FDRE      | 8164 |         Flop & Latch |
+| LUT2      | 2824 |                  LUT |
+| LUT3      | 1810 |                  LUT |
+| LUT1      | 1496 |                  LUT |
+| LUT6      | 1132 |                  LUT |
 | CARRY4    | 1038 |           CarryLogic |
-| LUT4      |  912 |                  LUT |
-| LUT5      |  704 |                  LUT |
+| LUT4      |  915 |                  LUT |
+| LUT5      |  681 |                  LUT |
 | FDSE      |  362 |         Flop & Latch |
 | RAMD32    |  312 |   Distributed Memory |
 | BIBUF     |  130 |                   IO |
@@ -171,7 +171,7 @@ Table of Contents
 | RAMB36E1  |   19 |         Block Memory |
 | ODDR      |   18 |                   IO |
 | OBUFT     |   18 |                   IO |
-| BUFG      |   13 |                Clock |
+| BUFG      |   14 |                Clock |
 | DSP48E1   |    7 |     Block Arithmetic |
 | XADC      |    1 |               Others |
 | PS7       |    1 | Specialized Resource |
