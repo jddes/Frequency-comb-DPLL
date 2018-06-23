@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="clk_10MHz_sync_synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1516910168">
+<GenRun Id="clk_10MHz_sync_synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1529727729">
   <File Type="RDS-DCP" Name="clk_10MHz_sync.dcp"/>
   <File Type="RUN-CONSTRS" Name="$PDATADIR/runs/clk_10MHz_sync_synth_1/constrs_in.xml"/>
   <File Type="RDS-UTIL-PB" Name="clk_10MHz_sync_utilization_synth.pb"/>

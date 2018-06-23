@@ -26,6 +26,7 @@ module red_pitaya_pll (
 );
 
 logic clk_fb;
+logic clk_fb_in;
 
 PLLE2_ADV #(
    .BANDWIDTH            ("OPTIMIZED"),
@@ -63,7 +64,7 @@ PLLE2_ADV #(
    .CLKOUT4      (clk_adc_2x),
    .CLKOUT5      (clk_pwm   ),
    // Input clock control
-   .CLKFBIN      (clk_fb    ),
+   .CLKFBIN      (clk_fb_in ),
    .CLKIN1       (clk       ),
    .CLKIN2       (1'b0      ),
    // Tied to always select the primary input clock
@@ -81,5 +82,12 @@ PLLE2_ADV #(
    .PWRDWN       (1'b0      ),
    .RST          (!rstn     )
 );
+
+// JDD 2018-06-23: Adding a bufg in the feedback loop to remove the associated phase offset of the input bufg
+// this is to try to help the hold time violation on the ADC data inputs
+   BUFG BUFG_inst (
+      .O(clk_fb_in), // 1-bit output: Clock output
+      .I(clk_fb)  // 1-bit input: Clock input
+   );
 
 endmodule: red_pitaya_pll
