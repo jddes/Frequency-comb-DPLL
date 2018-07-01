@@ -1,3 +1,5 @@
+/*.*
+!/*.*/
 redpitaya.cache/
 redpitaya.hw/
 redpitaya.ip_user_files/
@@ -5,6 +7,5 @@ redpitaya.runs/
 redpitaya.sim/
 redpitaya.srcs/sources_1/ip/**/*.*
 !redpitaya.srcs/sources_1/ip/**/*.xci
-/*.*
 !vivadoproj.xpr
 !.gitignore
