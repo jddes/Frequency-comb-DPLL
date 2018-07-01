@@ -10,8 +10,9 @@ redpitaya.runs/
 redpitaya.sim/
 # Ignore everything in the "ip" subfolder:
 redpitaya.srcs/sources_1/ip/**/*.*
-# Except the xci files
+# Except the xci and coe files
 !redpitaya.srcs/sources_1/ip/**/*.xci
+!redpitaya.srcs/sources_1/ip/*.coe
 # Don't ignore the project and gitignore files:
 !vivadoproj.xpr
 !.gitignore
