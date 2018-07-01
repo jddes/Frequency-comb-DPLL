@@ -222,9 +222,9 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         try:
             output_amplitude = int(float(self.sl.DACs_limit_high[output_select] - self.sl.DACs_limit_low[output_select])*float(self.qedit_output_amplitude.text())/2)
-            if output_select == 2:
-                # The DAC2 has a particularity in that the VNA outputs only a 16-bit number, and it is multiplied by 4 to fit the 20-bit range of DAC2.
-                output_amplitude = output_amplitude/4
+            # if output_select == 2:
+            #     # The DAC2 has a particularity in that the VNA outputs only a 16-bit number, and it is multiplied by 4 to fit the 20-bit range of DAC2.
+            #     output_amplitude = output_amplitude/4
         except:
             output_amplitude = 1
             pass
@@ -255,9 +255,9 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         try:
             output_amplitude = int(float(self.sl.DACs_limit_high[output_select] - self.sl.DACs_limit_low[output_select])*float(self.qedit_dither_amplitude.text())/2)
-            if output_select == 2:
-                # The DAC2 has a particularity in that the VNA outputs only a 16-bit number, and it is multiplied by 4 to fit the 20-bit range of DAC2.
-                output_amplitude = output_amplitude/4
+            # if output_select == 2:
+            #     # The DAC2 has a particularity in that the VNA outputs only a 16-bit number, and it is multiplied by 4 to fit the 20-bit range of DAC2.
+            #     output_amplitude = output_amplitude/4
         except:
             output_amplitude = 0
             pass
@@ -296,6 +296,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         input_select = 0
         number_of_frequencies = 8
         System_settling_time = 1e-3
+        print("before syst ident")
         self.sl.setup_system_identification(input_select, output_select, modulation_frequency_in_hz, modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         
         print('(output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither) = %d, %f, %f, %d, %d' % (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither))

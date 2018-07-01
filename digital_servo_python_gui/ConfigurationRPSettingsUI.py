@@ -31,18 +31,21 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setStyleSheet(custom_style_sheet)
 		self.custom_shorthand = custom_shorthand
 
-		self.controller = controller #link to the top class
+		self.controller = weakref.proxy(controller) #link to the top class
 
 		self.initUI()
 		self.loadParameters()
 
 	def loadParameters(self):
+		#print("ConfigurationRPSettingsUI::loadParameters()")
 		# Load the default parameters from the selected xml file (select by the devices_data dictionnary in the controller class)
 		fan_state = int((self.sp.getValue('RP_settings', "Fan_state")))
 		mux_pll2 = int((self.sp.getValue('RP_settings', "PLL2_connection")))
 		mux_vco = int((self.sp.getValue('VCO_settings', "VCO_connection")))
 		vco_amplitude = float((self.sp.getValue('VCO_settings', "VCO_amplitude")))
 		vco_offset = float((self.sp.getValue('VCO_settings', "VCO_offset")))
+
+		#print("ConfigurationRPSettingsUI::loadParameters(): after read GUI")
 
 		if fan_state > 0:
 			self.qradio_fan_on.setChecked(True)
@@ -71,6 +74,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qedit_int_vco_offset.setText('{:.3f}'.format(vco_offset))
 		self.qedit_int_vco_offset.blockSignals(False)
 
+		#print("ConfigurationRPSettingsUI::loadParameters(): end")
 
 	def pushDefaultValues(self):
 		# Push the values from the xml file to the red pitaya (load + send)
@@ -121,13 +125,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 	def initUI(self):
 
-		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select connection to VCO')
+		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select VCO connection')
 		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
 		MUX_vco = Qt.QGridLayout()
 
 		self.qradio_VCO_to_DAC0 = Qt.QRadioButton('VCO connected to DAC A')
 		self.qradio_VCO_to_DAC1 = Qt.QRadioButton('VCO connected to DAC B')
-		self.qradio_no_VCO = Qt.QRadioButton('No VCO connected')
+		self.qradio_no_VCO = Qt.QRadioButton('VCO not connected')
 		self.qradio_no_VCO.setChecked(True)
 		self.qradio_VCO_to_DAC0.clicked.connect(self.mux_vco_Action)
 		self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
@@ -136,7 +140,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude [0-1]')
 		self.qedit_int_vco_amplitude = user_friendly_QLineEdit('0.5')
 		self.qedit_int_vco_amplitude.returnPressed.connect(self.setInternalVCO_amplitude)
-		self.qedit_int_vco_amplitude.setMaximumWidth(60)
+		self.qedit_int_vco_amplitude.setMaximumWidth(100)
 
 		self.qlabel_int_vco_offset = Qt.QLabel('Internal VCO offset [0-1]')
 		self.qedit_int_vco_offset = user_friendly_QLineEdit('0.0')
@@ -161,7 +165,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		MUX_pll2 = Qt.QGridLayout()
 
 		self.qradio_ddc1_to_pll2 = Qt.QRadioButton('DDC_a output to PLL_b input')
-		self.qradio_pll1_to_pll2 = Qt.QRadioButton('PLL_a output to PLL_b input')
+		self.qradio_pll1_to_pll2 = Qt.QRadioButton('DAC_a output to PLL_b input (cascade lock)')
 		self.qradio_ddc2_to_pll2 = Qt.QRadioButton('DDC_b output to PLL_b input')
 		self.qradio_ddc2_to_pll2.setChecked(True)
 		self.qradio_pll1_to_pll2.clicked.connect(self.mux_pll2_Action)

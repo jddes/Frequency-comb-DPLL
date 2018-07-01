@@ -2,7 +2,7 @@
     <Reference_frequency                DDC0="31.25e6" DDC1="31.25e6" />
     <VCO_gain                           DAC0="7.5e8" DAC1="0.5e6" DAC2="9e6" /> <!--VCO Gain -->
     <Output_limits_low                  DAC0="-1" DAC1="-1" DAC2="0" />
-    <Output_limits_high                 DAC0="1" DAC1="1" DAC2="55" />
+    <Output_limits_high                 DAC0="1" DAC1="1" DAC2="3.3" />
     <Input_Output_gain                  ADC0="1" ADC1="1" DAC0="1" DAC1="1" />
     <Output_offset_in_volts             DAC0="0" DAC1="0" DAC2="0" />
     <PLL0_settings                      chkKp="True" chkKd="False" chkKpCrossing="True" chkLock="False" fi="45e3" fii="3.4e3" kp="24" fd="60e3" fdf="600e3" />

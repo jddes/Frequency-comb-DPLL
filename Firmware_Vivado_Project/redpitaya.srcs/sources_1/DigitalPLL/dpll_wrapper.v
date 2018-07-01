@@ -1305,6 +1305,7 @@ output_summing_dac2 (
     // convert from 17-bits signed to 16-bits unsigned.
     // the 17-bits values only use the positive range
     assign DACout2 = DACout2_17bitssigned[15:0];
+    //assign DACout2 = positive_limit_dac2;//manual_offset_dac2;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Vector Network Analyzer (VNA) which performs transfer function measurements

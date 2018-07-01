@@ -41,6 +41,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.setObjectName('MainWindow')
         self.setStyleSheet(custom_style_sheet)
         self.sp = sp
+        self.timerID = None
         
         # Need to pass xem_gui_window as a parameter (to control DAC offset)
         if xem_gui_mainwindow:
@@ -101,14 +102,16 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.startTimers()
 
     def startTimers(self):
-        print("%s start timers" % self.strTitle)
+        # print("startTimers(): %s" % self.strTitle)
         self.timerID = self.startTimer(500)
 
     def killTimers(self):
-        print("%s kill timers" % self.strTitle)
+        
+        # print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
         
         #if self.timerID.isActive():
-        self.killTimer(self.timerID)
+        if self.timerID is not None:
+            self.killTimer(self.timerID)
         
 
     def openTCPConnection(self):
@@ -122,14 +125,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 print('Connection to temp control established.')
             except:
                 time_after = time.clock()
-                print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
+                #print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
                 self.client = None
                 self.last_update = time.clock()
                 self.setpoint_change = 0.
         else:
             self.client = None
         end_time = time.clock()
-        print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
+        #print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
     
 
     def initBuffer(self):
@@ -252,8 +255,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.qchk_triangular.clicked.connect(self.chkTriangular_checked)
         
         # Controls for the vertical scale of the frequency graph:
-        print(type(self.sl.fs))
-        print(self.sl.fs)
         self.qedit_ymin = Qt.QLineEdit('%f' % (-self.sl.fs/4.))
         self.qedit_ymax = Qt.QLineEdit('%f' % (self.sl.fs/4.))
 
@@ -579,7 +580,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 # Write data to disk:
                 self.file_output_dac2.write(DAC2_output)
                 
-                self.runTempControlLoop(time.clock(), DAC2_output[-1:])
+                #self.runTempControlLoop(time.clock(), DAC2_output[-1:])
                 
                 
                 

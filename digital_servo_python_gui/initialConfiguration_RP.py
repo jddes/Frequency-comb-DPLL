@@ -7,7 +7,7 @@ Created on Fri Aug 26 00:26:50 2016
 from __future__ import print_function
 
 import sys
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 #import numpy as np
 import UDPRedPitayaDiscovery
 
@@ -15,8 +15,11 @@ import time
 
 from RP_PLL import RP_PLL_device # needed to update FPGA firmware and CPU (Zynq) software
 import socket
+import weakref
 
-class initialConfiguration(QtGui.QDialog):
+import pdb
+
+class initialConfiguration(QtWidgets.QDialog):
 	
 
 		
@@ -40,7 +43,8 @@ class initialConfiguration(QtGui.QDialog):
 		self.strSelectedMAC = ''
 		self.strSelectedIP = ''
 		
-		self.controller = controller
+		if controller is not None:
+			self.controller = weakref.proxy(controller)
 
 		# create the UDP discovery object:
 		self.udp_discovery = UDPRedPitayaDiscovery.UDPRedPitayaDiscovery(self.strBroadcastAddress)
@@ -76,7 +80,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.qbtn_reprogram_cpu.clicked.connect(self.programCPUClicked)
 		
 		self.qradio_reprogram = Qt.QRadioButton('Send default values')
-		self.qradio_noreprogram = Qt.QRadioButton('Connect to an already running box (NOT WORKING YET)')
+		self.qradio_noreprogram = Qt.QRadioButton('Connect to an already running box')
 		self.qradio_reprogram.setChecked(True)
 		
 		self.qradio_noreprogram.setDisabled(True)
@@ -113,12 +117,18 @@ class initialConfiguration(QtGui.QDialog):
 		self.qradio_usefromlist.setChecked(True)
 
 		self.qlabel_manual_entry = Qt.QLabel('Manual IP entry')
-		self.qedit_manual_entry = Qt.QLineEdit('')
+		self.qedit_manual_entry = Qt.QLineEdit('192.168.0.150')
+
+		self.qlabel_host_port = Qt.QLabel('Host Port')
+		self.qedit_host_port = Qt.QLineEdit('5000')
 
 
 		gridIP.addWidget(self.qradio_usefromtextbox, 0, 0)
 		gridIP.addWidget(self.qlabel_manual_entry, 0, 1)
 		gridIP.addWidget(self.qedit_manual_entry, 0, 2)
+
+		gridIP.addWidget(self.qlabel_host_port, 0, 3)
+		gridIP.addWidget(self.qedit_host_port, 0, 4)
 
 	
 
@@ -189,9 +199,10 @@ class initialConfiguration(QtGui.QDialog):
 		self.setWindowTitle('Initial configuration')
 		self.qbtn_yes.setFocus()
 		self.show()
+
 		
 	def reset_list_and_send_broadcast(self):
-		
+
 		# clear the list if it exists
 		self.strSerialList
 		try:
@@ -207,7 +218,12 @@ class initialConfiguration(QtGui.QDialog):
 		except AttributeError:
 			pass
 		# send a broadcast packet to start building the list:
-		self.udp_discovery.send_broadcast()
+		try:
+			self.udp_discovery.send_broadcast()
+		except Exception as e:
+			print('Exception when sending UDP broadcast packet')
+			print(e)
+
 		
 	def MAC_to_display_string(self, strMAC, strIP):
 		# build the string that we will display to the user in the combo box:
@@ -232,7 +248,15 @@ class initialConfiguration(QtGui.QDialog):
 		
 	def timerEvent(self, e):
 		# check if there are any answers to the broadcast packet
-		(strIP, strMAC) = self.udp_discovery.check_answers()
+		try:
+			(strIP, strMAC) = self.udp_discovery.check_answers()
+		except AttributeError:
+			return
+		except Exception as e:
+			print('Exception when checking answers to broadcast packet')
+			print(e)
+			return
+
 
 		# iterate over answers
 		while (strIP is not None):
@@ -255,6 +279,7 @@ class initialConfiguration(QtGui.QDialog):
 		self.strSelectedIP = ''
 		self.strSelectedMAC = ''
 		self.strSelectedSerial = ''
+		self.strSelectedPort = 5000
 
 		# do we use the manual entry IP address or the one from the list?
 		if self.qradio_usefromlist.isChecked():
@@ -278,8 +303,10 @@ class initialConfiguration(QtGui.QDialog):
 			# we don't have a good way of populating the MAC and serial number yet using this manual connection
 			print("using manual entry")
 			self.strSelectedIP = str(self.qedit_manual_entry.text())
+			self.strSelectedPort = int(self.qedit_host_port.text())
 		
 	def okClicked(self):
+		print("initialConfiguration.py::okClicked(): enter")
 		self.bOk = True
 		self.bContinue = True
 
@@ -294,36 +321,45 @@ class initialConfiguration(QtGui.QDialog):
 
 		if self.qradio_pushValue.isChecked() :
 			# connect to the selected RedPitaya.
+			print("1")
 			self.readSelectedFPGA()
+			print("initialConfiguration.py::okClicked():after readSelectedFPGA")
 			if not self.strSelectedIP:
+				#print("No selected IP: returning")
 				return
 			#self.dev.OpenTCPConnection(self.strSelectedIP)
-			#print("About to connect")
-			self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP)
+			print("About to connect")
+			if self.controller is not None:
+				self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort)
+			print("initialConfiguration.py::okClicked():after pushDefaultValues")
 
 		elif self.qradio_existingRP.isChecked():
 			# Reconnect to the selected RedPitaya.
+			#print("2")
 			self.readSelectedFPGA()
+			#print("initialConfiguration.py::okClicked():after readSelectedFPGA")
 			if not self.strSelectedIP:
+				#print("No selected IP: returning")
 				return
 			#print("About to reconnect")
-			self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP) 
+			if self.controller is not None:
+				self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort)
+			#print("initialConfiguration.py::okClicked():after getActualValues")
 
 		elif self.qradio_noRP.isChecked():
+			#print("3")
 			# Open the GUI without any RP
 			print("WARNING! The socket has been replaced with a fake one, there might be some problems.")
-			# We write fake info to allow connection
-			# strMAC = "00:00:00:00:00:00"
-			# self.strSelectedMAC = strMAC
-			# self.strSelectedSerial = strMAC.replace(':', '') # this is just for legacy compatibility, when we had actual serial numbers
-			# self.strSelectedIP = "192.168.0.150"
-			self.controller.stopCommunication() #Call the function which kill the timers and call the fake socket
 
+			if self.controller is not None:
+				self.controller.stopCommunication() #Call the function which kill the timers and call the fake socket
 
+		print("initialConfiguration.py::okClicked():after if")
 		# close UDP discovery server:
 		self.killTimer(self.timerID)    # is it guaranteed that no timerEvent will be called after this line? because we delete our reference to udp_discovery, which is used in the timer event
 		del self.udp_discovery
 
+		#print("initialConfiguration.py::okClicked():close")
 		self.close()
 		#self.controller.pushDefaultValues(self.strSelectedIP)
 
@@ -336,7 +372,7 @@ class initialConfiguration(QtGui.QDialog):
 			return
 
 		# connect to the selected RedPitaya, send new bitfile, then send programming command to the shell:
-		self.dev.OpenTCPConnection(self.strSelectedIP)
+		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		self.dev.write_file_on_remote(strFilenameLocal=str(self.qedit_firmware.text()), strFilenameRemote='/opt/red_pitaya_top.bit')
 		print("File written to remote host at /opt/red_pitaya_top.bit.")
 		self.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
@@ -355,7 +391,7 @@ class initialConfiguration(QtGui.QDialog):
 			return
 
 		# connect to the selected RedPitaya
-		self.dev.OpenTCPConnection(self.strSelectedIP)
+		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		# send new monitor-tcp version
 		self.dev.write_file_on_remote(strFilenameLocal=self.qedit_software.text(), strFilenameRemote='/opt/monitor-tcp-new')
 		
@@ -381,19 +417,23 @@ class initialConfiguration(QtGui.QDialog):
 		self.close()
 		
 	def closeEvent(self, e):
-		print('close')
-		del self.udp_discovery
+		try:
+			del self.udp_discovery
+		except AttributeError:
+			# Means that we deleted the object already
+			pass
 		return
 
 def main():
-	
+
 	###########################################################################
 	# Start the User Interface
 	
 	
 	# Start Qt:
-	app = QtGui.QApplication(sys.argv)
-	
+	app = QtCore.QCoreApplication.instance()
+	if app is None:
+		app = QtWidgets.QApplication(sys.argv)
 	
 	# Load a first window which asks the user a question
 	# Specify the mapping between the MAC addresses (which are used as a form of serial numbers) and the box data
@@ -408,9 +448,10 @@ def main():
 	strFPGAFirmware=r'D:\Projects\RedPitaya\fpga\project\redpitaya.runs\impl_1\red_pitaya_top.bit'
 	strCPUFirmware=u'D:\\Université\\Dropbox\\22_H2015\\Red Pitaya\\monitor-tcp\\monitor-tcp'
 	dev = RP_PLL_device()
-	initial_config = initialConfiguration(dev, devices_data=devices_data, strFPGAFirmware=strFPGAFirmware, strCPUFirmware=strCPUFirmware)
+	initial_config = initialConfiguration(dev, None, devices_data=devices_data, strFPGAFirmware=strFPGAFirmware, strCPUFirmware=strCPUFirmware)
 	# Run the event loop for this window
 	app.exec_()
+	print("app.exec_ returned.")
 	print(initial_config.bOk)
 	print(initial_config.bSendDefaultValues)
 	print(initial_config.strSelectedMAC)

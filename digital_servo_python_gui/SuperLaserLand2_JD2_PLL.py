@@ -23,16 +23,16 @@ class Loop_filters_module(object):
         self.N_DIVIDE_II = N_DIVIDE_II
         self.N_DIVIDE_D = N_DIVIDE_D
         self.N_DIVIDE_DF = N_DIVIDE_DF
-        self.gain_p = 0.
-        self.gain_i = 0.
+        self.gain_p  = 0.
+        self.gain_i  = 0.
         self.gain_ii = 0.
-        self.gain_d = 0.
-        self.coef_d = 0.
+        self.gain_d  = 0.
+        self.coef_d  = 0.
         
-        self.N_delay_p = 5 # TODO: put the correct values here
-        self.N_delay_i = 6 # TODO: put the correct values here
+        self.N_delay_p  = 5 # TODO: put the correct values here
+        self.N_delay_i  = 6 # TODO: put the correct values here
         self.N_delay_ii = 7 # TODO: put the correct values here
-        self.N_delay_d = 7 # TODO: put the correct values here
+        self.N_delay_d  = 7 # TODO: put the correct values here
         
     def get_p_limits(self):
         # These are the real, hardware limits for the multipler operands
@@ -128,49 +128,54 @@ class Loop_filters_module(object):
         self.coef_d = coef_d_int/2.**self.N_DIVIDE_DF
         
         if bDebugOutput:
-            print('P_gain = %e, in integer: P_gain = %d = 2^%.2f' % (self.gain_p, gain_p_int, np.log2(gain_p_int+0.1)))
-            print('I_gain = %e, in integer: I_gain = %d = 2^%.2f' % (self.gain_i, gain_i_int, np.log2(gain_i_int+0.1)))
-            print('II_gain = %e, in integer: II_gain = %d = 2^%.2f' % (self.gain_ii, gain_ii_int, np.log2(gain_ii_int+0.1)))
-            print('D_gain = %e, in integer: D_gain = %d = 2^%.2f' % (self.gain_d, gain_d_int, np.log2(gain_d_int+0.1)))
-            print('DF_gain = %e, in integer: DF_gain = %d = 2^%.2f' % (self.coef_d, coef_d_int, np.log2(coef_d_int+0.1)))
+            print('P_gain = %e, in integer: P_gain = %d = 2^%.2f' % (self.gain_p, gain_p_int, np.log2(abs(gain_p_int)+0.1)))
+            print('I_gain = %e, in integer: I_gain = %d = 2^%.2f' % (self.gain_i, gain_i_int, np.log2(abs(gain_i_int)+0.1)))
+            print('II_gain = %e, in integer: II_gain = %d = 2^%.2f' % (self.gain_ii, gain_ii_int, np.log2(abs(gain_ii_int)+0.1)))
+            print('D_gain = %e, in integer: D_gain = %d = 2^%.2f' % (self.gain_d, gain_d_int, np.log2(abs(gain_d_int)+0.1)))
+            print('DF_gain = %e, in integer: DF_gain = %d = 2^%.2f' % (self.coef_d, coef_d_int, np.log2(abs(coef_d_int)+0.1)))
         
         # Send P gain
-        int_bits15_to_0 = gain_p_int & 0xFFFF
-        int_bits31_to_16 = (gain_p_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_p, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_p_int & 0xFFFF
+        # int_bits31_to_16 = (gain_p_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_p, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_p, gain_p_int)
 #        print('int_bits15_to_0 = %d, int_bits31_to_16 = %d' % (int_bits15_to_0, int_bits31_to_16))
         
         # Send I gain
-        int_bits15_to_0 = gain_i_int & 0xFFFF
-        int_bits31_to_16 = (gain_i_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_i, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_i_int & 0xFFFF
+        # int_bits31_to_16 = (gain_i_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_i, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_i, gain_i_int)
         #print('address = %x' % (self.bus_base_address + self.BUS_OFFSET_gain_i))
         
         # Send II gain
-        int_bits15_to_0 = gain_ii_int & 0xFFFF
-        int_bits31_to_16 = (gain_ii_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_ii, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_ii_int & 0xFFFF
+        # int_bits31_to_16 = (gain_ii_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_ii, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_ii, gain_ii_int)
             
         # Send D gain
-        int_bits15_to_0 = gain_d_int & 0xFFFF
-        int_bits31_to_16 = (gain_d_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_d, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = gain_d_int & 0xFFFF
+        # int_bits31_to_16 = (gain_d_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_gain_d, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_gain_d, gain_d_int)
             
         # Send DF gain
-        int_bits15_to_0 = coef_d_int & 0xFFFF
-        int_bits31_to_16 = (coef_d_int & 0xFFFF0000) >> 16
-        sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, int_bits15_to_0, int_bits31_to_16)
+        # int_bits15_to_0 = coef_d_int & 0xFFFF
+        # int_bits31_to_16 = (coef_d_int & 0xFFFF0000) >> 16
+        # sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, int_bits15_to_0, int_bits31_to_16)
+        sl.send_bus_cmd_32bits(self.bus_base_address + self.BUS_OFFSET_coef_d_filt, coef_d_int)
         
         # Send lock/unlock setting
         sl.send_bus_cmd(self.bus_base_address + self.BUS_OFFSET_settings, bLock, 0)
 
     def get_pll_settings(self, sl):
-        gain_p_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_p)
-        gain_i_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_i)
-        gain_ii_raw = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_ii)
-        gain_d_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_gain_d)
-        coef_d_raw  = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_coef_d_filt)
-        bLock       = sl.read_RAM_dpll_wrapper(self.bus_base_address + self.BUS_OFFSET_settings)
+        gain_p_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_p)
+        gain_i_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_i)
+        gain_ii_raw = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_ii)
+        gain_d_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_gain_d)
+        coef_d_raw  = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_coef_d_filt)
+        bLock       = sl.read_RAM_dpll_wrapper_signed(self.bus_base_address + self.BUS_OFFSET_settings)
 
         self.gain_p  = gain_p_raw/2.**self.N_DIVIDE_P
         self.gain_i  = gain_i_raw/2.**self.N_DIVIDE_I
@@ -181,9 +186,11 @@ class Loop_filters_module(object):
         return (self.gain_p,  self.gain_i, self.gain_ii, self.gain_d, self.coef_d, self.bLock)
 
 
+
+
 class PLL0_module(Loop_filters_module):
     
-    # Values that are fixed in the firmware (VHDL/Verilog code)
+    # Values that are fixed in the firmware (VHDL/Verilog code, file dpll_wrapper.v)
     bus_base_address = 0x7000
     N_DIVIDE_P = 24-11 # changed 2017-05-02 by JDD from 24 to 24-11 to recenter gain for RedPitaya connected to a laser with 8e8 Hz/V of VCO gain and 20 kHz of 1st order cutoff
     N_DIVIDE_I = 24
@@ -196,15 +203,14 @@ class PLL0_module(Loop_filters_module):
         
 class PLL1_module(Loop_filters_module):
     
-    # Values that are fixed in the firmware (VHDL/Verilog code)
+    # Values that are fixed in the firmware (VHDL/Verilog code, file dpll_wrapper.v)
     bus_base_address = 0x7010
     N_DIVIDE_P = 11
-    N_DIVIDE_I = 19
-    N_DIVIDE_II = 28
+    N_DIVIDE_I = 18
+    N_DIVIDE_II = 29
     N_DIVIDE_D = 0
     N_DIVIDE_DF = 18
 
-    
     def __init__(self, sl):
         super(PLL1_module, self).__init__(self.bus_base_address, self.N_DIVIDE_P, self.N_DIVIDE_I, self.N_DIVIDE_II, self.N_DIVIDE_D, self.N_DIVIDE_DF)
         

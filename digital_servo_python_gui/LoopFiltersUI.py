@@ -498,7 +498,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.updateFilterSettings()
 		self.updateGraph()
 
-	def textboxChanged_withoutUpdateFPGA(self):
+	def textboxChanged_withoutUpdatingFPGA(self):
 #        print('textboxChanged()')
 #        traceback.print_stack()
 	
@@ -533,36 +533,6 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		# Read the firmware gain limits to check if the values are within range:
 		self.getLimits()
-		
-#        if self.kp_min <= P_gain and P_gain <= self.kp_max:
-#            self.qedit_kp.setStyleSheet("background-color: %s" % Qt.QColor(QtCore.Qt.white).name())
-#        else:
-#            # red background
-#            self.qedit_kp.setStyleSheet("color: white; background-color: %s" % Qt.QColor(QtCore.Qt.red).name())
-#
-#        if self.ki_min <= I_gain and I_gain <= self.ki_max:
-#            self.qedit_fi.setStyleSheet("background-color: %s" % Qt.QColor(QtCore.Qt.white).name())
-#        else:
-#            # red background
-#            self.qedit_fi.setStyleSheet("color: white; background-color: %s" % Qt.QColor(QtCore.Qt.red).name())
-#            
-#        if self.kii_min <= II_gain and II_gain <= self.kii_max:
-#            self.qedit_fii.setStyleSheet("background-color: %s" % Qt.QColor(QtCore.Qt.white).name())
-#        else:
-#            # red background
-#            self.qedit_fii.setStyleSheet("color: white; background-color: %s" % Qt.QColor(QtCore.Qt.red).name())
-#            
-#        if self.kd_min <= D_gain and D_gain <= self.kd_max:
-#            self.qedit_fd.setStyleSheet("background-color: %s" % Qt.QColor(QtCore.Qt.white).name())
-#        else:
-#            # red background
-#            self.qedit_fd.setStyleSheet("color: white; background-color: %s" % Qt.QColor(QtCore.Qt.red).name())
-#            
-#        if self.kdf_min <= D_coef and D_coef <= self.kdf_max:
-#            self.qedit_fdf.setStyleSheet("background-color: %s" % Qt.QColor(QtCore.Qt.white).name())
-#        else:
-#            # red background
-#            self.qedit_fdf.setStyleSheet("color: white; background-color: %s" % Qt.QColor(QtCore.Qt.red).name())
 		
 		if self.kp_min <= P_gain and P_gain <= self.kp_max:
 			self.qlabel_kp.setStyleSheet("background-color: #F0F0F0")
@@ -829,7 +799,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qslider_kp.setValue(np.max((10*kp, 10*gain_min)))
 		self.qslider_kp.blockSignals(False)
 		
-		self.textboxChanged_withoutUpdateFPGA() # To update the sliders
+		self.textboxChanged_withoutUpdatingFPGA() # To update the sliders
 
 				
 		

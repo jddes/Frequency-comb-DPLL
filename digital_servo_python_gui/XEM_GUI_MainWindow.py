@@ -20,7 +20,7 @@ import errno
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 from LoopFiltersUI import LoopFiltersUI
 from DisplayVNAWindow import DisplayVNAWindow
-#from LoopFiltersUI_DAC1_and_DAC2 import LoopFiltersUI_DAC1_and_DAC2
+from LoopFiltersUI_DAC1_and_DAC2 import LoopFiltersUI_DAC1_and_DAC2
 from DisplayDitherSettingsWindow import DisplayDitherSettingsWindow
 #from DisplayCrashMonitorWindow import DisplayCrashMonitorWindow
 #from ILX_laser_control import ILX_laser_control
@@ -121,7 +121,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.setStyleSheet(custom_style_sheet)
 		self.strFGPASerialNumber = strFGPASerialNumber
 
-		
+		self.timerIDDither = None
 
 		# For the crash monitor
 		self.crash_number = 0
@@ -154,6 +154,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def setDACOffset_event(self, e):
 
 	def getValues(self):
+		print("XEM_GUI_MainWindow::getValues()")
 		self.getVCOGain()
 		self.getDACoffset()
 		self.getVCOFreq()
@@ -165,7 +166,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.timerIDDither.timeout.connect(self.timerDitherEvent)
 		self.startTimers()
 		self.displayDAC()   # This populates the current DAC values with the actual value
-		self.qchk_refresh.setChecked(True)
+		self.qchk_refresh.setChecked(False)
 		self.refreshChk_event()
 
 	def pushActualValues(self):
@@ -173,17 +174,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 	def pushDefaultValues(self):
-		print("Push default values of MainWindow")
+		print("XEM_GUI_MainWindow::pushDefaultValues()")
 		#For now, equivalent to call initSL()
 
 		self.loadParameters()
-
+		print("XEM_GUI_MainWindow::pushDefaultValues(): after loadParameters")
 
 		# Send values to FPGA
 		self.setVCOFreq_event()
+		print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOFreq_event")
 		self.setVCOGain_event()
+		print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOGain_event")
 		# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway
 		self.chkLockClickedEvent()
+		print("XEM_GUI_MainWindow::pushDefaultValues(): after chkLockClickedEvent")
 		if self.output_controls[0] == True:
 			self.setPWM0_event()
 
@@ -198,21 +202,26 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
+		print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
+
 	def killTimers(self):
-		print("%s kill timers" % self.strTitle)
-		self.timerIDDither.stop()
+		print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
+		#traceback.print_stack()
+		if self.timerIDDither is not None:
+			self.timerIDDither.stop()
 
 		if self.qchk_refresh.isChecked():
 			self.qchk_refresh.setChecked(False)
 			self.refreshChk_event()
 		
 	def startTimers(self):
-		print("%s start timers" % self.strTitle)
+		print("XEM_GUI_MainWindow::startTimers(): %s" % self.strTitle)
 		# Need to init timerID
 		self.timerID = 0
 
 		# Start the timer which reads the dither:
-		self.timerIDDither.start(100)   # 100 ms readout delay, increased to 1000 ms for debugging
+		if self.timerIDDither is not None:
+		    self.timerIDDither.start(100)   # 100 ms readout delay, increased to 1000 ms for debugging
 
 	def setDACOffset_event(self):
 		for k in range(3):
@@ -243,10 +252,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.q_dac_offset[k].setValue(q_dac_offset)
 				self.q_dac_offset[k].blockSignals(False)
 
-				try:
-					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
-				except:
-					VCO_gain_in_Hz_per_Volts = 1e9
+				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
+				# try:
+				# 	VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
+				# except:
+				# 	VCO_gain_in_Hz_per_Volts = 1e9
 
 				# Update the display:                
 				current_output_in_volts = self.sl.convertDACCountsToVolts(k, counts_offset)
@@ -254,8 +264,42 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.qlabel_dac_offset_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 
 
+	def getVCOGainFromUI(self, output_number):
+
+		try:
+			VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[output_number].text())
+		except:
+			VCO_gain_in_Hz_per_Volts = 1e9
+
+		return VCO_gain_in_Hz_per_Volts
+
+	def setSliderStepSize(self, output_number, VCO_gain_in_Hz_per_Volts):
+		# Units for the slider are millionth of fullscale (goes from 0 to 1e6), which maps to [DAC_limit_low, DAC_limit_high]
+		# The times three is because the scroll wheel actually does 3 small_steps (this is settings in Windows and can change from one computer to the next..)
+		if output_number == 1 and self.sl.read_pll2_mux() == 2:
+			print('Cascade lock operation: slider step size is hardcoded here!')
+			VCO_gain_in_Hz_per_Volts = 700e6	# use hard-coded value because the textbox is used for a different setting (gain ratio instead of VCO gain)
+			small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+			large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+		else:
+			# Normal operation
+			small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+			large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(output_number))) / float(self.sl.DACs_limit_high[output_number] - self.sl.DACs_limit_low[output_number])))
+
+		if small_step < 1:
+			small_step = 1
+		if small_step > 1e6:
+			small_step = 1e6
+		if large_step < 1:
+			large_step = 1
+		if large_step > 1e6:
+			large_step = 1e6
+			
+		self.q_dac_offset[output_number].setSingleStep(small_step)
+		self.q_dac_offset[output_number].setPageStep(large_step)
+
 	def setVCOGain_event(self):
-#        print('setVCOGain_event(): Entering')
+		print('setVCOGain_event(): Entering')
 #        self.setFLL0_event()
 	
 		# Update the loop filters gain settings based on the new VCO gains:
@@ -267,15 +311,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# large steps (clicking in the open area of the scrollbar) to be about 5 MHz
 		for k in range(3):
 			if self.output_controls[k]:
-				try:
-					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
-				except:
-					VCO_gain_in_Hz_per_Volts = 1e9
+				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
+				# try:
+				# 	VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
+				# except:
+				# 	VCO_gain_in_Hz_per_Volts = 1e9
 					
-#                print('DAC gain in V/Counts = %f' % self.sl.getDACGainInVoltsPerCounts(k))
+				# print('DAC gain in V/Counts = %f' % self.sl.getDACGainInVoltsPerCounts(k))
 				# getFreqDiscriminatorGain is in DDC Counts/Hz
 				# getDACGainInVoltsPerCounts is in V/(DAC Counts)
 				VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts * self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k) #.sl.getFreqDiscriminatorGain() and self.sl.getDACGainInVoltsPerCounts(k) are constant (different for each k)
+				#print('1')
 
 				#print('k %f' % self.sl.getDACGainInVoltsPerCounts(k))
 				# print('VCO_gain_in_counts_per_counts = %f' % VCO_gain_in_counts_per_counts)
@@ -284,6 +330,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					self.qloop_filters[k].checkFirmwareLimits()
 					self.qloop_filters[k].updateFilterSettings()
 					self.qloop_filters[k].updateGraph()
+					#print('2')
 				elif k == 2:
 					# DAC 2 loop settings are controlled by the same widget as DAC1
 					self.qloop_filters[1].kc_dac2 = VCO_gain_in_counts_per_counts
@@ -292,34 +339,25 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					self.qloop_filters[1].updateGraph()
 
 				self.sl.save_openLoop_gain(k, VCO_gain_in_counts_per_counts) #Save the value of the open-loop gain in the FPGA to allow reconnection (usefull to read Loop-Filter gain value)
+				#print('3')
 				
-				# Units for the slider are millionth of fullscale (goes from 0 to 1e6), which maps to [DAC_limit_low, DAC_limit_high]
-				# The times three is because the scroll wheel actually does 3 small_steps (this is settings in Windows and can change from one computer to the next..)
-				small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-				large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-	
-				if small_step < 1:
-					small_step = 1
-				if small_step > 1e6:
-					small_step = 1e6
-				if large_step < 1:
-					large_step = 1
-				if large_step > 1e6:
-					large_step = 1e6
-					
-	#                print('small_step = %f' % small_step)
-	#                print('large_step = %f' % large_step)
-				self.q_dac_offset[k].setSingleStep(small_step)
-				self.q_dac_offset[k].setPageStep(large_step)
+				self.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
+				#print('4')
 
 		# This function needs the VCO gain to compute the control effort so we have to update it if we have changed.
 		self.setDACOffset_event()
+		#print('5')
 
 	def getVCOGain(self):
 		for k in range(3):
 			if self.output_controls[k]:
 				VCO_gain_in_counts_per_counts = self.sl.get_openLoop_gain(k)
+				print("k = %d, VCO_gain_in_counts_per_counts=%f" % (k, VCO_gain_in_counts_per_counts))
 				VCO_gain_in_Hz_per_Volts = VCO_gain_in_counts_per_counts / (self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k))
+				print("k = %d, VCO_gain_in_Hz_per_Volts=%f" % (k, VCO_gain_in_Hz_per_Volts))
+				# prevent divide-by-0 bug:
+				if VCO_gain_in_Hz_per_Volts == 0:
+					VCO_gain_in_Hz_per_Volts = 1.
 
 				self.qedit_vco_gain[k].blockSignals(True)
 				self.qedit_vco_gain[k].setText('{:.1e}'.format(VCO_gain_in_Hz_per_Volts))
@@ -335,20 +373,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					self.qloop_filters[1].checkFirmwareLimits()
 					self.qloop_filters[1].updateGraph()
 
-				small_step = int(round(1e6/3. * (0.5e6 / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-				large_step = int(round(1e6    * (5e6   / float(VCO_gain_in_Hz_per_Volts) / float(self.sl.getDACGainInVoltsPerCounts(k))) / float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])))
-	
-				if small_step < 1:
-					small_step = 1
-				if small_step > 1e6:
-					small_step = 1e6
-				if large_step < 1:
-					large_step = 1
-				if large_step > 1e6:
-					large_step = 1e6
 
-				self.q_dac_offset[k].setSingleStep(small_step)
-				self.q_dac_offset[k].setPageStep(large_step)
+				self.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
 	##
 	## HB, 4/27/2015, Added PWM support on DOUT0
 	##
@@ -365,20 +391,23 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_pwm0_value.setText('%.2f V' % (value_in_volts))
 	
 	def setVCOFreq_event(self):
+		print("setVCOFreq_event")
 		try:
 			frequency_in_hz = float(self.qedit_ref_freq.text())
 		except:
 			frequency_in_hz = 5e6
+
 			
 		# If the VCO has positive sign, we need to put a negative reference frequency to make the
 		# total loop sign be negative so that it's stable when we close the loop
 		if self.qsign_positive.isChecked():
 			frequency_in_hz =-frequency_in_hz
-#        print('frequency_in_hz = %e' % frequency_in_hz)
+		#print('frequency_in_hz = %e' % frequency_in_hz)
 		if self.selected_ADC == 0:
 			self.sl.set_ddc0_ref_freq(frequency_in_hz)
 		elif self.selected_ADC == 1:
 			self.sl.set_ddc1_ref_freq(frequency_in_hz)
+		#print('frequency_in_hz = %e (after)' % frequency_in_hz)
 
 	def getVCOFreq(self):
 		if self.selected_ADC == 0:
@@ -748,28 +777,29 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.qloop_filters[0].updateFilterSettings()
 
 			elif self.selected_ADC == 1:
-				self.qloop_filters[1].qchk_lock.setChecked(True)
-				self.qloop_filters[1].updateFilterSettings()
+				# Lock procedure if there is no 3rd DAC on the Red Pitaya:
+				# self.qloop_filters[1].qchk_lock.setChecked(True)
+				# self.qloop_filters[1].updateFilterSettings()
 
-				# LEGACY procedure for the NIST lockbox with two DACs on the 2nd PLL channel:
-				# # There is a different procedure for turning the lock on on the optical loop:
-				# # first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
-				# # and switch to the DAC1 PLL + DAC2 second integrator.
-				# self.qloop_filters[1].qradio_mode_off.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_slow.setChecked(True)
-				# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_both.setChecked(False)
-				# self.qloop_filters[1].updateSettings()
 				
-				# # Wait for the integrator to grab on to the beat
-				# time.sleep(0.2)
+				# There is a different procedure for turning the lock on on the optical loop:
+				# first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
+				# and switch to the DAC1 PLL + DAC2 second integrator.
+				self.qloop_filters[1].qradio_mode_off.setChecked(False)
+				self.qloop_filters[1].qradio_mode_slow.setChecked(True)
+				self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+				self.qloop_filters[1].qradio_mode_both.setChecked(False)
+				self.qloop_filters[1].updateSettings()
 				
-				# # Turn on the full-blown PLL
-				# self.qloop_filters[1].qradio_mode_off.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_slow.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_both.setChecked(True)
-				# self.qloop_filters[1].updateSettings()
+				# Wait for the integrator to grab on to the beat
+				time.sleep(0.2)
+				
+				# Turn on the full-blown PLL
+				self.qloop_filters[1].qradio_mode_off.setChecked(False)
+				self.qloop_filters[1].qradio_mode_slow.setChecked(False)
+				self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+				self.qloop_filters[1].qradio_mode_both.setChecked(True)
+				self.qloop_filters[1].updateSettings()
 				
 		
 		else:   # bLock = False
@@ -823,21 +853,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					if self.selected_ADC == 0:
 						self.qloop_filters[0].qchk_lock.setChecked(False)
 						self.qloop_filters[0].updateFilterSettings()
-		#                self
-		#                self.updateGraph
 					elif self.selected_ADC == 1:
-						self.qloop_filters[1].qchk_lock.setChecked(False)
-						self.qloop_filters[1].updateFilterSettings()
+						# Unlock procedure for when there is no 3rd DAC on the Red Pitaya
+						# self.qloop_filters[1].qchk_lock.setChecked(False)
+						# self.qloop_filters[1].updateFilterSettings()
 
-						# LEGACY procedure for the NIST lockbox with two DACs on the 2nd PLL channel:
-						# # There is a different procedure for turning the lock on on the optical loop:
-						# # first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
-						# # and switch to the DAC1 PLL + DAC2 second integrator.
-						# self.qloop_filters[1].qradio_mode_off.setChecked(True)
-						# self.qloop_filters[1].qradio_mode_slow.setChecked(False)
-						# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-						# self.qloop_filters[1].qradio_mode_both.setChecked(False)
-						# self.qloop_filters[1].updateSettings()
+						# There is a different procedure for turning the lock on on the optical loop:
+						# first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
+						# and switch to the DAC1 PLL + DAC2 second integrator.
+						self.qloop_filters[1].qradio_mode_off.setChecked(True)
+						self.qloop_filters[1].qradio_mode_slow.setChecked(False)
+						self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+						self.qloop_filters[1].qradio_mode_both.setChecked(False)
+						self.qloop_filters[1].updateSettings()
 					
 			else:
 				# if the VCO is activated, we don't want to try to estimate the output offset, we just turn off the lock directly
@@ -928,8 +956,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 		else:
 			# Optical lock
-			# self.qlabel_vco_gain = Qt.QLabel('VCO Gains (DAC1, DAC2HV) [Hz/V]:')
-			self.qlabel_vco_gain = Qt.QLabel('VCO Gain (DAC1) [Hz/V]:')
+			self.qlabel_vco_gain = Qt.QLabel('VCO Gains (DAC1, DAC2HV) [Hz/V]:')
+			# self.qlabel_vco_gain = Qt.QLabel('VCO Gain (DAC1) [Hz/V]:')
 			
 			self.qlabel_detected_vco_gain_label = Qt.QLabel('Detected VCO Gain [Hz/V]:')
 			
@@ -937,9 +965,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.qedit_vco_gain[1].returnPressed.connect(self.setVCOGain_event)
 			self.qedit_vco_gain[1].setMaximumWidth(60)
 			
-			# self.qedit_vco_gain[2] = user_friendly_QLineEdit('1e6')
-			# self.qedit_vco_gain[2].returnPressed.connect(self.setVCOGain_event)
-			# self.qedit_vco_gain[2].setMaximumWidth(60)
+			self.qedit_vco_gain[2] = user_friendly_QLineEdit('1e6')
+			self.qedit_vco_gain[2].returnPressed.connect(self.setVCOGain_event)
+			self.qedit_vco_gain[2].setMaximumWidth(60)
 			
 			self.qlabel_detected_vco_gain[1] = Qt.QLabel('0 Hz/V')
 			self.qlabel_detected_vco_gain[1].setAlignment(Qt.Qt.AlignHCenter)
@@ -1105,7 +1133,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			grid2.addWidget(self.qedit_vco_gain[1],                         0, 1)
 			grid2.addWidget(self.qlabel_detected_vco_gain[1],               1, 1)
 			
-			# grid2.addWidget(self.qedit_vco_gain[2],                         0, 2)
+			grid2.addWidget(self.qedit_vco_gain[2],                         0, 2)
 			# grid2.addWidget(self.qlabel_detected_vco_gain[2],               1, 2)
 		
 		grid.addLayout(grid2, 0, 5, 2, 2)        
@@ -1228,8 +1256,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.qthermo_dac_current[k].setValue(0)
 				#self.qthermo_dac_current[k].setFillBrush(Qt.QBrush(Qt.QColor(0, 186, 52)))
 				self.qthermo_dac_current[k].setFillColor(Qt.QColor(0, 186, 52))
-				ticksListMajor = [-1, -0.5, 0, 0.5, 1]
-				ticksListMinor = [-0.75, -0.25, 0.25, 0.75]
+				if k == 2:
+					ticksListMajor = [0, 1, 2, 3]
+					ticksListMinor = [0.5, 1.5, 2.5]
+				else:
+					ticksListMajor = [-1, -0.5, 0, 0.5, 1]
+					ticksListMinor = [-0.75, -0.25, 0.25, 0.75]
 				ticksLabelMajor = list(map(str, ticksListMajor))
 				self.qthermo_dac_current[k].setTicks(ticksListMajor, ticksListMinor, ticksLabelMajor)
 				
@@ -1410,7 +1442,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		for k in range(3):
 			if self.output_controls[k] == True:
-				if k == 0 or k == 1:
+				if k == 0:
 	#                print('XEM_GUI_MainWindow(): About to call LoopFiltersUI()')
 					self.qloop_filters[k] = LoopFiltersUI(self.sl, k, bDisplayLockChkBox=False)
 
@@ -1418,10 +1450,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					hbox.addWidget(self.qloop_filters[k])
 					#self.qloop_filters[k].show()
 				
-				# elif k == 1:
-				#     self.qloop_filters[k] = LoopFiltersUI_DAC1_and_DAC2(self.sl, k, self.sl.pll[k])
-				#     hbox.addWidget(self.qloop_filters[k])
-				#     self.qloop_filters[k].show()
+				elif k == 1:
+				    self.qloop_filters[k] = LoopFiltersUI_DAC1_and_DAC2(self.sl, k, self.sl.pll[k])
+				    hbox.addWidget(self.qloop_filters[k])
+				    self.qloop_filters[k].show()
 					
 		
 		
@@ -1616,20 +1648,22 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		for k in range(3):
 			if self.output_controls[k] == True:
 #                print('XEM_GUI_MainWindow(): About to call loadParameters()')
-				if k < 2: # For qllop_filter 0 and 1
-					#print('before calling self.qloop_filters[k].loadParameters(self.sp)')
+				if k < 2: # For qloop_filter 0 and 1
+					print('before calling self.qloop_filters[k].loadParameters(self.sp)')
 					self.qloop_filters[k].loadParameters(self.sp)                               # Get values from xml file for loop_filters
-					#print('after calling self.qloop_filters[k].loadParameters(self.sp)')
-					self.qchk_lock.setChecked(self.qloop_filters[k].qchk_lock.isChecked()) # update the qchk_lock in this widget with the value loaded from sp
+					print('after calling self.qloop_filters[k].loadParameters(self.sp)')
+					# self.qchk_lock.setChecked(self.qloop_filters[k].qchk_lock.isChecked()) # update the qchk_lock in this widget with the value loaded from sp
+					print('after calling setChecked')
 
 				# Get dac gain from the system parameters object and set it in the UI:
+				print('before calling self.sp.getValue(''VCO_gain'', strDAC)')
 				strDAC = 'DAC{:01d}'.format(k)
 				str_VCO_gain = (self.sp.getValue('VCO_gain', strDAC))
-				# print('before calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
+				print('before calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
 				self.qedit_vco_gain[k].blockSignals(True)
 				self.qedit_vco_gain[k].setText(str_VCO_gain)
 				self.qedit_vco_gain[k].blockSignals(False)
-				# print('after calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
+				print('after calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
 				
 				# Output offsets values:
 				output_offset_in_volts = float(self.sp.getValue('Output_offset_in_volts', strDAC))
@@ -1638,11 +1672,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				min_output_in_volts = float(self.sp.getValue('Output_limits_low', strDAC))
 				max_output_in_volts = float(self.sp.getValue('Output_limits_high', strDAC))
 				slider_units = (output_offset_in_volts - min_output_in_volts)/(max_output_in_volts-min_output_in_volts) * 1e6
-				#print('calling dac offset slider setValue()')
+				print('calling dac offset slider setValue()')
 				self.q_dac_offset[k].blockSignals(True)
 				self.q_dac_offset[k].setValue(slider_units)
 				self.q_dac_offset[k].blockSignals(False)
-				#print('done calling dac offset slider setValue()')
+				print('done calling dac offset slider setValue()')
 				
 		if self.output_controls[0] == True:
 
@@ -1665,7 +1699,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qedit_ref_freq.reset_my_color()
 		
 			
-		#print('done loadParameters()')
+		print('done loadParameters()')
 		return
 		
 	def center(self):
@@ -1944,12 +1978,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.sl.wait_for_write()
 				(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 				
+				elapsed_time = time.clock() - start_time
+				if self.bDisplayTiming == True:
+					print('Elapsed time (read dac values) = %f ms' % (1000*elapsed_time))
 				
-				if k == 0 or k == 1:
-					samples_out = samples_out.astype(dtype=np.float)
-				elif k == 2:
-					samples_out = samples_out.astype(dtype=np.float)*2**4  # The DAC is actually 20 bits, but only the 16 MSBs are sent to the DDR2 logger, which amounts to dividing the DAC counts by 2**4
-
+				
+				samples_out = samples_out.astype(dtype=np.float)
 
 				try:
 					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
@@ -1965,7 +1999,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				
 				elapsed_time = time.clock() - start_time
 				if self.bDisplayTiming == True:
-					print('Elapsed time (displayDAC) = %f ms' % (1000*elapsed_time))
+					print('Elapsed time (displayDAC total) = %f ms' % (1000*elapsed_time))
 			
 		# Signal to other functions that they can use the DDR2 logger
 		self.sl.bDDR2InUse = False
@@ -2019,8 +2053,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			start_time = time.clock()
 			N_decimation = 10
 			fs_new = self.sl.fs/N_decimation
-			inst_freq_decimated = decimate(inst_freq, N_decimation)
-#            inst_freq_decimated = decimate(inst_freq, N_decimation, zero_phase=False)
+			#inst_freq_decimated = decimate(inst_freq, N_decimation, zero_phase=False)
+			inst_freq_decimated = decimate(inst_freq, N_decimation, zero_phase=False)
 			
 #            inst_freq_decimated = inst_freq
 #            fs_new = self.sl.fs
@@ -2280,8 +2314,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 
 			max_abs = np.max(np.abs(samples_out))
-			
-			samples_out = samples_out.astype(dtype=np.float)/2**15
+
+			samples_out = samples_out.astype(dtype=np.float)
 			self.raw_adc_samples = samples_out
 				
 		except:
@@ -2301,7 +2335,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		max_abs = np.max(np.abs(samples_out))
 		if max_abs == 0:
 			max_abs = 1 # to prevent passing a 0 value to the log function, which throws an exception
-		max_abs_in_bits = np.log2(max_abs*2**16)
+		max_abs_in_bits = np.log2(max_abs)
 		
 		self.qadc0_scale.setValue(max_abs_in_bits)
 		self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
@@ -2338,6 +2372,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
 			start_time = time.clock()
 			
+			# Normalize samples to +/- 1:
+			samples_out = samples_out/2**15
 			# Apply window function to the data:
 			samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
 			
@@ -2369,8 +2405,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.plt_spc.setTitle('Spectrum')
 		elif self.qcombo_adc_plottype.currentIndex() == 1:
 			# Display time-domain plot instead
-			# Convert ADC counts to voltage
-			samples_out = samples_out*2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1)
+			
+			if currentSelector == 0 or currentSelector == 1:
+				# Convert ADC counts to voltage
+				samples_out = self.sl.convertADCCountsToVolts(self.selected_ADC, samples_out)
+			else:
+				# Convert DAC counts to voltage
+				DAC_number = currentSelector-2
+				samples_out = self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 			time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
 			
 			self.curve_spc.setData(time_axis, samples_out)
@@ -2409,8 +2451,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# Compute the SNR on the amplitude of the baseband signal:    
 			amplitude = np.abs(complex_baseband)
-			mean_amplitude = np.mean(np.abs(complex_baseband))
-			baseband_snr = 20*np.log10(np.mean(amplitude)/np.std(amplitude))
+			mean_amplitude = np.mean(amplitude)
+			std_dev_amplitude = np.std(amplitude)
+			if mean_amplitude == 0:
+				mean_amplitude = 1.	# to avoid a NaN in the log operation
+				std_dev_amplitude = 1e3
+			baseband_snr = 20*np.log10(mean_amplitude/std_dev_amplitude)
 			# to get a more stable reading of the SNR without resorting to rounding:
 			# we put a simple first-order IIR filter:
 			filter_alpha = np.exp(-1./10.)
@@ -2420,7 +2466,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if not(np.isnan(temp_filtered_baseband_snr)):
 				self.filtered_baseband_snr = temp_filtered_baseband_snr
 			else:
-				print("Error 'nan' on filtered_baseband_snr")
+				print("Error 'nan' in filtered_baseband_snr")
 
 			self.qthermo_baseband_snr.setValue(baseband_snr)
 			self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
@@ -2530,8 +2576,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# Decimate the signal since
 				N_decimation = 10
 				fs_new = self.sl.fs/N_decimation
-				amplitude = decimate(amplitude, N_decimation)
-#                amplitude = decimate(amplitude, N_decimation, zero_phase=False)
+#				amplitude = decimate(amplitude, N_decimation)
+				amplitude = decimate(amplitude, N_decimation, zero_phase=False)
 				
 				N_fft = 2**(int(np.ceil(np.log2(len(amplitude)))))
 				frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*fs_new, N_fft)
