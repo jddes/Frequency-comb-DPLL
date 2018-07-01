@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<Runs Version="1" Minor="0">
-	<Run Id="clk_10MHz_sync_synth_1" LaunchDir="C:/Users/Alex/Documents/GitHub/OnlineVersion2/Firmware Vivado Project/redpitaya.runs/clk_10MHz_sync_synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
-</Runs>
-

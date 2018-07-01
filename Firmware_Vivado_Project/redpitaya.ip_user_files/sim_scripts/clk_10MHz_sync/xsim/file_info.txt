@@ -1,4 +1,0 @@
-Language File-Name                 IP              Library File-Path                                                                      
-Verilog, clk_10MHz_sync_clk_wiz.v, clk_10MHz_sync, work,   ../../../../redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync_clk_wiz.v
-Verilog, clk_10MHz_sync.v,         clk_10MHz_sync, work,   ../../../../redpitaya.srcs/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync.v        
-Verilog, glbl.v,                   *,              work,   glbl.v                                                                         
