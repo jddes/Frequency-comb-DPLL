@@ -1,11 +1,17 @@
+# Ignore all files in the current directory
 /*.*
+# Make sure that the previous pattern didn't match the directories with a "." in their name:
 !/*.*/
+# Specifically ignore a few subfolders:
 redpitaya.cache/
 redpitaya.hw/
 redpitaya.ip_user_files/
 redpitaya.runs/
 redpitaya.sim/
+# Ignore everything in the "ip" subfolder:
 redpitaya.srcs/sources_1/ip/**/*.*
+# Except the xci files
 !redpitaya.srcs/sources_1/ip/**/*.xci
+# Don't ignore the project and gitignore files:
 !vivadoproj.xpr
 !.gitignore
