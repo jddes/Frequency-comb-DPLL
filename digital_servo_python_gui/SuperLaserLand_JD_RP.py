@@ -1370,17 +1370,18 @@ class SuperLaserLand_JD_RP:
 			# self.convertDACCountsToVolts(1 , limit_high)
 
 		if dac_number == 2:
-			limit_low  = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac2_limit_low)
-			limit_high = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac2_limit_high)
+			data  = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac2_limits)
+			limit_high = (data & 0xFFFF0000)>>16
+			limit_low  = (data & 0x0000FFFF)
+		
+			if limit_high > ((1<<31)-1):
+				limit_high = -(0xFFFFFFFF-limit_high+1) 	#Because the value is consider as an signed integer
 
-			# if limit_high > ((1<<31)-1):
-			# 	limit_high = -(0xFFFFFFFF-limit_high+1) 	#Because the value is consider as an signed integer
-
-			# if limit_low > ((1<<31)-1):
-			# 	limit_low = -(0xFFFFFFFF-limit_low+1) 	#Because the value is consider as an signed integer
+			if limit_low > ((1<<31)-1):
+				limit_low = -(0xFFFFFFFF-limit_low+1) 	#Because the value is consider as an signed integer
 			
-			# self.convertDACCountsToVolts(2 , limit_low)
-			# self.convertDACCountsToVolts(2 , limit_high)
+			self.convertDACCountsToVolts(2 , limit_low)
+			self.convertDACCountsToVolts(2 , limit_high)
 
 		self.DACs_limit_low[dac_number] = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
@@ -1447,10 +1448,8 @@ class SuperLaserLand_JD_RP:
 		
 	def get_ddc1_ref_freq_from_RAM(self):
 		if self.bVerbose == True:
-			print('get_ddc1_ref_freq')
-
+			print('get_ddc1_ref_freq_from_RAM')
 		# Read FPGA to get the current value
-		
 		self.ddc1_frequency_in_int = (self.read_RAM_dpll_wrapper(self.BUS_ADDR_nominal_ref_freq1_msbs) << 32) + self.read_RAM_dpll_wrapper(self.BUS_ADDR_nominal_ref_freq1_lsbs)
 
 		if self.ddc1_frequency_in_int > ((1<<47)-1):
@@ -1857,10 +1856,9 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd(address, 2**12 * hold + 2**11 * flip_sign + 2**10 * lock + 2**5*gain_left_shift_in_bits + gain_right_shift_in_bits, 0)
 
 	# return type is a tuple: (hold, flip_sign, lock, gain_in_bits)
-	def get_integrator_settings(self, integrator_number, hold, flip_sign, lock, gain_in_bits):
+	def get_integrator_settings(self, integrator_number):
 		if self.bVerbose == True:
 			print('get_integrator_settings')
-			
 		if integrator_number == 1:
 		# Register format is:
 		# {dac2_integrator1_flipsign, dac2_integrate_frequency, dac2_freq_integrator_gain_left_shift_in_bits, dac2_freq_integrator_gain_right_shift_in_bits}
@@ -1869,14 +1867,12 @@ class SuperLaserLand_JD_RP:
 		# Register format is:
 		# {dac2_integrator2_flipsign, dac2_integrate_dac1_output, dac2_dac1_integrator_gain_left_shift_in_bits, dac2_dac1_integrator_gain_right_shift_in_bits}
 			address = self.BUS_ADDR_integrator2_settings
-
-		data  = sl.read_RAM_dpll_wrapper(address)
-
-		integrator_gain_right_shift_in_bits = (data    ) & (1<<5-1)
-		integrator_gain_left_shift_in_bits  = (data>> 5) & (1<<5-1)
-		lock                                = (data>>10) & (1<<1-1)
-		flip_sign                           = (data>>11) & (1<<1-1)
-		hold                                = (data>>12) & (1<<1-1)
+		data  = self.read_RAM_dpll_wrapper(address)
+		integrator_gain_right_shift_in_bits = (data    ) & ((1<<5)-1)
+		integrator_gain_left_shift_in_bits  = (data>> 5) & ((1<<5)-1)
+		lock                                = (data>>10) & ((1<<1)-1)
+		flip_sign                           = (data>>11) & ((1<<1)-1)
+		hold                                = (data>>12) & ((1<<1)-1)
 
 		# combine right-shift and left-shift value into positive or negative shift value:
 		# first a self-consistency check:

@@ -44,21 +44,108 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
     def updateFilterSettings(self):
         self.dac1_ui.updateFilterSettings()
 
+    def getValues(self):
+        self.dac1_ui.getValues()
+        self.getIntegratorGainEvent()
+
     def loadParameters(self, sp):
-        # TODO: Do something...
-        print("LoopFiltersUI_DAC1_and_DAC2::loadParameters before")
+        slowDAC_number = 2
         self.dac1_ui.loadParameters(sp)
-        print("LoopFiltersUI_DAC1_and_DAC2::loadParameters after")
+        strPLL = 'PLL{:01d}_settings'.format(slowDAC_number)
+        LoopFilter = int(sp.getValue(strPLL, 'LoopFilter'))
+        flipsign1 = bool(sp.getValue(strPLL, 'flip_acquisition').lower() == 'true')
+        flipsign2 = bool(sp.getValue(strPLL, 'flip_lock').lower() == 'true')
+        gain1_in_bits = int(sp.getValue(strPLL, 'AcqGain'))
+        gain2_in_bits = int(sp.getValue(strPLL, 'LockGain'))
+
+        if LoopFilter == 0:
+            #mode off
+            self.qradio_mode_off.blockSignals(True)
+            self.qradio_mode_off.setChecked(True)
+            self.qradio_mode_off.blockSignals(False)
+        elif LoopFilter == 1:
+            #mode slow
+            self.qradio_mode_slow.blockSignals(True)
+            self.qradio_mode_slow.setChecked(True)
+            self.qradio_mode_slow.blockSignals(False)
+        elif LoopFilter == 2:
+            # mode fase
+            self.qradio_mode_fast.blockSignals(True)
+            self.qradio_mode_fast.setChecked(True)
+            self.qradio_mode_fast.blockSignals(False)
+        elif LoopFilter == 3:
+            #mode both
+            self.qradio_mode_both.blockSignals(True)
+            self.qradio_mode_both.setChecked(True)
+            self.qradio_mode_both.blockSignals(False)
+
+
+        self.qchk_flip1.blockSignals(True)
+        self.qchk_flip1.setChecked(flipsign1)
+        self.qchk_flip1.blockSignals(False)
+        self.qcombo_int1_gain.blockSignals(True)
+        self.qcombo_int1_gain.setCurrentIndex(gain1_in_bits+32)
+        self.qcombo_int1_gain.blockSignals(False)
+
+        self.qchk_flip2.blockSignals(True)
+        self.qchk_flip2.setChecked(flipsign2)
+        self.qchk_flip2.blockSignals(False)
+        self.qcombo_int2_gain.blockSignals(True)
+        self.qcombo_int2_gain.setCurrentIndex(gain2_in_bits+32)
+        self.qcombo_int2_gain.blockSignals(False)
+
+        self.updateSettings()
+
+
+
         
     def updateGraph(self):
         # this call is meant for the underlying LoopFilterUI() object:
         self.dac1_ui.updateGraph()
         # However, that could also mean that we need to re-update our settings based on a new value of kc:
-        self.setIntegratorGainEvent()
+        #self.setIntegratorGainEvent()
         
     def getIntegratorGainEvent(self):
-        (hold, flip_sign, lock, gain_in_bits) = self.sl.get_integrator_settings(self, integrator_number, hold, flip_sign, lock, gain_in_bits)
-        # TODO...
+        (hold1, flipsign1, lock_integrator1, gain1_in_bits) = self.sl.get_integrator_settings(integrator_number = 1)
+        (hold2, flipsign2, lock_integrator2, gain2_in_bits) = self.sl.get_integrator_settings(integrator_number = 2)
+        
+        if (lock_integrator1 == 0) & (lock_integrator2 == 0):
+            #mode off
+            self.qradio_mode_off.blockSignals(True)
+            self.qradio_mode_off.setChecked(True)
+            self.qradio_mode_off.blockSignals(False)
+        elif (hold1 == 1) & (hold2 == 1):
+            # mode fase
+            self.qradio_mode_fast.blockSignals(True)
+            self.qradio_mode_fast.setChecked(True)
+            self.qradio_mode_fast.blockSignals(False)
+        elif hold2 == 1:
+            #mode slow
+            self.qradio_mode_slow.blockSignals(True)
+            self.qradio_mode_slow.setChecked(True)
+            self.qradio_mode_slow.blockSignals(False)
+        elif hold1 == 1:
+            #mode both (this was selected either by checking the lock button or by selecting the radio button)
+            self.qradio_mode_both.blockSignals(True)
+            self.qradio_mode_both.setChecked(True)
+            self.qradio_mode_both.blockSignals(False)
+
+        self.qchk_flip1.blockSignals(True)
+        self.qchk_flip1.setChecked(flipsign1)
+        self.qchk_flip1.blockSignals(False)
+        self.qcombo_int1_gain.blockSignals(True)
+        self.qcombo_int1_gain.setCurrentIndex(gain1_in_bits+32)
+        self.qcombo_int1_gain.blockSignals(False)
+
+        self.qchk_flip2.blockSignals(True)
+        self.qchk_flip2.setChecked(flipsign2)
+        self.qchk_flip2.blockSignals(False)
+        self.qcombo_int2_gain.blockSignals(True)
+        self.qcombo_int2_gain.setCurrentIndex(gain2_in_bits+32)
+        self.qcombo_int2_gain.blockSignals(False)
+
+        self.updateSettings() #to makes sure the GUI contains all the infos relative to the previous parameters
+
 
 
     def setIntegratorGainEvent(self):
@@ -161,8 +248,10 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         # Need to also call an update on PLL1 loop settings...
         if self.qradio_mode_fast.isChecked() or self.qradio_mode_both.isChecked():
             self.dac1_ui.qchk_lock.setChecked(True)
+            self.qchk_lock.setChecked(True)
         else:
             self.dac1_ui.qchk_lock.setChecked(False)
+            self.qchk_lock.setChecked(False)
         
         # Pass down the kc setting:
         self.dac1_ui.kc = self.kc
@@ -170,7 +259,6 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         self.dac1_ui.updateFilterSettings()
         self.dac1_ui.updateGraph()
 
-        
         # User changed any of the settings:
         self.setIntegratorGainEvent()
         
@@ -179,6 +267,10 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         
     def initUI(self):
 #        print('initUI()')
+        
+        self.qchk_lock = Qt.QCheckBox('Lock On') # Not displayed, for status reading only (to act like the other LoopFilter)
+        self.qchk_lock.setChecked(False)
+
         # first column: contains the radio buttons to select the mode
         vbox = Qt.QVBoxLayout()
         
@@ -195,8 +287,9 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         
         # Two checkboxes to flip the sign
         self.qchk_flip1 = Qt.QCheckBox('Flip sign on acquisition')
+        self.qchk_flip1.clicked.connect(self.setIntegratorGainEvent)
         self.qchk_flip2 = Qt.QCheckBox('Flip sign on lock')
-        
+        self.qchk_flip2.clicked.connect(self.setIntegratorGainEvent)
         
         
         self.qradio_mode_off.clicked.connect(self.updateSettings)
