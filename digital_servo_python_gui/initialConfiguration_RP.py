@@ -283,15 +283,14 @@ class initialConfiguration(QtWidgets.QDialog):
 
 		# do we use the manual entry IP address or the one from the list?
 		if self.qradio_usefromlist.isChecked():
-			print("using list")
+			# use IP from list
 			try:
 				(strIP, strMAC) = self.strSerialList[self.qcombo_serial.currentIndex()]
 				self.strSelectedSerial = strMAC.replace(':', '') # this is just for legacy compatibility, when we had actual serial numbers
 				self.strSelectedMAC = strMAC
 				self.strSelectedIP = strIP
-				print(strMAC)
-				print(strIP)
-
+				# print(strMAC)
+				# print(strIP)
 				
 			except IndexError:
 				# nothing bad happened, we probably simply had an empty list
@@ -301,7 +300,6 @@ class initialConfiguration(QtWidgets.QDialog):
 		else:
 			# use manual entry IP address
 			# we don't have a good way of populating the MAC and serial number yet using this manual connection
-			print("using manual entry")
 			self.strSelectedIP = str(self.qedit_manual_entry.text())
 			self.strSelectedPort = int(self.qedit_host_port.text())
 		
@@ -321,9 +319,8 @@ class initialConfiguration(QtWidgets.QDialog):
 
 		if self.qradio_pushValue.isChecked() :
 			# connect to the selected RedPitaya.
-			print("1")
 			self.readSelectedFPGA()
-			print("initialConfiguration.py::okClicked():after readSelectedFPGA")
+			# print("initialConfiguration.py::okClicked():after readSelectedFPGA")
 			if not self.strSelectedIP:
 				#print("No selected IP: returning")
 				return

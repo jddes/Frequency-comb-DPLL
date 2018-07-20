@@ -155,11 +155,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def getValues(self):
 		print("XEM_GUI_MainWindow::getValues()")
+		self.bFirstTimeLockCheckBoxClicked = False
 		self.getVCOGain()
 		self.getDACoffset()
 		self.getVCOFreq()
 
 		self.qloop_filters[self.selected_ADC].getValues() # We should get qloop_filters.kc before (done in getVCOGain)
+		
 		self.setLock()
 
 		self.timerIDDither = Qt.QTimer(self)
@@ -172,37 +174,24 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def pushActualValues(self):
 		print("Push actual values of MainWindow")
 
-
 	def pushDefaultValues(self):
 		print("XEM_GUI_MainWindow::pushDefaultValues()")
 		#For now, equivalent to call initSL()
-
 		self.loadParameters()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after loadParameters")
-
 		# Send values to FPGA
 		self.setVCOFreq_event()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOFreq_event")
 		self.setVCOGain_event()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOGain_event")
 		# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway
 		self.chkLockClickedEvent()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after chkLockClickedEvent")
 		if self.output_controls[0] == True:
 			self.setPWM0_event()
-
 
 		self.timerIDDither = Qt.QTimer(self)
 		self.timerIDDither.timeout.connect(self.timerDitherEvent)
 		self.startTimers()
-	
-#        self.displayADC()
-#        self.displayDDC()
-	
-
+        # self.displayADC()
+        # self.displayDDC()
 		self.displayDAC()   # This populates the current DAC values with the actual value
-
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
 
 	def killTimers(self):
 		print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
@@ -299,8 +288,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.q_dac_offset[output_number].setPageStep(large_step)
 
 	def setVCOGain_event(self):
-		print('setVCOGain_event(): Entering')
-#        self.setFLL0_event()
+		# print('setVCOGain_event(): Entering')
+		# self.setFLL0_event()
 	
 		# Update the loop filters gain settings based on the new VCO gains:
 
@@ -321,7 +310,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# getFreqDiscriminatorGain is in DDC Counts/Hz
 				# getDACGainInVoltsPerCounts is in V/(DAC Counts)
 				VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts * self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k) #.sl.getFreqDiscriminatorGain() and self.sl.getDACGainInVoltsPerCounts(k) are constant (different for each k)
-				#print('1')
 
 				#print('k %f' % self.sl.getDACGainInVoltsPerCounts(k))
 				# print('VCO_gain_in_counts_per_counts = %f' % VCO_gain_in_counts_per_counts)
@@ -391,7 +379,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_pwm0_value.setText('%.2f V' % (value_in_volts))
 	
 	def setVCOFreq_event(self):
-		print("setVCOFreq_event")
+		# print("setVCOFreq_event")
 		try:
 			frequency_in_hz = float(self.qedit_ref_freq.text())
 		except:
@@ -414,7 +402,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			frequency_in_hz = self.sl.get_ddc0_ref_freq_from_RAM()
 		elif self.selected_ADC == 1:
 			frequency_in_hz = self.sl.get_ddc1_ref_freq_from_RAM()
-
 		# If the VCO has positive sign, we need to put a negative reference frequency to make the
 		# total loop sign be negative so that it's stable when we close the loop
 		if frequency_in_hz < 0:
@@ -422,12 +409,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		else:
 			self.qsign_negative.setChecked(True)
 			
-
-
 		self.qedit_ref_freq.blockSignals(True)
 		self.qedit_ref_freq.setText('%.2e' % abs(frequency_in_hz))
 		self.qedit_ref_freq.blockSignals(False)
-
 		
 	def refreshChk_event(self):
 #        print('refreshChk_event()')
@@ -896,6 +880,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 
 		self.bFirstTimeLockCheckBoxClicked = False
+		print(self.qloop_filters[self.selected_ADC].qchk_lock.isChecked())
 
 			
 	def initUI(self):
@@ -1649,21 +1634,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if self.output_controls[k] == True:
 #                print('XEM_GUI_MainWindow(): About to call loadParameters()')
 				if k < 2: # For qloop_filter 0 and 1
-					print('before calling self.qloop_filters[k].loadParameters(self.sp)')
+					# print('before calling self.qloop_filters[k].loadParameters(self.sp)')
 					self.qloop_filters[k].loadParameters(self.sp)                               # Get values from xml file for loop_filters
-					print('after calling self.qloop_filters[k].loadParameters(self.sp)')
+					# print('after calling self.qloop_filters[k].loadParameters(self.sp)')
 					# self.qchk_lock.setChecked(self.qloop_filters[k].qchk_lock.isChecked()) # update the qchk_lock in this widget with the value loaded from sp
-					print('after calling setChecked')
+					# print('after calling setChecked')
 
 				# Get dac gain from the system parameters object and set it in the UI:
-				print('before calling self.sp.getValue(''VCO_gain'', strDAC)')
+				# print('before calling self.sp.getValue(''VCO_gain'', strDAC)')
 				strDAC = 'DAC{:01d}'.format(k)
 				str_VCO_gain = (self.sp.getValue('VCO_gain', strDAC))
-				print('before calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
+				# print('before calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
 				self.qedit_vco_gain[k].blockSignals(True)
 				self.qedit_vco_gain[k].setText(str_VCO_gain)
 				self.qedit_vco_gain[k].blockSignals(False)
-				print('after calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
+				# print('after calling self.qedit_vco_gain[k].setText(str_VCO_gain)')
 				
 				# Output offsets values:
 				output_offset_in_volts = float(self.sp.getValue('Output_offset_in_volts', strDAC))
@@ -1672,11 +1657,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				min_output_in_volts = float(self.sp.getValue('Output_limits_low', strDAC))
 				max_output_in_volts = float(self.sp.getValue('Output_limits_high', strDAC))
 				slider_units = (output_offset_in_volts - min_output_in_volts)/(max_output_in_volts-min_output_in_volts) * 1e6
-				print('calling dac offset slider setValue()')
+				# print('calling dac offset slider setValue()')
 				self.q_dac_offset[k].blockSignals(True)
 				self.q_dac_offset[k].setValue(slider_units)
 				self.q_dac_offset[k].blockSignals(False)
-				print('done calling dac offset slider setValue()')
+				# print('done calling dac offset slider setValue()')
 				
 		if self.output_controls[0] == True:
 
@@ -1697,9 +1682,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		str_ref_freq = (self.sp.getValue('Reference_frequency', strDDC))
 		self.qedit_ref_freq.setText(str_ref_freq)
 		self.qedit_ref_freq.reset_my_color()
-		
 			
-		print('done loadParameters()')
+		# print('done loadParameters()')
 		return
 		
 	def center(self):
