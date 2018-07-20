@@ -737,8 +737,8 @@ red_pitaya_hk i_hk (
 // assign exp_p_out[8-1:0] = {8'b00000000};
 
 // Set the direction of each IO pins:
-assign exp_n_dir[8-1:0] = {8'b00000011};  // pins 1-7 set as inputs, pin 0 set as output
-assign exp_p_dir[8-1:0] = {8'b00000001};  // pins 1-7 set as inputs, pins 0 set as output
+assign exp_n_dir[8-1:0] = {8'b00001011};  // pins 0, 1 and 3 set as outputs, the rest as inputs
+assign exp_p_dir[8-1:0] = {8'b00000001};  // pin 0 set as output, the rest as inputs
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
@@ -960,14 +960,14 @@ always @(posedge adc_clk) begin
   end
 end
 
-clk_10MHz_sync 
-(// Clock in ports
-  .clk_in1    ( adc_clk   ),
-  // Clock out ports
-  .clk_out1   (clk_out_10 ),
-  // Status and control signals
-  .locked     (           )
- );
+// clk_10MHz_sync 
+// (// Clock in ports
+//   .clk_in1    ( adc_clk   ),
+//   // Clock out ports
+//   .clk_out1   (clk_out_10 ),
+//   // Status and control signals
+//   .locked     (           )
+//  );
 
 
 assign daisy_p_o = {clk_out_10, 1'bz};  //Important : if you want to use only one of the signals (p or n), terminate the other one with a 50 Ohm. To do so
@@ -982,6 +982,7 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
   wire max5541_scl;
   wire max5541_sda;
   wire max5541_csb;
+  wire opamp_30V_enable = 1'b1;
 
   // // we simply play a ramp in a loop for now:
   // always @(posedge adc_clk) begin
@@ -1004,5 +1005,7 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
   assign exp_n_out[0] = max5541_scl; // before 2018-06-29: max5541_sda
   assign exp_n_out[1] = max5541_sda; 
   assign exp_p_out[1] = 0; // before 2018-06-29: max5541_csb, now is just an input (unused, but wired in parallel with an output on one of the boards
+
+  assign exp_n_out[3] = opamp_30V_enable; // this turns ON Q1 in the schematic, which turns on Q2, which activates 15 mA of bias current into the non-inverting pin in order to put the opamp inside it's common-mode input range
 endmodule
 
