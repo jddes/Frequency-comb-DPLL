@@ -665,7 +665,7 @@ class LoopFiltersUI(Qt.QWidget):
 		
 	def updateFilterSettings(self):
 #        print('LoopFiltersUI::updateFilterSettings(): Entering')
-#        traceback.print_stack()
+#		traceback.print_stack()
 
 		(P_gain, I_gain, II_gain, D_gain, D_coef, bLock) = self.getActualControllerDesign()
 		
