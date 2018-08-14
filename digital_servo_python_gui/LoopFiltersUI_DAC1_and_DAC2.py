@@ -45,18 +45,29 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         self.dac1_ui.updateFilterSettings()
 
     def getValues(self):
+        self.dac1_ui.kc = self.kc
         self.dac1_ui.getValues()
         self.getIntegratorGainEvent()
 
     def loadParameters(self, sp):
         slowDAC_number = 2
         self.dac1_ui.loadParameters(sp)
-        strPLL = 'PLL{:01d}_settings'.format(slowDAC_number)
-        LoopFilter = int(sp.getValue(strPLL, 'LoopFilter'))
-        flipsign1 = bool(sp.getValue(strPLL, 'flip_acquisition').lower() == 'true')
-        flipsign2 = bool(sp.getValue(strPLL, 'flip_lock').lower() == 'true')
-        gain1_in_bits = int(sp.getValue(strPLL, 'AcqGain'))
-        gain2_in_bits = int(sp.getValue(strPLL, 'LockGain'))
+
+        try:
+            strPLL = 'PLL{:01d}_settings'.format(slowDAC_number)
+            LoopFilter = int(sp.getValue(strPLL, 'LoopFilter'))
+            flipsign1 = bool(sp.getValue(strPLL, 'flip_acquisition').lower() == 'true')
+            flipsign2 = bool(sp.getValue(strPLL, 'flip_lock').lower() == 'true')
+            gain1_in_bits = int(sp.getValue(strPLL, 'AcqGain'))
+            gain2_in_bits = int(sp.getValue(strPLL, 'LockGain'))
+        except:
+            # the xml file was not modified to contain the infos of the 3rd DAC
+            print('Cannot load values from xml file')
+            LoopFilter = 0
+            flipsign1 = False
+            flipsign2 = False
+            gain1_in_bits = -20
+            gain2_in_bits = -20
 
         if LoopFilter == 0:
             #mode off
@@ -261,8 +272,6 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
 
         # User changed any of the settings:
         self.setIntegratorGainEvent()
-        
-
             
         
     def initUI(self):
