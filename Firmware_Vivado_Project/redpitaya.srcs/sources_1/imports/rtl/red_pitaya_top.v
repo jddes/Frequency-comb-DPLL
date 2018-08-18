@@ -741,10 +741,12 @@ red_pitaya_hk i_hk (
 // assign exp_p_out[8-1:0] = {8'b00000000};
 
 // Set the direction of each IO pins:
-assign exp_n_dir[8-1:0] = {8'b00011011};  // pins 0, 1 and 3 set as outputs, the rest as inputs
-assign exp_p_dir[8-1:0] = {8'b00000001};  // pin 0 set as output, the rest as inputs
+assign exp_n_dir[8-1:0] = {8'b00111111};  // pins 0-5 set as outputs, the rest as inputs
+assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest as inputs
 
-assign exp_n_out[4] = osc_output;
+assign exp_n_out[2] = osc_output;
+assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
+assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
