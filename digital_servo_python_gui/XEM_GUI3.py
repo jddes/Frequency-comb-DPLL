@@ -314,6 +314,7 @@ class controller(object):
 		self.divider_settings_window.pushDefaultValues()
 		self.dither_widget0.pushDefaultValues()
 		self.dither_widget1.pushDefaultValues()
+		
 
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)

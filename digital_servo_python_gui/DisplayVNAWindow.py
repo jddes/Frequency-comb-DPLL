@@ -457,8 +457,9 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qedit_osc_freq.textChanged.connect(self.oscClicked)
         # On/Off button
         self.qbtn_osc = QtGui.QPushButton('Activate output')
-        self.qbtn_osc.clicked.connect(self.oscClicked)
         self.qbtn_osc.setCheckable(True)
+        self.qbtn_osc.setChecked(True)
+        self.qbtn_osc.clicked.connect(self.oscClicked)
         # Polarity setting
         self.qchk_osc_polarity = Qt.QCheckBox('Invert polarity')
         self.qchk_osc_polarity.clicked.connect(self.oscClicked)
@@ -470,6 +471,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         # Units are millionth of the full range available
         self.q_osc_duty_cyle.setMinimum(0)
         self.q_osc_duty_cyle.setMaximum(1e6)
+
         self.q_osc_duty_cyle.setSingleStep(1e6/100./3.)
         self.q_osc_duty_cyle.setPageStep(1e6/10.)
         # Put all the widgets into a grid layout
@@ -545,6 +547,7 @@ class DisplayVNAWindow(QtGui.QWidget):
 
         oscillator_modulus = int(round(  self.sl.fs/float(self.qedit_osc_freq.text()) ))
         oscillator_modulus_active = int(round(  oscillator_modulus * float(self.q_osc_duty_cyle.value()/1e6) ))
-        print("oscClicked2")
+
+        print("self.q_osc_duty_cyle.value()")
         self.sl.setTestOscillator(int(self.qbtn_osc.isChecked()), int(not self.qchk_osc_polarity.isChecked()), oscillator_modulus, oscillator_modulus_active)
-        print("oscClicked3")
+

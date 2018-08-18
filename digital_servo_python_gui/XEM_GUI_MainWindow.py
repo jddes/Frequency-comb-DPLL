@@ -178,16 +178,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		#For now, equivalent to call initSL()
 
 		self.loadParameters()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after loadParameters")
+		# print("XEM_GUI_MainWindow::pushDefaultValues(): after loadParameters")
 
 		# Send values to FPGA
 		self.setVCOFreq_event()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOFreq_event")
+		# print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOFreq_event")
 		self.setVCOGain_event()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOGain_event")
+		# print("XEM_GUI_MainWindow::pushDefaultValues(): after setVCOGain_event")
 		# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway
 		self.chkLockClickedEvent()
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after chkLockClickedEvent")
+		# print("XEM_GUI_MainWindow::pushDefaultValues(): after chkLockClickedEvent")
 		if self.output_controls[0] == True:
 			self.setPWM0_event()
 
@@ -202,7 +202,34 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
-		print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
+		# print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
+		if self.output_controls[0] == True:
+			self.slowStart100VSwitchingSupply()
+
+	def slowStart100VSwitchingSupply(self):
+		# need to set the switching supply to it's default values:
+		# do a slow start over ~ 100 ms.
+		f_switching = 200e3
+		Vtarget = 100.
+		Vsupply = 30.
+		T_slow_start = 100e-3
+
+
+		target_duty_cycle = (Vtarget-Vsupply)/Vtarget
+		oscillator_modulus = int(round(  self.sl.fs/f_switching ))
+
+		print("slowStart100VSwitchingSupply(): starting")
+		N_steps = 10
+		for k in range(int(N_steps)+1):
+			# print("slowStart100VSwitchingSupply(): here")
+			current_duty_cycle = float(k)/N_steps * target_duty_cycle
+			# print("slowStart100VSwitchingSupply(): here2")
+			oscillator_modulus_active = int(round(  oscillator_modulus * current_duty_cycle ))
+			# print("slowStart100VSwitchingSupply(): here3")
+			self.sl.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
+			time.sleep(T_slow_start/N_steps)
+
+		print("slowStart100VSwitchingSupply(): finished")
 
 	def killTimers(self):
 		print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
@@ -221,7 +248,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		# Start the timer which reads the dither:
 		if self.timerIDDither is not None:
-		    self.timerIDDither.start(100)   # 100 ms readout delay, increased to 1000 ms for debugging
+			self.timerIDDither.start(100)   # 100 ms readout delay, increased to 1000 ms for debugging
 
 	def setDACOffset_event(self):
 		for k in range(3):
@@ -1451,9 +1478,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					#self.qloop_filters[k].show()
 				
 				elif k == 1:
-				    self.qloop_filters[k] = LoopFiltersUI_DAC1_and_DAC2(self.sl, k, self.sl.pll[k])
-				    hbox.addWidget(self.qloop_filters[k])
-				    self.qloop_filters[k].show()
+					self.qloop_filters[k] = LoopFiltersUI_DAC1_and_DAC2(self.sl, k, self.sl.pll[k])
+					hbox.addWidget(self.qloop_filters[k])
+					self.qloop_filters[k].show()
 					
 		
 		
