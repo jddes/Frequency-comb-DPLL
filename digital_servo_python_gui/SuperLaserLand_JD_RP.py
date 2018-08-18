@@ -156,6 +156,8 @@ class SuperLaserLand_JD_RP:
 	# Addresses for the internal 'cmd' register bus:
 	###########################################################################
 	
+	BUS_ADDR_TEST_OSC                                   = 0x0046
+	BUS_ADDR_TEST_OSC_DUTY                              = 0x0048
 
 	# Addresses for the system identification VNA:
 	BUS_ADDR_number_of_cycles_integration               = 0x5000
@@ -2566,5 +2568,16 @@ class SuperLaserLand_JD_RP:
 			data = 0b00000000
 
 		self.dev.write_Zynq_register_uint32(bus_address, data)
+
+
+	def setTestOscillator(self, bEnable=1, bPolarity=1, oscillator_modulus=625, oscillator_modulus_active=62):
+
+		print("setTestOscillator(): bEnable=%d, bPolarity=%d, oscillator_modulus=%d, oscillator_modulus_active=%d" % (bEnable, bPolarity, oscillator_modulus, oscillator_modulus_active) )
+
+		reg1 = (int(bPolarity)<<25) + (int(bEnable)<<24) + (oscillator_modulus & ((1<<24)-1))
+		reg2 = (oscillator_modulus_active & ((1<<24)-1))
+		print("setTestOscillator(): reg1=%d, reg2=%d" % (reg1, reg2) )
+		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC, reg1)
+		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC_DUTY, reg2)
 
 # end class definition

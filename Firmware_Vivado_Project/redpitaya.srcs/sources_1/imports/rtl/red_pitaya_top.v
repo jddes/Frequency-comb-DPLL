@@ -423,6 +423,8 @@ wire LoggerIsWriting;
 
 reg dpll_output_selector;
 
+wire osc_output;  // for testing a switching regulator
+
 wire [ 32-1:0] dpll_output;
 wire dpll_ack;
 wire [ 32-1:0] addr_packed_output;
@@ -461,6 +463,8 @@ dpll_wrapper dpll_wrapper_inst (
   .DACout0                 (  DACout0                    ),
   .DACout1                 (  DACout1                    ),
   .DACout2                 (  DACout2                    ),
+
+  .osc_output(osc_output),
 
   // Data logger port:
   .LoggerData              (  LoggerData                 ),
@@ -737,8 +741,10 @@ red_pitaya_hk i_hk (
 // assign exp_p_out[8-1:0] = {8'b00000000};
 
 // Set the direction of each IO pins:
-assign exp_n_dir[8-1:0] = {8'b00001011};  // pins 0, 1 and 3 set as outputs, the rest as inputs
+assign exp_n_dir[8-1:0] = {8'b00011011};  // pins 0, 1 and 3 set as outputs, the rest as inputs
 assign exp_p_dir[8-1:0] = {8'b00000001};  // pin 0 set as output, the rest as inputs
+
+assign exp_n_out[4] = osc_output;
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );

@@ -17,6 +17,8 @@ module dpll_wrapper(
     output wire signed [15:0] DACout1,
     output wire signed [15:0] DACout2,
 
+    output wire osc_output,
+
     // Data logger port:
     output wire [16-1:0]      LoggerData,
     output wire               LoggerData_clk_enable,
@@ -108,7 +110,49 @@ assign cmd_data1in = sys_wdata[16-1  :0];
 assign cmd_data2in = sys_wdata[32-1  :16];
 
 
+///////////////////////////////////////////////////////////////////////////////
+// For testing a switching supply
+wire osc_enable, osc_polarity;
+wire [24-1:0] oscillator_modulus;
+wire [24-1:0] oscillator_modulus_active;
 
+    variable_duty_cycle_oscillator variable_duty_cycle_oscillator_inst
+    (
+        .clk(clk1),
+        .benable(osc_enable),
+        .bpolarity(osc_polarity),
+        .modulus(oscillator_modulus),                  // sets the period
+        .modulus_active(oscillator_modulus_active),    // controls the duty cycle: output < '1' when modulus < modulus_active (if polarity='1' and enable = '1')
+        .output_square_wave(osc_output)
+    );
+
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(26),
+    .REGISTER_DEFAULT_VALUE(26'b11000000000000001001110001),    // polarity=1, enable=1, modulus = 625
+    .ADDRESS(16'h0046)
+)
+parallel_bus_register_oscillator (
+     .clk(clk1), 
+     .bus_strobe(cmd_trig), 
+     .bus_address(cmd_addr), 
+     .bus_data({cmd_data2in, cmd_data1in}), 
+     .register_output({osc_polarity, osc_enable, oscillator_modulus}), 
+     .update_flag()
+     );
+
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(24),
+    .REGISTER_DEFAULT_VALUE(24'd62), // modulus_active = 62 (9.9% duty cyle)
+    .ADDRESS(16'h0048)
+)
+parallel_bus_register_oscillator_duty (
+     .clk(clk1), 
+     .bus_strobe(cmd_trig), 
+     .bus_address(cmd_addr), 
+     .bus_data({cmd_data2in, cmd_data1in}), 
+     .register_output(oscillator_modulus_active), 
+     .update_flag()
+     );
 
 ///////////////////////////////////////////////////////////////////////////////
 // LEDs
