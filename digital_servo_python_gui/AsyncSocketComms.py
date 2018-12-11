@@ -32,6 +32,9 @@ class AsyncSocketServer():
         self.sock_server.bind((HOST, self.port_number))
         self.sock_server.listen(5)
 
+    def closeServer(self):
+        self.sock_server.close()
+
     def run(self):
         # First: check if there is any connection pending:
         # Check if there is a connection pending:
@@ -56,15 +59,15 @@ class AsyncSocketServer():
             try:
                 (read_buffer, bSocketOpen) = self.readdata_async(self.sock_conn, self.read_buffer)
                 self.read_buffer = read_buffer
-                
                 if not bSocketOpen:
                     # socket has been closed on the other side:
                     if self.bVerbose:
                         print('Socket closed detected.')
                     self.sock_conn = None
-            except:
+            except Exception as e:
                 # probably better to just close the socket if we get here:
                 print('Read generated an exception')
+                print(e)
 #                self.sock_conn.close() # this can also throw an exception:
                 self.sock_conn = None
 #                raise
@@ -88,10 +91,9 @@ class AsyncSocketServer():
             # Check if there is data:
             # note the [0] at the end which selects only the first output of the select()
             ready_to_read = select.select([sock], [], [], 0)[0]
-                
             if ready_to_read:
                 data = sock.recv(recv_buffer)
-                
+                data = data.decode("utf-8") #bytes -> str
                 if not data:
                     # This means that the other end has closed the socket:
                     if self.bVerbose:
@@ -117,4 +119,11 @@ class AsyncSocketClient():
         self.sock.connect((HOST, self.PORT))
         
     def send_text(self, txt_to_send):
-        self.sock.sendall(txt_to_send)
+        if type(txt_to_send)!=str:
+            print('Error, txt_to_send is not a str')
+            return
+        
+        self.sock.send(txt_to_send.encode('utf-8'))
+
+    def close(self):
+        self.sock.close()        
