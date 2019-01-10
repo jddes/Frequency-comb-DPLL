@@ -185,7 +185,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.sl.setCounterMode(True)
         else:
             self.sl.setCounterMode(False)
-        print('Updating counter mode')
+        # print('Updating counter mode')
 
     def getTriangular_checked(self):
         self.bTriangularAveraging = self.sl.getCounterMode()

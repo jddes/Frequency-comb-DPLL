@@ -272,7 +272,26 @@ class controller(object):
 
 		self.sp.sendToFPGA(self.sl, True)
 
+	def setCustomShorthand(self, strSelectedSerial):
+		# The shorthand name which gets added to the window names:
+		try:
+			# custom_shorthand = self.devices_data[self.initial_config.strSelectedSerial]['shorthand']
+			custom_shorthand = self.devices_data[strSelectedSerial]['shorthand']
+		except KeyError:
+			custom_shorthand = ''
 
+		self.main_windows.setWindowTitle(custom_shorthand)
+		self.xem_gui_mainwindow2.strTitle = custom_shorthand + ': Optical lock'
+		self.xem_gui_mainwindow.strTitle = custom_shorthand + ': CEO lock'
+		
+		# self.divider_settings_window.custom_shorthand = custom_shorthand
+		# self.xem_gui_mainwindow.setWindowTitle(self.xem_gui_mainwindow2.strTitle)		
+		# self.xem_gui_mainwindow2.setWindowTitle(self.xem_gui_mainwindow2.strTitle)
+		# self.RP_Settings.setStyleSheet(custom_shorthand)
+		# self.counters_window.setWindowTitle(custom_shorthand + ': Frequency counters')
+		# self.settings_window.setWindowTitle(custom_shorthand + ': Dither controls')
+		# self.divider_settings_window.setWindowTitle(custom_shorthand + ': Peripherals settings')
+		
 	def setCustomStyleSheet(self, strSelectedSerial):
 		# Style sheet which includes the color scheme for each specific box:
 		try:
@@ -296,6 +315,7 @@ class controller(object):
 
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
+		self.setCustomShorthand(strSelectedSerial)
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
@@ -304,7 +324,6 @@ class controller(object):
 		# Now we just need to reset the frontend to make sure we start everything in a nice state
 		self.sl.resetFrontend()
 		self.loadDefaultValueFromConfigFile(strSelectedSerial)
-		
 		
 		self.xem_gui_mainwindow2.pushDefaultValues()
 		self.xem_gui_mainwindow.pushDefaultValues()
@@ -317,6 +336,7 @@ class controller(object):
 
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
+		self.setCustomShorthand(strSelectedSerial)
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
@@ -331,8 +351,11 @@ class controller(object):
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
+		self.setCustomShorthand(strSelectedSerial)
+
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
+
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
 		self.xem_gui_mainwindow2.getValues()
