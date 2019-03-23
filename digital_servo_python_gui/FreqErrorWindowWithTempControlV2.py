@@ -804,7 +804,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     self.curve_dac.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_history[self.bValid_dacs])
                     self.curve_dac_uthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]+self.DAC_thrsh_history[self.bValid_dacs])
                     self.curve_dac_lthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]-self.DAC_thrsh_history[self.bValid_dacs])
-                    self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f (%f)' % (channelName, self.DAC_history[-1]), DAC0_output_voltage)
+                    self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f (%f)' % (channelName, self.DAC_history[-1], DAC0_output_voltage))
 
                 if self.output_number == 1:
                     if self.qchk_show_DAC1.isChecked():
