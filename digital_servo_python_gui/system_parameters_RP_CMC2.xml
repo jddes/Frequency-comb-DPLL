@@ -1,23 +1,25 @@
 <SuperLaserLandPLL_settings>
-    <Reference_frequency                DDC0="10e6" DDC1="31.25e6" />
-    <VCO_gain                           DAC0="1.4e9" DAC1="5e6" DAC2="5e6" />
+    <Reference_frequency                DDC0="31.25e6" DDC1="31.25e6" />
+    <VCO_gain                           DAC0="1e9" DAC1="1e6" DAC2="6.5e8" />
     <Output_limits_low                  DAC0="-1" DAC1="-1" DAC2="0" />
     <Output_limits_high                 DAC0="1" DAC1="1" DAC2="2" />
     <Input_Output_gain                  ADC0="1" ADC1="1" DAC0="1" DAC1="1" />
-    <Output_offset_in_volts             DAC0="0" DAC1="0" DAC2="0" />
-    <PLL0_settings                      chkKp="True" chkKd="False" chkKpCrossing="True" chkLock="False" fi="45e3" fii="3.4e3" kp="24" fd="60e3" fdf="600e3" />
-    <PLL1_settings                      chkKp="True" chkKd="False" chkKpCrossing="True" chkLock="False" fi="141e3" fii="3.24e3" kp="-5.6" fd="60e3" fdf="600e3" />
+    <Output_offset_in_volts             DAC0="0" DAC1="0" DAC2="1" />
+    <PLL0_settings                      chkKp="True" chkKd="False" chkKpCrossing="False" chkLock="False" fi="4.5e5" fii="3.4e3" kp="20" fd="60e3" fdf="600e3" />
+    <PLL1_settings                      chkKp="False" chkKd="False" chkKpCrossing="False" chkLock="False" fi="7.24e4" fii="1.29e4" kp="0" fd="60e3" fdf="600e3" />
     <!--<PLL2_settings                      chkKp="False" chkKd="False" chkKpCrossing="False" chkLock="False" fi="1e-2" fii="0" kp="-120" fd="60e3" fdf="600e3" />-->
-    <PLL2_settings                      LoopFilter="0" flip_acquisition="True" flip_lock="True" AcqGain="-21" LockGain="-23"/> <!--LoopFilter = 0: off | 1: slow piezo only | 2: fast piezo only | 3:both piezo (equivalent to lock) -->
+    <PLL2_settings                      LoopFilter="0" flip_acquisition="False" flip_lock="False" AcqGain="-15" LockGain="-24"/> <!--LoopFilter = 0: off | 1: slow piezo only | 2: fast piezo only | 3:both piezo (equivalent to lock) -->
     <PWM0_settings                      standard="3.3" levels="256" default="0.0" minval="0.0" maxval="3.3" />
     <Main_window_settings               Integration_limit="5e6" N_samples_adc="1.75e3" N_samples_ddc="1e6" refresh_delay="500" />
     <Triangular_averaging               DAC0="1" DAC1 ="1" />
+    <Auto_unlock                        chkAutoUnlock="True"    threshold = "0.05" />
+    <Temperature_control                chkControl="False"    threshold_step="0.35"  threshold_disable="0.05"    step_size="0.05"    step_delay="60" />
     <Dither_frequency                   DAC0="1e3" DAC1 ="5.1e3" />
     <Dither_integration_time            DAC0="0.1" DAC1 ="0.1" />
-    <Dither_amplitude                   DAC0="1e-3" DAC1 ="1e-3" />
+    <Dither_amplitude                   DAC0="1e-3" DAC1 ="1e-2" />
     <Dither_mode                        DAC0="2" DAC1 ="2" />  <!--0 : Manual off | 1 : Manual on | 2 : Automatic -->
     <VCO_settings                       VCO_connection="0" VCO_amplitude="0.5" VCO_offset="0.00" /> <!--VCO_connection = 0, A or B -->
     <RP_settings                        PLL2_connection="0" Fan_state="0" /> <!--PLL2_connection = 0: DDC2 | 1: DDC1 | 2: channel 1's loop filter -->
-    <Filter_select                      DAC0="1" DAC1="0" /> <!--0: Wideband | 1: Narrowband | 2: WidebandFIR -->
+    <Filter_select                      DAC0="1" DAC1="1" /> <!--0: Wideband | 1: Narrowband | 2: WidebandFIR -->
     <Angle_select                       DAC0="0" DAC1="0" />  <!--0: cordic | 1:quadrature_msb | 2: quadrature_lsb | 3: inphase_msb | 4:inphase_lsb -->
 </SuperLaserLandPLL_settings>

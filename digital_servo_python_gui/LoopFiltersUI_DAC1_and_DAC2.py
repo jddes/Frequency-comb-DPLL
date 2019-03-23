@@ -41,6 +41,7 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         
     def checkFirmwareLimits(self):
         self.dac1_ui.checkFirmwareLimits()
+    
     def updateFilterSettings(self):
         self.dac1_ui.updateFilterSettings()
 

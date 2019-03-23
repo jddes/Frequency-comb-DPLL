@@ -9,6 +9,7 @@ import time
 import sys
 
 import numpy as np
+import logging
 #import matplotlib.pyplot as plt
 
 class socket_placeholder():
@@ -40,6 +41,9 @@ class RP_PLL_device():
 
 
     def __init__(self, controller=None):
+        self.logger = logging.getLogger(__name__)
+        self.logger_name = ':RP_PLL'
+
         self.sock = socket_placeholder()
         self.controller = controller
         self.valid_socket = 0
@@ -92,6 +96,7 @@ class RP_PLL_device():
             self.sock.sendall(file_data.tobytes())
         except:
             print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
+            self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
             self.disconnectEvent()
     # Function used to send a shell command to the Red Pitaya:
     def send_shell_command(self, strCommand):
@@ -104,6 +109,7 @@ class RP_PLL_device():
             self.sock.sendall(strCommand.encode('ascii'))
         except:
             print("RP_PLL.py: send_shell_command(): exception while sending command!")
+            self.logger.warning('Red_Pitaya_GUI{}: send_shell_command(): exception while sending command!'.format(self.logger_name))
             self.disconnectEvent()
     # Function used to reboot the monitor-tcp program
     def send_reboot_command(self):
@@ -114,6 +120,7 @@ class RP_PLL_device():
             self.sock.sendall(packet_to_send)
         except:
             print("RP_PLL.py: send_reboot_command(): exception while sending command!")
+            self.logger.warning('Red_Pitaya_GUI{}: send_reboot_command(): exception while sending command!'.format(self.logger_name))
             self.disconnectEvent()
 
     #######################################################
@@ -175,8 +182,10 @@ class RP_PLL_device():
             return 0
         if len(data_buffer) != 4:
             print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+            
         register_value_as_tuple = struct.unpack('i', data_buffer)
         return register_value_as_tuple[0]
+
 
     def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
         print("read_Zynq_register_uint64()")
