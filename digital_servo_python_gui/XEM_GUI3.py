@@ -333,7 +333,12 @@ class controller(object):
 		self.main_windows.setStyleSheet(custom_style_sheet)
 
 	def setTemperatureControlPort(self, strSelectedSerial):
-		port_number = self.devices_data[strSelectedSerial]['port_temp']
+		try:
+			port_number = self.devices_data[strSelectedSerial]['port_temp']
+		except Exception:
+			port_number = 0
+			self.logger.warning('Red_Pitaya_GUI{}: Could not get temperature control port'.format(self.logger_name))
+
 		self.freq_error_window2.port_number = int(port_number)
 
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
