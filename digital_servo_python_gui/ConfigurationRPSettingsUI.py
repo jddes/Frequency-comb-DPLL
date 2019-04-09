@@ -44,8 +44,14 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		mux_vco = int((self.sp.getValue('VCO_settings', "VCO_connection")))
 		vco_amplitude = float((self.sp.getValue('VCO_settings', "VCO_amplitude")))
 		vco_offset = float((self.sp.getValue('VCO_settings', "VCO_offset")))
+		clk_select = int((self.sp.getValue('RP_settings', "Clock_select")))
 
 		#print("ConfigurationRPSettingsUI::loadParameters(): after read GUI")
+
+		if clk_select > 0:
+			self.qradio_internal_clk.setChecked(True)
+		else:
+			self.qradio_external_clk.setChecked(True)
 
 		if fan_state > 0:
 			self.qradio_fan_on.setChecked(True)
@@ -87,6 +93,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.mux_pll2_Action()
 		self.setInternalVCO_amplitude()
 		self.setFan()
+		self.setClkSelect()
 
 	def getValues(self):
 		#get value from the memory of the red pitaya 
@@ -121,9 +128,35 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		elif mux_pll2 == 2:
 			self.qradio_pll1_to_pll2.setChecked(True)
 		
-
+		# clock source
+		clk_select = self.sl.read_clk_select()
+		if clk_select > 0:
+			self.qradio_internal_clk.setChecked(True)
+		else:
+			self.qradio_external_clk.setChecked(True)
 
 	def initUI(self):
+
+		###################################################################################
+
+		self.qgroupbox_clkselect = Qt.QGroupBox('Clock source')
+		self.qgroupbox_clkselect.setAutoFillBackground(True)
+		grid = Qt.QGridLayout()
+
+		self.qradio_internal_clk = Qt.QRadioButton('Internal clock')
+		self.qradio_external_clk = Qt.QRadioButton('External clock')
+		self.qradio_internal_clk.setChecked(True)
+		self.qradio_internal_clk.clicked.connect(self.setClkSelect)
+		self.qradio_external_clk.clicked.connect(self.setClkSelect)
+
+		grid.addWidget(self.qradio_internal_clk, 0, 0)
+		grid.addWidget(self.qradio_external_clk, 1, 0)
+
+		#grid.setRowStretch(2, 2)
+
+		self.qgroupbox_clkselect.setLayout(grid)
+
+		###################################################################################
 
 		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select VCO connection')
 		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
@@ -209,7 +242,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		###################################################################################
 
-		self.qgroupbox_fanUI = Qt.QGroupBox('Turn on/off fan')
+		self.qgroupbox_fanUI = Qt.QGroupBox('Turn fan on/off')
 		self.qgroupbox_fanUI.setAutoFillBackground(True)
 		fanUI = Qt.QGridLayout()
 
@@ -238,11 +271,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.group.setAutoFillBackground(True)
 		group = Qt.QGridLayout()
 
-		group.addWidget(self.qgroupbox_MUX_vco, 0, 0, 2, 4)
-		group.addWidget(self.qgroupbox_MUX_pll2, 3, 0, 2, 4)
-		group.addWidget(self.qgroupbox_read_data, 6, 0, 2, 4)
-		group.addWidget(self.qgroupbox_fanUI, 8, 0, 1, 1)
-		group.addWidget(self.qbtn_reconnect, 8, 1, 1, 2)
+		group.addWidget(self.qgroupbox_clkselect, 0, 0, 1, 3)
+		group.addWidget(self.qgroupbox_MUX_vco,   1, 0, 1, 3)
+		group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 3)
+		group.addWidget(self.qgroupbox_read_data, 3, 0, 1, 3)
+		group.addWidget(self.qgroupbox_fanUI,     4, 0, 1, 1)
+		group.addWidget(self.qbtn_reconnect,      4, 1, 1, 1)
 
 		#vbox = Qt.QVBoxLayout()
 		#vbox.addStretch(1)
@@ -293,6 +327,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
 	def setFan(self):
 		# Set the output of 2 IO pins (0 or 3.3V) for the activation of the fan
 		self.sl.setFan(self.qradio_fan_on.isChecked())
+
+
+	def setClkSelect(self):
+		self.sl.setClockSelector(self.qradio_internal_clk.isChecked())
 
 	def mux_vco_Action(self):
 		if self.qradio_VCO_to_DAC0.isChecked():

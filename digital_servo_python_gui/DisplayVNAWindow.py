@@ -515,7 +515,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         vbox = Qt.QVBoxLayout()
         vbox.addWidget(self.qgroupbox_vna)
         vbox.addWidget(self.qgroupbox_dither)
-        vbox.addWidget(self.qgroupbox_test_osc)
+        # vbox.addWidget(self.qgroupbox_test_osc)
 
         # Spacer which takes up the rest of the space:
         spacerItem = QtGui.QSpacerItem(1, 1, QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Expanding)

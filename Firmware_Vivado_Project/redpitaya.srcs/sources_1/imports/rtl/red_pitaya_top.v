@@ -308,23 +308,30 @@ wire                  digital_loop;
 ////////////////////////////////////////////////////////////////////////////////
 // PLL (clock and reaset)
 ////////////////////////////////////////////////////////////////////////////////
+wire clk_to_adc;
+wire clk_ext_or_int;
 
 // diferential clock input
 IBUFDS i_clk (.I (adc_clk_p_i), .IB (adc_clk_n_i), .O (adc_clk_in));  // differential clock input
 
 red_pitaya_pll pll (
   // inputs
-  .clk         (adc_clk_in),  // clock
-  .rstn        (frstn[0]  ),  // reset - active low
+  .clk            (adc_clk_in),  // clock
+  .rstn           (frstn[0]  ),  // reset - active low
+  // 200 MHz clock inputs, will be converted to 125 MHz for clocking the ADC
+  .clk_ext_or_int (clk_ext_or_int), // selects between "clk_int_for_adc" or "clk_ext_for_adc" as the ADC clock sources
+  .clk_int_for_adc(fclk[3]),        // 200 MHz clock input, internal from block design
+  .clk_ext_for_adc(exp_p_in[5]),    // 200 MHz external clock input on DIO5_P
+  .clk_to_adc     (clk_to_adc),     // 125 MHz clock output, goes to two ODDR to drive the ADC clock input (requires a hardware modification on the RP boards)
   // output clocks
-  .clk_adc     (pll_adc_clk   ),  // ADC clock
-  .clk_dac_1x  (pll_dac_clk_1x),  // DAC clock 125MHz
-  .clk_dac_2x  (pll_dac_clk_2x),  // DAC clock 250MHz
-  .clk_dac_2p  (pll_dac_clk_2p),  // DAC clock 250MHz -45DGR
-  .clk_adc_2x  (pll_clk_adc_2x),  // fast serial clock
-  .clk_pwm     (pll_pwm_clk   ),  // PWM clock
+  .clk_adc        (pll_adc_clk   ),  // ADC clock
+  .clk_dac_1x     (pll_dac_clk_1x),  // DAC clock 125MHz
+  .clk_dac_2x     (pll_dac_clk_2x),  // DAC clock 250MHz
+  .clk_dac_2p     (pll_dac_clk_2p),  // DAC clock 250MHz -45DGR
+  .clk_adc_2x     (pll_clk_adc_2x),  // fast serial clock
+  .clk_pwm        (pll_pwm_clk   ),  // PWM clock
   // status outputs
-  .pll_locked  (pll_locked)
+  .pll_locked     (pll_locked)
 );
 
 BUFG bufg_adc_clk    (.O (adc_clk   ), .I (pll_adc_clk   ));
@@ -351,10 +358,15 @@ pwm_rstn <=  frstn[0] &  pll_locked;
 // ADC IO
 ////////////////////////////////////////////////////////////////////////////////
 
-// generating ADC clock is disabled
-assign adc_clk_o = 2'b10;
-//ODDR i_adc_clk_p ( .Q(adc_clk_o[0]), .D1(1'b1), .D2(1'b0), .C(fclk[0]), .CE(1'b1), .R(1'b0), .S(1'b0));
-//ODDR i_adc_clk_n ( .Q(adc_clk_o[1]), .D1(1'b0), .D2(1'b1), .C(fclk[0]), .CE(1'b1), .R(1'b0), .S(1'b0));
+// // generating ADC clock is disabled
+// assign adc_clk_o = 2'b10;
+// //ODDR i_adc_clk_p ( .Q(adc_clk_o[0]), .D1(1'b1), .D2(1'b0), .C(fclk[0]), .CE(1'b1), .R(1'b0), .S(1'b0));
+// //ODDR i_adc_clk_n ( .Q(adc_clk_o[1]), .D1(1'b0), .D2(1'b1), .C(fclk[0]), .CE(1'b1), .R(1'b0), .S(1'b0));
+
+// JDD 2019-01-09: Enabling generating ADC clock from the FPGA (so that we can switch between internal and external clock modes)
+// assign adc_clk_o = 2'b10;
+ODDR i_adc_clk_p ( .Q(adc_clk_o[0]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
+ODDR i_adc_clk_n ( .Q(adc_clk_o[1]), .D1(1'b0), .D2(1'b1), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // ADC clock duty cycle stabilizer is enabled
 assign adc_cdcs_o = 1'b1 ;
@@ -465,6 +477,7 @@ dpll_wrapper dpll_wrapper_inst (
   .DACout2                 (  DACout2                    ),
 
   .osc_output(osc_output),
+  .clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
 
   // Data logger port:
   .LoggerData              (  LoggerData                 ),
@@ -745,8 +758,13 @@ assign exp_n_dir[8-1:0] = {8'b00111111};  // pins 0-5 set as outputs, the rest a
 assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest as inputs
 
 assign exp_n_out[2] = osc_output;
-assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
-assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
+assign exp_n_out[5] = 1'b0;   // unused GPIO set as output with 0V for the moment
+assign exp_n_out[3] = 1'b0;   // unused GPIO set as output with 0V for the moment
+// assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
+//assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
+
+// // 125 MHz generated from 200 MHz, either internal or external clocks
+// ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );

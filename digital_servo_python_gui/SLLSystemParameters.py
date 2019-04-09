@@ -49,7 +49,7 @@ class SLLSystemParameters():
         self.root.append(ET.Element('Dither_mode', DAC1='2', DAC0='2'))
         
         self.root.append(ET.Element('VCO_settings', VCO_offset='0.00', VCO_amplitude='0.5', VCO_connection='0'))
-        self.root.append(ET.Element('RP_settings', Fan_state='0', PLL2_connection='0'))
+        self.root.append(ET.Element('RP_settings', Fan_state='0', PLL2_connection='0', Clock_select=0))
         self.root.append(ET.Element('Filter_select', DAC1='0', DAC0='0'))
         self.root.append(ET.Element('Angle_select', DAC1='0', DAC0='0'))
 

@@ -113,7 +113,7 @@ class controller(object):
 		
 		strBroadcastAddress = self.findMostLikelyLANBroadcastIPAddress()
 		#strBroadcastAddress = "192.168.0.255"
-		strFPGAFirmware=r'red_pitaya_top.bit'
+		strFPGAFirmware=r'red_pitaya_top_extint_clk.bit'
 		strCPUFirmware=u'monitor-tcp'
 		self.initial_config = initialConfiguration(self.sl.dev, self, self.devices_data, strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
 		
@@ -351,21 +351,32 @@ class controller(object):
 		self.freq_error_window2.pushValues()
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
+		print("getActualValues: strSelectedSerial = %s" % strSelectedSerial)
+		# pdb.set_trace()
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
 
 		if self.sl.dev.valid_socket:
+			print("getActualValues: before Close")
 			self.sl.dev.CloseTCPConnection()
-
+		print("getActualValues: before Open")
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
+		print("getActualValues: 0")
 		self.xem_gui_mainwindow2.getValues()
+		print("getActualValues: 1")
 		self.xem_gui_mainwindow.getValues()
+		print("getActualValues: 2")
 		self.freq_error_window1.getValues()
+		print("getActualValues: 3")
 		self.freq_error_window2.getValues()
+		print("getActualValues: 4")
 		self.RP_Settings.getValues()
+		print("getActualValues: 5")
 		self.divider_settings_window.getValues()
+		print("getActualValues: 6")
 		self.dither_widget0.getValues()
+		print("getActualValues: 7")
 		self.dither_widget1.getValues()
 
 	def stopCommunication(self):

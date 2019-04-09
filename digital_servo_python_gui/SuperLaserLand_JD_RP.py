@@ -158,6 +158,8 @@ class SuperLaserLand_JD_RP:
 	
 	BUS_ADDR_TEST_OSC                                   = 0x0046
 	BUS_ADDR_TEST_OSC_DUTY                              = 0x0048
+	# clock select register. 0 = internal, 1 = external
+	BUS_ADDR_CLK_SEL                                    = 0x0049
 
 	# Addresses for the system identification VNA:
 	BUS_ADDR_number_of_cycles_integration               = 0x5000
@@ -2518,6 +2520,10 @@ class SuperLaserLand_JD_RP:
 			print('Warning! You received the default value when asking for data at address {}.'.format(hex(int(addr))))
 		return value
 
+	def read_clk_select(self):
+		clk_select = self.read_RAM_dpll_wrapper(self.BUS_ADDR_CLK_SEL)
+		self.clk_select = clk_select
+		return clk_select
 		
 
 	def read_pll2_mux(self):
@@ -2575,5 +2581,11 @@ class SuperLaserLand_JD_RP:
 		print("setTestOscillator(): reg1=%d, reg2=%d" % (reg1, reg2) )
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC, reg1)
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC_DUTY, reg2)
+
+
+	# clock select register. 0 = internal, 1 = external
+	def setClockSelector(self, bExternalClock=0):
+		
+		self.send_bus_cmd_32bits(self.BUS_ADDR_CLK_SEL, int(bExternalClock))
 
 # end class definition

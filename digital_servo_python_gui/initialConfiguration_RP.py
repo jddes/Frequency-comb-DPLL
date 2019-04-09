@@ -317,7 +317,7 @@ class initialConfiguration(QtWidgets.QDialog):
 
 		#print(self.strSelectedIP)
 
-		if self.qradio_pushValue.isChecked() :
+		if self.qradio_pushValue.isChecked():
 			# connect to the selected RedPitaya.
 			self.readSelectedFPGA()
 			# print("initialConfiguration.py::okClicked():after readSelectedFPGA")
@@ -332,16 +332,16 @@ class initialConfiguration(QtWidgets.QDialog):
 
 		elif self.qradio_existingRP.isChecked():
 			# Reconnect to the selected RedPitaya.
-			#print("2")
+			print("2")
 			self.readSelectedFPGA()
-			#print("initialConfiguration.py::okClicked():after readSelectedFPGA")
+			print("initialConfiguration.py::okClicked():after readSelectedFPGA")
 			if not self.strSelectedIP:
 				#print("No selected IP: returning")
 				return
-			#print("About to reconnect")
+			print("About to reconnect")
 			if self.controller is not None:
 				self.controller.getActualValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort)
-			#print("initialConfiguration.py::okClicked():after getActualValues")
+			print("initialConfiguration.py::okClicked():after getActualValues")
 
 		elif self.qradio_noRP.isChecked():
 			#print("3")

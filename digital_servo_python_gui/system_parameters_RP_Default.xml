@@ -17,7 +17,7 @@
     <Dither_amplitude                   DAC0="1e-3" DAC1 ="1e-3" />
     <Dither_mode                        DAC0="2" DAC1 ="2" />  <!--0 : Manual off | 1 : Manual on | 2 : Automatic -->
     <VCO_settings                       VCO_connection="0" VCO_amplitude="0.5" VCO_offset="0.00" /> <!--VCO_connection = 0, A or B -->
-    <RP_settings                        PLL2_connection="0" Fan_state="0" /> <!--PLL2_connection = 0: DDC2 | 1: DDC1 | 2: channel 1's loop filter -->
+    <RP_settings                        PLL2_connection="0" Fan_state="0" Clock_select="1" /> <!--PLL2_connection = 0: DDC2 | 1: DDC1 | 2: channel 1's loop filter. Clk select: 1 = internal, 0 = external -->
     <Filter_select                      DAC0="0" DAC1="0" /> <!--0: Wideband | 1: Narrowband | 2: WidebandFIR -->
     <Angle_select                       DAC0="0" DAC1="0" />  <!--0: cordic | 1:quadrature_msb | 2: quadrature_lsb | 3: inphase_msb | 4:inphase_lsb -->
     

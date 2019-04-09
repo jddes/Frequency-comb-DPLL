@@ -220,3 +220,6 @@ create_clock -period 4.000 -name rx_clk  [get_ports daisy_p_i[1]]
 #set_false_path -from [get_clocks dac_clk_out] -to [get_clocks dac_2clk_out]
 #set_false_path -from [get_clocks dac_clk_out] -to [get_clocks dac_2ph_out]
 
+
+
+#set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets adc_clk_in]

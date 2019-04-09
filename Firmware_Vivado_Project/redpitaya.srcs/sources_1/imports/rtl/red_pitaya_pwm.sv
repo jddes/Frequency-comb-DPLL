@@ -30,7 +30,7 @@ reg  [ 8-1: 0] vcnt, vcnt_r;
 reg  [ 8-1: 0] v   , v_r   ;
 // add some registers to help timing closure:
 reg [CCW-1:0] cfg_reg;
-reg pwm_o_reg;
+reg pwm_o_reg, pwm_o_reg2;
 
 always @(posedge clk)
 begin
@@ -40,9 +40,9 @@ end
 always @(posedge clk)
 begin
 	if (~rstn) begin
-	   vcnt  <=  8'h0;
-	   bcnt  <=  4'h0;
-	   pwm_o <=  1'b0;
+	   vcnt      <=  8'h0;
+	   bcnt      <=  4'h0;
+	   //pwm_o_reg <=  1'b0;
 	end else begin
 	   vcnt   <= (vcnt == FULL) ? 8'h1 : (vcnt + 8'd1) ;
 	   vcnt_r <= vcnt;
@@ -52,12 +52,14 @@ begin
 		  v    <= (bcnt == 4'hF) ? cfg_reg[24-1:16] : v ; // new value on 16*FULL
 		  b    <= (bcnt == 4'hF) ? cfg_reg[16-1:0] : {1'b0,b[15:1]} ; // shift right
 	   end
-	   // make PWM duty cycle
-	   pwm_o_reg <= (vcnt_r <= v_r) ;
+
    end
+   // JDD 2019-01-10: removed reset from pwm_o_reg to try to help timing.
+   pwm_o_reg <= (vcnt_r <= v_r) ; // make PWM duty cycle
+   pwm_o_reg2 <= pwm_o_reg; // another register layer to hopefully achieve timing closure
 end
 
 assign pwm_s = (bcnt == 4'hF) && (vcnt == (FULL-1)) ; // latch one before
-assign pwm_o = pwm_o_reg;
+assign pwm_o = pwm_o_reg2;
 
 endmodule: red_pitaya_pwm

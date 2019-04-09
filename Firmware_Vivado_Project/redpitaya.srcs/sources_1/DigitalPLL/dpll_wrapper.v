@@ -18,6 +18,7 @@ module dpll_wrapper(
     output wire signed [15:0] DACout2,
 
     output wire osc_output,
+    output wire clk_ext_or_int, // clock select register. 1 = internal, 0 = external
 
     // Data logger port:
     output wire [16-1:0]      LoggerData,
@@ -153,6 +154,24 @@ parallel_bus_register_oscillator_duty (
      .register_output(oscillator_modulus_active), 
      .update_flag()
      );
+
+///////////////////////////////////////////////////////////////////////////////
+// clock select register. 1 = internal, 0 = external
+
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(1),
+    .REGISTER_DEFAULT_VALUE(1'b1), // internal clock mode by default
+    .ADDRESS(16'h0049)
+)
+parallel_bus_register_clk_select (
+     .clk(clk1), 
+     .bus_strobe(cmd_trig), 
+     .bus_address(cmd_addr), 
+     .bus_data({cmd_data2in, cmd_data1in}), 
+     .register_output(clk_ext_or_int), 
+     .update_flag()
+     );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // LEDs
@@ -1582,7 +1601,7 @@ assign modulation_output_to_dac2 = vna_output_to_dac2;  // we didn't bother addi
 
 
 reg [32-1:0]    zdtc_samples_number_counter;
-wire [32-1:0]   status_flags = 32'b0;
+wire [32-1:0]   status_flags;
 // two legacy flags that made sense when the counters were sent to a fifo... should be removed eventually
 wire            counter0_fifo_has_too_little_samples;   // Frequency counter 0 (1 Hz writes)
 wire            counter1_fifo_has_too_little_samples;   // Frequency counter 1 (1 Hz writes)
@@ -1607,6 +1626,7 @@ assign status_flags[8]  = 1'b0; // LED_G[2]
 assign status_flags[9]  = 1'b0; // LED_R[2]
 assign status_flags[10] = 1'b0; // residuals_ceo_fifo_has_too_little_samples;
 assign status_flags[11] = 1'b0; // residuals_optical_fifo_has_too_little_samples;
+assign status_flags[31:12] = 20'b0;
 
 
 // this module implements all of the register/status readout to the Zynq

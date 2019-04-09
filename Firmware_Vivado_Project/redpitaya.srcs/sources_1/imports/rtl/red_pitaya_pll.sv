@@ -14,7 +14,12 @@ module red_pitaya_pll (
   // inputs
   input  logic clk       ,  // clock
   input  logic rstn      ,  // reset - active low
-  // output clocks, all phase-locked to the input clk
+  // 200 MHz clock inputs, will be converted to 125 MHz for clocking the ADC
+  input  logic clk_ext_or_int,   // selects between "clk_int_for_adc" or "clk_ext_for_adc" as the ADC clock sources
+  input  logic clk_int_for_adc,  // 200 MHz clock input, internal from block design
+  input  logic clk_ext_for_adc,  // 200 MHz external clock input on DIO5_P
+  output logic clk_to_adc,       // 125 MHz clock output, goes to two ODDR to drive the ADC clock input (requires a hardware modification on the RP boards)
+  // output clocks, all phase-locked to the input "clk"
   output logic clk_adc   ,  // ADC clock
   output logic clk_dac_1x,  // DAC clock
   output logic clk_dac_2x,  // DAC clock
@@ -88,6 +93,76 @@ PLLE2_ADV #(
    BUFG BUFG_inst (
       .O(clk_fb_in), // 1-bit output: Clock output
       .I(clk_fb)  // 1-bit input: Clock input
+   );
+
+
+///////////////////////////////////////////////////////////////////////
+// 200 MHz input clocks, converted to 125 MHz for clocking the ADC.
+// the VCO should run at 200 MHz*CLKFBOUT_MULT = 1 GHz, which yields F_VCO/CLKOUT0_DIVIDE = 125 MHz output.
+wire clk_fb2;
+wire clk_to_adc_before_bufg;
+
+PLLE2_ADV #(
+   .BANDWIDTH            ("OPTIMIZED"),
+   .COMPENSATION         ("ZHOLD"    ),
+   .DIVCLK_DIVIDE        ( 1         ),
+   .CLKFBOUT_MULT        ( 5         ), // 200 MHz*5 = 1 GHz VCO frequency (valid range is 800-1600 MHz according to the datasheet)
+   .CLKFBOUT_PHASE       ( 0.000     ),
+   .CLKOUT0_DIVIDE       ( 8         ),
+   .CLKOUT0_PHASE        ( 0.000     ),
+   .CLKOUT0_DUTY_CYCLE   ( 0.5       ),
+   .CLKOUT1_DIVIDE       ( 8         ), // 200 MHz*5/8 = 125 MHz
+   .CLKOUT1_PHASE        ( 0.000     ),
+   .CLKOUT1_DUTY_CYCLE   ( 0.5       ),
+   .CLKOUT2_DIVIDE       ( 4         ),
+   .CLKOUT2_PHASE        ( 0.000     ),
+   .CLKOUT2_DUTY_CYCLE   ( 0.5       ),
+   .CLKOUT3_DIVIDE       ( 4         ),
+   .CLKOUT3_PHASE        (-45.000    ),
+   .CLKOUT3_DUTY_CYCLE   ( 0.5       ),
+   .CLKOUT4_DIVIDE       ( 4         ),
+   .CLKOUT4_PHASE        ( 0.000     ),
+   .CLKOUT4_DUTY_CYCLE   ( 0.5       ),
+   .CLKOUT5_DIVIDE       ( 4         ),
+   .CLKOUT5_PHASE        ( 0.000     ),
+   .CLKOUT5_DUTY_CYCLE   ( 0.5       ),
+   .CLKIN1_PERIOD        ( 5.000     ),
+   .CLKIN2_PERIOD        ( 5.000     ),
+   .REF_JITTER1          ( 0.010     ),
+   .REF_JITTER2          ( 0.010     )
+) pll2 (
+   // Output clocks
+   .CLKFBOUT     (clk_fb2   ),
+   .CLKOUT0      (clk_to_adc_before_bufg),
+   .CLKOUT1      (),
+   .CLKOUT2      (),
+   .CLKOUT3      (),
+   .CLKOUT4      (),
+   .CLKOUT5      (),
+   // Input clock control
+   .CLKFBIN      (clk_fb2 ),
+   .CLKIN1       (clk_int_for_adc   ),
+   .CLKIN2       (clk_ext_for_adc   ),
+   .CLKINSEL     (clk_ext_or_int),
+   // Ports for dynamic reconfiguration
+   .DADDR        (7'h0 ),
+   .DCLK         (1'b0 ),
+   .DEN          (1'b0 ),
+   .DI           (16'h0),
+   .DO           (     ),
+   .DRDY         (     ),
+   .DWE          (1'b0 ),
+   // Other control and status signals
+   .LOCKED       (),
+   .PWRDWN       (1'b0      ),
+   .RST          (!rstn     )
+);
+
+
+
+   BUFG BUFG_inst2 (
+      .O(clk_to_adc), // 1-bit output: Clock output
+      .I(clk_to_adc_before_bufg)  // 1-bit input: Clock input
    );
 
 endmodule: red_pitaya_pll
