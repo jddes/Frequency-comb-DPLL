@@ -451,7 +451,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         ######################################################################
         # Settings
         ######################################################################
-        self.qgroupbox_test_osc = Qt.QGroupBox('Variable duty-cycle oscillator', self)
+        self.qgroupbox_test_osc = Qt.QGroupBox('Variable duty-cycle oscillator')
         self.qlbl_osc_freq = Qt.QLabel('Frequency [Hz]:')
         self.qedit_osc_freq = Qt.QLineEdit('200e3')
         self.qedit_osc_freq.textChanged.connect(self.oscClicked)
