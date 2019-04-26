@@ -37,6 +37,11 @@ import traceback
 import pyqtgraph as pg
 from ThermometerWidget import ThermometerWidget # to replace Qwt's thermometer widget
 
+def round_to_N_sig_figs(x, Nsigfigs):
+    leading_pos = np.floor(np.log10(np.abs(x)))
+    factor = 10**((Nsigfigs-1)-leading_pos)
+    return np.round(x * factor)/factor
+
 def smooth(x,window_len=11,window='hanning'):
 	"""smooth the data using a window with requested size.
 	
@@ -2401,7 +2406,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
 			start_time = time.clock()
 						
-			spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2/4)
+			spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
+			spc_single_sided_psd = spc*2/window_NEB * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
+			# Measure average PSD level by looking at out-of-band noise and rejecting outliers:
+			index_from_freq = lambda freq: round(freq*N_fft/self.sl.fs)# f_axis = index/N_fft*fs
+			ind_min_psd = index_from_freq(10e6)
+			ind_max_psd = index_from_freq(20e6)
+			spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
+			# reject the biggest outlier (biases the result, but by a very small amount, and avoids the large error if there is a spur in the chosen bandwidth)
+			worst_outlier_index = np.argmax(spc_single_sided_psd)
+			spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+			avg_psd = np.mean(spc_single_sided_psd) # compute the mean
+			# 
+			spc = spc*4. # scale relative to 0 dBFS sine wave
 			spc = 10*np.log10(spc + 1e-12)
 			
 			
@@ -2415,7 +2432,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.plt_spc.setYRange(-120, 0)
 			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
 			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-			self.plt_spc.setTitle('Spectrum')
+			# self.plt_spc.setTitle('Spectrum')
+			self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
 		elif self.qcombo_adc_plottype.currentIndex() == 1:
 			# Display time-domain plot instead
 			
@@ -2450,7 +2468,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
-				print('displayADC(): Invalid complex exponential. Probably because of the USB bug.')
+				print('displayADC(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
 				return
 		
 			# The signal is from ADC0 or ADC1
