@@ -36,8 +36,8 @@ class SuperLaserLand_JD_RP:
 	ddc1_frequency_in_hz = 25e6
 	ddc0_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
 	ddc1_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
-	ADC0_gain = 1
-	ADC1_gain = 1
+	ADC0_gain = 1. * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
+	ADC1_gain = 1. * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
 	DAC0_gain = 1
 	DAC1_gain = 1
 	DAC2_gain = 1
