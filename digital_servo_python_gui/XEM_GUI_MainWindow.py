@@ -2428,8 +2428,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# Update the graph data:
 			self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
-			self.plt_spc.setXRange(frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
-			self.plt_spc.setYRange(-120, 0)
+			# self.plt_spc.setXRange(frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
+			# self.plt_spc.setYRange(-120, 0)
 			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
 			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
 			# self.plt_spc.setTitle('Spectrum')
