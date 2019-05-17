@@ -182,19 +182,19 @@ class DisplayDitherSettingsWindow(QtGui.QWidget):
 		self.qedit_freq_label = Qt.QLabel('Frequency [Hz]:')
 		self.qedit_dither_freq = Qt.QLineEdit(str(modulation_frequency_in_hz))
 		self.qedit_dither_freq.textChanged.connect(self.ditherClicked)
-		self.qedit_dither_freq.setMaximumWidth(60)
+		self.qedit_dither_freq.setMaximumWidth(100)
 		
 		# Integration time:
 		self.qedit_int_label = Qt.QLabel('Integration time [s]:')
 		self.qedit_integration_time = Qt.QLineEdit(str(integration_time_in_seconds))
 		self.qedit_integration_time.textChanged.connect(self.ditherClicked)
-		self.qedit_integration_time.setMaximumWidth(60)
+		self.qedit_integration_time.setMaximumWidth(100)
 		
 		# Amplitude:
 		self.qlabel_dither_amplitude = Qt.QLabel('Amplitude [0-1]:')
 		self.qedit_dither_amplitude = Qt.QLineEdit(str(output_amplitude))
 		self.qedit_dither_amplitude.textChanged.connect(self.ditherClicked)
-		self.qedit_dither_amplitude.setMaximumWidth(60)
+		self.qedit_dither_amplitude.setMaximumWidth(100)
 		
 		
 #        # On/Off button

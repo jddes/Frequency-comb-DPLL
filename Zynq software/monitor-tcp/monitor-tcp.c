@@ -144,14 +144,25 @@ void write_value(unsigned long a_addr, int a_type, unsigned long a_value);
 uint32_t FPGA_MEMORY_START = 0x40000000UL;
 void* map_base = (void*)(-1);
 
-int fd = -1;
+int fd_dev_mem = -1;
+
+// Stuff for memory-mapping the XADC, on the GP 0 AXI master bus of the PS:
+#define MAP_SIZE_XADC (1UL<<20)	// there are really only a handful of registers in this map (1k addresses I think) (see XADC Wizard v3.2 product guide PG091, table 2-3 for a list, C_BASEADDR = 0x0)
+#define MAP_MASK_XADC (MAP_SIZE - 1)
+uint32_t FPGA_MEMORY_START_XADC = 0x80000000UL;
+void* map_base_xadc = (void*)(-1);
+
 
 void initMemoryMap()
 {
 	printf("MAP_SIZE = %lu\n", MAP_SIZE);
-	if((fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1) FATAL;
-	map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, FPGA_MEMORY_START & ~MAP_MASK);
+	if((fd_dev_mem = open("/dev/mem", O_RDWR | O_SYNC)) == -1) FATAL;
+	map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd_dev_mem, FPGA_MEMORY_START & ~MAP_MASK);
 	if(map_base == (void *) -1) FATAL;
+
+	// open XADC memory map:
+	map_base_xadc = mmap(0, MAP_SIZE_XADC, PROT_READ | PROT_WRITE, MAP_SHARED, fd_dev_mem, FPGA_MEMORY_START_XADC & ~MAP_MASK_XADC);
+	if(map_base_xadc == (void *) -1) FATAL;
 		
 	// if (addr != 0) {
 	// 	if (val_count == 0) {
@@ -165,16 +176,26 @@ void initMemoryMap()
 
 void closeMemoryMap()
 {
+	// close main memory map to 0x4000_0000 to 0x6000_0000
 	if (map_base != (void*)(-1)) {
 		if(munmap(map_base, MAP_SIZE) == -1) FATAL;
 		map_base = (void*)(-1);
 	}
-	close(fd);
+	// close XADC memory map to 0x8000_0000 to ...
+	if (map_base != (void*)(-1)) {
+		if(munmap(map_base, MAP_SIZE) == -1) FATAL;
+		map_base = (void*)(-1);
+	}
+	close(fd_dev_mem);
 }
 
 
 uint32_t read_value(uint32_t a_addr) {
-	void* virt_addr = map_base + (a_addr & MAP_MASK);
+	void* virt_addr;
+	if (a_addr < FPGA_MEMORY_START_XADC)
+		virt_addr = map_base + (a_addr & MAP_MASK);	// register is in main memory map (0x4000_0000 to 0x6000_0000)
+	else
+		virt_addr = map_base_xadc + (a_addr & MAP_MASK_XADC); // register is in XADC memory map (0x8XXX_XXXX)
 	uint32_t read_result = 0;
 	read_result = *((uint32_t *) virt_addr);
 	//printf("0x%08x\n", read_result);

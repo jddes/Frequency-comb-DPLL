@@ -158,6 +158,30 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		###################################################################################
 
+		self.qgroupbox_xadc = Qt.QGroupBox('XADC inputs')
+		self.qgroupbox_xadc.setAutoFillBackground(True)
+		grid = Qt.QGridLayout()
+
+
+		self.qlbl_Temp   = Qt.QLabel('Zynq temperature: %.2f degC' % 0.)
+		self.qlbl_vccint = Qt.QLabel('Vccint = %.2f V' % 0.)
+		self.qlbl_vccaux = Qt.QLabel('Vccaux = %.2f V' % 0.)
+
+		grid.addWidget(self.qlbl_Temp, 0, 0)
+		grid.addWidget(self.qlbl_vccint, 1, 0)
+		grid.addWidget(self.qlbl_vccaux, 2, 0)
+
+		#grid.setRowStretch(2, 2)
+
+		self.qgroupbox_xadc.setLayout(grid)
+
+		# polling timer for the xadc values:
+		self.timerXADC = Qt.QTimer(self)
+		self.timerXADC.timeout.connect(self.timerXADCEvent)
+		self.timerXADC.start(1000)   # 1000 ms
+
+		###################################################################################
+
 		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select VCO connection')
 		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
 		MUX_vco = Qt.QGridLayout()
@@ -271,7 +295,8 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.group.setAutoFillBackground(True)
 		group = Qt.QGridLayout()
 
-		group.addWidget(self.qgroupbox_clkselect, 0, 0, 1, 3)
+		group.addWidget(self.qgroupbox_clkselect, 0, 0, 1, 1)
+		group.addWidget(self.qgroupbox_xadc,      0, 1, 1, 2)
 		group.addWidget(self.qgroupbox_MUX_vco,   1, 0, 1, 3)
 		group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 3)
 		group.addWidget(self.qgroupbox_read_data, 3, 0, 1, 3)
@@ -291,6 +316,24 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setWindowTitle(self.custom_shorthand + ': RP Configuration')    
 		#self.show()
 		#self.show()
+
+	def timerXADCEvent(self):
+		# read from xadc registers:
+		if not self.sl.dev.valid_socket:
+			return
+		try:
+			(Vccint, Vccaux, Vbram) = self.sl.readZynqXADCsupply()
+			ZynqTempInDegC          = self.sl.readZynqTemperature()
+			self.qlbl_Temp.setText('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
+			self.qlbl_vccint.setText('Vccint = %.2f V' % Vccint)
+			self.qlbl_vccaux.setText('Vccaux = %.2f V' % Vccaux)
+		except:
+			self.qlbl_Temp          = Qt.QLabel('Zynq temperature: N/A degC')
+			self.qlbl_vccint        = Qt.QLabel('Vccint = N/A V')
+			self.qlbl_vccaux        = Qt.QLabel('Vccaux = N/A V')
+
+
+
 
 	#Function to read the value in the RAM Block (channel 2) to an address
 	#The data we should read are the data sent to dpll_wrapper module (channel 0)

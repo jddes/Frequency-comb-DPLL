@@ -398,7 +398,7 @@ class controller(object):
 		self.freq_error_window1.startTimers()
 		self.freq_error_window2.startTimers()
 
-
+	    
 
 if __name__ == '__main__':
 	# pbd.run('controller()')

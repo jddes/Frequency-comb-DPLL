@@ -2574,11 +2574,11 @@ class SuperLaserLand_JD_RP:
 
 	def setTestOscillator(self, bEnable=1, bPolarity=1, oscillator_modulus=625, oscillator_modulus_active=62):
 
-		print("setTestOscillator(): bEnable=%d, bPolarity=%d, oscillator_modulus=%d, oscillator_modulus_active=%d" % (bEnable, bPolarity, oscillator_modulus, oscillator_modulus_active) )
+		# print("setTestOscillator(): bEnable=%d, bPolarity=%d, oscillator_modulus=%d, oscillator_modulus_active=%d" % (bEnable, bPolarity, oscillator_modulus, oscillator_modulus_active) )
 
 		reg1 = (int(bPolarity)<<25) + (int(bEnable)<<24) + (oscillator_modulus & ((1<<24)-1))
 		reg2 = (oscillator_modulus_active & ((1<<24)-1))
-		print("setTestOscillator(): reg1=%d, reg2=%d" % (reg1, reg2) )
+		# print("setTestOscillator(): reg1=%d, reg2=%d" % (reg1, reg2) )
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC, reg1)
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC_DUTY, reg2)
 
@@ -2587,5 +2587,40 @@ class SuperLaserLand_JD_RP:
 	def setClockSelector(self, bExternalClock=0):
 		
 		self.send_bus_cmd_32bits(self.BUS_ADDR_CLK_SEL, int(bExternalClock))
+
+
+	# xadc_channel can be [0, 15]
+	def readZynqXADC(self, xadc_channel=0):
+		###########################################################################
+		# Reading the XADC values:
+		# See Xilinx document UG480 chapter 2 for conversion factors
+		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+		xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
+		return xadc_unipolar_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x240+4*xadc_channel)   )
+
+
+	# read various power supply voltages on the Zynq using the XADC:
+	def readZynqXADCsupply(self):
+		###########################################################################
+		# Reading the XADC values:
+		# See Xilinx document UG480 chapter 2 for conversion factors
+		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+		xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
+		Vccint = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x204)   )
+		Vccaux = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x208)   )
+		Vbram  = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x218)   )
+		return (Vccint, Vccaux, Vbram)
+
+	# read the Zynq's current temperature:
+	def readZynqTemperature(self):
+		###########################################################################
+		# Reading the XADC values:
+		# See Xilinx document UG480 chapter 2 for conversion factors
+		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+		xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
+		ZynqTempInDegC = xadc_temperature_code_to_degC(self.dev.read_Zynq_XADC_register_uint32(0x200)    )
+
+		return ZynqTempInDegC
+		
 
 # end class definition

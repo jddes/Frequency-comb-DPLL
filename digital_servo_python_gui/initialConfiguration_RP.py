@@ -391,6 +391,7 @@ class initialConfiguration(QtWidgets.QDialog):
 		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		# send new monitor-tcp version
 		self.dev.write_file_on_remote(strFilenameLocal=self.qedit_software.text(), strFilenameRemote='/opt/monitor-tcp-new')
+		print("CPU software update sent. Rebooting server using new version")
 		
 		# set executable permissions
 		self.dev.send_shell_command('chmod +x /opt/monitor-tcp-new')
@@ -403,6 +404,7 @@ class initialConfiguration(QtWidgets.QDialog):
 		self.dev.sock.close()
 		
 		time.sleep(1) # give some time for tcp server to come back up
+		print("CPU software update complete.")
 		pass
 
 	def cancelClicked(self):

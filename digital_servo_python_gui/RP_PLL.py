@@ -34,7 +34,9 @@ class RP_PLL_device():
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
     MAGIC_BYTES_REBOOT_MONITOR  = 0xABCD1239
     
-    FPGA_BASE_ADDR              = 0x40000000
+
+    FPGA_BASE_ADDR              = 0x40000000    # address of the main PS <-> PL memory map (GP 0 AXI master on PS)
+    FPGA_BASE_ADDR_XADC         = 0x80000000    # address of the XADC PS <-> PL memory map (GP 1 AXI master on PS)
 
     MAX_SAMPLES_READ_BUFFER = 2**15 # should be equal to 2**ADDRESS_WIDTH from ram_data_logger.vhd
 
@@ -155,6 +157,18 @@ class RP_PLL_device():
         except:
             self.disconnectEvent()
 
+        if data_buffer is None:
+            return 0
+        if len(data_buffer) != 4:
+            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+        register_value_as_tuple = struct.unpack('I', data_buffer)
+        return register_value_as_tuple[0]
+
+    def read_Zynq_XADC_register_uint32(self, address_uint32):
+        # print "read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, 0)  # last value is reserved
+        self.sock.sendall(packet_to_send)
+        data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
         if data_buffer is None:
             return 0
         if len(data_buffer) != 4:
