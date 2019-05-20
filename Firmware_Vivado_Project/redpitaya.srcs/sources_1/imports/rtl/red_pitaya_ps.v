@@ -95,7 +95,12 @@ module red_pitaya_ps (
   output wire             rd_do_o,
   output wire             wr_do_o,
   output wire             ack_timout_o,
-  output wire             ack_combine_o
+  output wire             ack_combine_o,
+  
+
+  input  wire       clk_ext_in,
+  output wire       clk_to_adc,
+  output wire [1:0] gpio_io_o
 );
 
 //------------------------------------------------------------------------------
@@ -476,7 +481,11 @@ system_wrapper system_i (
   .S_AXI_HP0_awid    (hp0_saxi_awid   ),  .S_AXI_HP1_awid    (hp1_saxi_awid   ), // in 6
   .S_AXI_HP0_wid     (hp0_saxi_wid    ),  .S_AXI_HP1_wid     (hp1_saxi_wid    ), // in 6
   .S_AXI_HP0_wdata   (hp0_saxi_wdata  ),  .S_AXI_HP1_wdata   (hp1_saxi_wdata  ), // in 64
-  .S_AXI_HP0_wstrb   (hp0_saxi_wstrb  ),  .S_AXI_HP1_wstrb   (hp1_saxi_wstrb  )  // in 8
+  .S_AXI_HP0_wstrb   (hp0_saxi_wstrb  ),  .S_AXI_HP1_wstrb   (hp1_saxi_wstrb  ),  // in 8
+
+  .clk_ext_in(clk_ext_in),
+  .clk_to_adc(clk_to_adc),
+  .gpio_io_o(gpio_io_o)
 );
 
 endmodule

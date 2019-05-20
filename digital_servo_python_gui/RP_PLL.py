@@ -164,7 +164,20 @@ class RP_PLL_device():
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
-    def read_Zynq_XADC_register_uint32(self, address_uint32):
+    def write_Zynq_AXI_register_uint32(self, address_uint32, data_uint32):
+        # print("write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32))
+        if address_uint32 % 4:
+            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
+            print("write_Zynq_AXI_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
+            raise Exception("write_Zynq_AXI_register_uint32", "non-32-bits-aligned write")
+            return
+        try:
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, int(data_uint32) & 0xFFFFFFFF)
+            self.sock.sendall(packet_to_send)
+        except:
+            self.disconnectEvent()
+
+    def read_Zynq_AXI_register_uint32(self, address_uint32):
         # print "read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, 0)  # last value is reserved
         self.sock.sendall(packet_to_send)
@@ -172,7 +185,7 @@ class RP_PLL_device():
         if data_buffer is None:
             return 0
         if len(data_buffer) != 4:
-            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+            print("read_Zynq_AXI_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 

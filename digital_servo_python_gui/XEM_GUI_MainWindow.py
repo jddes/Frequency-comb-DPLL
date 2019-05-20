@@ -1793,6 +1793,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def timerDitherEvent(self):
 		# print('timerDitherEvent')
 
+
 		#print("timerDitherEvent: self.qthermo_baseband_snr.sizeHint() = ", self.qthermo_baseband_snr.sizeHint())
 
 		# Check if the sl object exists: otherwise this timer will keep throwing exceptions, filling up the console messages
@@ -1801,6 +1802,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			print('SL object does not exist anymore. disabling timer in timerDitherEvent')
 			self.timerIDDither.stop()
 			return
+
 	
 		start_time = time.clock()
 		for k in range(3):

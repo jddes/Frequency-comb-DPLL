@@ -148,7 +148,7 @@ int fd_dev_mem = -1;
 
 // Stuff for memory-mapping the XADC, on the GP 0 AXI master bus of the PS:
 #define MAP_SIZE_XADC (1UL<<20)	// there are really only a handful of registers in this map (1k addresses I think) (see XADC Wizard v3.2 product guide PG091, table 2-3 for a list, C_BASEADDR = 0x0)
-#define MAP_MASK_XADC (MAP_SIZE - 1)
+#define MAP_MASK_XADC (MAP_SIZE_XADC - 1)
 uint32_t FPGA_MEMORY_START_XADC = 0x80000000UL;
 void* map_base_xadc = (void*)(-1);
 
@@ -204,7 +204,12 @@ uint32_t read_value(uint32_t a_addr) {
 }
 
 void write_value(unsigned long a_addr, int a_type, unsigned long a_value) {
-	void* virt_addr = map_base + (a_addr & MAP_MASK);
+	void* virt_addr;
+	if (a_addr < FPGA_MEMORY_START_XADC)
+		virt_addr = map_base + (a_addr & MAP_MASK);	// register is in main memory map (0x4000_0000 to 0x6000_0000)
+	else
+		virt_addr = map_base_xadc + (a_addr & MAP_MASK_XADC); // register is in XADC memory map (0x8XXX_XXXX)
+	
 	//printf("writing at addr = 0x%08lx, ", (a_addr & MAP_MASK));
 	//printf("map_base = 0x%08lx, ", (unsigned long)(map_base));
 	//printf("virt_addr = 0x%08lx\n", (unsigned long)(virt_addr));

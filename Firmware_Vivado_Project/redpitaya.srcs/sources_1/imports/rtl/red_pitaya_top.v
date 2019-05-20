@@ -153,6 +153,13 @@ wire wr_do_t;
 wire ack_timout_t;
 wire ack_combine_t;
 
+wire [1:0] gpio_io_o;
+wire ps_gpio_rst;
+wire clk_int_or_ext;
+
+assign clk_int_or_ext = gpio_io_o[0];
+assign ps_gpio_rst    = gpio_io_o[1];
+
 red_pitaya_ps i_ps (
   .FIXED_IO_mio       (  FIXED_IO_mio                ),
   .FIXED_IO_ps_clk    (  FIXED_IO_ps_clk             ),
@@ -207,8 +214,15 @@ red_pitaya_ps i_ps (
   .rd_do_o       (rd_do_t      ),
   .wr_do_o       (wr_do_t      ),
   .ack_timout_o  (ack_timout_t ),
-  .ack_combine_o (ack_combine_t)
+  .ack_combine_o (ack_combine_t),
+
+  .clk_ext_in(exp_p_in[5]), // 10 MHz-200 MHz external clock input on DIO5_P
+  .clk_to_adc(clk_to_adc),
+  .gpio_io_o(gpio_io_o)
+
 );
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // system bus decoder & multiplexer (it breaks memory addresses into 8 regions)
@@ -309,7 +323,8 @@ wire                  digital_loop;
 // PLL (clock and reaset)
 ////////////////////////////////////////////////////////////////////////////////
 wire clk_to_adc;
-wire clk_ext_or_int;
+//wire clk_ext_or_int;
+
 
 // diferential clock input
 IBUFDS i_clk (.I (adc_clk_p_i), .IB (adc_clk_n_i), .O (adc_clk_in));  // differential clock input
@@ -317,12 +332,12 @@ IBUFDS i_clk (.I (adc_clk_p_i), .IB (adc_clk_n_i), .O (adc_clk_in));  // differe
 red_pitaya_pll pll (
   // inputs
   .clk            (adc_clk_in),  // clock
-  .rstn           (frstn[0]  ),  // reset - active low
+  .rstn           (frstn[0] | (~ps_gpio_rst) ),  // reset - active low
   // 200 MHz clock inputs, will be converted to 125 MHz for clocking the ADC
-  .clk_ext_or_int (clk_ext_or_int), // selects between "clk_int_for_adc" or "clk_ext_for_adc" as the ADC clock sources
-  .clk_int_for_adc(fclk[3]),        // 200 MHz clock input, internal from block design
-  .clk_ext_for_adc(exp_p_in[5]),    // 200 MHz external clock input on DIO5_P
-  .clk_to_adc     (clk_to_adc),     // 125 MHz clock output, goes to two ODDR to drive the ADC clock input (requires a hardware modification on the RP boards)
+  //.clk_ext_or_int (clk_ext_or_int), // selects between "clk_int_for_adc" or "clk_ext_for_adc" as the ADC clock sources
+  //.clk_int_for_adc(fclk[3]),        // 200 MHz clock input, internal from block design
+  //.clk_ext_for_adc(exp_p_in[5]),    // 200 MHz external clock input on DIO5_P
+  //.clk_to_adc     (clk_to_adc),     // 125 MHz clock output, goes to two ODDR to drive the ADC clock input (requires a hardware modification on the RP boards)
   // output clocks
   .clk_adc        (pll_adc_clk   ),  // ADC clock
   .clk_dac_1x     (pll_dac_clk_1x),  // DAC clock 125MHz
@@ -477,7 +492,7 @@ dpll_wrapper dpll_wrapper_inst (
   .DACout2                 (  DACout2                    ),
 
   .osc_output(osc_output),
-  .clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
+  //.clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
 
   // Data logger port:
   .LoggerData              (  LoggerData                 ),
@@ -546,7 +561,7 @@ always @(posedge adc_clk) begin
   end
 end
 
-assign led_o = {fifo_empty, fifo_full, led_counter[25], 4'b0};
+assign led_o = {fifo_empty, fifo_full, led_counter[25], clk_int_or_ext, 4'b0};
 
 // // ---------------------------------------------------------------------------------
 // // For testing the N-times clk FIR filter:
@@ -764,7 +779,7 @@ assign exp_n_out[3] = 1'b0;   // unused GPIO set as output with 0V for the momen
 //assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
 
 // // 125 MHz generated from 200 MHz, either internal or external clocks
-// ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
+ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );

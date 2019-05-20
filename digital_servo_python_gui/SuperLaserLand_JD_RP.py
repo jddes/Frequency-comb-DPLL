@@ -80,6 +80,11 @@ class SuperLaserLand_JD_RP:
 	
 	last_freq_update = 0
 	new_freq_setting_number = 0
+
+	# addresses from the "IP integrator block design" (see address editor)
+	xadc_base_addr    = 0x0001_0000
+	clkw_base_addr    = 0x0002_0000
+	clk_sel_base_addr = 0x0003_0000
 	
 	############################################################
 	# CONSTANTS for endpoint numbers:
@@ -328,6 +333,17 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_RESET_FRONTEND*4, 0)
 		
 		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET)
+
+	# bReset=1 asserts the PLL reset, bReset=0 de-asserts it:
+	def resetPLL(self, bReset=1):
+		# resets the PLL which locks onto the incoming ADC clock.
+		# should be issued if the ADC clock ever goes away for a moment
+
+		# we do a read-modify-write since there are two bits on this register:
+		reg = self.dev.read_Zynq_AXI_register_uint32(self.clk_sel_base_addr)
+		reg = (reg & 0x1) | (bReset<<1) # set 2nd bit to high if bReset=1
+		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg)
+
 		
 	def selectClockSource(self, clock_source):
 		if self.bVerbose == True:
@@ -2586,8 +2602,55 @@ class SuperLaserLand_JD_RP:
 	# clock select register. 0 = internal, 1 = external
 	def setClockSelector(self, bExternalClock=0):
 		
-		self.send_bus_cmd_32bits(self.BUS_ADDR_CLK_SEL, int(bExternalClock))
+		# self.send_bus_cmd_32bits(self.BUS_ADDR_CLK_SEL, int(bExternalClock))
 
+		# in the actual register, 1 means internal clock, 0 means external
+		reg = int(not bExternalClock)
+		print("setClockSelector: bExternalClock=%d. writing 0x%x (decimal %d) to 0x%x" % (bExternalClock, reg, reg, self.clk_sel_base_addr))
+		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg)
+
+
+	# f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode)
+	def setADCclockPLL(self, f_source, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
+		DIVCLK_DIVIDE = 1
+		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
+		print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
+
+
+		# From PG065:
+		# "You should first write all the required clock configuration registers and then check for the
+		# status register. If status register value is 0x1, start the reconfiguration by writing Clock
+		# Configuration Register 23 with 0x7. The next write should be 0x2 before the Locked goes
+		# High. If the original configuration is needed at any time, then writing this register with value
+		# 0x4 and then 0x0 restores the original settings."
+
+		# Clock configuration register 0 (table 4-2 in PG065)
+		reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
+		reg |= (CLKFBOUT_MULT & ((1<<8)-1)) << 8
+		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x200, reg)
+		# Clock configuration register 2 (table 4-2 in PG065)
+		reg = (CLKOUT0_DIVIDE & ((1<<8)-1)) << 0
+		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x208, reg)
+
+		# check status register:
+		time_start = time.clock()
+		status_reg = 0x0
+		while status_reg != 0x1 and time.clock()-time_start < 1.: # 1 sec timeout
+			status_reg = self.dev.read_Zynq_AXI_register_uint32(self.clkw_base_addr+0x04)
+
+		if status_reg != 0x1:
+			print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
+			return
+
+		self.resetPLL(1) # assert reset on the incoming ADC clock 
+		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x7)
+		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
+
+		self.fs = f_source * CLKFBOUT_MULT/CLKOUT0_DIVIDE
+		time.sleep(0.1)
+		self.resetPLL(1) # de-assert reset on the incoming ADC clock
+		
+		self.resetFrontend() # all clocks should now be stable, reset everything else
 
 	# xadc_channel can be [0, 15]
 	def readZynqXADC(self, xadc_channel=0):
@@ -2596,7 +2659,7 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
-		return xadc_unipolar_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x240+4*xadc_channel)   )
+		return xadc_unipolar_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x240+4*xadc_channel)   )
 
 
 	# read various power supply voltages on the Zynq using the XADC:
@@ -2606,9 +2669,9 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
-		Vccint = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x204)   )
-		Vccaux = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x208)   )
-		Vbram  = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_XADC_register_uint32(0x218)   )
+		Vccint = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x204)   )
+		Vccaux = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x208)   )
+		Vbram  = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x218)   )
 		return (Vccint, Vccaux, Vbram)
 
 	# read the Zynq's current temperature:
@@ -2618,7 +2681,7 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
-		ZynqTempInDegC = xadc_temperature_code_to_degC(self.dev.read_Zynq_XADC_register_uint32(0x200)    )
+		ZynqTempInDegC = xadc_temperature_code_to_degC(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x200)    )
 
 		return ZynqTempInDegC
 		

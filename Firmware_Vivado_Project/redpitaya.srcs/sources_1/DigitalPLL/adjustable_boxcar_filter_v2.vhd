@@ -64,19 +64,19 @@ begin
 			DATA_BITS => DATA_WIDTH
 	)
 	PORT MAP (
-			 rst => rst,
-          clk => clk,
-			 
-			 -- Input port
-			 input_clk_enable => '1',
-          data_in => input_data,
-			 
-				-- Configuration port.  The actual delay will be desired_delay_minus_one_minus_one+1.
-          desired_delay_minus_one => desired_delay_minus_one,
-			 
-			 -- Output port
-			 output_clk_enable => open,
-          data_out => delayed_data
+			rst                     => rst,
+			clk                     => clk,
+			
+			-- Input port
+			input_clk_enable        => '1',
+			data_in                 => input_data,
+			
+			-- Configuration port.  The actual delay will be desired_delay_minus_one_minus_one+1.
+			desired_delay_minus_one => desired_delay_minus_one,
+			
+			-- Output port
+			output_clk_enable       => open,
+			data_out                => delayed_data
         );
 	desired_delay_minus_one <= std_logic_vector(resize(unsigned(filter_size)-1, 12));
 		  

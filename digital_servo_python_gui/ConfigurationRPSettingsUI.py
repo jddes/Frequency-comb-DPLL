@@ -373,7 +373,35 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 
 	def setClkSelect(self):
-		self.sl.setClockSelector(self.qradio_internal_clk.isChecked())
+		if self.qradio_external_clk.isChecked():
+			# Valid VCO range is 600 MHz-1600 MHz according to DS181
+
+			# # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+			# f_ext          = 200e6
+			# CLKFBOUT_MULT  = 5
+			# CLKOUT0_DIVIDE = 8
+
+			# For 10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
+			f_ext          = 10e6
+			CLKFBOUT_MULT  = 62
+			CLKOUT0_DIVIDE = 5
+
+			self.sl.setADCclockPLL(f_ext, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+
+		else:
+			# For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+			f_int          = 200e6
+			CLKFBOUT_MULT  = 5
+			CLKOUT0_DIVIDE = 8
+
+			self.sl.setADCclockPLL(f_int, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+
+
+		self.sl.setClockSelector(self.qradio_external_clk.isChecked())
+
+		# make sure to update the lockpoint frequencies, in case the ADC clock frequency changed:
+		self.controller.xem_gui_mainwindow.setVCOFreq_event()
+		self.controller.xem_gui_mainwindow2.setVCOFreq_event()
 
 	def mux_vco_Action(self):
 		if self.qradio_VCO_to_DAC0.isChecked():
