@@ -45,12 +45,24 @@ class RP_PLL_device():
         self.sock = socket_placeholder()
         self.controller = controller
         self.valid_socket = 0
+        self.reconnection_attempts = 0
 
         return
 
     def disconnectEvent(self):
         if self.controller is not None:
             self.controller.stopCommunication()
+
+            # attempt to reconnect:
+
+            if self.reconnection_attempts < 10:
+                self.reconnection_attempts += 1
+                print("TCP connection lost. Attempting to reconnect %d/10..." % (self.reconnection_attempts))
+                self.OpenTCPConnection(self.HOST, self.PORT, True)
+                if self.valid_socket:
+                    self.reconnection_attempts = 0
+            else:
+                print("TCP connection lost. Will not attempt to reconnect because self.reconnection_attempts >= 10...")
 
     def CloseTCPConnection(self):
         print("RP_PLL_device::CloseTCPConnection()")
@@ -178,7 +190,7 @@ class RP_PLL_device():
             self.disconnectEvent()
 
     def read_Zynq_AXI_register_uint32(self, address_uint32):
-        # print "read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32))
+        # print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, 0)  # last value is reserved
         self.sock.sendall(packet_to_send)
         data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
