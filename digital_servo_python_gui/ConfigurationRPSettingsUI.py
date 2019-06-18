@@ -12,12 +12,15 @@ import numpy as np
 import weakref
 import sys
 
+import time
+
 import traceback
 
 from user_friendly_QLineEdit import user_friendly_QLineEdit
 
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
+import DataLoggingDisplayWidget
 
 
 class ConfigRPSettingsUI(Qt.QWidget):
@@ -311,6 +314,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		grid.addWidget(self.group)
 		self.setLayout(grid)
 
+		self.time_start = time.clock()
+		self.qplots = DataLoggingDisplayWidget.DataLoggingDisplayWidget(numPlots=1, numCurvesPerPlot=1)
+		self.qplots.pltItemsList[0].setLabel('left', 'Temp [degC]')
+		self.qplots.show()
+
+
 
 		#self.center()
 		self.setWindowTitle(self.custom_shorthand + ': RP Configuration')    
@@ -324,9 +333,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		try:
 			(Vccint, Vccaux, Vbram) = self.sl.readZynqXADCsupply()
 			ZynqTempInDegC          = self.sl.readZynqTemperature()
+			print('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
 			self.qlbl_Temp.setText('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
 			self.qlbl_vccint.setText('Vccint = %.2f V' % Vccint)
 			self.qlbl_vccaux.setText('Vccaux = %.2f V' % Vccaux)
+
+			self.qplots.addDataPoint(time.clock()-self.time_start, [ZynqTempInDegC])
 		except:
 			self.qlbl_Temp          = Qt.QLabel('Zynq temperature: N/A degC')
 			self.qlbl_vccint        = Qt.QLabel('Vccint = N/A V')
@@ -376,17 +388,17 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		if self.qradio_external_clk.isChecked():
 			# Valid VCO range is 600 MHz-1600 MHz according to DS181
 
-			# # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-			# f_ext          = 200e6
-			# CLKFBOUT_MULT  = 5
-			# CLKOUT0_DIVIDE = 8
+			# For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+			f_ext          = 200e6
+			CLKFBOUT_MULT  = 5
+			CLKOUT0_DIVIDE = 8
 
-			# For 10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
-			f_ext          = 10e6
-			CLKFBOUT_MULT  = 62
-			CLKOUT0_DIVIDE = 5
+			# # For 10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
+			# f_ext          = 10e6
+			# CLKFBOUT_MULT  = 62
+			# CLKOUT0_DIVIDE = 5
 
-			self.sl.setADCclockPLL(f_ext, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+			self.sl.setADCclockPLL(f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
 		else:
 			# For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
@@ -394,10 +406,8 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			CLKFBOUT_MULT  = 5
 			CLKOUT0_DIVIDE = 8
 
-			self.sl.setADCclockPLL(f_int, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+			self.sl.setADCclockPLL(f_int, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE) # calling this crashes the thing...
 
-
-		self.sl.setClockSelector(self.qradio_external_clk.isChecked())
 
 		# make sure to update the lockpoint frequencies, in case the ADC clock frequency changed:
 		self.controller.xem_gui_mainwindow.setVCOFreq_event()
