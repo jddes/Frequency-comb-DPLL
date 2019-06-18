@@ -36,8 +36,8 @@ class SuperLaserLand_JD_RP:
 	ddc1_frequency_in_hz = 25e6
 	ddc0_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
 	ddc1_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
-	ADC0_gain = 1. * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
-	ADC1_gain = 1. * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
+	ADC0_gain = 1. #  * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
+	ADC1_gain = 1. #  * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
 	DAC0_gain = 1
 	DAC1_gain = 1
 	DAC2_gain = 1
@@ -334,22 +334,7 @@ class SuperLaserLand_JD_RP:
 		
 		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET)
 
-	# bReset=1 asserts the PLL reset, bReset=0 de-asserts it:
-	def resetPLL(self, bReset=1):
-		# resets the PLL which locks onto the incoming ADC clock.
-		# should be issued if the ADC clock ever goes away for a moment
 
-		# we do a read-modify-write since there are two bits on this register:
-		reg = self.dev.read_Zynq_AXI_register_uint32(self.clk_sel_base_addr)
-		reg = (reg & 0x1) | (bReset<<1) # set 2nd bit to high if bReset=1
-		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg)
-
-		
-	def selectClockSource(self, clock_source):
-		if self.bVerbose == True:
-			print('selectClockSource')
-			# Red Pitaya does not currently support multiple clock sources
-		return
 
 	# From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
 	def make_sure_path_exists(self, path):
@@ -2610,8 +2595,9 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg)
 
 
+
 	# f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode)
-	def setADCclockPLL(self, f_source, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
+	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
 		DIVCLK_DIVIDE = 1
 		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
 		print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
@@ -2642,13 +2628,15 @@ class SuperLaserLand_JD_RP:
 			print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
 			return
 
-		self.resetPLL(1) # assert reset on the incoming ADC clock 
+		reg_clk_sel_and_reset = int(not bExternalClock) | (1<<1)
+		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
 		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x7)
 		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
 		self.fs = f_source * CLKFBOUT_MULT/CLKOUT0_DIVIDE
 		time.sleep(0.1)
-		self.resetPLL(1) # de-assert reset on the incoming ADC clock
+		reg_clk_sel_and_reset = int(not bExternalClock) | (0<<1) # de-assert reset on the incoming ADC clock
+		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
 		
 		self.resetFrontend() # all clocks should now be stable, reset everything else
 
@@ -2681,8 +2669,18 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
-		ZynqTempInDegC = xadc_temperature_code_to_degC(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x200)    )
-
+		time_start = time.clock()
+		# average 10 readings because otherwise they are quite noisy:
+		# this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
+		N_average = 100.
+		reg_avg = 0.
+		for k in range(int(N_average)):
+			reg = self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x200)
+			reg_avg += float(reg)
+			
+		reg_avg = float(reg_avg)/N_average
+		# print("elapsed = %f" % (time.clock()-time_start))
+		ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
 		return ZynqTempInDegC
 		
 
