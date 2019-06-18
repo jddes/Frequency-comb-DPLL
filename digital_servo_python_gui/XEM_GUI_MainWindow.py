@@ -2463,6 +2463,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.plt_spc.setXRange(time_axis[0], time_axis[-1])
 			
 			self.plt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
+			self.plt_spc.setTitle('Time, std = %.2f mV, ampl = %.2f mVpp' % (1e3*np.std(samples_out), 1e3*np.std(samples_out)*2*np.sqrt(2)))
 			
 
 		# If we are handling ADC0 or ADC1 data (as opposed to DAC data)
