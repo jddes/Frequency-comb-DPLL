@@ -2409,7 +2409,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.updateScaleDisplays(samples_out)
 
-	def plotADCorDACspectrum(self, samples_out, window_function):
+	def plotADCorDACspectrum(self, samples_out, window_function, input_select):
 
 		start_time = time.clock()
 		
@@ -2454,6 +2454,22 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		frequency_axis = self.fftFrequencyAxis(N_fft, self.sl.fs)
 		self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
 		self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
+
+		if input_select == 0 or input_select == 1:
+			self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
+
+
+	def updateFilterSpcDisplay(self, frequency_axis):
+		start_time = time.clock()
+		# Compute the spectrum of the filter:
+		spc_filter = self.sl.get_frontend_filter_response(frequency_axis, self.selected_ADC)
+		self.curve_filter.setData(frequency_axis/1e6, spc_filter)
+		self.curve_filter.setVisible(True)
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (Spectrum of filter) = %f' % (time.clock()-start_time))
+		
+
 
 	def fftFrequencyAxis(self, N_fft, fs):
 		return np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
@@ -2522,7 +2538,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if plot_type == 0:    # Display Spectrum
 			# Normalize samples to +/- 1:
 			samples_out = samples_out/2**15
-			self.plotADCorDACspectrum(samples_out, window_function)
+			self.plotADCorDACspectrum(samples_out, window_function, input_select)
 
 		elif plot_type == 1:
 			# Display time-domain plot instead
@@ -2631,22 +2647,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 
 
-			
-			if plot_type == 0:
-				# Compute the spectrum of the filter:
-				frequency_axis = self.fftFrequencyAxis(N_fft, self.sl.fs)
-				spc_filter = self.sl.get_frontend_filter_response(frequency_axis, self.selected_ADC)
-#                spc_filter = np.sin(np.pi * (abs(frequency_axis-abs(f_reference))+10)*N_filter/self.sl.fs)/ (np.pi*(abs(frequency_axis-abs(f_reference))+10)*N_filter/self.sl.fs)
-#                spc_filter = 20*np.log10(np.abs(spc_filter) + 1e-7)
-				# Update the graph
-				self.curve_filter.setData(frequency_axis[0:last_index_shown]/1e6, spc_filter[0:last_index_shown])
-				self.curve_filter.setVisible(True)
-			
 
-			if self.bDisplayTiming == True:
-				print('Elapsed time (Spectrum of filter) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
-			
 			
 
 			
