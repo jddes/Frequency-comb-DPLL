@@ -2458,6 +2458,29 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def fftFrequencyAxis(self, N_fft, fs):
 		return np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
 
+
+	def updateSNRdisplay(self, amplitude):
+		mean_amplitude = np.mean(amplitude)
+		std_dev_amplitude = np.std(amplitude)
+		if mean_amplitude == 0:
+			mean_amplitude = 1.	# to avoid a NaN in the log operation
+			std_dev_amplitude = 1e3
+		baseband_snr = 20*np.log10(mean_amplitude/std_dev_amplitude)
+		# to get a more stable reading of the SNR without resorting to rounding:
+		# we put a simple first-order IIR filter:
+		filter_alpha = np.exp(-1./10.)
+		temp_filtered_baseband_snr = filter_alpha * self.filtered_baseband_snr + (1-filter_alpha)*baseband_snr
+		
+		# Sometimes, the average of the amplitude is NaN, so we only accept the new SNR if it is not(NaN)
+		if not(np.isnan(temp_filtered_baseband_snr)):
+			self.filtered_baseband_snr = temp_filtered_baseband_snr
+		else:
+			print("Error 'nan' in filtered_baseband_snr")
+
+		self.qthermo_baseband_snr.setValue(baseband_snr)
+		self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
+		
+
 	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
 
 		start_time = time.clock()
@@ -2529,26 +2552,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# Compute the SNR on the amplitude of the baseband signal:    
 			amplitude = np.abs(complex_baseband)
+			self.updateSNRdisplay(amplitude)
 			mean_amplitude = np.mean(amplitude)
-			std_dev_amplitude = np.std(amplitude)
-			if mean_amplitude == 0:
-				mean_amplitude = 1.	# to avoid a NaN in the log operation
-				std_dev_amplitude = 1e3
-			baseband_snr = 20*np.log10(mean_amplitude/std_dev_amplitude)
-			# to get a more stable reading of the SNR without resorting to rounding:
-			# we put a simple first-order IIR filter:
-			filter_alpha = np.exp(-1./10.)
-			temp_filtered_baseband_snr = filter_alpha * self.filtered_baseband_snr + (1-filter_alpha)*baseband_snr
-			
-			# Sometimes, the average of the amplitude is NaN, so we only accept the new SNR if it is not(NaN)
-			if not(np.isnan(temp_filtered_baseband_snr)):
-				self.filtered_baseband_snr = temp_filtered_baseband_snr
-			else:
-				print("Error 'nan' in filtered_baseband_snr")
-
-			self.qthermo_baseband_snr.setValue(baseband_snr)
-			self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
-			
 			
 			if plot_type == 2:
 				# show phase error as a function of time
@@ -2632,7 +2637,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 
 			if self.bDisplayTiming == True:
-				print('Elapsed time (Spectrum of amplitude noise) = %f' % (time.clock()-start_time))
+				print('Elapsed time (Spectrum of filter) = %f' % (time.clock()-start_time))
 			start_time = time.clock()
 			
 			
