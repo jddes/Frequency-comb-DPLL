@@ -2576,11 +2576,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
 			
 	   
-			if plot_type == 3:
+			if plot_type == 3 or plot_type == 4:
 				
 				# show time-domain I and Q signals
 				# To mimic as much as possible the processing done in the FPGA, we quantize the complex baseband:
 				complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
+				if plot_type == 4:
+					# Sync the phase to be equal to 0 at t=0:
+					complex_basebandr = complex_basebandr * np.conj(complex_basebandr[0])/np.abs(complex_basebandr[0])
 				# Set axis
 				time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
 
@@ -2596,30 +2599,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
 				self.plt_spc.setXRange(time_axis[0], time_axis[-1])
 			
-				self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
+				if plot_type == 4:
+					self.plt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
+				else:
+					self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
 				
-			if plot_type == 4:
-				
-				# show time-domain I and Q signals
-				# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
-				complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
-				# Sync the phase to be equal to 0 at t=0:
-				complex_basebandr = complex_basebandr * np.conj(complex_basebandr[0])/np.abs(complex_basebandr[0])
-				# Set axis
-				time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
-				
-				self.curve_spc.setData(time_axis, np.real(complex_basebandr))
-				self.curve_filter.setData(time_axis, np.imag(complex_basebandr))
-	#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-	#            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
-				self.curve_filter.setVisible(True)
-				# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
-				valmax1 = np.mean(np.abs(complex_basebandr))
-				
-				self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
-				self.plt_spc.setXRange(time_axis[0], time_axis[-1])
-			
-				self.plt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
 			
 			
 			complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
