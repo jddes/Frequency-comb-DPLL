@@ -1563,9 +1563,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		#self.curve_DDC0_spc.attach(self.qplt_DDC0_spc)
 		#self.curve_DDC0_spc.setPen(Qt.QPen(Qt.Qt.blue))
 		
-		self.curve_DDC0_spc_amplitude_noise = self.qplt_DDC0_spc.getPlotItem().plot(pen='r')
-		#self.curve_DDC0_spc_amplitude_noise.attach(self.qplt_DDC0_spc)
-		#self.curve_DDC0_spc_amplitude_noise.setPen(Qt.QPen(Qt.Qt.red))
 		
 
 		#self.curve_DDC0_cumul_phase = pg.PlotCurveItem(pen='g')
@@ -2656,13 +2653,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				spc[1:last_index_shown] = 2*spc[1:last_index_shown] / window_NEB
 				spc = 10*np.log10(spc + 1e-20)
 				
-				self.curve_DDC0_spc_amplitude_noise.setData(frequency_axis[1:last_index_shown], spc[1:last_index_shown])
-				self.curve_DDC0_spc_amplitude_noise.setVisible(True)
 				
 			else:
-				# turn off amplitude noise curve:
-				self.curve_DDC0_spc_amplitude_noise.setVisible(False)
-				
+				pass
+
 			if self.bDisplayTiming == True:
 				print('Elapsed time (Spectrum of amplitude noise) = %f' % (time.clock()-start_time))
 			start_time = time.clock()
