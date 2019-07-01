@@ -2323,9 +2323,29 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
 
 
+	def computeFFT(self, samples, fs):
+		# Compute the window function used to display the spectrum:
+		N_fft = 2**(int(np.ceil(np.log2(len(samples)))))
+		frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
+		window_function = np.blackman(len(samples))
+		last_index_shown = int(np.round(len(frequency_axis)/2))
+		window_NEB = np.sum((window_function/np.sum(window_function))**2) * fs
+		
+		return (frequency_axis, window_function, window_NEB, last_index_shown)
 
 
+	def computeNEB(self, window_function, fs):
+		return np.sum((window_function/np.sum(window_function))**2) * fs
 
+	def updateNEBdisplay(self, window_NEB):
+		
+		# Show the RBW:
+		if window_NEB > 1e6:
+			self.qlabel_rawdata_rbw.setText('RBW: %.1f MHz; Points:' % (round(window_NEB*1e5)/1e5/1e6))
+		elif window_NEB > 1e3:
+			self.qlabel_rawdata_rbw.setText('RBW: %.1f kHz; Points:' % (round(window_NEB*1e2)/1e2/1e3))
+		else:
+			self.qlabel_rawdata_rbw.setText('RBW: %.0f Hz; Points:' % (round(window_NEB)))
 		
 	def displayADC(self):
 				
@@ -2389,16 +2409,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*self.sl.fs, N_fft)
 		window_function = np.blackman(len(samples_out))
 		last_index_shown = int(np.round(len(frequency_axis)/2))
-		window_NEB = np.sum((window_function/np.sum(window_function))**2) * self.sl.fs
-		
-		# Show the RBW:
-		if window_NEB > 1e6:
-			self.qlabel_rawdata_rbw.setText('RBW: %.1f MHz; Points:' % (round(window_NEB*1e5)/1e5/1e6))
-		elif window_NEB > 1e3:
-			self.qlabel_rawdata_rbw.setText('RBW: %.1f kHz; Points:' % (round(window_NEB*1e2)/1e2/1e3))
-		else:
-			self.qlabel_rawdata_rbw.setText('RBW: %.0f Hz; Points:' % (round(window_NEB)))
-			
+
+		window_NEB = self.computeNEB(window_function, self.sl.fs)
+		self.updateNEBdisplay(window_NEB)
+
+
+
+
 
 
 		if self.qcombo_adc_plottype.currentIndex() == 0:    # Display Spectrum
