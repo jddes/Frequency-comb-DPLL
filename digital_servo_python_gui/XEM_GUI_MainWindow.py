@@ -2459,6 +2459,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		return np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
 
 
+	# N_max_IQ is the max number of points to display in the IQ graph
+	def updateIQdisplay(self, complex_baseband, N_max_IQ = 10e3):
+		start_time = time.clock()
+
+		complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
+		mean_amplitude = np.mean(np.abs(complex_baseband))
+		self.curve_IQ.setData(np.real(complex_baseband), np.imag(complex_baseband))
+
+		self.qplt_IQ.setXRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
+		self.qplt_IQ.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (Display IQ) = %f' % (time.clock()-start_time))
+
 	def updateSNRdisplay(self, amplitude):
 		mean_amplitude = np.mean(amplitude)
 		std_dev_amplitude = np.std(amplitude)
@@ -2542,18 +2556,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if input_select == 0 or input_select == 1:
 
 			# The signal is from ADC0 or ADC1
-			N_max_IQ = 10e3 # Max number of points to display in the IQ graph
+			
 			complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
+			amplitude = np.abs(complex_baseband)
+			mean_amplitude = np.mean(amplitude)
 			
 			if self.bDisplayTiming == True:
 				print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
+			
+
+			self.updateIQdisplay(complex_baseband)
+
 			start_time = time.clock()
-			
-			
 			# Compute the SNR on the amplitude of the baseband signal:    
-			amplitude = np.abs(complex_baseband)
 			self.updateSNRdisplay(amplitude)
-			mean_amplitude = np.mean(amplitude)
+			
 			
 			if plot_type == 2:
 				# show phase error as a function of time
@@ -2612,17 +2629,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				
 			
 			
-			complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
-			self.curve_IQ.setData(np.real(complex_baseband), np.imag(complex_baseband))
-			
-			self.qplt_IQ.setXRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
-			self.qplt_IQ.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
-			# Refresh the display:
-			# self.qplt_IQ.replot()
-			
-			if self.bDisplayTiming == True:
-				print('Elapsed time (Display IQ) = %f' % (time.clock()-start_time))
-			start_time = time.clock()     
+
 
 			
 			if plot_type == 0:
