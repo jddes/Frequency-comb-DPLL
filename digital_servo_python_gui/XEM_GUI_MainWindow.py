@@ -2630,32 +2630,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.curve_filter.setData(frequency_axis[0:last_index_shown]/1e6, spc_filter[0:last_index_shown])
 				self.curve_filter.setVisible(True)
 			
-			# If the phase noise spectrum is selected, we add the spectrum of the amplitude noise:
-			if self.qcombo_ddc_plot.currentIndex() == 1 and True:
-				# Normalize the amplitude to the carrier and remove DC:
-				amplitude = amplitude / np.mean(amplitude) - 1
-				
-				# Decimate the signal since
-				N_decimation = 10
-				fs_new = self.sl.fs/N_decimation
-				amplitude = decimate(amplitude, N_decimation, zero_phase=False)
-				
-				N_fft = 2**(int(np.ceil(np.log2(len(amplitude)))))
-				frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*fs_new, N_fft)
-				window_function = np.blackman(len(amplitude))
-				window_NEB = np.sum((window_function/np.sum(window_function))**2) * fs_new
-				last_index_shown = int(np.round(N_fft/2))
-				
-				spc = np.fft.fft(amplitude * window_function, N_fft)
-				spc = np.real(spc*np.conj(spc))/(sum(window_function)**2) # Spectrum is now scaled in power (Hz^2 per bin)
-				last_index_shown = int(np.round(len(frequency_axis)/2))
-				# Scale the spectrum to be a single-sided power spectral density in Hz^2/Hz:
-				spc[1:last_index_shown] = 2*spc[1:last_index_shown] / window_NEB
-				spc = 10*np.log10(spc + 1e-20)
-				
-				
-			else:
-				pass
 
 			if self.bDisplayTiming == True:
 				print('Elapsed time (Spectrum of amplitude noise) = %f' % (time.clock()-start_time))
