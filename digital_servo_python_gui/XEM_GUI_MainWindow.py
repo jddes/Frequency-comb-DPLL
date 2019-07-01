@@ -2406,6 +2406,54 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.updateScaleDisplays(samples_out)
 
+	def plotADCspectrum(self, samples_out, window_function):
+
+		start_time = time.clock()
+		
+
+		# Apply window function to the data:
+		samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (pre-FFT2) = %f' % (time.clock()-start_time))
+		start_time = time.clock()
+		
+		# Compute the spectrum of the raw data:
+		N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
+		spc = np.fft.fft(samples_out_windowed, N_fft)
+		last_index_shown = int(np.round(N_fft/2))
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
+		start_time = time.clock()
+					
+		spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
+		spc_single_sided_psd = spc*2/self.computeNEB(window_function, self.sl.fs) * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
+		# Measure average PSD level by looking at out-of-band noise and rejecting outliers:
+		index_from_freq = lambda freq: round(freq*N_fft/self.sl.fs)# f_axis = index/N_fft*fs
+		ind_min_psd = index_from_freq(10e6)
+		ind_max_psd = index_from_freq(20e6)
+		spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
+		# reject the biggest outlier (biases the result, but by a very small amount, and avoids the large error if there is a spur in the chosen bandwidth)
+		worst_outlier_index = np.argmax(spc_single_sided_psd)
+		spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+		avg_psd = np.mean(spc_single_sided_psd) # compute the mean
+		# 
+		spc = spc*4. # scale relative to 0 dBFS sine wave
+		spc = 10*np.log10(spc + 1e-12)
+		
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (10log10 abs(FFT) = %f' % (time.clock()-start_time))
+		start_time = time.clock()
+		
+		# Update the graph data:
+		frequency_axis = self.fftFrequencyAxis(N_fft, self.sl.fs)
+		self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
+		self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
+
+	def fftFrequencyAxis(self, N_fft, fs):
+		return np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
 
 	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
 
@@ -2415,69 +2463,24 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		# Compute the window function used to display the spectrum:
 		N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
-		frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*self.sl.fs, N_fft)
+		
 		window_function = np.blackman(len(samples_out))
-		last_index_shown = int(np.round(len(frequency_axis)/2))
+		last_index_shown = int(np.round(N_fft/2))
 
 		window_NEB = self.computeNEB(window_function, self.sl.fs)
 		self.updateNEBdisplay(window_NEB)
 
 
 
+		if self.bDisplayTiming == True:
+			print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
 
 
 
 		if plot_type == 0:    # Display Spectrum
-
-			if self.bDisplayTiming == True:
-				print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
-			
 			# Normalize samples to +/- 1:
 			samples_out = samples_out/2**15
-			# Apply window function to the data:
-			samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
-			
-			if self.bDisplayTiming == True:
-				print('Elapsed time (pre-FFT2) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
-			
-			# Compute the spectrum of the raw data:
-			spc = np.fft.fft(samples_out_windowed, N_fft)
-			
-			if self.bDisplayTiming == True:
-				print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
-						
-			spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
-			spc_single_sided_psd = spc*2/window_NEB * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
-			# Measure average PSD level by looking at out-of-band noise and rejecting outliers:
-			index_from_freq = lambda freq: round(freq*N_fft/self.sl.fs)# f_axis = index/N_fft*fs
-			ind_min_psd = index_from_freq(10e6)
-			ind_max_psd = index_from_freq(20e6)
-			spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
-			# reject the biggest outlier (biases the result, but by a very small amount, and avoids the large error if there is a spur in the chosen bandwidth)
-			worst_outlier_index = np.argmax(spc_single_sided_psd)
-			spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
-			avg_psd = np.mean(spc_single_sided_psd) # compute the mean
-			# 
-			spc = spc*4. # scale relative to 0 dBFS sine wave
-			spc = 10*np.log10(spc + 1e-12)
-			
-			
-			if self.bDisplayTiming == True:
-				print('Elapsed time (10log10 abs(FFT) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
-			
-			# Update the graph data:
-			self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
-			# self.plt_spc.setXRange(frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
-			# self.plt_spc.setYRange(-120, 0)
-			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, frequency_axis[0]/1e6, frequency_axis[last_index_shown]/1e6)
-			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-			# self.plt_spc.setTitle('Spectrum')
-			self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
-
+			self.plotADCspectrum(samples_out, window_function)
 
 		elif plot_type == 1:
 			# Display time-domain plot instead
@@ -2492,22 +2495,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
 			
 			self.curve_spc.setData(time_axis, samples_out)
-#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-#            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
 			self.curve_filter.setVisible(False)
 			# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
 			valmin = np.min(samples_out)
 			valmax = np.max(samples_out)
 			
-			# self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, (valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
-			# self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
-
 			self.plt_spc.setYRange((valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
 			self.plt_spc.setXRange(time_axis[0], time_axis[-1])
 			
 			self.plt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
 			self.plt_spc.setTitle('Time, std = %.2f mV, ampl = %.2f mVpp' % (1e3*np.std(samples_out), 1e3*np.std(samples_out)*2*np.sqrt(2)))
 			
+
+
+
+
 
 		# If we are handling ADC0 or ADC1 data (as opposed to DAC data)
 		if input_select == 0 or input_select == 1:
@@ -2621,6 +2623,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			if plot_type == 0:
 				# Compute the spectrum of the filter:
+				frequency_axis = self.fftFrequencyAxis(N_fft, self.sl.fs)
 				spc_filter = self.sl.get_frontend_filter_response(frequency_axis, self.selected_ADC)
 #                spc_filter = np.sin(np.pi * (abs(frequency_axis-abs(f_reference))+10)*N_filter/self.sl.fs)/ (np.pi*(abs(frequency_axis-abs(f_reference))+10)*N_filter/self.sl.fs)
 #                spc_filter = 20*np.log10(np.abs(spc_filter) + 1e-7)
@@ -2630,25 +2633,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# If the phase noise spectrum is selected, we add the spectrum of the amplitude noise:
 			if self.qcombo_ddc_plot.currentIndex() == 1 and True:
-#                print('showing amplitude noise')
 				# Normalize the amplitude to the carrier and remove DC:
 				amplitude = amplitude / np.mean(amplitude) - 1
 				
 				# Decimate the signal since
 				N_decimation = 10
 				fs_new = self.sl.fs/N_decimation
-#				amplitude = decimate(amplitude, N_decimation)
 				amplitude = decimate(amplitude, N_decimation, zero_phase=False)
 				
 				N_fft = 2**(int(np.ceil(np.log2(len(amplitude)))))
 				frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*fs_new, N_fft)
 				window_function = np.blackman(len(amplitude))
-#                window_function = np.blackman(len(amplitude))
 				window_NEB = np.sum((window_function/np.sum(window_function))**2) * fs_new
-#                frequency_axis = np.linspace(0, (len(amplitude)-1)/float(len(amplitude))*(fs_new), len(amplitude))
-				last_index_shown = int(np.round(len(frequency_axis)/2))
+				last_index_shown = int(np.round(N_fft/2))
 				
-#                amplitude.resize(len(window_function))  # to match the window size
 				spc = np.fft.fft(amplitude * window_function, N_fft)
 				spc = np.real(spc*np.conj(spc))/(sum(window_function)**2) # Spectrum is now scaled in power (Hz^2 per bin)
 				last_index_shown = int(np.round(len(frequency_axis)/2))
@@ -2656,7 +2654,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				spc[1:last_index_shown] = 2*spc[1:last_index_shown] / window_NEB
 				spc = 10*np.log10(spc + 1e-20)
 				
-#                self.curve_DDC0_spc_amplitude_noise.setData(frequency_axis[1:last_index_shown], spc[1:last_index_shown])
 				self.curve_DDC0_spc_amplitude_noise.setData(frequency_axis[1:last_index_shown], spc[1:last_index_shown])
 				self.curve_DDC0_spc_amplitude_noise.setVisible(True)
 				
@@ -2675,10 +2672,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# The signal is from DAC0 or DAC1:
 			# Not sure what to put in the baseband IQ plot.  For now we put nothing
 			self.qthermo_baseband_snr.setValue(0)
-#                empty_array = np.array(0)
-#                self.curve_IQ.setData(empty_array, empty_array)
-#                self.curve_DDC0_spc_amplitude_noise.setData(empty_array, empty_array)
-#                self.curve_filter.setData(empty_array, empty_array)
 			pass
 
 		
