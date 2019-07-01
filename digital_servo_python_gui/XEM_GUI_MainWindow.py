@@ -2310,8 +2310,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 
-
-
+	# Update the scale which indicates the ADC fill ratio in numbers of bits:
+	# samples must be in integer units (same as raw ADC data)
+	def updateScaleDisplays(self, samples):
+		
+		max_abs = np.max(np.abs(samples))
+		if max_abs == 0:
+			max_abs = 1 # to prevent passing a 0 value to the log function, which throws an exception
+		max_abs_in_bits = np.log2(max_abs)
+		
+		self.qadc0_scale.setValue(max_abs_in_bits)
+		self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
 
 
 
@@ -2373,13 +2382,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		start_time = time.clock()
 		
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
-		max_abs = np.max(np.abs(samples_out))
-		if max_abs == 0:
-			max_abs = 1 # to prevent passing a 0 value to the log function, which throws an exception
-		max_abs_in_bits = np.log2(max_abs)
-		
-		self.qadc0_scale.setValue(max_abs_in_bits)
-		self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
+		self.updateScaleDisplays(samples_out)
 		
 		# Compute the window function used to display the spectrum:
 		N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
