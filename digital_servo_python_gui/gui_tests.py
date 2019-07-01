@@ -312,21 +312,25 @@ g.plt_spc.strTitle = Spectrum, noise floor = 130 nV/sqrt(Hz)"""
 
 
 if __name__ == '__main__':
+
+    # Start Qt:
+    app = QtCore.QCoreApplication.instance()
+    if app is None:
+        print("QCoreApplication not running yet. creating.")
+        bEventLoopWasRunningAlready = False
+        app = QtWidgets.QApplication(sys.argv)
+    else:
+        bEventLoopWasRunningAlready = True
+        print("QCoreApplication already running.")
+
+        
     sp                 = SLLSystemParameters()
     sl                 = SuperLaserLand_mock()
     sl.initSubModules() # this should definitely be moved to SuperLaserLand_JD_RP.__init__()
     xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
     # xem_gui_mainwindow.show()
 
-    # Start Qt:
-    app = QtCore.QCoreApplication.instance()
-    if app is None:
-        # print("QCoreApplication not running yet. creating.")
-        bEventLoopWasRunningAlready = False
-        app = QtWidgets.QApplication(sys.argv)
-    else:
-        bEventLoopWasRunningAlready = True
-        # print("QCoreApplication already running.")
+
 
     test_displayADC(sl, xem_gui_mainwindow)
 
