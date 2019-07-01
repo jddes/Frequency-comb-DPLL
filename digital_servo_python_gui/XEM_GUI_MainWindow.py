@@ -2296,6 +2296,27 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			print('Unhandled exception')
 			raise
 #        pause(1/10.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		
 	def displayADC(self):
 				
@@ -2360,15 +2381,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qadc0_scale.setValue(max_abs_in_bits)
 		self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
 		
-		
-		# Compute the baseband IQ data and the spectrum:
-		# Read the reference frequency, should contain a negative frequency (encoded as a frequency above Nyquist) if the VCO sign is positive
-		if self.selected_ADC == 0:
-			f_reference = self.sl.get_ddc0_ref_freq()
-		elif self.selected_ADC == 1:
-			f_reference = self.sl.get_ddc1_ref_freq()
-		f_reference = ((f_reference+self.sl.fs/2) % self.sl.fs)-self.sl.fs/2  # The modulo converts a frequency above Nyquist to the matching negative frequency
-			
 		# Compute the window function used to display the spectrum:
 		N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
 		frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*self.sl.fs, N_fft)
