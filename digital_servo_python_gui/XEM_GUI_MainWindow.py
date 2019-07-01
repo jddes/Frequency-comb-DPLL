@@ -2347,6 +2347,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		else:
 			self.qlabel_rawdata_rbw.setText('RBW: %.0f Hz; Points:' % (round(window_NEB)))
 		
+
 	def displayADC(self):
 				
 		start_time = time.clock()
@@ -2399,6 +2400,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		if self.bDisplayTiming == True:
 			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
+
+		self.plotADCdata(input_select=currentSelector, plot_type=self.qcombo_adc_plottype.currentIndex(), samples_out=samples_out, ref_exp0=ref_exp0)
+
+	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
+
 		start_time = time.clock()
 		
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
@@ -2418,7 +2424,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 
-		if self.qcombo_adc_plottype.currentIndex() == 0:    # Display Spectrum
+		if plot_type == 0:    # Display Spectrum
 
 			if self.bDisplayTiming == True:
 				print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
@@ -2468,15 +2474,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
 			# self.plt_spc.setTitle('Spectrum')
 			self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
-		elif self.qcombo_adc_plottype.currentIndex() == 1:
+		elif plot_type == 1:
 			# Display time-domain plot instead
 			
-			if currentSelector == 0 or currentSelector == 1:
+			if input_select == 0 or input_select == 1:
 				# Convert ADC counts to voltage
 				samples_out = self.sl.convertADCCountsToVolts(self.selected_ADC, samples_out)
 			else:
 				# Convert DAC counts to voltage
-				DAC_number = currentSelector-2
+				DAC_number = input_select-2
 				samples_out = self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 			time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
 			
@@ -2499,7 +2505,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 
 		# If we are handling ADC0 or ADC1 data (as opposed to DAC data)
-		if currentSelector == 0 or currentSelector == 1:
+		if input_select == 0 or input_select == 1:
 
 
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
@@ -2538,7 +2544,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
 			
 			
-			if self.qcombo_adc_plottype.currentIndex() == 2:
+			if plot_type == 2:
 				# show phase error as a function of time
 				
 				# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
@@ -2565,7 +2571,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
 			
 	   
-			if self.qcombo_adc_plottype.currentIndex() == 3:
+			if plot_type == 3:
 				
 				# show time-domain I and Q signals
 				# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
@@ -2587,7 +2593,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 				self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
 				
-			if self.qcombo_adc_plottype.currentIndex() == 4:
+			if plot_type == 4:
 				
 				# show time-domain I and Q signals
 				# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
@@ -2624,7 +2630,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			start_time = time.clock()     
 
 			
-			if self.qcombo_adc_plottype.currentIndex() == 0:
+			if plot_type == 0:
 				# Compute the spectrum of the filter:
 				spc_filter = self.sl.get_frontend_filter_response(frequency_axis, self.selected_ADC)
 #                spc_filter = np.sin(np.pi * (abs(frequency_axis-abs(f_reference))+10)*N_filter/self.sl.fs)/ (np.pi*(abs(frequency_axis-abs(f_reference))+10)*N_filter/self.sl.fs)
@@ -2691,6 +2697,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if self.bDisplayTiming == True:
 			print('Elapsed time (self.plt_spc.replot()) = %f' % (time.clock()-start_time))
 		start_time = time.clock()
+
 		
 #        self.bDisplayTiming = False
 		
