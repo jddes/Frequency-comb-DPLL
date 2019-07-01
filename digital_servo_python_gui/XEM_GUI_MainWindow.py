@@ -2473,7 +2473,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if self.bDisplayTiming == True:
 			print('Elapsed time (Display IQ) = %f' % (time.clock()-start_time))
 
-	def updateSNRdisplay(self, amplitude):
+	# Compute the SNR on the amplitude of the baseband signal:    
+	def updateSNRdisplay(self, complex_baseband):
+		amplitude = np.abs(complex_baseband)
 		mean_amplitude = np.mean(amplitude)
 		std_dev_amplitude = np.std(amplitude)
 		if mean_amplitude == 0:
@@ -2566,11 +2568,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 
 			self.updateIQdisplay(complex_baseband)
-
-			start_time = time.clock()
-			# Compute the SNR on the amplitude of the baseband signal:    
-			self.updateSNRdisplay(amplitude)
+			self.updateSNRdisplay(complex_baseband)
 			
+			start_time = time.clock()
 			
 			if plot_type == 2:
 				# show phase error as a function of time
