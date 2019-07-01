@@ -2401,12 +2401,18 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if self.bDisplayTiming == True:
 			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
 
+		# A little bit of data validation:
+		if currentSelector == 0 or currentSelector == 1:
+			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
+				print('displayADC(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
+				return
+
 		self.plotADCdata(input_select=currentSelector, plot_type=self.qcombo_adc_plottype.currentIndex(), samples_out=samples_out, ref_exp0=ref_exp0)
 
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.updateScaleDisplays(samples_out)
 
-	def plotADCspectrum(self, samples_out, window_function):
+	def plotADCorDACspectrum(self, samples_out, window_function):
 
 		start_time = time.clock()
 		
@@ -2480,7 +2486,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if plot_type == 0:    # Display Spectrum
 			# Normalize samples to +/- 1:
 			samples_out = samples_out/2**15
-			self.plotADCspectrum(samples_out, window_function)
+			self.plotADCorDACspectrum(samples_out, window_function)
 
 		elif plot_type == 1:
 			# Display time-domain plot instead
@@ -2492,6 +2498,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# Convert DAC counts to voltage
 				DAC_number = input_select-2
 				samples_out = self.sl.convertDACCountsToVolts(DAC_number, samples_out)
+
 			time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
 			
 			self.curve_spc.setData(time_axis, samples_out)
@@ -2514,11 +2521,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# If we are handling ADC0 or ADC1 data (as opposed to DAC data)
 		if input_select == 0 or input_select == 1:
 
-
-			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
-				print('displayADC(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
-				return
-		
 			# The signal is from ADC0 or ADC1
 			N_max_IQ = 10e3 # Max number of points to display in the IQ graph
 			complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
