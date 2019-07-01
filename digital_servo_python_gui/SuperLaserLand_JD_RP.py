@@ -303,7 +303,10 @@ class SuperLaserLand_JD_RP:
 		self.ddc1_angle_select = 0
 		self.residuals0_phase_or_freq = 0
 		self.residuals1_phase_or_freq = 0
-		self.controller = weakref.proxy(controller)
+		if controller is not None:
+			self.controller = weakref.proxy(controller)
+		else:
+			self.controller = None
 
 		self.dev = RP_PLL.RP_PLL_device(self.controller)
 
