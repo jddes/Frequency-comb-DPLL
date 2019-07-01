@@ -2513,6 +2513,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
 		
 
+	def scaleDataToVolts(self, samples_out, input_select):
+		if input_select == 0 or input_select == 1:
+			# Convert ADC counts to voltage
+			return self.sl.convertADCCountsToVolts(input_select, samples_out)
+		else:
+			# Convert DAC counts to voltage
+			DAC_number = input_select-2
+			return self.sl.convertDACCountsToVolts(DAC_number, samples_out)
+
 	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
 
 		start_time = time.clock()
@@ -2543,13 +2552,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		elif plot_type == 1:
 			# Display time-domain plot instead
 			
-			if input_select == 0 or input_select == 1:
-				# Convert ADC counts to voltage
-				samples_out = self.sl.convertADCCountsToVolts(self.selected_ADC, samples_out)
-			else:
-				# Convert DAC counts to voltage
-				DAC_number = input_select-2
-				samples_out = self.sl.convertDACCountsToVolts(DAC_number, samples_out)
+			samples_out = self.scaleDataToVolts(samples_out, input_select)
 
 			time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
 			
