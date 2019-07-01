@@ -2403,12 +2403,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		self.plotADCdata(input_select=currentSelector, plot_type=self.qcombo_adc_plottype.currentIndex(), samples_out=samples_out, ref_exp0=ref_exp0)
 
+		# Update the scale which indicates the ADC fill ratio in numbers of bits:
+		self.updateScaleDisplays(samples_out)
+
+
 	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
 
 		start_time = time.clock()
 		
-		# Update the scale which indicates the ADC fill ratio in numbers of bits:
-		self.updateScaleDisplays(samples_out)
+
 		
 		# Compute the window function used to display the spectrum:
 		N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
