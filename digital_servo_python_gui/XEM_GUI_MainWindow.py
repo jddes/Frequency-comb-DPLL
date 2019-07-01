@@ -2477,6 +2477,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			#self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
 			# self.plt_spc.setTitle('Spectrum')
 			self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
+
+
 		elif plot_type == 1:
 			# Display time-domain plot instead
 			
@@ -2577,7 +2579,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if plot_type == 3:
 				
 				# show time-domain I and Q signals
-				# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
+				# To mimic as much as possible the processing done in the FPGA, we quantize the complex baseband:
 				complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
 				# Set axis
 				time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
