@@ -2372,7 +2372,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 						   2: self.sl.setup_DAC0_write,
 						   3: self.sl.setup_DAC1_write,
 						   4: self.sl.setup_DAC2_write}
-		
 			
 		try:
 			# Read from selected source
@@ -2606,29 +2605,26 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.plotADCorDACtimeDomain(samples_out)
 
 
-		
 		if not (input_select == 0 or input_select == 1):
 			# Not sure what to put in the baseband IQ plot.  For now we put nothing
 			self.qthermo_baseband_snr.setValue(0)
 			return
 		
 
-
 		# If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
 		complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
 		
 		if self.bDisplayTiming == True:
 			print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
-		
+		start_time = time.clock()
 
 		self.updateIQdisplay(complex_baseband)
 		self.updateSNRdisplay(complex_baseband)
-		
-		start_time = time.clock()
+
 		
 		if plot_type == 2 or plot_type == 3 or plot_type == 4:
-			# show phase error as a function of time
-			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) # NEB doesn't make that much sense here, but we still plot 1/Total time
+			# NEB doesn't make that much sense here, but we still plot 1/Total time
+			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
 			
 			# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
 			complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
