@@ -2606,16 +2606,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 		if not (input_select == 0 or input_select == 1):
-			# Not sure what to put in the baseband IQ plot.  For now we put nothing
+			# Not sure what to put in the baseband IQ plot.  For now we simply don't update it
 			self.qthermo_baseband_snr.setValue(0)
 			return
 		
-
 		# If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
+		start_time = time.clock()
 		complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
-		
 		if self.bDisplayTiming == True:
 			print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
+
+		self.handleComplexBaseband(complex_baseband, plot_type)
+		
+	def handleComplexBaseband(self, complex_baseband, plot_type):
+
+
 		start_time = time.clock()
 
 		self.updateIQdisplay(complex_baseband)
@@ -2636,7 +2641,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		
 		if self.bDisplayTiming == True:
-			print('Elapsed time (IQ data) = %f' % (time.clock()-start_time))
+			print('Elapsed time (complex baseband plots) = %f' % (time.clock()-start_time))
 		start_time = time.clock()
 
 		
