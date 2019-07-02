@@ -2347,7 +2347,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		N_samples = max(N_samples, 64) # apply limit
 		return (input_select, plot_type, N_samples)
 
-	def getADCdata(self, ìnput_select, N_samples):
+	def getADCdata(self, input_select, N_samples):
 
 		start_time = time.clock()
 		
@@ -2368,7 +2368,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 		try:
 			# Read from selected source
-			setup_func_dict[ìnput_select](N_samples)
+			setup_func_dict[input_select](N_samples)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
@@ -2391,7 +2391,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
 
 		# A little bit of data validation:
-		if ìnput_select == 0 or ìnput_select == 1:
+		if input_select == 0 or input_select == 1:
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
 				print('getADCdata(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
 				return (None, None)
