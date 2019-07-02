@@ -194,7 +194,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.timerIDDither = Qt.QTimer(self)
 		self.timerIDDither.timeout.connect(self.timerDitherEvent)
 		self.startTimers()
-        # self.displayADC()
+        # self.grabAndDisplayADC()
         # self.displayDDC()
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
@@ -1762,7 +1762,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# print "Warning! Increased self.timerIDDither.start(100) to 3000 for debugging."
 #        self.timerDitherEvent()
 	
-#        self.displayADC()
+#        self.grabAndDisplayADC()
 #        self.displayDDC()
 	
 		self.displayDAC()   # This populates the current DAC values with the actual value
@@ -1945,7 +1945,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# 		self.qlbl_status2.setStyleSheet('')
 		
 			if self.qchk_refresh.isChecked():
-				self.displayADC()
+				self.grabAndDisplayADC()
 				self.displayDAC()
 				
 				if self.display_phase == 0 or self.qchk_phase_noise_fast_updates.isChecked():
@@ -2320,16 +2320,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
 
 
-	def computeFFT(self, samples, fs):
-		# Compute the window function used to display the spectrum:
-		N_fft = 2**(int(np.ceil(np.log2(len(samples)))))
-		frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
-		window_function = np.blackman(len(samples))
-		last_index_shown = int(np.round(len(frequency_axis)/2))
-		window_NEB = np.sum((window_function/np.sum(window_function))**2) * fs
-		
-		return (frequency_axis, window_function, window_NEB, last_index_shown)
-
 
 	def computeNEB(self, window_function, fs):
 		return np.sum((window_function/np.sum(window_function))**2) * fs
@@ -2345,26 +2335,29 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.qlabel_rawdata_rbw.setText('RBW: %.0f Hz; Points:' % (round(window_NEB)))
 		
 
-	def displayADC(self):
-				
+	def getGUIsettingsForADCdata(self):
+		# Get settings from the GUI:
+		input_select = self.qcombo_adc_plot.currentIndex()
+		plot_type    = self.qcombo_adc_plottype.currentIndex()
+		try:
+			N_samples = int(float(self.qedit_rawdata_length.text()))
+		except:
+			N_samples = 4e3
+
+		N_samples = max(N_samples, 64) # apply limit
+		return (input_select, plot_type, N_samples)
+
+	def getADCdata(self, ìnput_select, N_samples):
+
 		start_time = time.clock()
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
-			print('displayADC(): DDR2 logger in use, cannot get data from adc')
-			return
+			print('grabAndDisplayADC(): DDR2 logger in use, cannot get data from adc')
+			return (None, None)
 		# Block access to the DDR2 Logger to any other function until we are done:
 		self.sl.bDDR2InUse = True
 
-		try:
-			N_points = int(float(self.qedit_rawdata_length.text()))
-		except:
-			N_points = 4e3
-			
-		if N_points < 64:
-			N_points = 64
-	
-		currentSelector = self.qcombo_adc_plot.currentIndex()
 		# Python doesn't have switch-case statements
 		# Apparently the best way is to use a dictionary instead:
 		setup_func_dict = {0: self.sl.setup_ADC0_write,
@@ -2375,7 +2368,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 		try:
 			# Read from selected source
-			setup_func_dict[currentSelector](N_points)
+			setup_func_dict[ìnput_select](N_samples)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
@@ -2398,15 +2391,74 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
 
 		# A little bit of data validation:
-		if currentSelector == 0 or currentSelector == 1:
+		if ìnput_select == 0 or ìnput_select == 1:
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
-				print('displayADC(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
-				return
+				print('getADCdata(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
+				return (None, None)
 
-		self.plotADCdata(input_select=currentSelector, plot_type=self.qcombo_adc_plottype.currentIndex(), samples_out=samples_out, ref_exp0=ref_exp0)
+		return (samples_out, ref_exp0)
+
+
+
+	def grabAndDisplayADC(self):
+		(input_select, plot_type, N_samples) = self.getGUIsettingsForADCdata()
+		# Grab data from the FPGA:
+		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
+		if (samples_out is None) or (ref_exp0 is None):
+			return
+
+		self.plotADCdata(input_select, plot_type, samples_out, ref_exp0)
 
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.updateScaleDisplays(samples_out)
+
+
+
+	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
+
+		if plot_type == 0:    # Display Spectrum
+			self.plotADCorDACspectrum(samples_out, input_select)
+
+		elif plot_type == 1:
+			self.plotADCorDACtimeDomain(samples_out, input_select)
+
+
+		if not (input_select == 0 or input_select == 1):
+			# Not sure what to put in the baseband IQ plot.  For now we simply don't update it
+			self.qthermo_baseband_snr.setValue(0)
+			return
+		
+		# If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
+		start_time = time.clock()
+		complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
+		if self.bDisplayTiming == True:
+			print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
+
+		self.handleComplexBaseband(complex_baseband, plot_type)
+		
+	def handleComplexBaseband(self, complex_baseband, plot_type):
+
+
+		start_time = time.clock()
+
+		self.updateIQdisplay(complex_baseband)
+		self.updateSNRdisplay(complex_baseband)
+
+		
+		if plot_type == 2 or plot_type == 3 or plot_type == 4:
+			# NEB doesn't make that much sense here, but we still plot 1/Total time
+			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
+			
+		if plot_type == 2:
+			self.plotPhaseData(complex_baseband)
+		elif plot_type == 3 or plot_type == 4:
+			self.plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
+
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (complex baseband plots) = %f' % (time.clock()-start_time))
+		start_time = time.clock()
+
 
 	def plotADCorDACspectrum(self, samples_out, input_select):
 
@@ -2581,9 +2633,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
 		self.curve_filter.setVisible(True)
 		# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
-		valmax1 = np.mean(np.abs(complex_baseband))
+		mean_amplitude = np.mean(np.abs(complex_baseband))
 		
-		self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
+		self.plt_spc.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
 		self.plt_spc.setXRange(time_axis[0], time_axis[-1])
 	
 		if bPhaseAligned:
@@ -2592,54 +2644,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
 
 
-	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
-
-		if plot_type == 0:    # Display Spectrum
-			self.plotADCorDACspectrum(samples_out, input_select)
-
-		elif plot_type == 1:
-			self.plotADCorDACtimeDomain(samples_out, input_select)
-
-
-		if not (input_select == 0 or input_select == 1):
-			# Not sure what to put in the baseband IQ plot.  For now we simply don't update it
-			self.qthermo_baseband_snr.setValue(0)
-			return
-		
-		# If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
-		start_time = time.clock()
-		complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
-		if self.bDisplayTiming == True:
-			print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
-
-		self.handleComplexBaseband(complex_baseband, plot_type)
-		
-	def handleComplexBaseband(self, complex_baseband, plot_type):
-
-
-		start_time = time.clock()
-
-		self.updateIQdisplay(complex_baseband)
-		self.updateSNRdisplay(complex_baseband)
-
-		
-		if plot_type == 2 or plot_type == 3 or plot_type == 4:
-			# NEB doesn't make that much sense here, but we still plot 1/Total time
-			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
-			
-		if plot_type == 2:
-			self.plotPhaseData(complex_baseband)
-		elif plot_type == 3 or plot_type == 4:
-			self.plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
-
-		
-		if self.bDisplayTiming == True:
-			print('Elapsed time (complex baseband plots) = %f' % (time.clock()-start_time))
-		start_time = time.clock()
-
-		
-#        self.bDisplayTiming = False
-		
 	# From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
 	def make_sure_path_exists(self, path):
 		try:

@@ -75,7 +75,7 @@ class PlotWidgetIntercept():
         self.obj.setTitle(strTitle)
 
 
-def test_displayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False):
+def test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False):
     # shorthand:
     g = gui_mainwindow
 
@@ -115,7 +115,7 @@ def test_displayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False)
     g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
     g.plt_spc = PlotWidgetIntercept(g.plt_spc)
 
-    g.displayADC()
+    g.grabAndDisplayADC()
 
     # this is used to determine what the "true" outputs should be
     if bPrintAllOutputState:
@@ -164,7 +164,7 @@ def test_displayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False)
         
 
     # Check the outputs against the expected:
-    return check_displayADC_outputs(g, test_number)
+    return check_grabAndDisplayADC_outputs(g, test_number)
 
     
 # finds the value of a field in a string, delimited between strStartToken and strStopToken
@@ -253,10 +253,10 @@ def compare_text_fields(actual, expected_outputs_as_text):
             print("Failed test: %s: actual : '%s', expected: '%s'" % (full_field_name, eval('actual.' + field_sub_name), field_value))
     return (bPass, strFailedFields)
 
-def check_displayADC_outputs(g, test_number=0):
+def check_grabAndDisplayADC_outputs(g, test_number=0):
     bPass = True
     strFailedFields = ''
-    print("check_displayADC_outputs(): test_number=%d" % test_number)
+    # print("check_grabAndDisplayADC_outputs(): test_number=%d" % test_number)
 
     expected = simple_struct()
     expected.curve_spc                      = simple_struct()
@@ -496,12 +496,12 @@ if __name__ == '__main__':
     bPass = True
     for test_case in range(5):
         xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
-        bPass = bPass and test_displayADC(sl, xem_gui_mainwindow, test_number=test_case, bPrintAllOutputState=False)
+        bPass = bPass and test_grabAndDisplayADC(sl, xem_gui_mainwindow, test_number=test_case, bPrintAllOutputState=False)
         del xem_gui_mainwindow
 
 
     # xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
-    # bPass = bPass and test_displayADC(sl, xem_gui_mainwindow, test_number=2, bPrintAllOutputState=True)
+    # bPass = bPass and test_grabAndDisplayADC(sl, xem_gui_mainwindow, test_number=2, bPrintAllOutputState=True)
     # xem_gui_mainwindow.show()
 
     if bPass:
