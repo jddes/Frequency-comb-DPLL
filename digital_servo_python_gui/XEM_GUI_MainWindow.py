@@ -2627,10 +2627,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# NEB doesn't make that much sense here, but we still plot 1/Total time
 			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
 			
-			if plot_type == 2:
-				self.plotPhaseData(complex_baseband)
-			elif plot_type == 3 or plot_type == 4:
-				self.plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
+		if plot_type == 2:
+			self.plotPhaseData(complex_baseband)
+		elif plot_type == 3 or plot_type == 4:
+			self.plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
 
 		
 		if self.bDisplayTiming == True:
