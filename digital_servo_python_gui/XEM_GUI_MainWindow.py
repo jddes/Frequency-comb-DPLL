@@ -2409,10 +2409,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.updateScaleDisplays(samples_out)
 
-	def plotADCorDACspectrum(self, samples_out, window_function, input_select):
+	def plotADCorDACspectrum(self, samples_out, input_select):
 
 		start_time = time.clock()
 		
+		# Compute window function:
+		window_function = np.blackman(len(samples_out))
+		window_NEB = self.computeNEB(window_function, self.sl.fs)
+		self.updateNEBdisplay(window_NEB)
 
 		# Apply window function to the data:
 		samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
@@ -2457,6 +2461,27 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		if input_select == 0 or input_select == 1:
 			self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
+
+	def plotADCorDACtimeDomain(self, samples_out):
+		# Display time-domain plot instead
+		self.updateNEBdisplay(self.sl.fs/len(samples_out)) # NEB doesn't make that much sense here, but we still plot 1/Total time
+		
+		
+
+		time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
+		
+		self.curve_spc.setData(time_axis, samples_out)
+		self.curve_filter.setVisible(False)
+		# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
+		valmin = np.min(samples_out)
+		valmax = np.max(samples_out)
+		
+		self.plt_spc.setYRange((valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
+		self.plt_spc.setXRange(time_axis[0], time_axis[-1])
+		
+		self.plt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
+		self.plt_spc.setTitle('Time, std = %.2f mV, ampl = %.2f mVpp' % (1e3*np.std(samples_out), 1e3*np.std(samples_out)*2*np.sqrt(2)))
+		
 
 
 	def updateFilterSpcDisplay(self, frequency_axis):
@@ -2522,148 +2547,100 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			DAC_number = input_select-2
 			return self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 
+	def plotPhaseData(self, complex_basebandr):
+		phi = np.unwrap(np.angle(complex_basebandr))
+		phi_std = np.std(phi)
+		# Set axis
+		time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
+		
+		self.curve_spc.setData(time_axis, phi-phi[0])
+		self.curve_filter.setVisible(False)
+		# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
+		valmin = np.min(phi)-phi[0]
+		valmax = np.max(phi)-phi[0]
+		
+		# self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, valmin, valmax)
+		# self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
+
+		self.plt_spc.setYRange(valmin, valmax)
+		self.plt_spc.setXRange(time_axis[0], time_axis[-1])
+	
+		self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
+
+	def plotIQData(self, complex_basebandr, bPhaseAligned):
+
+		if bPhaseAligned:
+			# Sync the phase to be equal to 0 at t=0:
+			complex_basebandr = complex_basebandr * np.conj(complex_basebandr[0])/np.abs(complex_basebandr[0])
+
+		# Set axis
+		time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
+
+		
+		self.curve_spc.setData(time_axis, np.real(complex_basebandr))
+		self.curve_filter.setData(time_axis, np.imag(complex_basebandr))
+#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
+#            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
+		self.curve_filter.setVisible(True)
+		# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
+		valmax1 = np.mean(np.abs(complex_basebandr))
+		
+		self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
+		self.plt_spc.setXRange(time_axis[0], time_axis[-1])
+	
+		if bPhaseAligned:
+			self.plt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
+		else:
+			self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
+
+
 	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
-
-		start_time = time.clock()
-		
-
-		
-		# Compute the window function used to display the spectrum:
-		N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
-		
-		window_function = np.blackman(len(samples_out))
-		last_index_shown = int(np.round(N_fft/2))
-
-		window_NEB = self.computeNEB(window_function, self.sl.fs)
-		self.updateNEBdisplay(window_NEB)
-
-
-
-		if self.bDisplayTiming == True:
-			print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
-
-
 
 		if plot_type == 0:    # Display Spectrum
 			# Normalize samples to +/- 1:
 			samples_out = samples_out/2**15
-			self.plotADCorDACspectrum(samples_out, window_function, input_select)
+			self.plotADCorDACspectrum(samples_out, input_select)
 
 		elif plot_type == 1:
-			# Display time-domain plot instead
-			
 			samples_out = self.scaleDataToVolts(samples_out, input_select)
-
-			time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
-			
-			self.curve_spc.setData(time_axis, samples_out)
-			self.curve_filter.setVisible(False)
-			# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
-			valmin = np.min(samples_out)
-			valmax = np.max(samples_out)
-			
-			self.plt_spc.setYRange((valmin+valmax)/2-1.1*(valmax-valmin)/2-1/65e3, (valmin+valmax)/2+1.1*(valmax-valmin)/2+1/65e3)
-			self.plt_spc.setXRange(time_axis[0], time_axis[-1])
-			
-			self.plt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
-			self.plt_spc.setTitle('Time, std = %.2f mV, ampl = %.2f mVpp' % (1e3*np.std(samples_out), 1e3*np.std(samples_out)*2*np.sqrt(2)))
-			
+			self.plotADCorDACtimeDomain(samples_out)
 
 
-
-
-
-		# If we are handling ADC0 or ADC1 data (as opposed to DAC data)
-		if input_select == 0 or input_select == 1:
-
-			# The signal is from ADC0 or ADC1
-			
-			complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
-			amplitude = np.abs(complex_baseband)
-			mean_amplitude = np.mean(amplitude)
-			
-			if self.bDisplayTiming == True:
-				print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
-			
-
-			self.updateIQdisplay(complex_baseband)
-			self.updateSNRdisplay(complex_baseband)
-			
-			start_time = time.clock()
-			
-			if plot_type == 2:
-				# show phase error as a function of time
-				
-				# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
-				complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
-				phi = np.unwrap(np.angle(complex_basebandr))
-				phi_std = np.std(phi)
-				# Set axis
-				time_axis = np.linspace(0, len(complex_baseband)-1, len(complex_baseband))/self.sl.fs
-				
-				self.curve_spc.setData(time_axis, phi-phi[0])
-	#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-	#            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
-				self.curve_filter.setVisible(False)
-				# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
-				valmin = np.min(phi)-phi[0]
-				valmax = np.max(phi)-phi[0]
-				
-				# self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, valmin, valmax)
-				# self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
-
-				self.plt_spc.setYRange(valmin, valmax)
-				self.plt_spc.setXRange(time_axis[0], time_axis[-1])
-			
-				self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
-			
-	   
-			if plot_type == 3 or plot_type == 4:
-				
-				# show time-domain I and Q signals
-				# To mimic as much as possible the processing done in the FPGA, we quantize the complex baseband:
-				complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
-				if plot_type == 4:
-					# Sync the phase to be equal to 0 at t=0:
-					complex_basebandr = complex_basebandr * np.conj(complex_basebandr[0])/np.abs(complex_basebandr[0])
-				# Set axis
-				time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
-
-				
-				self.curve_spc.setData(time_axis, np.real(complex_basebandr))
-				self.curve_filter.setData(time_axis, np.imag(complex_basebandr))
-	#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-	#            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
-				self.curve_filter.setVisible(True)
-				# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
-				valmax1 = np.mean(np.abs(complex_basebandr))
-				
-				self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
-				self.plt_spc.setXRange(time_axis[0], time_axis[-1])
-			
-				if plot_type == 4:
-					self.plt_spc.setTitle('Time-domain IQ signals, phase aligned at t=0')
-				else:
-					self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
-				
-			
-			
-
-
-
-			
-
-			
-		else:
-			# The signal is from DAC0 or DAC1:
+		
+		if not (input_select == 0 or input_select == 1):
 			# Not sure what to put in the baseband IQ plot.  For now we put nothing
 			self.qthermo_baseband_snr.setValue(0)
-			pass
-
+			return
 		
+
+
+		# If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
+		complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
 		
 		if self.bDisplayTiming == True:
-			print('Elapsed time (self.plt_spc.replot()) = %f' % (time.clock()-start_time))
+			print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
+		
+
+		self.updateIQdisplay(complex_baseband)
+		self.updateSNRdisplay(complex_baseband)
+		
+		start_time = time.clock()
+		
+		if plot_type == 2 or plot_type == 3 or plot_type == 4:
+			# show phase error as a function of time
+			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) # NEB doesn't make that much sense here, but we still plot 1/Total time
+			
+			# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
+			complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
+
+			if plot_type == 2:
+				self.plotPhaseData(complex_basebandr)
+			elif plot_type == 3 or plot_type == 4:
+				self.plotIQData(complex_basebandr, bPhaseAligned=(plot_type==4))
+
+		
+		if self.bDisplayTiming == True:
+			print('Elapsed time (IQ data) = %f' % (time.clock()-start_time))
 		start_time = time.clock()
 
 		
