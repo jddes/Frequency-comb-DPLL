@@ -2411,11 +2411,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def plotADCorDACspectrum(self, samples_out, input_select):
 
 		start_time = time.clock()
+
+		# Normalize samples to +/- 1:
+		samples_out = samples_out/2**15
 		
 		# Compute window function:
 		window_function = np.blackman(len(samples_out))
 		window_NEB = self.computeNEB(window_function, self.sl.fs)
 		self.updateNEBdisplay(window_NEB)
+
 
 		# Apply window function to the data:
 		samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
@@ -2461,12 +2465,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if input_select == 0 or input_select == 1:
 			self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
 
-	def plotADCorDACtimeDomain(self, samples_out):
-		# Display time-domain plot instead
+	def plotADCorDACtimeDomain(self, samples_out, input_select):
+		samples_out = self.scaleDataToVolts(samples_out, input_select)
+
+
 		self.updateNEBdisplay(self.sl.fs/len(samples_out)) # NEB doesn't make that much sense here, but we still plot 1/Total time
 		
-		
-
 		time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
 		
 		self.curve_spc.setData(time_axis, samples_out)
@@ -2546,11 +2550,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			DAC_number = input_select-2
 			return self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 
-	def plotPhaseData(self, complex_basebandr):
-		phi = np.unwrap(np.angle(complex_basebandr))
-		phi_std = np.std(phi)
-		# Set axis
-		time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
+	def plotPhaseData(self, complex_baseband):
+		phi = np.unwrap(np.angle(complex_baseband))
+		time_axis = np.linspace(0, len(complex_baseband)-1, len(complex_baseband))/self.sl.fs
 		
 		self.curve_spc.setData(time_axis, phi-phi[0])
 		self.curve_filter.setVisible(False)
@@ -2558,31 +2560,28 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		valmin = np.min(phi)-phi[0]
 		valmax = np.max(phi)-phi[0]
 		
-		# self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, valmin, valmax)
-		# self.qplt_spc.setAxisScale(Qwt.QwtPlot.xBottom, time_axis[0], time_axis[-1])
-
 		self.plt_spc.setYRange(valmin, valmax)
 		self.plt_spc.setXRange(time_axis[0], time_axis[-1])
 	
-		self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % phi_std)
+		self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % np.std(phi))
 
-	def plotIQData(self, complex_basebandr, bPhaseAligned):
+	def plotIQData(self, complex_baseband, bPhaseAligned):
 
 		if bPhaseAligned:
 			# Sync the phase to be equal to 0 at t=0:
-			complex_basebandr = complex_basebandr * np.conj(complex_basebandr[0])/np.abs(complex_basebandr[0])
+			complex_baseband = complex_baseband * np.conj(complex_baseband[0])/np.abs(complex_baseband[0])
 
 		# Set axis
-		time_axis = np.linspace(0, len(complex_basebandr)-1, len(complex_basebandr))/self.sl.fs
+		time_axis = np.linspace(0, len(complex_baseband)-1, len(complex_baseband))/self.sl.fs
 
 		
-		self.curve_spc.setData(time_axis, np.real(complex_basebandr))
-		self.curve_filter.setData(time_axis, np.imag(complex_basebandr))
+		self.curve_spc.setData(time_axis, np.real(complex_baseband))
+		self.curve_filter.setData(time_axis, np.imag(complex_baseband))
 #            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
 #            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
 		self.curve_filter.setVisible(True)
 		# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
-		valmax1 = np.mean(np.abs(complex_basebandr))
+		valmax1 = np.mean(np.abs(complex_baseband))
 		
 		self.plt_spc.setYRange(-1.5*valmax1, 1.5*valmax1)
 		self.plt_spc.setXRange(time_axis[0], time_axis[-1])
@@ -2596,13 +2595,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
 
 		if plot_type == 0:    # Display Spectrum
-			# Normalize samples to +/- 1:
-			samples_out = samples_out/2**15
 			self.plotADCorDACspectrum(samples_out, input_select)
 
 		elif plot_type == 1:
-			samples_out = self.scaleDataToVolts(samples_out, input_select)
-			self.plotADCorDACtimeDomain(samples_out)
+			self.plotADCorDACtimeDomain(samples_out, input_select)
 
 
 		if not (input_select == 0 or input_select == 1):
@@ -2631,13 +2627,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# NEB doesn't make that much sense here, but we still plot 1/Total time
 			self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
 			
-			# To mimick as much as possible the processing done in the FPGA, we quantize the complex baseband:
-			complex_basebandr = np.round(2**15*complex_baseband * 20/2 /2**4 /2)
-
 			if plot_type == 2:
-				self.plotPhaseData(complex_basebandr)
+				self.plotPhaseData(complex_baseband)
 			elif plot_type == 3 or plot_type == 4:
-				self.plotIQData(complex_basebandr, bPhaseAligned=(plot_type==4))
+				self.plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
 
 		
 		if self.bDisplayTiming == True:
