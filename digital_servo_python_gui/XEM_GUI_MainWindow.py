@@ -1808,8 +1808,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		for k in range(3):
 			if self.output_controls[k]:
 				if self.sl.dither_enable[k] == False:
-					self.qlabel_detected_vco_gain[k].setText('off')
-					self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: black")
+					if k != 2: # DAC2 currently does not have dither
+						self.qlabel_detected_vco_gain[k].setText('off')
+						self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: black")
 					
 				else:
 					samples = self.sl.ditherRead(2, k)
