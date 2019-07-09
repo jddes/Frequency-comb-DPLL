@@ -1295,7 +1295,7 @@ int main(int argc, char *argv[])
     bool bBindSuccess = false;
     uint iRetries = 0;
 
-    while (!bBindSuccess && iRetries < 200)
+    while (!bBindSuccess && iRetries < 200 && !app_exit)
     {
 	    if (bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
 	    {
@@ -1307,6 +1307,10 @@ int main(int argc, char *argv[])
 	    } else {
 	    	bBindSuccess = true;
 	    }
+    }
+    if (app_exit)
+    {
+    	return EXIT_FAILURE;
     }
     if (!bBindSuccess)	// we didn't succeed after 20 retries...
     {
