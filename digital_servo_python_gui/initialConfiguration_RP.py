@@ -371,6 +371,7 @@ class initialConfiguration(QtWidgets.QDialog):
 		# connect to the selected RedPitaya, send new bitfile, then send programming command to the shell:
 		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		self.dev.write_file_on_remote(strFilenameLocal=str(self.qedit_firmware.text()), strFilenameRemote='/opt/red_pitaya_top.bit')
+		time.sleep(2) # to handle slow SD cards
 		print("File written to remote host at /opt/red_pitaya_top.bit.")
 		self.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
 		print("Program FPGA firmware command sent.")
