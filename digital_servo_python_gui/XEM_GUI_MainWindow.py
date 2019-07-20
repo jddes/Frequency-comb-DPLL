@@ -991,8 +991,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.qlabel_detected_vco_gain[1] = Qt.QLabel('0 Hz/V')
 			self.qlabel_detected_vco_gain[1].setAlignment(Qt.Qt.AlignHCenter)
 			
-			# self.qlabel_detected_vco_gain[2] = Qt.QLabel('0 Hz/V')
-			# self.qlabel_detected_vco_gain[2].setAlignment(Qt.Qt.AlignHCenter)
+			self.qlabel_detected_vco_gain[2] = Qt.QLabel('0 Hz/V')
+			self.qlabel_detected_vco_gain[2].setAlignment(Qt.Qt.AlignHCenter)
 
 		
 		# DDC reference frequency:
