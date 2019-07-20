@@ -2629,8 +2629,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		self.curve_spc.setData(time_axis, np.real(complex_baseband))
 		self.curve_filter.setData(time_axis, np.imag(complex_baseband))
-#            self.qplt_spc.setAxisScale(Qwt.QwtPlot.yLeft, -120, 0)
-#            self.qplt_spc.setAxisAutoScale(Qwt.QwtPlot.yLeft)
 		self.curve_filter.setVisible(True)
 		# Simply setting a curve to be invisible does not prevent it from being used to compute the axis, so we have to set the axis manually:
 		mean_amplitude = np.mean(np.abs(complex_baseband))
