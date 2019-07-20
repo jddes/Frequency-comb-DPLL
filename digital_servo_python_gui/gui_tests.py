@@ -109,9 +109,9 @@ def test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState
 
 
     # replace the PyQtGraph objects that are acted on with our interceptors so that we can verify the correct outputs without requiring knowledge of the internal structure of the objects in PyQtGraph:
-    g.curve_spc                      = PlotWindowIntercept(g.curve_spc)
-    g.curve_filter                   = PlotWindowIntercept(g.curve_filter)
-    g.curve_IQ                       = PlotWindowIntercept(g.curve_IQ)
+    g.curve_spc    = PlotWindowIntercept(g.curve_spc)
+    g.curve_filter = PlotWindowIntercept(g.curve_filter)
+    g.curve_IQ     = PlotWindowIntercept(g.curve_IQ)
     g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
     g.plt_spc = PlotWidgetIntercept(g.plt_spc)
 
@@ -515,6 +515,6 @@ if __name__ == '__main__':
     # for example to enable re-using the same console to run another instance afterwards,
     # is different.
     if bEventLoopWasRunningAlready == False:
-        del xem_gui_mainwindow
+        # del xem_gui_mainwindow
         del sl
     
