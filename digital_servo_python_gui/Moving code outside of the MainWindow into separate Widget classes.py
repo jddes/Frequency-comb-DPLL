@@ -12,7 +12,7 @@ a few labels
 1 spectrum (and other types) plot)
 
 Stuff that stays in MainWindow:
-self.output_controls
+self.output_controls: gets passed down to SpectrumWidget
 
 
 State from elsewhere in the GUI that is needed in the plot thingy
@@ -61,6 +61,7 @@ self.output_controls: stays in MainWindow, will need to be read
 self.lblplt_IQ_title
 self.qplt_IQ
 self.qplt_IQ
+
 self.plt_spc
 self.qlabel_adc_plot_input
 self.qlabel_adc_plot_type
