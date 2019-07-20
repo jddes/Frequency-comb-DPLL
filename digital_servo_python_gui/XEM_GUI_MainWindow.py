@@ -181,21 +181,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def pushDefaultValues(self):
 		print("XEM_GUI_MainWindow::pushDefaultValues()")
-		#For now, equivalent to call initSL()
+		#For now, equivalent to calling initSL()
 		self.loadParameters()
 		# Send values to FPGA
 		self.setVCOFreq_event()
 		self.setVCOGain_event()
 		# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway
 		self.chkLockClickedEvent()
-		if self.output_controls[0] == True:
-			self.setPWM0_event()
 
 		self.timerIDDither = Qt.QTimer(self)
 		self.timerIDDither.timeout.connect(self.timerDitherEvent)
 		self.startTimers()
-        # self.grabAndDisplayADC()
-        # self.displayDDC()
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
 		# print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
@@ -397,21 +393,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 				self.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
-	##
-	## HB, 4/27/2015, Added PWM support on DOUT0
-	##
-	def setPWM0_event(self):
-		# Get slider units
-		slider_units = float(self.q_pwm0_value.value())
-		# Convert to volts
-		value_in_volts = slider_units*1e-6*(self.PWM0_max-self.PWM0_min)+self.PWM0_min
-		# Convert to counts
-		value_in_counts = self.sl.convertPWMVoltsToCounts(self.PWM0_standard, self.PWM0_levels, value_in_volts)
-		# Send to FPGA
-		self.sl.set_pwm_settings(self.PWM0_levels, value_in_counts)
-		# Update label
-		self.qlabel_pwm0_value.setText('%.2f V' % (value_in_volts))
-	
+
 	def setVCOFreq_event(self):
 		# print("setVCOFreq_event")
 		try:
@@ -1227,18 +1209,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_baseband_snr_value = Qt.QLabel('20 dB')
 		self.qlabel_baseband_snr_value.setAlignment(Qt.Qt.AlignHCenter)
 		
-	   # # Create the scale which indicates the average frequency error:
-	   # self.qlabel_ddc0_error = Qt.QLabel('Freq error\n[MHz]')
-	   # self.qlabel_ddc0_error.setAlignment(Qt.Qt.AlignHCenter)
-	   
-	   # self.qddc0_error_scale = ThermometerWidget()#Qwt.QwtThermo()
-	   # self.qddc0_error_scale.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
-	   # self.qddc0_error_scale.setRange(-5, 5)
-	   # self.qddc0_error_scale.setScale(-5, 5)
-	   # self.qddc0_error_scale.setValue(0)
-	   # self.qddc0_error_scale.setFillColor(Qt.Qt.blue)
-		
-
 		
 
 		# Create the widgets which shows the current dac output and sets the output offset:
@@ -1249,19 +1219,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.q_dac_offset = {}
 		self.qlabel_dac_offset_value = {}
 		
-		if self.output_controls[0] == True:
-			self.qlabel_pwm0 = Qt.QLabel('Output\nPWM 0 [V]')
-			self.qlabel_pwm0.setAlignment(Qt.Qt.AlignHCenter)
-			
-			self.q_pwm0_value = Qt.QSlider()
-			self.q_pwm0_value.valueChanged.connect(self.setPWM0_event)
-			self.q_pwm0_value.setOrientation(Qt.Qt.Vertical)
-			self.q_pwm0_value.setMinimum(0)
-			self.q_pwm0_value.setMaximum(1e6)
-			self.q_pwm0_value.setSliderPosition(0)
-			
-			self.qlabel_pwm0_value = Qt.QLabel('Value\nPWM 0 [V]')
-			self.qlabel_pwm0_value.setAlignment(Qt.Qt.AlignHCenter)
 		
 		for k in range(3):
 			if self.output_controls[k] == True:
@@ -1395,8 +1352,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		grid.addWidget(self.qlabel_baseband_snr,    0, 1)
 		grid.addWidget(self.qthermo_baseband_snr,   1, 1, 3, 1)
 		grid.addWidget(self.qlabel_baseband_snr_value,  4, 1, 1, 1)
-#        grid.addWidget(self.qlabel_ddc0_error,      0, 2)
-#        grid.addWidget(self.qddc0_error_scale,      1, 2, 4, 1)
+
 		
 
 		
@@ -1413,13 +1369,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				
 				N_dac_controls = N_dac_controls + 2
 				
-		#FEATURE         
-		#if self.output_controls[0] == True:
-			#grid.addWidget(self.qlabel_pwm0,       0, 3+N_dac_controls, 1, 1)
-			#grid.addWidget(self.q_pwm0_value,      1, 3+N_dac_controls, 3, 1)
-			#grid.addWidget(self.qlabel_pwm0_value, 4, 3+N_dac_controls, 1, 1)
-			#N_dac_controls = N_dac_controls + 2
-			
 				
 		grid.setRowStretch(1, 1)
 
@@ -1694,19 +1643,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.q_dac_offset[k].blockSignals(False)
 				# print('done calling dac offset slider setValue()')
 				
-		if self.output_controls[0] == True:
-
-			self.PWM0_standard = float(self.sp.getValue('PWM0_settings', 'standard'));
-			self.PWM0_levels   = int(self.sp.getValue('PWM0_settings', 'levels'));
-			self.PWM0_default  = float(self.sp.getValue('PWM0_settings', 'default'));
-			self.PWM0_min      = float(self.sp.getValue('PWM0_settings', 'minval'));
-			self.PWM0_max      = float(self.sp.getValue('PWM0_settings', 'maxval'));            
-			
-			slider_units = (self.PWM0_default-self.PWM0_min)/(self.PWM0_max-self.PWM0_min) * 1e6
-			self.q_pwm0_value.blockSignals(True)
-			self.q_pwm0_value.setValue(slider_units)
-			self.q_pwm0_value.blockSignals(False)
-			
 
 		# Get ddc reference frequency from the system parameters object and set it in the UI:
 		strDDC = 'DDC{:01d}'.format(self.selected_ADC)
@@ -2061,7 +1997,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 			
 			
-#            self.qddc0_error_scale.setValue(np.mean(inst_freq)/1e6)
 #            print('mean freq error = %f MHz, raw code = %f' % (np.mean(inst_freq)/1e6, np.mean(inst_freq)*2**10 / self.sl.fs*4))
 			self.qlbl_mean_freq_error.setText('Freq error: %.2f MHz' % (np.mean(inst_freq)/1e6))
 			
