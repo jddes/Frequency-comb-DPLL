@@ -950,7 +950,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 
 		self.qlabel_timerdelay = Qt.QLabel('Refresh delay [ms]:')
-		self.qedit_timerdelay = user_friendly_QLineEdit('200')
+		self.qedit_timerdelay = user_friendly_QLineEdit('33')
 		self.qedit_timerdelay.returnPressed.connect(self.refreshChk_event)
 		self.qedit_timerdelay.setMaximumWidth(60)
 		
@@ -1662,6 +1662,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.sl.bDDR2InUse = False
 
 	def displayDDC(self):
+		self.bDisplayTiming = True
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
@@ -1933,12 +1934,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			raise
 #        pause(1/10.)
 
-
+		self.bDisplayTiming = False
 
 
 	def grabAndDisplayADC(self):
 		(input_select, plot_type, N_samples) = self.spectrum.getGUIsettingsForADCdata()
 		# Grab data from the FPGA:
+		start_time = time.perf_counter()
 		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
 		if (samples_out is None) or (ref_exp0 is None):
 			return
@@ -1967,7 +1969,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 						   2: self.sl.setup_DAC0_write,
 						   3: self.sl.setup_DAC1_write,
 						   4: self.sl.setup_DAC2_write}
-			
+
+		time_start = time.perf_counter()
 		try:
 			# Read from selected source
 			setup_func_dict[input_select](N_samples)
