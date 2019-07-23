@@ -333,7 +333,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		try:
 			(Vccint, Vccaux, Vbram) = self.sl.readZynqXADCsupply()
 			ZynqTempInDegC          = self.sl.readZynqTemperature()
-			print('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
+			# print('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
 			self.qlbl_Temp.setText('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
 			self.qlbl_vccint.setText('Vccint = %.2f V' % Vccint)
 			self.qlbl_vccaux.setText('Vccaux = %.2f V' % Vccaux)

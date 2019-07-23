@@ -668,9 +668,7 @@ class SuperLaserLand_JD_RP:
 			
 		# Wait, seems necessary because setting the DDR2Logger to 'read' mode overrides the 'write' mode
 		write_delay = 1.1*1024*(int(self.Num_samples_write/1024) + 1)/(self.fs/(2*self.clk_divider))
-#        print('Waiting for the DDR to fill up... (%f secs)' % ((write_delay)))
 		time.sleep(write_delay)
-#        print('Done!')
 		
 	def get_system_identification_wait_time(self):
 		if self.bVerbose == True:
@@ -1053,7 +1051,7 @@ class SuperLaserLand_JD_RP:
 			
 		if self.bCommunicationLogging == True:
 			self.log_file.write('read_adc_samples_from_DDR2()\n')
-		
+
 		data_buffer = self.read_raw_bytes_from_DDR2()
 		if self.last_selector == self.SELECT_DAC2:
 			# DAC 2 samples are unsigned 16-bits
