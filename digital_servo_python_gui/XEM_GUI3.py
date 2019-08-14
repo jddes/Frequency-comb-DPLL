@@ -11,6 +11,8 @@ import sys
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import numpy as np
 
+import ctypes # for the icons
+
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
@@ -32,6 +34,12 @@ import pdb
 
 import socket
 
+import logging, logging.handlers
+SYSLOG_IP = '127.0.0.1' #To log on this computer
+# SYSLOG_IP = '10.248.174.184'
+SYSLOG_PORT = 514
+logging.basicConfig(level=logging.INFO)
+
 #sys._excepthook = sys.excepthook
 #def exception_hook(exctype, value, traceback):
 #	print("exception_hook(): type = %s, value = %s" % (exctype, value))
@@ -45,7 +53,10 @@ import socket
 class controller(object):
 	"""Main class of the GUI. It contains most of the elements of the GUI, the main_window and the communication class"""
 	def __init__(self):
-		print("controller::__init__()")
+		self.logger = logging.getLogger()
+		self.logger.addHandler(logging.handlers.SysLogHandler(address = (SYSLOG_IP,SYSLOG_PORT)))
+		self.logger_name = '' #To be replaced with FPGA's shorthand
+
 		# Create the object that handles the communication with the FPGA board:
 		self.sl = SuperLaserLand_JD_RP(self)
 		self.updateDeviceData()
@@ -61,7 +72,6 @@ class controller(object):
 		else:
 			self.bEventLoopWasRunningAlready = True
 			print("QCoreApplication already running.")
-
 
 		self.main()
 
@@ -164,11 +174,8 @@ class controller(object):
 		# The two frequency counter:
 		strOfTime = time.strftime("%m_%d_%Y_%H_%M_%S_")
 
-		try:
-			# temp_control_port = self.devices_data[self.initial_config.strSelectedSerial]['port']
-			temp_control_port = self.devices_data[self.strSelectedSerial]['port']
-		except:
-			temp_control_port = 0
+		
+		temp_control_port = 0
 		
 		
 		strNameTemplate = 'data_logging\%s' % strOfTime
@@ -231,6 +238,13 @@ class controller(object):
 		#self.main_windows.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(945-300, 0))
 		self.main_windows.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800-300, 0))
 		
+		
+		APPID = u'TITLE'
+		ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
+
+		app_icon = QtGui.QIcon()
+		app_icon.addFile('icons/red_pitaya.png', QtCore.QSize(16,16))
+
 		self.main_windows.show()
 
 		
@@ -239,14 +253,20 @@ class controller(object):
 		# Enter main event loop
 		try:
 			#print("before app.exec_()")
+			self.app.setWindowIcon(app_icon)
+
 			self.app.exec_()
+			
+			
+
 			#print("after app.exec_()")
 		except Exception as e:
 			print("XEM_GUI3.py: Exception during app.exec_():")
+			self.logger.emergency('Red_Pitaya_GUI{}: Exception during app.exec_():{}'.format(self.logger_name, e))
 			print(e)
 
 
-	def loadDefaultValueFromConfigFile(self, strSelectedSerial):
+	def loadDefaultValueFromConfigFile(self, strSelectedSerial, bSendToFPGA = True):
 		try:
 			# custom_config_file = self.devices_data[self.initial_config.strSelectedSerial]['config file']
 			custom_config_file = self.devices_data[strSelectedSerial]['config file']
@@ -270,27 +290,27 @@ class controller(object):
 		# self.sp.loadDefaults()
 		# self.sp.saveToFile('system_parameters_current.xml')
 
-		self.sp.sendToFPGA(self.sl, True)
+		self.sp.sendToFPGA(self.sl, bSendToFPGA)
 
 	def setCustomShorthand(self, strSelectedSerial):
 		# The shorthand name which gets added to the window names:
 		try:
 			# custom_shorthand = self.devices_data[self.initial_config.strSelectedSerial]['shorthand']
 			custom_shorthand = self.devices_data[strSelectedSerial]['shorthand']
+			self.logger_name = ':' + custom_shorthand
 		except KeyError:
 			custom_shorthand = ''
+			self.logger_name = ''
 
 		self.main_windows.setWindowTitle(custom_shorthand)
 		self.xem_gui_mainwindow2.strTitle = custom_shorthand + ': Optical lock'
 		self.xem_gui_mainwindow.strTitle = custom_shorthand + ': CEO lock'
-		
-		# self.divider_settings_window.custom_shorthand = custom_shorthand
-		# self.xem_gui_mainwindow.setWindowTitle(self.xem_gui_mainwindow2.strTitle)		
-		# self.xem_gui_mainwindow2.setWindowTitle(self.xem_gui_mainwindow2.strTitle)
-		# self.RP_Settings.setStyleSheet(custom_shorthand)
-		# self.counters_window.setWindowTitle(custom_shorthand + ': Frequency counters')
-		# self.settings_window.setWindowTitle(custom_shorthand + ': Dither controls')
-		# self.divider_settings_window.setWindowTitle(custom_shorthand + ': Peripherals settings')
+		self.counters_window.strTitle = custom_shorthand + ': Frequency counters'
+
+		self.xem_gui_mainwindow2.logger_name = ':' + custom_shorthand + ':Optical lock'
+		self.xem_gui_mainwindow.logger_name = ':' + custom_shorthand + ':CEO lock'
+		self.freq_error_window1.logger_name = ':' + custom_shorthand + ': Frequency counters'
+		self.freq_error_window2.logger_name = ':' + custom_shorthand + ': Frequency counters'
 		
 	def setCustomStyleSheet(self, strSelectedSerial):
 		# Style sheet which includes the color scheme for each specific box:
@@ -312,10 +332,20 @@ class controller(object):
 		self.settings_window.setStyleSheet(custom_style_sheet)
 		self.main_windows.setStyleSheet(custom_style_sheet)
 
+	def setTemperatureControlPort(self, strSelectedSerial):
+		try:
+			port_number = self.devices_data[strSelectedSerial]['port_temp']
+		except Exception:
+			port_number = 0
+			self.logger.warning('Red_Pitaya_GUI{}: Could not get temperature control port'.format(self.logger_name))
+
+		self.freq_error_window2.port_number = int(port_number)
 
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
+
+		self.logger.info('Red_Pitaya_GUI{}: Pushing default values from xml file'.format(self.logger_name))
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
@@ -323,7 +353,7 @@ class controller(object):
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 		# Now we just need to reset the frontend to make sure we start everything in a nice state
 		self.sl.resetFrontend()
-		self.loadDefaultValueFromConfigFile(strSelectedSerial)
+		self.loadDefaultValueFromConfigFile(strSelectedSerial, True)
 		
 		self.xem_gui_mainwindow2.pushDefaultValues()
 		self.xem_gui_mainwindow.pushDefaultValues()
@@ -334,9 +364,13 @@ class controller(object):
 		self.dither_widget0.pushDefaultValues()
 		self.dither_widget1.pushDefaultValues()
 
+		self.setTemperatureControlPort(strSelectedSerial)
+
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
+
+		self.logger.info('Red_Pitaya_GUI{}: Pushing actual values from GUI'.format(self.logger_name))
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
@@ -349,14 +383,20 @@ class controller(object):
 		self.freq_error_window1.pushValues()
 		self.freq_error_window2.pushValues()
 
+		self.setTemperatureControlPort(strSelectedSerial)
+
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
+
+		self.logger.info('Red_Pitaya_GUI{}: Updating GUI from FPGA'.format(self.logger_name))
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
 
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
+
+		self.loadDefaultValueFromConfigFile(strSelectedSerial, False) #read xml file to update some values. False means not updating the FPGA
 
 		self.xem_gui_mainwindow2.getValues()
 		self.xem_gui_mainwindow.getValues()
@@ -367,7 +407,13 @@ class controller(object):
 		self.dither_widget0.getValues()
 		self.dither_widget1.getValues()
 
+		self.setTemperatureControlPort(strSelectedSerial)
+
+
 	def stopCommunication(self):
+
+		self.logger.info('Red_Pitaya_GUI{}: Closing connection'.format(self.logger_name))
+
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
 		try:

@@ -27,12 +27,16 @@ import weakref
 
 # stuff for Python 3 port
 import pyqtgraph as pg
+import logging
 
 
 class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
     def __init__(self, sl, strTitle, sp, output_number=0, strNameTemplate='', custom_style_sheet='', port_number=0, xem_gui_mainwindow=0):
         super(FreqErrorWindowWithTempControlV2, self).__init__()
+
+        self.logger = logging.getLogger(__name__)
+        self.logger_name = ':FreqErrorWindowWithTempControlV2'
 
         self.strTitle = strTitle
         self.strNameTemplate = strNameTemplate
@@ -42,6 +46,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.setStyleSheet(custom_style_sheet)
         self.sp = sp
         self.timerID = None
+        self.client = None
         
         # Need to pass xem_gui_window as a parameter (to control DAC offset)
         if xem_gui_mainwindow:
@@ -51,17 +56,16 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         self.port_number = port_number
         #print('before openTCPConnection')
-        self.openTCPConnection()
+        #self.openTCPConnection() #We cannot open TCP connection on init because we still haven't read deviceData.xml
         #print('after openTCPConnection')
-        if self.client is None:
-            print('Warning: no connection to temp control')
+        # if self.client is None:
+        #     print('Warning: no connection to temp control: {}'.format(strTitle))
             
-        self.last_update_freq = time.clock()
+        self.last_update = time.clock()
         self.initUI()
         self.openOutputFiles()
         
         self.recovery_history = np.array([])
-
 
 
 #    def __del__(self):
@@ -73,13 +77,42 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
     def loadParameters(self):
         strDAC = 'DAC{:01d}'.format(self.output_number)
-        chk = int((self.sp.getValue('Triangular_averaging', strDAC)))
+        chk = int(self.sp.getValue('Triangular_averaging', strDAC))
         if chk > 0:
             bTriangularAveraging = True
         else:
             bTriangularAveraging = False
 
         self.qchk_triangular.setChecked(bTriangularAveraging)
+        self.load_autoUnlock_and_TempControl()
+
+    def load_autoUnlock_and_TempControl(self):
+        chkAutoUnlock           = bool(self.sp.getValue('Auto_unlock', 'chkAutoUnlock').lower() == 'true')
+        autoUnlock_threshold    = float(self.sp.getValue('Auto_unlock', 'threshold'))
+
+        self.qchk_autoUnlock.setChecked(chkAutoUnlock)
+        self.qedit_unlock_thresh.setText('{:.2}'.format(autoUnlock_threshold))
+
+        if self.output_number == 1:
+            chkTempControl                  = bool(self.sp.getValue('Temperature_control', 'chkControl').lower() == 'true')
+            tempControl_threshold_step      = float(self.sp.getValue('Temperature_control', 'threshold_step'))
+            tempControl_threshold_disable   = float(self.sp.getValue('Temperature_control', 'threshold_disable'))
+            tempControl_step_size           = float(self.sp.getValue('Temperature_control', 'step_size'))
+            tempControl_step_delay          = int(self.sp.getValue('Temperature_control', 'step_delay'))
+
+            self.qchk_temp_control.setChecked(chkTempControl) #warning, if bLock is False, this checkbox is going to be set at False in the first loop
+            self.qedit_threshold_step.setText('{:.2}'.format(tempControl_threshold_step))
+            self.qedit_threshold_disable.setText('{:.2}'.format(tempControl_threshold_disable))
+            self.qedit_step_size.setText('{:.2}'.format(tempControl_step_size))
+            self.qedit_step_delay.setText('{}'.format(tempControl_step_delay))
+            
+
+            if chkTempControl == True:
+                self.qchk_temp_control.setStyleSheet('background-color: green')
+            else:
+                self.qchk_temp_control.setStyleSheet('background-color: red')
+            
+
 
     def pushDefaultValues(self):
         self.loadParameters()
@@ -97,6 +130,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
     def getValues(self):
         self.getTriangular_checked()
+        self.load_autoUnlock_and_TempControl() #These values are not saved in the device, load them from the xml file instead
         self.initBuffer()
         # Start timer which grabs data
         self.startTimers()
@@ -122,8 +156,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.client = AsyncSocketComms.AsyncSocketClient(self.port_number)
                 self.last_update = float("-inf")
                 self.setpoint_change = 0.
-                print('Connection to temp control established.')
-            except:
+                
+                self.logger.info('Red_Pitaya_GUI{}: Starting temperature control on port {}'.format(self.logger_name, self.port_number))
+            except Exception as e:
+                print(e)
                 time_after = time.clock()
                 #print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
                 self.client = None
@@ -134,6 +170,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         end_time = time.clock()
         #print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
     
+    def closeTCPConnection(self):
+        if self.client is not None:
+            try: #in case it was already close
+                self.client.close()
+            except Exception as e:
+                print('Error while closing the client: {}'.format(e))
+            self.client = None
+            self.logger.info('Red_Pitaya_GUI{}: Closing temperature control'.format(self.logger_name, self.port_number))
 
     def initBuffer(self):
 #        print('initBuffer')
@@ -149,6 +193,9 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.DAC_history = np.zeros(self.N_history_dacs)
         self.DAC_mean_history = np.zeros(self.N_history_dacs)*np.nan
         self.DAC_thrsh_history = np.zeros(self.N_history_dacs)*np.nan
+
+        if self.output_number == 1:
+            self.DAC2_history = np.zeros(self.N_history_dacs)
 
         self.freq_history = np.zeros(self.N_history_counters)
 #        self.time_history = np.zeros(self.N_history)
@@ -185,6 +232,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.sl.setCounterMode(True)
         else:
             self.sl.setCounterMode(False)
+
+        self.addTempControlWidget()
         # print('Updating counter mode')
 
     def getTriangular_checked(self):
@@ -231,6 +280,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         # Create the curve in the plot
         self.curve_dac = self.qplt_dac.getPlotItem().plot(pen='b')
+        if self.output_number == 1:
+            self.curve_dac2 = self.qplt_dac.getPlotItem().plot(pen='r')
         self.curve_dac_uthrsh = self.qplt_dac.getPlotItem().plot(connect='finite', pen=pg.mkPen(0.5, style=QtCore.Qt.DashLine))
         self.curve_dac_lthrsh = self.qplt_dac.getPlotItem().plot(connect='finite', pen=pg.mkPen(0.5, style=QtCore.Qt.DashLine))
                     
@@ -264,6 +315,22 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.qlabel_rec_thresh = Qt.QLabel('Recovery Threshold')
         self.qedit_rec_thresh = Qt.QLineEdit('5')
         self.qedit_rec_thresh.setMaximumWidth(40)
+
+
+        #Controls for Auto Unlock
+        self.qchk_autoUnlock = Qt.QCheckBox('Auto Unlock')
+        self.qchk_autoUnlock.setChecked(False)
+        self.qlabel_unlock_thresh = Qt.QLabel('Unlock Threshold')
+        self.qedit_unlock_thresh = Qt.QLineEdit('0.05')
+        self.qedit_unlock_thresh.setMaximumWidth(40)
+
+        if self.output_number == 1: 
+            # We add a checkBox to plot the DAC1 and/or DAC2
+            self.qchk_show_DAC1 = Qt.QCheckBox('DAC1')
+            self.qchk_show_DAC1.setChecked(True)
+            self.qchk_show_DAC2 = Qt.QCheckBox('DAC2')
+            self.qchk_show_DAC2.setChecked(True)
+
         
         # Put the two graphs into a vertical box layout, so that they share all the vertical space equally:
         vbox = QtGui.QVBoxLayout()
@@ -285,15 +352,24 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         grid.addWidget(self.qedit_ymax,                     6, 0, 1, 2)        
 
         #FEATURE        
-        grid.addWidget(self.qchk_autorecover,               7, 0, 1, 2)        
-        grid.addWidget(self.qlabel_rec_thresh,              8, 0)
-        grid.addWidget(self.qedit_rec_thresh,               8, 1)
+        # grid.addWidget(self.qchk_autorecover,               7, 0, 1, 2)        
+        # grid.addWidget(self.qlabel_rec_thresh,              8, 0)
+        # grid.addWidget(self.qedit_rec_thresh,               8, 1)
+
+        grid.addWidget(self.qchk_autoUnlock,               7, 0, 1, 2)        
+        grid.addWidget(self.qlabel_unlock_thresh,              8, 0)
+        grid.addWidget(self.qedit_unlock_thresh,               8, 1)
+        last_widget_line = 8
+        if self.output_number == 1: 
+            grid.addWidget(self.qchk_show_DAC1,               9, 0)
+            grid.addWidget(self.qchk_show_DAC2,               10, 0)
+            last_widget_line = 10
 
         
-        if self.client or True:
+        if self.output_number == 1: 
             # we need to add the controls which implement the temperature control loop:
             self.qlabel_threshold_step = Qt.QLabel('Threshold for step:')
-            self.qedit_threshold_step = Qt.QLineEdit('0.2')
+            self.qedit_threshold_step = Qt.QLineEdit('0.35')
             self.qedit_threshold_step.setMaximumWidth(40)
             
             
@@ -306,40 +382,41 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.qedit_step_size.setMaximumWidth(40)
             
             self.qlabel_step_delay = Qt.QLabel('Step delay [s]:')
-            self.qedit_step_delay = Qt.QLineEdit('120')
+            self.qedit_step_delay = Qt.QLineEdit('60')
             self.qedit_step_delay.setMaximumWidth(40)
             
             self.qchk_temp_control = Qt.QCheckBox('Temperature control')
             self.qchk_temp_control.setChecked(False)
+            self.qchk_temp_control.setStyleSheet('background-color: red')
+            self.qchk_temp_control.clicked.connect(self.qchk_temp_control_checked)
             
-            self.qchk_clear_temp_control = Qt.QCheckBox('Clear Temperature control')
-            self.qchk_clear_temp_control.setChecked(False)
-            
+            # self.qchk_clear_temp_control = Qt.QCheckBox('Clear Temperature control')
+            # self.qchk_clear_temp_control.setChecked(False)
+
             #FEATURE
-            #grid.addWidget(self.qlabel_threshold_step,          8, 0)
-            #grid.addWidget(self.qedit_threshold_step,           8, 1)
-            #grid.addWidget(self.qlabel_threshold_disable,       9, 0)
-            #grid.addWidget(self.qedit_threshold_disable,        9, 1)
-            #grid.addWidget(self.qlabel_step_size,               10, 0)
-            #grid.addWidget(self.qedit_step_size,                11, 1)
-            #
-            #grid.addWidget(self.qlabel_step_delay,              12, 0)
-            #grid.addWidget(self.qedit_step_delay,               13, 1)
-            #
-            #grid.addWidget(self.qchk_temp_control,              14, 0, 1, 2)
-            #grid.addWidget(self.qchk_clear_temp_control,        15, 0, 1, 2)
+            grid.addWidget(self.qlabel_threshold_step,          11, 0)
+            grid.addWidget(self.qedit_threshold_step,           11, 1)
+            grid.addWidget(self.qlabel_threshold_disable,       12, 0)
+            grid.addWidget(self.qedit_threshold_disable,        12, 1)
+            grid.addWidget(self.qlabel_step_size,               13, 0)
+            grid.addWidget(self.qedit_step_size,                13, 1)
+            
+            grid.addWidget(self.qlabel_step_delay,              14, 0)
+            grid.addWidget(self.qedit_step_delay,               14, 1)
+            
+            grid.addWidget(self.qchk_temp_control,              15, 0, 1, 2)
+            # grid.addWidget(self.qchk_clear_temp_control,        15, 0, 1, 2)
             
             
             grid.addWidget(Qt.QLabel(''),                       16, 0, 1, 2)
-            grid.setRowStretch(15, 1)
+            grid.setRowStretch(16, 1)
             grid.setColumnStretch(2, 1)
-        else:
+
+        # else:
             # no controls for the temp control loop
-        
-        
-            grid.addWidget(Qt.QLabel(''),                       8, 0, 1, 2)
-            grid.setRowStretch(8, 1)
-            grid.setColumnStretch(2, 1)
+            # grid.addWidget(Qt.QLabel(''),                       8, 0, 1, 2)
+            # grid.setRowStretch(8, 1)
+            # grid.setColumnStretch(2, 1)
         
         
         self.qgroupbox_freq.setLayout(grid)
@@ -354,8 +431,15 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # self.resize(800, 480)
         self.center()
         self.setWindowTitle(self.strTitle)    
-        #self.show()
+        # self.show()
         
+    def addTempControlWidget(self):
+        # self.client = True
+        # self.showUI()
+        self.qlabel_threshold_step = None
+        self.qedit_threshold_step = None
+
+
     def center(self):
         
         qr = self.frameGeometry()
@@ -379,12 +463,19 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.displayFreqCounter()
         
         return
+
+    def qchk_temp_control_checked(self):
+        if self.qchk_temp_control.isChecked() == True:
+            self.qchk_temp_control.setStyleSheet('background-color: green')
+            self.openTCPConnection()
+        else:
+            self.qchk_temp_control.setStyleSheet('background-color: red')
         
     def runTempControlLoop(self, current_time, current_output):
         # Simple algorithm:
         # If the dac2 output crosses a threshold, we send a step to the temperature setpoint to nudge it in the right direction.
         # We then wait for a certain delay before we re-do a step
-#        print('runTempControlLoop(): current_time = %f, current_output = %f' % (current_time, current_output))
+        # print('runTempControlLoop(): current_time = %f, current_output = %f' % (current_time, current_output))
     
         # Read off the values from the UI:
         try:
@@ -406,12 +497,25 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             step_size = float(self.qedit_step_size.text())
         except:
             step_size = 0.01
-    
+        
+
+
         if self.qchk_temp_control.isChecked() == True:
+            self.qchk_temp_control.setStyleSheet('background-color: green')
+            try:
+                bLock = self.xem_gui_mainwindow.qchk_lock.isChecked()
+            except:
+                print('failed to read lock state')
+                bLock = False
+            
+            if bLock == False: #We don't control the temperature of the oscillator box if the lock is off
+                print('Setting temp control off : We don\'t control the temperature of the oscillator box if the lock is off')
+                self.qchk_temp_control.setChecked(False)
+                self.qchk_temp_control.setStyleSheet('background-color: red')
+                return
+
             if self.client:
-#                print('Temp control established, client connected.')
-                
-    #            print('last_update = %f, step_delay = %f, current_time = %f' % (self.last_update, step_delay, current_time))
+                # print('last_update = %f, step_delay = %f, current_time = %f' % (self.last_update, step_delay, current_time))
                 if self.last_update + step_delay <= current_time:
                     # Compare the output to two thresholds:
                     # first threshold means to disable the temperature control loop completely, because the low PZT has railed.
@@ -419,7 +523,9 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                         # disable temp control loop:
                         self.qchk_temp_control.setChecked(False)
                         strOfTime = time.strftime("%m_%d_%Y_%H_%M_%S_")
+                        self.closeTCPConnection()
                         print('Disabled temp control because the PZT is too close to the rail and thus has most likely railed already. time = %s' % strOfTime)
+                        self.logger.critical('Red_Pitaya_GUI{}: Disabled temp control because the PZT is too close to the rail.'.format(self.logger_name))
                         return
                     
                     # Second threshold means to send a step (in the right direction)
@@ -429,25 +535,30 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                         else:
                             step_sign = 1
                             
-                       
-                        self.setpoint_change = self.setpoint_change + step_sign*step_size
+                        delta_temperature = step_sign*step_size
+                        self.setpoint_change = self.setpoint_change + delta_temperature
                         # Implement limits:
                         if self.setpoint_change > 10.:
                             self.setpoint_change = 10.
+                            delta_temperature = 0
                         elif self.setpoint_change < -10.:
                             self.setpoint_change = -10.
+                            delta_temperature = 0
                         
                         self.last_update = time.clock()
 
                         try:                        
                             print('Sending a new setpoint: %f degrees' % self.setpoint_change)
-                            self.client.send_text('%f\n' % self.setpoint_change)
+                            self.logger.debug('Red_Pitaya_GUI{}: Sending a new setpoint : {} degrees'.format(self.logger_name, self.setpoint_change))
+                            # self.client.send_text('%f\n' % self.setpoint_change)
+                            self.client.send_text('%f\n' % delta_temperature)
                         except:
                             e = sys.exc_info()[0]
                             # If we get here, this probably means that the TCP connection to the temperature controller was lost.
+                            self.closeTCPConnection()
                             print('Exception occurred sending the new temperature setpoint.')
                             print(str(e))
-                            self.client = None
+                            self.logger.warning('Red_Pitaya_GUI{}: Exception occurred sending the new temperature setpoint. Connection probably lost. {}'.format(self.logger_name, str(e)))
                             
 #                            raise
                         return
@@ -457,26 +568,30 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 #                    print('Steps inhibited')
                     return
             
-                #clear temperature control integrator if temp control is turned off        
-                if self.qchk_clear_temp_control.isChecked() == True:
-                    self.setpoint_change = 0.
-                    try:
-                        print('Clearing Temperature Control')
-                        self.client.send_text('%f\n' % self.setpoint_change)
-                        self.qchk_clear_temp_control.setChecked(False)
-                    except:
-                        e = sys.exc_info()[0]
-                        # If we get here, this probably means that the TCP connection to the temperature controller was lost.
-                        print('Exception occurred sending the new temperature setpoint.')
-                        print(str(e))
-                        self.client = None
-                else:
-                    return
+                #clear temperature control integrator if temp control is turned off
+                
+                #### -> Was removed, the Laser Controller GUI only keeps the lastest value in memory    
+                # if self.qchk_clear_temp_control.isChecked() == True:
+                #     self.setpoint_change = 0.
+                #     try:
+                #         print('Clearing Temperature Control')
+                #         self.client.send_text('%f\n' % self.setpoint_change)
+                #         self.qchk_clear_temp_control.setChecked(False)
+                #     except:
+                #         e = sys.exc_info()[0]
+                #         # If we get here, this probably means that the TCP connection to the temperature controller was lost.
+                #         print('Exception occurred sending the new temperature setpoint.')
+                #         print(str(e))
+                #         self.client = None
+                # else:
+                #     return
             else:   # self.client == None
                 # Try to open TCP connection to the temperature controller code
                 print('Trying to establish connection to the temperature controller')
+                self.logger.debug('Red_Pitaya_GUI{}: Trying to establish connection to the temperature controller'.format(self.logger_name))
+                self.qchk_temp_control.setStyleSheet('background-color: orange')
                 self.openTCPConnection()
-#        else:
+       # else:
 #            print('Temp control disactivated.')
 
     def runAutoRecover(self, output_number, current_dac):
@@ -524,6 +639,24 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             # Return NANs for plotting
             return (np.nan, np.nan)
 
+    def checkAutoUnlock(self, output_number, DAC_output):
+        # Try to read the lock state
+        try:
+            bLock = self.xem_gui_mainwindow.qchk_lock.isChecked()
+        except:
+            print('failed to read lock state')
+            bLock = False
+
+        if bLock and self.qchk_autoUnlock.isChecked(): # If the lock and auto unlock are enabled
+            unlock_threshold = float(self.qedit_unlock_thresh.text())
+
+            if DAC_output < unlock_threshold or DAC_output > 1-unlock_threshold:
+                # If the current DAC value is out of bounds, we unlock
+                self.xem_gui_mainwindow.qchk_lock.setChecked(False)
+                self.xem_gui_mainwindow.chkLockClickedEvent()
+                print("{}: channel {} lost lock. Doing lock to unlock transition".format(time.strftime('%c'),output_number))
+                self.logger.critical('Red_Pitaya_GUI{}: Channel {} lost lock. DAC too close to the rail.'.format(self.logger_name, output_number))
+                # logger.warning("{}: channel {} lost lock. Doing lock to unlock transition".format(time.strftime('%c'),output_number))
    
         
     def displayFreqCounter(self):
@@ -533,7 +666,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             # print (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
             
         except:
-            print('Exception occured reading counter data. disabling further updates.')
+            print('Exception occured reading counter data. Disabling further updates.')
+            self.logger.warning('Red_Pitaya_GUI{}: Exception occured reading counter data. Disabling further updates.'.format(self.logger_name))
             self.killTimer(self.timerID)
             freq_counter_samples = 0
             time_axis = 0
@@ -554,33 +688,43 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 if self.output_number == 0:
                 # Run auto recovery for DAC0
                     dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC0_output))
-                    dac_output = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    DAC0_output_voltage = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+                    dac_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])   #We want the graph scale between 0 and 1
                     dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
                     dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
+
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                 # Write data to disk:
                 self.file_output_dac0.write(DAC0_output)
+
+                if self.output_number == 0:
+                    self.checkAutoUnlock(self.output_number, DAC0_output)                
                 
             if DAC1_output is not None:
                 if self.output_number == 1:
                 # Run auto recovery for DAC1
                     dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC1_output))
-                    dac_output = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    DAC1_output_voltage = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
+                    dac_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])    #We want the graph scale between 0 and 1
                     dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
                     dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
+                # self.checkAutoUnlock(self.output_number, DAC1_output)
                 # Write data to disk:
                 self.file_output_dac1.write(DAC1_output)
                 
             if DAC2_output is not None:
+                DAC2_output_voltage = DAC2_output/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(np.float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
                 # Write data to disk:
                 self.file_output_dac2.write(DAC2_output)
                 
-                #self.runTempControlLoop(time.clock(), DAC2_output[-1:])
+                if self.output_number == 1:
+                    self.checkAutoUnlock(self.output_number, DAC2_output)
+                    self.runTempControlLoop(time.clock(), DAC2_output)
                 
                 
                 
@@ -616,6 +760,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.DAC_thrsh_history[-1:] = dac_thrsh
                 self.bValid_dacs[:-1] = self.bValid_dacs[1:]
                 self.bValid_dacs[-1:] = True
+
+                if self.output_number == 1:
+                    self.DAC2_history[:-1] = self.DAC2_history[1:]
+                    self.DAC2_history[-1:] = DAC2_output
+
                 
     #            self.time_history[:-len(freq_counter_samples)] = self.time_history[len(freq_counter_samples):]
     #            self.time_history[-len(freq_counter_samples):] = time_axis
@@ -651,15 +800,32 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 #self.qplt_freq.replot()
                 
                 # Update graph:
-                self.curve_dac.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_history[self.bValid_dacs])
-                self.curve_dac_uthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]+self.DAC_thrsh_history[self.bValid_dacs])
-                self.curve_dac_lthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]-self.DAC_thrsh_history[self.bValid_dacs])
-                self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f' % (channelName, self.DAC_history[-1]))
+                if self.output_number == 0:
+                    self.curve_dac.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_history[self.bValid_dacs])
+                    self.curve_dac_uthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]+self.DAC_thrsh_history[self.bValid_dacs])
+                    self.curve_dac_lthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]-self.DAC_thrsh_history[self.bValid_dacs])
+                    self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code = %f (%f)' % (channelName, self.DAC_history[-1], DAC0_output_voltage))
+
+                if self.output_number == 1:
+                    if self.qchk_show_DAC1.isChecked():
+                        self.curve_dac.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_history[self.bValid_dacs])            
+                    else:
+                        self.curve_dac.clear()
+
+                    if self.qchk_show_DAC2.isChecked():
+                        self.curve_dac2.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC2_history[self.bValid_dacs])
+                    else:
+                        self.curve_dac2.clear()
+                    
+                    self.curve_dac_uthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]+self.DAC_thrsh_history[self.bValid_dacs])
+                    self.curve_dac_lthrsh.setData(self.time_history_dacs[self.bValid_dacs] - self.time_history_dacs[len(self.time_history_dacs)-1], self.DAC_mean_history[self.bValid_dacs]-self.DAC_thrsh_history[self.bValid_dacs])
+                    self.qplt_dac.setTitle('%s Lock DAC outputs, last raw code DAC1= %f (%f), DAC2 = %f (%f)' % (channelName, self.DAC_history[-1], DAC1_output_voltage, self.DAC2_history[-1], DAC2_output_voltage))
                 
                 if self.qchk_fullscale_dac.isChecked():
                     #self.qplt_dac.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLinearScaleEngine())
-                    self.qplt_dac.setYRange(-1, 1)
+                    self.qplt_dac.setYRange(0, 1)
                     #self.qplt_dac.setAxisScale(Qwt.QwtPlot.yLeft, 0, 1)
+
                 else:
                     self.qplt_dac.enableAutoRange(y=True)
                     #self.qplt_dac.setAxisAutoScale(Qwt.QwtPlot.yLeft)
@@ -667,7 +833,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 #self.qplt_dac.replot()
             
         except:
-            print('Exception occured parsing counter data. disabling further updates.')
+            print('Exception occured parsing counter data. Disabling further updates.')
+            self.logger.warning('Red_Pitaya_GUI{}: Exception occured reading counter data. Disabling further updates.'.format(self.logger_name))
             self.killTimer(self.timerID)
             freq_counter_samples = 0
             time_axis = 0

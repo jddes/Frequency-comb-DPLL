@@ -22,6 +22,8 @@ import weakref
 from SuperLaserLand2_JD2_PLL import PLL0_module, PLL1_module, PLL2_module
 import RP_PLL
 
+import logging
+
 class SuperLaserLand_JD_RP:
 	# Data members:
 	############################################################
@@ -40,7 +42,7 @@ class SuperLaserLand_JD_RP:
 	ADC1_gain = 1
 	DAC0_gain = 1
 	DAC1_gain = 1
-	DAC2_gain = 1
+	DAC2_gain = 2
 	DACs_limit_low = [-2**15, -2**15, 0]
 	DACs_limit_high = [2**15-1, 2**15-1, 2**16-1]
 	DACs_offset = [2**14, 2**14, -2**15]
@@ -280,6 +282,9 @@ class SuperLaserLand_JD_RP:
 	############################################################
 	
 	def __init__(self, controller = None):
+		self.logger = logging.getLogger(__name__)
+		self.logger_name = ':SuperLaserLand_JD_RP'
+
 		strNameTemplate = time.strftime("data_logging\%m_%d_%Y_%H_%M_%S_")
 		# Create the subdirectory if it doesn't exist:
 		self.make_sure_path_exists('data_logging')
@@ -1083,6 +1088,8 @@ class SuperLaserLand_JD_RP:
 				print('Comms bug! Sorry about that.')
 				print('Loss of synchronization detected on Pipe 0xA1:')
 				print('Original read length: %d' % self.Num_samples_read)
+				self.logger.warning('Red_Pitaya_GUI{}: Comms bug. Loss of synchronization detected on Pipe 0xA1'.format(self.logger_name))
+				
 				
 				actual_position = magic_bytes_expected_position
 				for iter in range(len(samples_out)):
@@ -1850,7 +1857,7 @@ class SuperLaserLand_JD_RP:
 			gain_left_shift_in_bits = 0
 			gain_right_shift_in_bits = -gain_in_bits
 			
-		print('integrator %d, hold = %d, flipsign = %d, lock = %d, gain = %d' % (integrator_number, hold, flip_sign, lock, gain_in_bits))
+		# print('integrator %d, hold = %d, flipsign = %d, lock = %d, gain = %d' % (integrator_number, hold, flip_sign, lock, gain_in_bits))
 		self.send_bus_cmd(address, 2**12 * hold + 2**11 * flip_sign + 2**10 * lock + 2**5*gain_left_shift_in_bits + gain_right_shift_in_bits, 0)
 
 	# return type is a tuple: (hold, flip_sign, lock, gain_in_bits)
@@ -2183,6 +2190,7 @@ class SuperLaserLand_JD_RP:
 			# print("zdtc_samples_number_counter = %d, was %d, read new values" % (zdtc_samples_number_counter, self.last_zdtc_samples_number_counter[output_number]))
 			if increments>1 and self.last_zdtc_samples_number_counter[output_number] != 0:
 				print("Warning, %d counter sample(s) dropped on counter #%d" % (zdtc_samples_number_counter-self.last_zdtc_samples_number_counter[output_number]-1, output_number))
+				self.logger.warning('Red_Pitaya_GUI{}: {} counter sample(s) dropped on counter #{}"'.format(self.logger_name, (zdtc_samples_number_counter-self.last_zdtc_samples_number_counter[output_number]-1),output_number))
 		else:
 			# we have already read all the counter samples for this output
 			freq_counter0_sample = None
@@ -2194,8 +2202,9 @@ class SuperLaserLand_JD_RP:
 
 		dac0_samples = self.dev.read_Zynq_register_int32(self.BUS_ADDR_DAC0_CURRENT*4)
 		dac1_samples = self.dev.read_Zynq_register_int32(self.BUS_ADDR_DAC1_CURRENT*4)
-		dac2_samples = self.dev.read_Zynq_register_int32(self.BUS_ADDR_DAC2_CURRENT*4)
-
+		dac2_samples = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DAC2_CURRENT*4) #this doesn't seems to work
+		if dac2_samples>0xFFFF0000: #greather than 16 bits
+			dac2_samples = dac2_samples-0xFFFF0000
 		# convert to numpy format:
 		dac0_samples = np.array((dac0_samples,))
 		dac1_samples = np.array((dac1_samples,))
@@ -2507,6 +2516,7 @@ class SuperLaserLand_JD_RP:
 		value = self.dev.read_Zynq_register_uint32(bus_address)
 		if value == 4026531839:
 			print('Warning! You received the default value when asking for data at address {}.'.format(hex(int(addr))))
+			self.logger.warning('Red_Pitaya_GUI{}: Warning! You received the default value when asking for data at address {}"'.format(self.logger_name, hex(int(addr))))
 		return value
 
 	def read_RAM_dpll_wrapper_signed(self,addr):
@@ -2514,6 +2524,7 @@ class SuperLaserLand_JD_RP:
 		value = self.dev.read_Zynq_register_int32(bus_address)
 		if value == 4026531839 - 2**32:
 			print('Warning! You received the default value when asking for data at address {}.'.format(hex(int(addr))))
+			self.logger.warning('Red_Pitaya_GUI{}: Warning! You received the default value when asking for data at address {}"'.format(self.logger_name, hex(int(addr))))
 		return value
 
 		

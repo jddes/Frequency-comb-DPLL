@@ -43,6 +43,9 @@ class SLLSystemParameters():
         self.root.append(ET.Element('Main_window_settings', refresh_delay='500', N_samples_adc='1.75e3', N_samples_ddc='1e6', Integration_limit='5e6'))
         self.root.append(ET.Element('Triangular_averaging', DAC1='1', DAC0='1'))
 
+        self.root.append(ET.Element('Auto_unlock', chkAutoUnlock='False', threshold='0.05'))
+        self.root.append(ET.Element('Temperature_control', chkControl='True', threshold_step='0.35', threshold_disable='0.05', step_size='0.05', step_delay='60'))
+
         self.root.append(ET.Element('Dither_frequency', DAC1='5.1e3', DAC0='1e3'))
         self.root.append(ET.Element('Dither_integration_time', DAC1='0.1', DAC0='0.1'))
         self.root.append(ET.Element('Dither_amplitude', DAC1='1e.3', DAC0='1e-3'))

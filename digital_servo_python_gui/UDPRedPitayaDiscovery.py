@@ -30,7 +30,8 @@ class UDPRedPitayaDiscovery():
         self.startListening()
         
     def __del__(self):
-        print("UDPRedPitayaDiscovery::__del__()")
+        # print("UDPRedPitayaDiscovery::__del__()")
+        pass
         
     def startListening(self):
         # Initialization:
