@@ -186,9 +186,7 @@ class SuperLaserLand_JD_RP:
 	# Programmable gain amplifier settings (order: ADC0, ADC1, DAC0, DAC1, 3 bits each)
 	BUS_ADDR_pga_gains                                  = 0x6100
 	# DAC limits
-	BUS_ADDR_dac0_limits                                = 0x6101
-	BUS_ADDR_dac1_limits                                = 0x6102
-	BUS_ADDR_dac2_limits                                = 0x6103
+	BUS_ADDR_dac_limits                                = (0x6101, 0x6102, 0x6103)
 	
 	#    # Loop filters settings:
 	#    BUS_ADDR_fll0_settings                      = 0x7000
@@ -1305,6 +1303,13 @@ class SuperLaserLand_JD_RP:
 		# print 'set_dac_limits(): dac_number=%d, limit_low=%d, limit_high=%d' % (dac_number, limit_low, limit_high)
 		# traceback.print_stack()
 
+		limits_signed = lambda n_bits: (-2**(n_bits-1), 2**(n_bits-1)-1)
+		limits_unsigned = lambda n_bits: (0, 2**(n_bits)-1)
+		limits_from_dac =  {0: limits_signed(16),
+		                    1: limits_signed(16),
+		                    2: limits_unsigned(16)}
+		limits_addr_from_dac = 
+
 		if dac_number == 0:
 			# Clamp the value to the actual DAC limits:
 			if limit_high > 2**15-1:
@@ -1313,7 +1318,7 @@ class SuperLaserLand_JD_RP:
 				limit_low = -2**15
 				
 			#print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
-			self.send_bus_cmd(self.BUS_ADDR_dac0_limits, limit_low, limit_high)
+			self.send_bus_cmd(self.BUS_ADDR_dac_limits[0], limit_low, limit_high)
 		if dac_number == 1:
 			# Clamp the value to the actual DAC limits:
 			if limit_high > 2**15-1:
@@ -1322,7 +1327,7 @@ class SuperLaserLand_JD_RP:
 				limit_low = -2**15
 				
 			#print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
-			self.send_bus_cmd(self.BUS_ADDR_dac1_limits, limit_low, limit_high)
+			self.send_bus_cmd(self.BUS_ADDR_dac_limits[1], limit_low, limit_high)
 			
 		if dac_number == 2:
 			# Clamp the value to the actual DAC limits:
@@ -1332,7 +1337,7 @@ class SuperLaserLand_JD_RP:
 				limit_low = 0
 			
 			#print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
-			self.send_bus_cmd(self.BUS_ADDR_dac2_limits, limit_low, limit_high)
+			self.send_bus_cmd(self.BUS_ADDR_dac_limits[2], limit_low, limit_high)
 			
 		self.DACs_limit_low[dac_number] = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
@@ -1344,47 +1349,16 @@ class SuperLaserLand_JD_RP:
 		if self.bCommunicationLogging == True:
 			self.log_file.write('get_dac_limits()\n')
 
-		if dac_number == 0:
-			data = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac0_limits)
-			limit_high = (data & 0xFFFF0000)>>16
-			limit_low  = (data & 0x0000FFFF)
+		# a few helper functions:
+		split_32bits_to_2x16bits   = lambda x: ((x & 0xFFFF0000)>>16, (x & 0x0000FFFF))
+		interpret_as_16bits_signed = lambda x: (x if x < (1<<15) else -(0xFFFF-x+1))
 
-			if limit_high > ((1<<15)-1):
-				limit_high = -(0xFFFF-limit_high+1) 	#Because the value is consider as an signed integer
+		limits_register = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac_limits[dac_number])
+		(limit_high, limit_low) = split_32bits_to_2x16bits(limits_register)
 
-			if limit_low > ((1<<15)-1):
-				limit_low = -(0xFFFF-limit_low+1) 	#Because the value is consider as an signed integer
-
-			# self.convertDACCountsToVolts(0 , limit_low)
-			# self.convertDACCountsToVolts(0 , limit_high)
-
-		if dac_number == 1:
-			data = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac1_limits)
-			limit_high = (data & 0xFFFF0000)>>16
-			limit_low  = (data & 0x0000FFFF)
-
-			if limit_high > ((1<<15)-1):
-				limit_high = -(0xFFFF-limit_high+1) 	#Because the value is consider as an signed integer
-
-			if limit_low > ((1<<15)-1):
-				limit_low = -(0xFFFF-limit_low+1) 	#Because the value is consider as an signed integer
-
-			# self.convertDACCountsToVolts(1 , limit_low)
-			# self.convertDACCountsToVolts(1 , limit_high)
-
-		if dac_number == 2:
-			data  = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac2_limits)
-			limit_high = (data & 0xFFFF0000)>>16
-			limit_low  = (data & 0x0000FFFF)
-		
-			if limit_high > ((1<<31)-1):
-				limit_high = -(0xFFFFFFFF-limit_high+1) 	#Because the value is consider as an signed integer
-
-			if limit_low > ((1<<31)-1):
-				limit_low = -(0xFFFFFFFF-limit_low+1) 	#Because the value is consider as an signed integer
-			
-			self.convertDACCountsToVolts(2 , limit_low)
-			self.convertDACCountsToVolts(2 , limit_high)
+		if dac_number == 0 or dac_number == 1:
+			limit_high = interpret_as_16bits_signed(limit_high)
+			limit_low  = interpret_as_16bits_signed(limit_low)
 
 		self.DACs_limit_low[dac_number] = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
