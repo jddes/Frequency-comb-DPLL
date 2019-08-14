@@ -165,14 +165,22 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qgroupbox_xadc.setAutoFillBackground(True)
 		grid = Qt.QGridLayout()
 
+		self.time_start = time.clock()
+		self.qplots = DataLoggingDisplayWidget.DataLoggingDisplayWidget(numPlots=1, numCurvesPerPlot=1)
+		self.qplots.pltItemsList[0].setLabel('left', 'Temp [degC]')
+		# self.qplots.show()
+
 
 		self.qlbl_Temp   = Qt.QLabel('Zynq temperature: %.2f degC' % 0.)
 		self.qlbl_vccint = Qt.QLabel('Vccint = %.2f V' % 0.)
 		self.qlbl_vccaux = Qt.QLabel('Vccaux = %.2f V' % 0.)
+		self.qbtn_OpenTempGraph = Qt.QPushButton('Open temperature display window')
+		self.qbtn_OpenTempGraph.clicked.connect(self.qplots.show)
 
-		grid.addWidget(self.qlbl_Temp, 0, 0)
+		grid.addWidget(self.qlbl_Temp, 0, 0, 1, 2)
 		grid.addWidget(self.qlbl_vccint, 1, 0)
 		grid.addWidget(self.qlbl_vccaux, 2, 0)
+		grid.addWidget(self.qbtn_OpenTempGraph, 2, 1)
 
 		#grid.setRowStretch(2, 2)
 
@@ -314,10 +322,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		grid.addWidget(self.group)
 		self.setLayout(grid)
 
-		self.time_start = time.clock()
-		self.qplots = DataLoggingDisplayWidget.DataLoggingDisplayWidget(numPlots=1, numCurvesPerPlot=1)
-		self.qplots.pltItemsList[0].setLabel('left', 'Temp [degC]')
-		self.qplots.show()
+
 
 
 
@@ -328,12 +333,14 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 	def timerXADCEvent(self):
 		# read from xadc registers:
+		# print(self.qplots.isVisible())
+
 		if not self.sl.dev.valid_socket:
 			return
 		try:
 			(Vccint, Vccaux, Vbram) = self.sl.readZynqXADCsupply()
 			ZynqTempInDegC          = self.sl.readZynqTemperature()
-			print('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
+			# print('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
 			self.qlbl_Temp.setText('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
 			self.qlbl_vccint.setText('Vccint = %.2f V' % Vccint)
 			self.qlbl_vccaux.setText('Vccaux = %.2f V' % Vccaux)
