@@ -1308,37 +1308,13 @@ class SuperLaserLand_JD_RP:
 		limits_from_dac =  {0: limits_signed(16),
 		                    1: limits_signed(16),
 		                    2: limits_unsigned(16)}
-		limits_addr_from_dac = 
+		# clamp to extremum values:
+		if limit_low < limits_from_dac(dac_number)[0]:
+			limit_low = limits_from_dac(dac_number)[0]
+		if limit_high > limits_from_dac(dac_number)[1]:
+			limit_high = limits_from_dac(dac_number)[1]
 
-		if dac_number == 0:
-			# Clamp the value to the actual DAC limits:
-			if limit_high > 2**15-1:
-				limit_high = 2**15-1
-			if limit_low < -2**15:
-				limit_low = -2**15
-				
-			#print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
-			self.send_bus_cmd(self.BUS_ADDR_dac_limits[0], limit_low, limit_high)
-		if dac_number == 1:
-			# Clamp the value to the actual DAC limits:
-			if limit_high > 2**15-1:
-				limit_high = 2**15-1
-			if limit_low < -2**15:
-				limit_low = -2**15
-				
-			#print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
-			self.send_bus_cmd(self.BUS_ADDR_dac_limits[1], limit_low, limit_high)
-			
-		if dac_number == 2:
-			# Clamp the value to the actual DAC limits:
-			if limit_high > 2**16-1:
-				limit_high = 2**16-1
-			if limit_low < 0:
-				limit_low = 0
-			
-			#print('dac = %d, low = %d, high = %d' % (dac_number, limit_low, limit_high))
-			self.send_bus_cmd(self.BUS_ADDR_dac_limits[2], limit_low, limit_high)
-			
+		self.send_bus_cmd(self.BUS_ADDR_dac_limits[dac_number], limit_low, limit_high)
 		self.DACs_limit_low[dac_number] = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
 
