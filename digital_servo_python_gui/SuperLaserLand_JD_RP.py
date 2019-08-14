@@ -1309,10 +1309,10 @@ class SuperLaserLand_JD_RP:
 		                    1: limits_signed(16),
 		                    2: limits_unsigned(16)}
 		# clamp to extremum values:
-		if limit_low < limits_from_dac(dac_number)[0]:
-			limit_low = limits_from_dac(dac_number)[0]
-		if limit_high > limits_from_dac(dac_number)[1]:
-			limit_high = limits_from_dac(dac_number)[1]
+		if limit_low < limits_from_dac[dac_number][0]:
+			limit_low = limits_from_dac[dac_number][0]
+		if limit_high > limits_from_dac[dac_number][1]:
+			limit_high = limits_from_dac[dac_number][1]
 
 		self.send_bus_cmd(self.BUS_ADDR_dac_limits[dac_number], limit_low, limit_high)
 		self.DACs_limit_low[dac_number] = limit_low
@@ -1336,7 +1336,7 @@ class SuperLaserLand_JD_RP:
 			limit_high = interpret_as_16bits_signed(limit_high)
 			limit_low  = interpret_as_16bits_signed(limit_low)
 
-		self.DACs_limit_low[dac_number] = limit_low
+		self.DACs_limit_low[dac_number]  = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
 		
 
