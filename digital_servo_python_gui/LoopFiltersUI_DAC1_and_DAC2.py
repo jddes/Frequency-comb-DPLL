@@ -69,27 +69,17 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
             gain1_in_bits = -20
             gain2_in_bits = -20
 
-        if LoopFilter == 0:
-            #mode off
-            self.qradio_mode_off.blockSignals(True)
-            self.qradio_mode_off.setChecked(True)
-            self.qradio_mode_off.blockSignals(False)
-        elif LoopFilter == 1:
-            #mode slow
-            self.qradio_mode_slow.blockSignals(True)
-            self.qradio_mode_slow.setChecked(True)
-            self.qradio_mode_slow.blockSignals(False)
-        elif LoopFilter == 2:
-            # mode fase
-            self.qradio_mode_fast.blockSignals(True)
-            self.qradio_mode_fast.setChecked(True)
-            self.qradio_mode_fast.blockSignals(False)
-        elif LoopFilter == 3:
-            #mode both
-            self.qradio_mode_both.blockSignals(True)
-            self.qradio_mode_both.setChecked(True)
-            self.qradio_mode_both.blockSignals(False)
+        loop_filter_mode_to_radio = {0: self.qradio_mode_off,
+                                     1: self.qradio_mode_slow,
+                                     2: self.qradio_mode_fast,
+                                     3: self.qradio_mode_both
+                                     }
+        def checkWithoutSignals(target_radio):
+            target_radio.blockSignals(True)
+            target_radio.setChecked(True)
+            target_radio.blockSignals(False)
 
+        checkWithoutSignals(target_radio = loop_filter_mode_to_radio[LoopFilter])
 
         self.qchk_flip1.blockSignals(True)
         self.qchk_flip1.setChecked(flipsign1)
