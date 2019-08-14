@@ -27,7 +27,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
 	"""docstring for ConfigRP"""
 	def __init__(self, sl, sp, controller, custom_style_sheet='', custom_shorthand=''):
 		super(ConfigRPSettingsUI, self).__init__()  
-		print('ConfigRPSettingsUI::__init(): Entering')		
 		self.sl = weakref.proxy(sl)
 		self.sp = sp
 		self.setObjectName('MainWindow')

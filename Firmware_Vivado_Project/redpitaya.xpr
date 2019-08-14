@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="10" Path="D:/Repo/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.xpr">
+<Project Version="7" Minor="10" Path="D:/Users/Alex/Documents/GitHub/Frequency-comb-DPLL/Firmware_Vivado_Project/redpitaya.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="55fbcb833fab42aea5d71afd7d8d1644"/>

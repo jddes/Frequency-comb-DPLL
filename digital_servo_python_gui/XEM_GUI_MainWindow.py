@@ -37,10 +37,14 @@ import traceback
 import pyqtgraph as pg
 from ThermometerWidget import ThermometerWidget # to replace Qwt's thermometer widget
 
+<<<<<<< HEAD
 def round_to_N_sig_figs(x, Nsigfigs):
     leading_pos = np.floor(np.log10(np.abs(x)))
     factor = 10**((Nsigfigs-1)-leading_pos)
     return np.round(x * factor)/factor
+=======
+import logging
+>>>>>>> alexs_fork/Laval_RP
 
 def smooth(x,window_len=11,window='hanning'):
 	"""smooth the data using a window with requested size.
@@ -126,7 +130,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.setStyleSheet(custom_style_sheet)
 		self.strFGPASerialNumber = strFGPASerialNumber
 
+		self.logger = logging.getLogger(__name__)
+		self.logger_name = ':XEM_GUI_MainWindow'
+
 		self.timerIDDither = None
+		self.timerID = 0
 
 		# For the crash monitor
 		self.crash_number = 0
@@ -159,7 +167,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def setDACOffset_event(self, e):
 
 	def getValues(self):
+<<<<<<< HEAD
 		print("XEM_GUI_MainWindow::getValues()")
+=======
+>>>>>>> alexs_fork/Laval_RP
 		self.bFirstTimeLockCheckBoxClicked = False
 		self.getVCOGain()
 		self.getDACoffset()
@@ -177,10 +188,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.refreshChk_event()
 
 	def pushActualValues(self):
+<<<<<<< HEAD
 		print("Push actual values of MainWindow")
+=======
+		print("Push actual values of MainWindow, TODO")
+>>>>>>> alexs_fork/Laval_RP
 
 	def pushDefaultValues(self):
-		print("XEM_GUI_MainWindow::pushDefaultValues()")
 		#For now, equivalent to call initSL()
 		self.loadParameters()
 		# Send values to FPGA
@@ -198,6 +212,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         # self.displayDDC()
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
+<<<<<<< HEAD
 		# print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
 		if self.output_controls[0] == True:
 			self.slowStart100VSwitchingSupply()
@@ -227,8 +242,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		print("slowStart100VSwitchingSupply(): finished")
 
+=======
+>>>>>>> alexs_fork/Laval_RP
 	def killTimers(self):
-		print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
+		# print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
 		#traceback.print_stack()
 		if self.timerIDDither is not None:
 			self.timerIDDither.stop()
@@ -238,7 +255,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.refreshChk_event()
 		
 	def startTimers(self):
-		print("XEM_GUI_MainWindow::startTimers(): %s" % self.strTitle)
+		# print("XEM_GUI_MainWindow::startTimers(): %s" % self.strTitle)
 		# Need to init timerID
 		self.timerID = 0
 
@@ -374,9 +391,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		for k in range(3):
 			if self.output_controls[k]:
 				VCO_gain_in_counts_per_counts = self.sl.get_openLoop_gain(k)
-				print("k = %d, VCO_gain_in_counts_per_counts=%f" % (k, VCO_gain_in_counts_per_counts))
+				# print("k = %d, VCO_gain_in_counts_per_counts=%f" % (k, VCO_gain_in_counts_per_counts))
 				VCO_gain_in_Hz_per_Volts = VCO_gain_in_counts_per_counts / (self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k))
-				print("k = %d, VCO_gain_in_Hz_per_Volts=%f" % (k, VCO_gain_in_Hz_per_Volts))
+				# print("k = %d, VCO_gain_in_Hz_per_Volts=%f" % (k, VCO_gain_in_Hz_per_Volts))
 				# prevent divide-by-0 bug:
 				if VCO_gain_in_Hz_per_Volts == 0:
 					VCO_gain_in_Hz_per_Volts = 1.
@@ -787,7 +804,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				#     # automatic mode
 				#     self.sl.setDitherLockInState(2, False)
 					
-			
+			self.logger.info('Red_Pitaya_GUI{}: Lock'.format(self.logger_name))
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: green')            
 			# Turn the lock on
 			if self.selected_ADC == 0:
@@ -858,7 +875,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					
 					# Set up a ramp with 20 steps:
 					desired_ramp = np.linspace(current_manual_offset_in_slider_units, current_dac_offset_in_slider_units, 20)
-					print('ramping from %d to %d in slider units' % (current_manual_offset_in_slider_units, current_dac_offset_in_slider_units))
+					# print('ramping from %d to %d in slider units' % (current_manual_offset_in_slider_units, current_dac_offset_in_slider_units))
 					
 					Total_ramp_time = 0.1
 					for k2 in range(len(desired_ramp)):
@@ -909,12 +926,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				#     # automatic mode
 				#     self.sl.setDitherLockInState(2, True)
 					
-			
+			self.logger.info('Red_Pitaya_GUI{}: Unlock'.format(self.logger_name))
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
 			
 
 		self.bFirstTimeLockCheckBoxClicked = False
+<<<<<<< HEAD
 		print(self.qloop_filters[self.selected_ADC].qchk_lock.isChecked())
+=======
+		# print('self.qloop_filters[self.selected_ADC].qchk_lock.isChecked()'')
+		# print(self.qloop_filters[self.selected_ADC].qchk_lock.isChecked())
+>>>>>>> alexs_fork/Laval_RP
 
 			
 	def initUI(self):
@@ -1805,7 +1827,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	
 		start_time = time.clock()
-		for k in range(3):
+		for k in range(2): #There is no dither for the 2nd DAC
 			if self.output_controls[k]:
 				if self.sl.dither_enable[k] == False:
 					if k != 2: # DAC2 currently does not have dither
@@ -1870,8 +1892,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 	def timerEvent(self, e):
 		# print 'timerEvent : %.3f sec' % (time.clock())
-		
-		
 
 		# Check if the sl object exists: otherwise this timer will keep throwing exceptions, filling up the console messages
 		# and preventing us form seeing the real cause.  We let only one exception go through and then disable 
