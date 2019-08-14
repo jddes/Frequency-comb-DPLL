@@ -24,7 +24,10 @@ class devicesData():
 				color 		= self.tree.find(device).attrib["color"]
 				name 		= self.tree.find(device).attrib["name"]
 				shorthand 	= self.tree.find(device).attrib["shorthand"]
-				port_temp	= self.tree.find(device).attrib["port_temp"]
+				try:
+					port_temp	= self.tree.find(device).attrib["port_temp"]
+				except:
+					port_temp = 5000
 				config_file = self.tree.find(device).attrib["config_file"]
 
 				devices_dict[strSerial] = {'color': color,

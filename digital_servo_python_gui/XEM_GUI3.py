@@ -243,7 +243,7 @@ class controller(object):
 		ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
 
 		app_icon = QtGui.QIcon()
-		app_icon.addFile('icons/red_pitaya.png', QtCore.QSize(16,16))
+		app_icon.addFile('icons/red_pitaya.png', QtCore.QSize(32,32))
 
 		self.main_windows.show()
 
@@ -297,36 +297,19 @@ class controller(object):
 		try:
 			# custom_shorthand = self.devices_data[self.initial_config.strSelectedSerial]['shorthand']
 			custom_shorthand = self.devices_data[strSelectedSerial]['shorthand']
-<<<<<<< HEAD
-		except KeyError:
-			custom_shorthand = ''
-=======
-			self.logger_name = ':' + custom_shorthand
 		except KeyError:
 			custom_shorthand = ''
 			self.logger_name = ''
->>>>>>> alexs_fork/Laval_RP
 
 		self.main_windows.setWindowTitle(custom_shorthand)
 		self.xem_gui_mainwindow2.strTitle = custom_shorthand + ': Optical lock'
 		self.xem_gui_mainwindow.strTitle = custom_shorthand + ': CEO lock'
-<<<<<<< HEAD
-		
-		# self.divider_settings_window.custom_shorthand = custom_shorthand
-		# self.xem_gui_mainwindow.setWindowTitle(self.xem_gui_mainwindow2.strTitle)		
-		# self.xem_gui_mainwindow2.setWindowTitle(self.xem_gui_mainwindow2.strTitle)
-		# self.RP_Settings.setStyleSheet(custom_shorthand)
-		# self.counters_window.setWindowTitle(custom_shorthand + ': Frequency counters')
-		# self.settings_window.setWindowTitle(custom_shorthand + ': Dither controls')
-		# self.divider_settings_window.setWindowTitle(custom_shorthand + ': Peripherals settings')
-=======
 		self.counters_window.strTitle = custom_shorthand + ': Frequency counters'
 
 		self.xem_gui_mainwindow2.logger_name = ':' + custom_shorthand + ':Optical lock'
 		self.xem_gui_mainwindow.logger_name = ':' + custom_shorthand + ':CEO lock'
 		self.freq_error_window1.logger_name = ':' + custom_shorthand + ': Frequency counters'
 		self.freq_error_window2.logger_name = ':' + custom_shorthand + ': Frequency counters'
->>>>>>> alexs_fork/Laval_RP
 		
 	def setCustomStyleSheet(self, strSelectedSerial):
 		# Style sheet which includes the color scheme for each specific box:
@@ -365,20 +348,16 @@ class controller(object):
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
-<<<<<<< HEAD
-=======
 
 		self.logger.info('Red_Pitaya_GUI{}: Pushing default values from xml file'.format(self.logger_name))
->>>>>>> alexs_fork/Laval_RP
-
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
 			
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 		# Now we just need to reset the frontend to make sure we start everything in a nice state
 		self.sl.resetFrontend()
-<<<<<<< HEAD
-		self.loadDefaultValueFromConfigFile(strSelectedSerial)
+
+		self.loadDefaultValueFromConfigFile(strSelectedSerial, True)
 		
 		target_windows = [
 			self.xem_gui_mainwindow2,
@@ -393,9 +372,6 @@ class controller(object):
 
 		for window in target_windows:
 			window.pushDefaultValues()
-=======
-		self.loadDefaultValueFromConfigFile(strSelectedSerial, True)
->>>>>>> alexs_fork/Laval_RP
 		
 
 		self.setTemperatureControlPort(strSelectedSerial)
@@ -403,11 +379,8 @@ class controller(object):
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
-<<<<<<< HEAD
-=======
 
 		self.logger.info('Red_Pitaya_GUI{}: Pushing actual values from GUI'.format(self.logger_name))
->>>>>>> alexs_fork/Laval_RP
 
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
@@ -432,17 +405,14 @@ class controller(object):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
 
-<<<<<<< HEAD
-=======
 		self.logger.info('Red_Pitaya_GUI{}: Updating GUI from FPGA'.format(self.logger_name))
 
->>>>>>> alexs_fork/Laval_RP
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
 
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
+		self.loadDefaultValueFromConfigFile(strSelectedSerial, False) #read xml file to update some values. False means not updating the FPGA
 
-<<<<<<< HEAD
 		target_windows = [
 			self.xem_gui_mainwindow2,
 			self.xem_gui_mainwindow,
@@ -456,18 +426,6 @@ class controller(object):
 
 		for window in target_windows:
 			window.getValues()
-=======
-		self.loadDefaultValueFromConfigFile(strSelectedSerial, False) #read xml file to update some values. False means not updating the FPGA
-
-		self.xem_gui_mainwindow2.getValues()
-		self.xem_gui_mainwindow.getValues()
-		self.freq_error_window1.getValues()
-		self.freq_error_window2.getValues()
-		self.RP_Settings.getValues()
-		self.divider_settings_window.getValues()
-		self.dither_widget0.getValues()
-		self.dither_widget1.getValues()
->>>>>>> alexs_fork/Laval_RP
 
 		self.setTemperatureControlPort(strSelectedSerial)
 

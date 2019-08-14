@@ -101,11 +101,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             tempControl_step_size           = float(self.sp.getValue('Temperature_control', 'step_size'))
             tempControl_step_delay          = int(  self.sp.getValue('Temperature_control', 'step_delay'))
             print("TODO: TEST THIS TO MAKE THIS THAT IT DOES THE RIGHT THING IN THE DEFAULT MODE!")
-            self.bIncrementalOnly       = bool( self.sp.getValue('Temperature_control', 'bIncrementalOnly'))
             try:
                 self.bIncrementalOnly       = bool( self.sp.getValue('Temperature_control', 'bIncrementalOnly'))
-            except:
+            except KeyError:
                 bIncrementalOnly = False
+            print("bIncrementalOnly=%d" % self.bIncrementalOnly)
 
             self.qchk_temp_control.setChecked(chkTempControl) #warning, if bLock is False, this checkbox is going to be set at False in the first loop
             self.qedit_threshold_step.setText('{:.2}'.format(tempControl_threshold_step))

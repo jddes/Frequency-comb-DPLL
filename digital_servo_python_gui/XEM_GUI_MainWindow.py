@@ -37,14 +37,13 @@ import traceback
 import pyqtgraph as pg
 from ThermometerWidget import ThermometerWidget # to replace Qwt's thermometer widget
 
-<<<<<<< HEAD
+import logging
+
 def round_to_N_sig_figs(x, Nsigfigs):
     leading_pos = np.floor(np.log10(np.abs(x)))
     factor = 10**((Nsigfigs-1)-leading_pos)
     return np.round(x * factor)/factor
-=======
-import logging
->>>>>>> alexs_fork/Laval_RP
+
 
 def smooth(x,window_len=11,window='hanning'):
 	"""smooth the data using a window with requested size.
@@ -167,10 +166,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def setDACOffset_event(self, e):
 
 	def getValues(self):
-<<<<<<< HEAD
-		print("XEM_GUI_MainWindow::getValues()")
-=======
->>>>>>> alexs_fork/Laval_RP
 		self.bFirstTimeLockCheckBoxClicked = False
 		self.getVCOGain()
 		self.getDACoffset()
@@ -188,11 +183,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.refreshChk_event()
 
 	def pushActualValues(self):
-<<<<<<< HEAD
-		print("Push actual values of MainWindow")
-=======
 		print("Push actual values of MainWindow, TODO")
->>>>>>> alexs_fork/Laval_RP
 
 	def pushDefaultValues(self):
 		#For now, equivalent to call initSL()
@@ -212,7 +203,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
         # self.displayDDC()
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
-<<<<<<< HEAD
 		# print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
 		if self.output_controls[0] == True:
 			self.slowStart100VSwitchingSupply()
@@ -242,8 +232,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		print("slowStart100VSwitchingSupply(): finished")
 
-=======
->>>>>>> alexs_fork/Laval_RP
 	def killTimers(self):
 		# print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
 		#traceback.print_stack()
@@ -931,12 +919,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 
 		self.bFirstTimeLockCheckBoxClicked = False
-<<<<<<< HEAD
-		print(self.qloop_filters[self.selected_ADC].qchk_lock.isChecked())
-=======
-		# print('self.qloop_filters[self.selected_ADC].qchk_lock.isChecked()'')
-		# print(self.qloop_filters[self.selected_ADC].qchk_lock.isChecked())
->>>>>>> alexs_fork/Laval_RP
 
 			
 	def initUI(self):

@@ -1339,29 +1339,11 @@ class SuperLaserLand_JD_RP:
 		limits_register = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac_limits[dac_number])
 		(limit_high, limit_low) = split_32bits_to_2x16bits(limits_register)
 
-<<<<<<< HEAD
 		if dac_number == 0 or dac_number == 1:
 			limit_high = interpret_as_16bits_signed(limit_high)
 			limit_low  = interpret_as_16bits_signed(limit_low)
 
 		self.DACs_limit_low[dac_number]  = limit_low
-=======
-		if dac_number == 2:
-			data  = self.read_RAM_dpll_wrapper(self.BUS_ADDR_dac2_limits)
-			limit_high = (data & 0xFFFF0000)>>16
-			limit_low  = (data & 0x0000FFFF)
-		
-			if limit_high > ((1<<31)-1):
-				limit_high = -(0xFFFFFFFF-limit_high+1) 	#Because the value is consider as an signed integer
-
-			if limit_low > ((1<<31)-1):
-				limit_low = -(0xFFFFFFFF-limit_low+1) 	#Because the value is consider as an signed integer
-			
-			self.convertDACCountsToVolts(2 , limit_low)
-			self.convertDACCountsToVolts(2 , limit_high)
-
-		self.DACs_limit_low[dac_number] = limit_low
->>>>>>> alexs_fork/Laval_RP
 		self.DACs_limit_high[dac_number] = limit_high
 		
 
