@@ -1339,22 +1339,6 @@ class SuperLaserLand_JD_RP:
 		self.DACs_limit_low[dac_number] = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
 		
-#    def set_fll0_settings(self, freq_lock, gain_in_bits):
-#        # Register format is:
-#        # {fll0_lock, fll0_gain_left_shift_in_bits, fll0_gain_right_shift_in_bits}
-#        if gain_in_bits > 0:
-#            # Positive gain (in log scale) goes into the MSBs:
-#            fll0_gain_left_shift_in_bits = gain_in_bits
-#            fll0_gain_right_shift_in_bits = 0
-#        else:
-#            # Negative gain (in log scale) goes into the LSBs:
-#            fll0_gain_left_shift_in_bits = 0
-#            fll0_gain_right_shift_in_bits = -gain_in_bits
-#        self.send_bus_cmd(self.BUS_ADDR_fll0_settings, 2**10 * freq_lock + 2**5*fll0_gain_left_shift_in_bits + fll0_gain_right_shift_in_bits, 0)
-#        
-
-
-
 
 	def get_ddc0_ref_freq_from_RAM(self):
 		if self.bVerbose == True:
