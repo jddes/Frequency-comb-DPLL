@@ -300,17 +300,22 @@ class controller(object):
 		except KeyError:
 			custom_style_sheet = ''
 
-		self.divider_settings_window.setStyleSheet(custom_style_sheet)
-		self.freq_error_window1.setStyleSheet(custom_style_sheet)
-		self.freq_error_window2.setStyleSheet(custom_style_sheet)
-		self.xem_gui_mainwindow2.setStyleSheet(custom_style_sheet)
-		self.xem_gui_mainwindow.setStyleSheet(custom_style_sheet)
-		self.counters_window.setStyleSheet(custom_style_sheet)
-		self.dither_widget0.setStyleSheet(custom_style_sheet)
-		self.dither_widget1.setStyleSheet(custom_style_sheet)
-		self.RP_Settings.setStyleSheet(custom_style_sheet)
-		self.settings_window.setStyleSheet(custom_style_sheet)
-		self.main_windows.setStyleSheet(custom_style_sheet)
+		windows_to_set = [
+			self.divider_settings_window,
+			self.freq_error_window1,
+			self.freq_error_window2,
+			self.xem_gui_mainwindow2,
+			self.xem_gui_mainwindow,
+			self.counters_window,
+			self.dither_widget0,
+			self.dither_widget1,
+			self.RP_Settings,
+			self.settings_window,
+			self.main_windows
+			]
+
+		for window in windows_to_set:
+			window.setStyleSheet(custom_style_sheet)
 
 
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
@@ -325,14 +330,19 @@ class controller(object):
 		self.sl.resetFrontend()
 		self.loadDefaultValueFromConfigFile(strSelectedSerial)
 		
-		self.xem_gui_mainwindow2.pushDefaultValues()
-		self.xem_gui_mainwindow.pushDefaultValues()
-		self.freq_error_window1.pushDefaultValues()
-		self.freq_error_window2.pushDefaultValues()
-		self.RP_Settings.pushDefaultValues()
-		self.divider_settings_window.pushDefaultValues()
-		self.dither_widget0.pushDefaultValues()
-		self.dither_widget1.pushDefaultValues()
+		target_windows = [
+			self.xem_gui_mainwindow2,
+			self.xem_gui_mainwindow,
+			self.freq_error_window1,
+			self.freq_error_window2,
+			self.RP_Settings,
+			self.divider_settings_window,
+			self.dither_widget0,
+			self.dither_widget1,
+		]
+
+		for window in target_windows:
+			window.pushDefaultValues()
 		
 
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
@@ -343,12 +353,16 @@ class controller(object):
 			self.sl.dev.CloseTCPConnection()
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
+		target_windows = [
+			self.xem_gui_mainwindow2,
+			self.xem_gui_mainwindow,
+			self.freq_error_window1,
+			self.freq_error_window2,
+		]
 
+		for window in target_windows:
+			window.pushActualValues()
 
-		self.xem_gui_mainwindow2.pushActualValues()
-		self.xem_gui_mainwindow.pushActualValues()
-		self.freq_error_window1.pushValues()
-		self.freq_error_window2.pushValues()
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		print("getActualValues: strSelectedSerial = %s" % strSelectedSerial)
@@ -357,27 +371,22 @@ class controller(object):
 		self.setCustomShorthand(strSelectedSerial)
 
 		if self.sl.dev.valid_socket:
-			print("getActualValues: before Close")
 			self.sl.dev.CloseTCPConnection()
-		print("getActualValues: before Open")
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
 
-		print("getActualValues: 0")
-		self.xem_gui_mainwindow2.getValues()
-		print("getActualValues: 1")
-		self.xem_gui_mainwindow.getValues()
-		print("getActualValues: 2")
-		self.freq_error_window1.getValues()
-		print("getActualValues: 3")
-		self.freq_error_window2.getValues()
-		print("getActualValues: 4")
-		self.RP_Settings.getValues()
-		print("getActualValues: 5")
-		self.divider_settings_window.getValues()
-		print("getActualValues: 6")
-		self.dither_widget0.getValues()
-		print("getActualValues: 7")
-		self.dither_widget1.getValues()
+		target_windows = [
+			self.xem_gui_mainwindow2,
+			self.xem_gui_mainwindow,
+			self.freq_error_window1,
+			self.freq_error_window2,
+			self.RP_Settings,
+			self.divider_settings_window,
+			self.dither_widget0,
+			self.dither_widget1,
+		]
+
+		for window in target_windows:
+			window.getValues()
 
 	def stopCommunication(self):
 		if self.sl.dev.valid_socket:
@@ -393,10 +402,16 @@ class controller(object):
 
 	def startCommunication(self, ip_addr = "192.168.0.150", port=5000):
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
-		self.xem_gui_mainwindow2.startTimers()
-		self.xem_gui_mainwindow.startTimers()
-		self.freq_error_window1.startTimers()
-		self.freq_error_window2.startTimers()
+
+		target_windows = [
+			self.xem_gui_mainwindow2,
+			self.xem_gui_mainwindow,
+			self.freq_error_window1,
+			self.freq_error_window2,
+		]
+
+		for window in target_windows:
+			window.startTimers()
 
 	    
 
