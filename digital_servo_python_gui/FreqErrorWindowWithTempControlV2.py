@@ -292,6 +292,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         if self.client or True:
             # we need to add the controls which implement the temperature control loop:
+            self.qhoriz_line = Qt.QFrame()
+            self.qhoriz_line.setFrameShape(Qt.QFrame.HLine)
+            self.qhoriz_line.setFrameShadow(Qt.QFrame.Sunken)
+
             self.qlabel_threshold_step = Qt.QLabel('Threshold for step:')
             self.qedit_threshold_step = Qt.QLineEdit('0.2')
             self.qedit_threshold_step.setMaximumWidth(40)
@@ -316,21 +320,22 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.qchk_clear_temp_control.setChecked(False)
             
             #FEATURE
-            #grid.addWidget(self.qlabel_threshold_step,          8, 0)
-            #grid.addWidget(self.qedit_threshold_step,           8, 1)
-            #grid.addWidget(self.qlabel_threshold_disable,       9, 0)
-            #grid.addWidget(self.qedit_threshold_disable,        9, 1)
-            #grid.addWidget(self.qlabel_step_size,               10, 0)
-            #grid.addWidget(self.qedit_step_size,                11, 1)
-            #
-            #grid.addWidget(self.qlabel_step_delay,              12, 0)
-            #grid.addWidget(self.qedit_step_delay,               13, 1)
-            #
-            #grid.addWidget(self.qchk_temp_control,              14, 0, 1, 2)
-            #grid.addWidget(self.qchk_clear_temp_control,        15, 0, 1, 2)
+            grid.addWidget(self.qhoriz_line,                    9, 0, 1, 2)
+            grid.addWidget(self.qlabel_threshold_step,          10, 0)
+            grid.addWidget(self.qedit_threshold_step,           10, 1)
+            grid.addWidget(self.qlabel_threshold_disable,       11, 0)
+            grid.addWidget(self.qedit_threshold_disable,        11, 1)
+            grid.addWidget(self.qlabel_step_size,               12, 0)
+            grid.addWidget(self.qedit_step_size,                13, 1)
+            
+            grid.addWidget(self.qlabel_step_delay,              14, 0)
+            grid.addWidget(self.qedit_step_delay,               15, 1)
+            
+            grid.addWidget(self.qchk_temp_control,              16, 0, 1, 2)
+            grid.addWidget(self.qchk_clear_temp_control,        17, 0, 1, 2)
             
             
-            grid.addWidget(Qt.QLabel(''),                       16, 0, 1, 2)
+            grid.addWidget(Qt.QLabel(''),                       18, 0, 1, 2)
             grid.setRowStretch(15, 1)
             grid.setColumnStretch(2, 1)
         else:
