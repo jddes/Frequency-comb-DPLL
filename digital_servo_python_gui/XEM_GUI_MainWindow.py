@@ -1036,7 +1036,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 
 		self.qlabel_timerdelay = Qt.QLabel('Refresh delay [ms]:')
-		self.qedit_timerdelay = user_friendly_QLineEdit('200')
+		self.qedit_timerdelay = user_friendly_QLineEdit('33')
 		self.qedit_timerdelay.returnPressed.connect(self.refreshChk_event)
 		self.qedit_timerdelay.setMaximumWidth(60)
 		
