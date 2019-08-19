@@ -48,7 +48,7 @@ class RP_PLL_device():
 
         self.sock = socket_placeholder()
         self.controller = controller
-        self.valid_socket = 0
+        self.valid_socket = False
         self.reconnection_attempts = 0
 
         return
@@ -71,7 +71,7 @@ class RP_PLL_device():
     def CloseTCPConnection(self):
         print("RP_PLL_device::CloseTCPConnection()")
         self.sock = socket_placeholder()
-        self.valid_socket = 0
+        self.valid_socket = False
 
     def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True):
         print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
@@ -142,33 +142,23 @@ class RP_PLL_device():
     # Functions used to access the memory-mapped registers of the Zynq
     #######################################################
 
-    def write_Zynq_register_uint32(self, address_uint32, data_uint32):
+    def write_Zynq_register_32bits(self, address_uint32, data_32bits, bSigned=False):
         # print("write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32))
         if address_uint32 % 4:
             # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
-            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
-            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
+            print("write_Zynq_register_32bits(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
+            raise Exception("write_Zynq_register_32bits", "non-32-bits-aligned write")
             return
         try:
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_uint32) & 0xFFFFFFFF)
-            self.sock.sendall(packet_to_send)
-        except:
-            self.disconnectEvent()
-
-    def write_Zynq_register_int32(self, address_uint32, data_int32):
-        # print("write_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
-        if address_uint32 % 4:
-            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
-            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
-            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
-            return
-        try:
-            packet_to_send = struct.pack('=IIi', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_int32) & 0xFFFFFFFF)
+            type_to_format_string = {False: '=III',
+                                     True: '=IIi'}
+            packet_to_send = struct.pack(type_to_format_string[bSigned], self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_32bits) & 0xFFFFFFFF)
             self.sock.sendall(packet_to_send)
         except:
             self.disconnectEvent()
 
     def read_Zynq_register_uint32(self, address_uint32):
+        data_buffer = None
         try:
             #  print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
@@ -181,6 +171,8 @@ class RP_PLL_device():
             return 0
         if len(data_buffer) != 4:
             print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+            return 0
+
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
@@ -206,10 +198,13 @@ class RP_PLL_device():
             return 0
         if len(data_buffer) != 4:
             print("read_Zynq_AXI_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+            return 0
+
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
     def read_Zynq_register_int32(self, address_uint32):
+        data_buffer = None
         try:
             # print("read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
@@ -222,38 +217,11 @@ class RP_PLL_device():
             return 0
         if len(data_buffer) != 4:
             print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
-            
+            return 0
+
         register_value_as_tuple = struct.unpack('i', data_buffer)
         return register_value_as_tuple[0]
 
-
-    def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
-        print("read_Zynq_register_uint64()")
-        results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
-        results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
-
-        # print 'results_lsb = %d' % results_lsb
-        # print 'results_msb = %d' % results_msb
-
-        # convert to 64 bits using numpy's casts
-        results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
-        results = np.frombuffer(results, np.dtype(np.uint64) )
-
-        return results
-
-    def read_Zynq_register_int64(self, address_uint32_lsb, address_uint32_msb):
-        # print "read_Zynq_register_uint64()"
-        results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
-        results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
-
-        # print 'results_lsb = %d' % results_lsb
-        # print 'results_msb = %d' % results_msb
-
-        # convert to 64 bits using numpy's casts
-        results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
-        results = np.frombuffer(results, np.dtype(np.int64) )
-
-        return results
   
     def read_Zynq_buffer_int16(self, address_uint32, number_of_points):
         #return '\x00\x00'
@@ -278,6 +246,40 @@ class RP_PLL_device():
             return b''
         
         return data_buffer    # returns a raw string buffer, to be read for example with np.fromstring(data_buffer, dtype=np.int16)
+
+
+    #######################################################
+    # Functions used to access Zynq registers, but which do not interact directly with the socket,
+    # and instead use the lower-level functions above
+    #######################################################
+
+    def write_Zynq_register_uint32(self, address_uint32, data_uint32):
+        self.write_Zynq_register_32bits(address_uint32, data_uint32, bSigned=False)
+
+    def write_Zynq_register_int32(self, address_uint32, data_int32):
+        self.write_Zynq_register_32bits(address_uint32, data_uint32, bSigned=True)
+
+    def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
+        print("read_Zynq_register_uint64()")
+        results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
+        results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
+
+        # convert to 64 bits using numpy's casts
+        results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
+        results = np.frombuffer(results, np.dtype(np.uint64) )
+
+        return results
+
+    def read_Zynq_register_int64(self, address_uint32_lsb, address_uint32_msb):
+        # print "read_Zynq_register_uint64()"
+        results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
+        results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
+
+        # convert to 64 bits using numpy's casts
+        results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
+        results = np.frombuffer(results, np.dtype(np.int64) )
+
+        return results
 
     #######################################################
     # Functions to emulate the Opal Kelly API:

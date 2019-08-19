@@ -319,7 +319,7 @@ class controller(object):
 		except KeyError:
 			custom_style_sheet = ''
 
-		windows_to_set = [
+		target_windows = [
 			self.divider_settings_window,
 			self.freq_error_window1,
 			self.freq_error_window2,
@@ -333,7 +333,7 @@ class controller(object):
 			self.main_windows
 			]
 
-		for window in windows_to_set:
+		for window in target_windows:
 			window.setStyleSheet(custom_style_sheet)
 
 	def setTemperatureControlPort(self, strSelectedSerial):
