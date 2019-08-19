@@ -240,7 +240,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.sl.setCounterMode(True)
         else:
             self.sl.setCounterMode(False)
-        self.addTempControlWidget()
+        # self.addTempControlWidget()
         # print('Updating counter mode')
 
     def getTriangular_checked(self):
