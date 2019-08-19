@@ -697,7 +697,7 @@ class SuperLaserLand_JD_RP:
 		bytes_per_sample = 2
 		Num_bytes_read = self.Num_samples_read*bytes_per_sample
 
-		data_buffer = self.dev.read_Zynq_buffer_int16(0, self.Num_samples_read)
+		data_buffer = self.dev.read_Zynq_buffer_int16(self.Num_samples_read)
 
 		if Num_bytes_read != len(data_buffer):
 			print('Error: did not receive the expected number of bytes. expected: %d, Received: %d' % (Num_bytes_read, len(data_buffer)))

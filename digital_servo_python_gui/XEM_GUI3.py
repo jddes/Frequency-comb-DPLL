@@ -31,6 +31,7 @@ from devicesData import devicesData
 import time
 
 import pdb
+import traceback
 
 import socket
 
@@ -62,6 +63,10 @@ class controller(object):
 		self.updateDeviceData()
 
 		self.sp = SLLSystemParameters()
+
+
+		self.reconnection_attempts = 0
+		self.timerReconnect = None
 
 		# Start Qt:
 		self.app = QtCore.QCoreApplication.instance()
@@ -346,6 +351,10 @@ class controller(object):
 		self.freq_error_window2.port_number = int(port_number)
 
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
+		self.strSelectedSerial = strSelectedSerial
+		self.ip_addr           = ip_addr
+		self.port              = port
+
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
 
@@ -377,6 +386,10 @@ class controller(object):
 		self.setTemperatureControlPort(strSelectedSerial)
 
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
+		self.strSelectedSerial = strSelectedSerial
+		self.ip_addr           = ip_addr
+		self.port              = port
+
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
 
@@ -400,6 +413,10 @@ class controller(object):
 		self.setTemperatureControlPort(strSelectedSerial)
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
+		self.strSelectedSerial = strSelectedSerial
+		self.ip_addr           = ip_addr
+		self.port              = port
+
 		print("getActualValues: strSelectedSerial = %s" % strSelectedSerial)
 		# pdb.set_trace()
 		self.setCustomStyleSheet(strSelectedSerial)
@@ -434,6 +451,9 @@ class controller(object):
 
 		self.logger.info('Red_Pitaya_GUI{}: Closing connection'.format(self.logger_name))
 
+		if self.timerReconnect is not None:
+			self.timerReconnect = None
+
 		if self.sl.dev.valid_socket:
 			self.sl.dev.CloseTCPConnection()
 		try:
@@ -445,20 +465,40 @@ class controller(object):
 			print("Error while killing the timers:")
 			print(e)
 
-	def startCommunication(self, ip_addr = "192.168.0.150", port=5000):
-		self.sl.dev.OpenTCPConnection(ip_addr, port)
+	def socketErrorEvent(self):
 
-		target_windows = [
-			self.xem_gui_mainwindow2,
-			self.xem_gui_mainwindow,
-			self.freq_error_window1,
-			self.freq_error_window2,
-		]
+		# check if we need to start the reconnection attempt timer:
+		if self.timerReconnect is None:
+			# disconnect from socket, and start reconnection timer:
+			self.stopCommunication()
 
-		for window in target_windows:
-			window.startTimers()
+			print("TCP connection lost. Starting reconnection timer")
+			self.timerReconnect = QtCore.QTimer()
+			self.reconnection_attempts = 0
+			self.timerReconnect.timeout.connect(self.reconnectionAttempt)
+			self.timerReconnect.start(1000) # 1000 ms update period
+				
 
-	    
+	def reconnectionAttempt(self):
+		self.reconnection_attempts += 1
+		# print("TCP connection lost. Attempting to reconnect %d." % (self.reconnection_attempts))
+
+		try:
+			self.getActualValues(self.strSelectedSerial, self.ip_addr, self.port)
+		except:
+			print("Reconnection attempt #%d failed." % self.reconnection_attempts)
+			logging.error(traceback.format_exc())
+
+		if self.sl.dev.valid_socket:
+			# success!
+			self.timerReconnect.stop()
+			return
+
+		if self.reconnection_attempts == 10:
+			# switch to a longer timer between reconnection attempt:
+			print("%d failed reconnection attempts. Switching to 10 secs between attempts." % self.reconnection_attempts)
+			self.timerReconnect.stop()
+			self.timerReconnect.start(10000) # 10 seconds update period
 
 if __name__ == '__main__':
 	# pbd.run('controller()')
