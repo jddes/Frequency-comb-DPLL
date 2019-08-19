@@ -81,8 +81,12 @@ class RP_PLL_device():
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # this avoids a ~33 ms on Windows before our request packets are sent (!!)
         # self.sock.setblocking(1)
         self.sock.settimeout(2)
-        self.sock.connect((self.HOST, self.PORT))
-        self.valid_socket = valid_socket_for_general_comms
+        try:
+            self.sock.connect((self.HOST, self.PORT))
+            self.valid_socket = valid_socket_for_general_comms
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            self.valid_socket = False
 
     # from http://stupidpythonideas.blogspot.ca/2013/05/sockets-are-byte-streams-not-message.html
     def recvall(self, count):
@@ -189,7 +193,7 @@ class RP_PLL_device():
         except:
             self.disconnectEvent()
 
-    def read_Zynq_AXI_register_uint32(self, address_uint32):
+    def read_Zynq_AXI_register_32bits(self, address_uint32):
         # print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, 0)  # last value is reserved
         self.sock.sendall(packet_to_send)
@@ -200,27 +204,7 @@ class RP_PLL_device():
             print("read_Zynq_AXI_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
             return 0
 
-        register_value_as_tuple = struct.unpack('I', data_buffer)
-        return register_value_as_tuple[0]
-
-    def read_Zynq_register_int32(self, address_uint32):
-        data_buffer = None
-        try:
-            # print("read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
-            self.sock.sendall(packet_to_send)
-            data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
-        except:
-            self.disconnectEvent()
-
-        if data_buffer is None:
-            return 0
-        if len(data_buffer) != 4:
-            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
-            return 0
-
-        register_value_as_tuple = struct.unpack('i', data_buffer)
-        return register_value_as_tuple[0]
+        return data_buffer
 
   
     def read_Zynq_buffer_int16(self, address_uint32, number_of_points):
@@ -258,6 +242,16 @@ class RP_PLL_device():
 
     def write_Zynq_register_int32(self, address_uint32, data_int32):
         self.write_Zynq_register_32bits(address_uint32, data_uint32, bSigned=True)
+
+    def read_Zynq_AXI_register_uint32(self, address_uint32):
+        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32, data_buffer)
+        register_value_as_tuple = struct.unpack('I', data_buffer)
+        return register_value_as_tuple[0]
+
+    def read_Zynq_register_int32(self, address_uint32):
+        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32, data_buffer)
+        register_value_as_tuple = struct.unpack('i', data_buffer)
+        return register_value_as_tuple[0]
 
     def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
         print("read_Zynq_register_uint64()")
