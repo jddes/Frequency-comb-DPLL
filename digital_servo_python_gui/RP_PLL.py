@@ -57,16 +57,16 @@ class RP_PLL_device():
         if self.controller is not None:
             self.controller.stopCommunication()
 
-            # attempt to reconnect:
+            # # attempt to reconnect:
 
-            if self.reconnection_attempts < 10:
-                self.reconnection_attempts += 1
-                print("TCP connection lost. Attempting to reconnect %d/10..." % (self.reconnection_attempts))
-                self.OpenTCPConnection(self.HOST, self.PORT, True)
-                if self.valid_socket:
-                    self.reconnection_attempts = 0
-            else:
-                print("TCP connection lost. Will not attempt to reconnect because self.reconnection_attempts >= 10...")
+            # if self.reconnection_attempts < 10:
+            #     self.reconnection_attempts += 1
+            #     print("TCP connection lost. Attempting to reconnect %d/10..." % (self.reconnection_attempts))
+            #     self.OpenTCPConnection(self.HOST, self.PORT, True)
+            #     if self.valid_socket:
+            #         self.reconnection_attempts = 0
+            # else:
+            #     print("TCP connection lost. Will not attempt to reconnect because self.reconnection_attempts >= 10...")
 
     def CloseTCPConnection(self):
         print("RP_PLL_device::CloseTCPConnection()")
