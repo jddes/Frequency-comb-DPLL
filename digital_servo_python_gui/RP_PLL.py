@@ -244,12 +244,12 @@ class RP_PLL_device():
         self.write_Zynq_register_32bits(address_uint32, data_uint32, bSigned=True)
 
     def read_Zynq_AXI_register_uint32(self, address_uint32):
-        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32, data_buffer)
+        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32)
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
     def read_Zynq_register_int32(self, address_uint32):
-        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32, data_buffer)
+        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32)
         register_value_as_tuple = struct.unpack('i', data_buffer)
         return register_value_as_tuple[0]
 
