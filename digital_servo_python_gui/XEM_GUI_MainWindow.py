@@ -1496,7 +1496,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.sl.bDDR2InUse = False
 
 	def displayDDC(self):
-		self.bDisplayTiming = True
+		# self.bDisplayTiming = True
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
