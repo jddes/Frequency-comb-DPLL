@@ -157,6 +157,12 @@ wire [1:0] gpio_io_o;
 wire ps_gpio_rst;
 wire clk_int_or_ext;
 
+// frequency counter on the external clock input
+wire clk_ext_bufg;
+wire [32-1:0] reg_to_axi1;
+wire [32-1:0] reg_to_axi2;
+wire [32-1:0] reg_to_axi3;
+
 assign clk_int_or_ext = gpio_io_o[0];
 assign ps_gpio_rst    = gpio_io_o[1];
 
@@ -217,11 +223,34 @@ red_pitaya_ps i_ps (
   .ack_combine_o (ack_combine_t),
 
   .clk_ext_in(exp_p_in[5]), // 10 MHz-200 MHz external clock input on DIO5_P
+  .clk_ext_bufg(clk_ext_bufg), // copy of the exp_p_in[5] signal, after a BUFG
   .clk_to_adc(clk_to_adc),
-  .gpio_io_o(gpio_io_o)
+  .gpio_io_o(gpio_io_o),
+
+  .reg_to_axi1(reg_to_axi1),
+  .reg_to_axi2(reg_to_axi2),
+  .reg_to_axi3(reg_to_axi3)
 
 );
 
+////////////////////////////////////////////////////////////////////////////////
+// counts the frequency of the external clock on exp_p_in[5] against fclk[3] (200 MHz)
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+digital_clock_freq_counter # (
+    .N_gate_time(32'd200000000) // fixed for clk_ref = 200 MHz, 1 sec gate time
+) digital_clock_freq_counter_inst (
+    .clk_ref          (fclk[3]),
+    .clk_target       (clk_ext_bufg),
+    .output_clk_enable(), // could use these if we had to use the results
+    .freq_count_out   (), // could use these if we had to use the results
+    .out_reg_to_axi1  (reg_to_axi1), // see inside this module for the data format in those three registers
+    .out_reg_to_axi2  (reg_to_axi2), // see inside this module for the data format in those three registers
+    .out_reg_to_axi3  (reg_to_axi3) // see inside this module for the data format in those three registers
+);
 
 
 ////////////////////////////////////////////////////////////////////////////////

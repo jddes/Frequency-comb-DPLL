@@ -88,6 +88,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		# Push the values from the xml file to the red pitaya (load + send)
 		self.loadParameters()
 		self.pushValues()
+		self.startTimers()
 
 	def pushValues(self):
 		# Send the values in the different fields to the RP
@@ -137,6 +138,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		else:
 			self.qradio_external_clk.setChecked(True)
 
+
+		self.startTimers()
+
+	def startTimers(self):
+	# This gets called when we have a valid connection to a device.
+		self.timerXADC.start(1000)
+
+	def killTimers(self):
+	# This gets called by the controller object in XEM_GUI3.py when we lose connection to a device.
+		self.timerXADC.stop()
+
+
 	def initUI(self):
 
 		###################################################################################
@@ -150,9 +163,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qradio_internal_clk.setChecked(True)
 		self.qradio_internal_clk.clicked.connect(self.setClkSelect)
 		self.qradio_external_clk.clicked.connect(self.setClkSelect)
+		self.lblExtClkFreq = Qt.QLabel('Ext clk freq = %.6f MHz' % 0.0)
 
 		grid.addWidget(self.qradio_internal_clk, 0, 0)
 		grid.addWidget(self.qradio_external_clk, 1, 0)
+		grid.addWidget(self.lblExtClkFreq,       2, 0)
 
 		#grid.setRowStretch(2, 2)
 
@@ -188,7 +203,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		# polling timer for the xadc values:
 		self.timerXADC = Qt.QTimer(self)
 		self.timerXADC.timeout.connect(self.timerXADCEvent)
-		self.timerXADC.start(1000)   # 1000 ms
 
 		###################################################################################
 
@@ -351,6 +365,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			self.qlbl_vccaux        = Qt.QLabel('Vccaux = N/A V')
 
 
+		# read ext clk frequency:
+		try:
+			self.lblExtClkFreq.setText('Ext clk freq = %.8f MHz' % (self.sl.getExtClockFreq()/1e6))
+		except:
+			self.lblExtClkFreq.setText('Ext clk freq = N/A MHz')
 
 
 	#Function to read the value in the RAM Block (channel 2) to an address

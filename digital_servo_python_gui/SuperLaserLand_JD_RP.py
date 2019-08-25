@@ -88,6 +88,9 @@ class SuperLaserLand_JD_RP:
 	xadc_base_addr    = 0x0001_0000
 	clkw_base_addr    = 0x0002_0000
 	clk_sel_base_addr = 0x0003_0000
+    clk_freq_reg1     = 0x0004_0000
+    clk_freq_reg2     = 0x0004_0008
+    clk_freq_reg3     = 0x0005_0000
 	
 	############################################################
 	# CONSTANTS for endpoint numbers:
@@ -1603,19 +1606,30 @@ class SuperLaserLand_JD_RP:
 		self.bTriangularAveraging = self.read_RAM_dpll_wrapper(self.BUS_ADDR_triangular_averaging)
 		return self.bTriangularAveraging
 
-	def scaleCounterReadingsIntoHz(self, freq_counter_samples):
+	def scaleCounterReadingsIntoHz(self, freq_counter_samples, f_ref=None, N_cycles_gate_time=None):
 		if self.bVerbose == True:
 			print('scaleCounterReadingsIntoHz')
+
+		if f_ref is None:
+			f_ref = self.fs
+		if N_cycles_gate_time is None:
+			N_cycles_gate_time = self.N_CYCLES_GATE_TIME
 			
 		# Scale the counter values into Hz units:
 		# f = data_out * fs / 2^N_INPUT_BITS / conversion_gain
 		N_INPUT_BITS = 10
 		if self.bTriangularAveraging:
-			conversion_gain = self.N_CYCLES_GATE_TIME * (self.N_CYCLES_GATE_TIME + 1)
+			conversion_gain = N_cycles_gate_time * (N_cycles_gate_time + 1)
 		else:
 			# Rectangular averaging:
-			conversion_gain = self.N_CYCLES_GATE_TIME
-		freq_counter_samples = freq_counter_samples.astype(np.float) * self.fs / 2**(N_INPUT_BITS) / conversion_gain
+			conversion_gain = N_cycles_gate_time
+		try:
+			freq_counter_samples = freq_counter_samples.astype(np.float)
+		except AttributeError:
+			# if freq_counter_samples is not a numpy type, we might get this exception
+			freq_counter_samples = float(freq_counter_samples)
+
+		freq_counter_samples = freq_counter_samples * f_ref / 2**(N_INPUT_BITS) / conversion_gain
 		return freq_counter_samples
 
 
@@ -2016,5 +2030,39 @@ class SuperLaserLand_JD_RP:
 		ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
 		return ZynqTempInDegC
 		
+    def getExtClockFreq(self):
+        # see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
+        read_all_regs = lambda : (self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg1),
+                                  self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg2),
+                                  self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg3))
+        data_index = lambda x: (x >> 24)
 
+        iAttempts = 0;
+        bSuccess = False
+        while iAttempts < 2:
+            (reg1, reg2, reg3) = read_all_regs()
+            # these three need to match.  If they don't, this means that the data changed in between our three reads.
+            # try another time to read all three registers.  It should succeed, since the counter updates only at 1 Hz
+            if data_index(reg1) == data_index(reg2) == data_index(reg3):
+                bSuccess = True
+                break
+            
+            iAttempts += 1
+
+        if not bSuccess:
+            return np.nan
+
+        freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
+                       ((reg2 & 0x00FFFFFF) << 24) + 
+                       ((reg3 & 0x0000FFFF) << 48))
+
+        # print("getExtClockFreq(): reg1=0x%08x, reg2=0x%08x, reg3=0x%08x" % (reg1, reg2, reg3))
+        # print("getExtClockFreq(): freq_64bits=0x%08x" % (freq_64bits))
+
+        freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, f_ref=200e6, N_cycles_gate_time=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
+        freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
+        # print("getExtClockFreq(): freq_Hz=%e Hz" % freq_Hz)
+
+        return freq_Hz
+        
 # end class definition

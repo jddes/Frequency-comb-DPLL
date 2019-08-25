@@ -441,6 +441,7 @@ class controller(object):
 			self.xem_gui_mainwindow.killTimers()
 			self.freq_error_window1.killTimers()
 			self.freq_error_window2.killTimers()
+			self.RP_Settings.killTimers()
 		except Exception as e:
 			print("Error while killing the timers:")
 			print(e)
@@ -453,7 +454,9 @@ class controller(object):
 			self.xem_gui_mainwindow,
 			self.freq_error_window1,
 			self.freq_error_window2,
+			self.RP_Settings
 		]
+		print("startCommunication")
 
 		for window in target_windows:
 			window.startTimers()

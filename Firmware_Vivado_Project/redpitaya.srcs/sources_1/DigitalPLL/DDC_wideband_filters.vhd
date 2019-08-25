@@ -157,7 +157,7 @@ architecture Behavioral of DDC_wideband_filters is
     constant I_limit_max  : std_logic_vector(INPUT_DATA_WIDTH-1 downto 0)    := std_logic_vector(to_signed(2**(WRAPPED_PHASE_WIDTH-1)-1, INPUT_DATA_WIDTH));
     
 --    attribute KEEP of wrapped_phase_cordic2 : signal is "TRUE";
-
+    signal bFrequencyIs0Hz, bFrequencyIs0Hz_d1 : std_logic := '0';
 begin
 
 -- Compute cos() and sin(), or more precisely, round((2^15-1)*cos()) and round((2^15-1)*sin())
@@ -179,7 +179,7 @@ begin
     -- added by Hugo
     process (reference_frequency, DDS_cosine_tmp, DDS_sine_tmp) is
     begin
-        if reference_frequency = std_logic_vector(to_signed(0, reference_frequency'length)) then
+        if bFrequencyIs0Hz_d1 = '1' then
             DDS_cosine <= std_logic_vector(to_signed(2**(INPUT_DATA_WIDTH-1)-1, INPUT_DATA_WIDTH));
             DDS_sine   <= std_logic_vector(to_signed(0                        , INPUT_DATA_WIDTH));
         else
@@ -187,7 +187,18 @@ begin
             DDS_sine   <= DDS_sine_tmp;
         end if;
     end process;
-                
+    -- pipeline the first comparison to help with timing:
+    process( clk )
+    begin
+        if rising_edge(clk) then
+            if reference_frequency = std_logic_vector(to_signed(0, reference_frequency'length)) then
+                bFrequencyIs0Hz <= '1';
+            else
+                bFrequencyIs0Hz <= '0';
+            end if;
+            bFrequencyIs0Hz_d1 <= bFrequencyIs0Hz; -- another pipeline register, since most of the delay is from the net right now, and one register is dirt cheap.
+        end if;
+    end process;
     ref_cosine_out <= DDS_cosine;
     ref_sine_out   <= DDS_sine;
     
