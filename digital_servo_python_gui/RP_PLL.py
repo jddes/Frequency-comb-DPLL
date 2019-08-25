@@ -161,7 +161,7 @@ class RP_PLL_device():
         except:
             self.disconnectEvent()
 
-    def read_Zynq_register_uint32(self, address_uint32):
+    def read_Zynq_register_32bits(self, address_uint32):
         data_buffer = None
         try:
             #  print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
@@ -169,16 +169,16 @@ class RP_PLL_device():
             self.sock.sendall(packet_to_send)
             data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
         except:
+            print("read_Zynq_register_uint32(): Exception in read. disconnecting.")
             self.disconnectEvent()
 
         if data_buffer is None:
-            return 0
+            return b'\x00\x00\x00\x00'
         if len(data_buffer) != 4:
             print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
-            return 0
+            return b'\x00\x00\x00\x00'
 
-        register_value_as_tuple = struct.unpack('I', data_buffer)
-        return register_value_as_tuple[0]
+        return data_buffer
 
     def write_Zynq_AXI_register_uint32(self, address_uint32, data_uint32):
         # print("write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32))
@@ -248,8 +248,13 @@ class RP_PLL_device():
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
+    def read_Zynq_register_uint32(self, address_uint32):
+        data_buffer = self.read_Zynq_register_32bits(address_uint32)
+        register_value_as_tuple = struct.unpack('I', data_buffer)
+        return register_value_as_tuple[0]
+
     def read_Zynq_register_int32(self, address_uint32):
-        data_buffer = self.read_Zynq_AXI_register_32bits(address_uint32)
+        data_buffer = self.read_Zynq_register_32bits(address_uint32)
         register_value_as_tuple = struct.unpack('i', data_buffer)
         return register_value_as_tuple[0]
 
