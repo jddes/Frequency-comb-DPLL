@@ -1,0 +1,78 @@
+def openDevice(self, bConfigure=True, strSerial='', strFirmware='superlaserland.bit'):
+def resetFrontend(self):
+def initSubModules(self):
+def send_bus_cmd(self, bus_address, data1, data2):
+def send_bus_cmd_32bits(self, bus_address, data_32bits):
+def send_bus_cmd_16bits(self, bus_address, data_16bits):
+def setup_write(self, selector, Num_samples):
+def setup_ADC0_write(self, Num_samples):
+def setup_ADC1_write(self, Num_samples):
+def setup_DDC0_write(self, Num_samples):
+def setup_DDC1_write(self, Num_samples):
+def setup_counter_write(self, Num_samples):
+def setup_DAC0_write(self, Num_samples):
+def setup_DAC1_write(self, Num_samples):
+def setup_DAC2_write(self, Num_samples):
+def setup_system_identification(self, input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bDither=False):    
+def setVNA_mode_register(self, trigger_dither, stop_flag, bSquareWave):
+def trigger_write(self):
+def trigger_system_identification(self):
+def read_raw_bytes_from_DDR2(self):
+def readStatusFlags(self):
+def readLEDs(self):
+def readResidualsStreamingStatus(self):
+def setResidualsStreamingSettings(self, data_delay, trigger_delay, boxcar_filter_size, rst_residuals_streaming):
+def setResidualsStreamingResetMode(self, rst_residuals_streaming):
+def read_raw_bytes_from_pipe(self, PipeAddress, Num_bytes_read):
+def read_adc_samples_from_DDR2(self):
+def read_ddc_samples_from_DDR2(self):
+def read_counter_samples_from_DDR2(self):
+def read_VNA_samples_from_DDR2(self):
+def set_dac_offset(self, dac_number, offset):
+def get_dac_offset(self, dac_number):
+def set_pwm_settings(self, levels, value, bSendToFPGA = True):
+def set_dac_limits(self, dac_number, limit_low, limit_high, bSendToFPGA = True):
+def get_dac_limits(self, dac_number):
+def get_ddc0_ref_freq_from_RAM(self):
+def set_ddc0_ref_freq(self, frequency_in_hz):
+def get_ddc1_ref_freq_from_RAM(self):
+def set_ddc1_ref_freq(self, frequency_in_hz):
+def setDitherLockInState(self, dac_number, bEnable):
+def setDitherLockInSettings(self, dac_number):
+def setupDitherLockIn(self, dac_number, modulation_period, N_periods, amplitude, mode_auto):
+def get_Dither_Settings(self, dac_number):
+def ditherRead(self, N_samples, dac_number=0):
+def set_integrator_settings(self, integrator_number, hold, flip_sign, lock, gain_in_bits):
+def get_integrator_settings(self, integrator_number):
+def get_frontend_filter_response(self, frequency_axis, input_number):
+def setCounterMode(self, bTriangular):
+def getCounterMode(self):
+def new_freq_setting(self):
+def read_dual_mode_counter(self, output_number):
+def set_ddc_filter(self, adc_number, filter_select, angle_select = 0):
+def set_ddc_filter_select_register(self):
+def get_ddc_filter_select(self):
+def get_ddc_angle_select(self):
+def set_mux_pll2(self, register_value):
+def set_internal_VCO_offset(self, offset):
+def get_internal_VCO_offset(self):
+def set_internal_VCO_amplitude(self, amplitude):
+def get_internal_VCO_amplitude(self):
+def set_mux_vco(self, data):
+def get_mux_vco(self):
+def read_RAM_dpll_wrapper(self,addr):
+def read_RAM_dpll_wrapper_signed(self,addr):
+def read_clk_select(self):
+def read_pll2_mux(self):
+def save_openLoop_gain(self, dac_number, value):
+def get_openLoop_gain(self, dac_number):
+def save_mode_auto(self, dac_number, mode):
+def get_mode_auto(self, dac_number):
+def setFan(self, fanState):
+def setTestOscillator(self, bEnable=1, bPolarity=1, oscillator_modulus=625, oscillator_modulus_active=62):
+def setClockSelector(self, bExternalClock=0):
+def getExtClockFreq(self):
+def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
+def readZynqXADC(self, xadc_channel=0):
+def readZynqXADCsupply(self):
+def readZynqTemperature(self):
