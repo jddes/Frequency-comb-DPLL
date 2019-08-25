@@ -629,104 +629,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		print('Elapsed time (write to disk) = %f' % (time.clock()-start_time))
 		start_time = time.clock()
 		
-	def resetFrontend(self):
-		self.sl.resetFrontend()
-		
 
-	def openDitherControls(self):
-		self.dither_settings = DisplayDitherSettingsWindow(self.sl)
-		
-		
-# 	def checkCrash(self):
-# 		rep = self.sl.checkCrashMonitor()
-# 		if type(rep) != type(0):
-# 			print('Crash monitor has data')
-			
-# #            crash_number = len(self.crash_windows)
-# 			# Changed to open only one window at a time:
-# #            self.crash_windows.append(DisplayCrashMonitorWindow(rep, crash_number))
-			
-# 			self.last_crash_window = DisplayCrashMonitorWindow(rep, self.crash_number, self.strFGPASerialNumber, self.sl, self.selected_ADC)
-# 			self.crash_number = self.crash_number+1
-# 			self.crash_windows_opening_times.append(time.clock())
-			
-			
-# 			# Disable the crash monitoring if we have opened too many windows in the last minute
-# 			# Count how many windows were open in the last minute:            
-# 			time_window = 60
-# 			number_of_windows_threshold = 27.5
-			
-# 			current_time = time.clock()
-# 			num_of_windows_counted = 0
-# 			for k in range(len(self.crash_windows_opening_times)):
-# 				if self.crash_windows_opening_times[k] > current_time-time_window:
-# 					num_of_windows_counted = num_of_windows_counted + 1
-					
-# 			print('Number of windows in the last minute: %d' % num_of_windows_counted)
-# 			# Disable if needed
-# 			if num_of_windows_counted > number_of_windows_threshold:
-# 				print('Too many windows!')
-# 				self.qchk_crash_monitor.setChecked(False)
-# 				self.crash_windows_opening_times = []
-			
-	def setCrashThreshold(self):
-		try:
-			crash_threshold_in_radians = float(self.qedit_crash_threshold.text())
-		except:
-			crash_threshold_in_radians = 1
-
-		try:
-			crash_threshold_in_Hz = float(self.qedit_crash_threshold_freq.text())
-		except:
-			crash_threshold_in_Hz = 100e6
-			
-		self.sl.setCrashMonitorThreshold(self.selected_ADC, crash_threshold_in_radians)
-		self.sl.setFreqResidualsThreshold(self.selected_ADC, crash_threshold_in_Hz)
-		
-	def qchk_residuals_streaming_clicked(self):
-		# If the checkbox is unchecked, we set the core to be reset:
-		if not self.qchk_residuals_streaming.isChecked():
-			# New procedure when we uncheck that box.
-			# 
-			# First we empty the fifo
-			# and in fact make sure to read past the end, it doesn't matter if we get a bunch of extra zeros in the file, but it's annoying if we don't get all the data points we are owed).
-			for k in range(10):
-				self.getResidualsAndSaveToFile(bForceRead=True)
-				
-			# Close the current files
-			self.foutput_residuals.close()
-			self.foutput_residuals2.close()
-			self.foutput_residuals_time.close()
-			
-			#Ask the user for the filename to save the residuals to.
-			prefix_str, ok = QtGui.QInputDialog.getText(self, 'Lock residuals files', 
-				'Enter a prefix to add to the lock residuals filenames\n(ex: prefix: "runa", file name will be: "runa_residuals_CEO_1230003SX.bin"):', Qt.QLineEdit.Normal, 'runa')
-			strFolder = 'c:\\SuperLaserLandLogs\\ResidualsStreaming'
-			self.make_sure_path_exists(strFolder)
-
-			strInitialName = '%s\\residuals_ceo_%s.bin'       % (strFolder, self.strFGPASerialNumber)
-			strInitialName2 = '%s\\residuals_optical_%s.bin'       % (strFolder, self.strFGPASerialNumber)
-			strInitialNameTime = '%s\\residuals_time_%s.bin'       % (strFolder, self.strFGPASerialNumber)                
-			if ok:
-				os.rename(strInitialName, strFolder + '\\' + prefix_str + '_residuals_ceo_%s.bin' % self.strFGPASerialNumber)
-				os.rename(strInitialName2, strFolder + '\\' + prefix_str + '_residuals_optical_%s.bin' % self.strFGPASerialNumber)
-				os.rename(strInitialNameTime, strFolder + '\\' + prefix_str + '_residuals_time_%s.bin' % self.strFGPASerialNumber)
-				
-			# Re-open the original files to be ready to stream another dataset:
-
-			self.word_counter = 0
-			self.foutput_residuals      = open(strInitialName, 'wb')
-			self.foutput_residuals2     = open(strInitialName2, 'wb')
-			self.foutput_residuals_time = open(strInitialNameTime, 'wb', 0)   # the 0 means un-buffered writes
-		
-			
-			# Set the core to be reset
-			self.sl.setResidualsStreamingResetMode(1)
-		else:
-			# Remove the reset on the streaming core:
-			self.sl.setResidualsStreamingResetMode(0)
-			
-			
 	def setLock(self):
 		bLock = self.qloop_filters[self.selected_ADC].qchk_lock.isChecked()
 		self.qchk_lock.setChecked(bLock)
@@ -1013,12 +916,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #        self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: green')
 		self.qchk_lock.clicked.connect(self.chkLockClickedEvent)
 		self.qchk_lock.setChecked(False)
-		
-		
-		# Button which opens the dither controls:
-		self.qbutton_dither_controls = Qt.QPushButton('')
-		self.qbutton_dither_controls.clicked.connect(self.openDitherControls)
-		
+				
 		# VCO sign:
 		self.qsign_positive = Qt.QRadioButton('VCO sign +')
 		self.qsign_negative = Qt.QRadioButton('VCO sign -')
@@ -1048,29 +946,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qchk_refresh.clicked.connect(self.refreshChk_event)
 		
 
-
-		if self.selected_ADC == 0:
-			# A checkbox to activate or not the crash monitoring module:
-			self.qchk_crash_monitor = Qt.QCheckBox('Crash Monitor')
-		
-		# The threshold setting for the crash monitor:
-		self.qlabel_crash_threshold = Qt.QLabel('Residuals threshold [rad]:')
-		if self.selected_ADC == 0:
-			self.qedit_crash_threshold = user_friendly_QLineEdit('30')
-		elif self.selected_ADC == 1:
-			self.qedit_crash_threshold = user_friendly_QLineEdit('1')
-		self.qedit_crash_threshold.returnPressed.connect(self.setCrashThreshold)
-		self.qedit_crash_threshold.setMaximumWidth(60)
-		self.qedit_crash_threshold.setToolTip('This value is used as a threshold for lighting up the red LED on the front panel.  For the CEO lock, it is also used to trigger the crash monitor which logs the raw input and outputs for a small time window (currently 16k points)')
-		
-		# The threshold setting for the crash monitor:
-		if self.selected_ADC == 0:
-			self.qlabel_crash_threshold_freq = Qt.QLabel('Freq threshold [Hz]:')
-			self.qedit_crash_threshold_freq = user_friendly_QLineEdit('25e6')
-			self.qedit_crash_threshold_freq.returnPressed.connect(self.setCrashThreshold)
-			self.qedit_crash_threshold_freq.setMaximumWidth(60)
-			self.qedit_crash_threshold_freq.setToolTip('This value is used as a threshold for lighting up the red LED on the front panel.  For the CEO lock, it is also used to trigger the crash monitor which logs the raw input and outputs for a small time window (currently 16k points)')
-			
 		
 		
 		# Status reporting:
@@ -1079,15 +954,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		elif self.selected_ADC == 1:
 			self.qlbl_status1 = Qt.QLabel('Status: Idle')
 			self.qlbl_status2 = Qt.QLabel('Status: Idle')
-		
-#        self.qbtn_reset = QtGui.QPushButton('Reset frontend')
-#        self.qbtn_reset.clicked.connect(self.resetFrontend)
-		
-		#FEATURE
-		## Toggles the residuals streaming or not        
-		#self.qchk_residuals_streaming = Qt.QCheckBox('Residuals streaming')
-		#self.qchk_residuals_streaming.setChecked(False)
-		#self.qchk_residuals_streaming.clicked.connect(self.qchk_residuals_streaming_clicked)
 		
 		
 		# Put all the widgets into a grid layout
@@ -1115,10 +981,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		grid.addWidget(self.qlabel_ref_freq,            1, 3)
 		grid.addWidget(self.qedit_ref_freq,             1, 4)
 		
-		# both PLLs need to receive a threshold for the residuals.
-		# See tooltip for info
-		grid.addWidget(self.qlabel_crash_threshold,     2, 3)
-		grid.addWidget(self.qedit_crash_threshold,      2, 4)
+		# # both PLLs need to receive a threshold for the residuals.
+		# # See tooltip for info
+		# grid.addWidget(self.qlabel_crash_threshold,     2, 3)
+		# grid.addWidget(self.qedit_crash_threshold,      2, 4)
 		
 
 		
@@ -1165,22 +1031,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 
 		
-#         # Status reporting:
-#         if self.selected_ADC == 0:
-			
-#             #FEATURE
-#             #grid.addWidget(self.qchk_residuals_streaming,   1, 8, 1, 2)
-#             grid.addWidget(self.qlbl_status1,               2, 5, 1, 2)
-#             #FEATURE            
-#             #grid.addWidget(self.qlbl_status1,               2, 8, 1, 2)
-# #            grid.addWidget(self.qtxt_adcphase,               2, 8, 1, 1)
-# #            grid.addWidget(self.qbtn_send_adcphase,               2, 9, 1, 1)
-			
-#         elif self.selected_ADC == 1:
-#             grid.addWidget(self.qlbl_status1,           2, 5, 1, 1)
-#             grid.addWidget(self.qlbl_status2,           2, 6, 1, 1)
-		
-#        grid.addWidget(self.qbtn_reset,                 1, 7)
 		grid.addWidget(Qt.QLabel(),                     0, 9, 1, 1)
 		grid.setColumnStretch(9, 1)
 		
@@ -1852,26 +1702,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		return
 		
-		
-	def getResidualsAndSaveToFile(self, bForceRead=False):
-		num_reads = 0
-		(residuals0_fifo_has_data, residuals1_fifo_has_data) = self.sl.readResidualsStreamingStatus()
-		while residuals0_fifo_has_data:
-			(phi0, phi1) = self.sl.read_residuals_streaming()
-			num_reads = num_reads + 1
-			if num_reads == 2:
-				print('Two reads in a row')
-			if phi0 is not None:
-				# we have data
-				self.foutput_residuals.write(phi0)
-				self.foutput_residuals2.write(phi1)
-				current_time = time.clock()
-				self.foutput_residuals_time.write(np.array((current_time,)))
-				self.word_counter = self.word_counter + 1
-	#                        print('word #%d: time.clock = %.0f' % (self.word_counter, current_time))
-				
-			(residuals0_fifo_has_data, residuals1_fifo_has_data) = self.sl.readResidualsStreamingStatus()
-			
 	def timerEvent(self, e):
 		# print 'timerEvent : %.3f sec' % (time.clock())
 
@@ -1881,10 +1711,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# Read out residuals and dump to disk:
 			if self.selected_ADC == 0:
 				pass
-				#FEATURE
-				#if self.qchk_residuals_streaming.isChecked():
-#               #     if self.bVeryFirstTime:
-				#    self.getResidualsAndSaveToFile(bForceRead=False)
 					
 			# Handle the LEDs display
 			(LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2) = self.sl.readLEDs()

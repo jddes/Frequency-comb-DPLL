@@ -673,7 +673,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
    
         
     def displayFreqCounter(self):
-#        (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_zero_deadtime_freq_counter(self.output_number)
         try:
             (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_dual_mode_counter(self.output_number)   
             # print (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)

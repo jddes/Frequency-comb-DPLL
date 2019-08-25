@@ -84,9 +84,13 @@ class SuperLaserLand_JD_RP:
 	new_freq_setting_number = 0
 
 	# addresses from the "IP integrator block design" (see address editor)
+	# there is also an offset of 0x8000_0000 applied in RP_PLL
 	xadc_base_addr    = 0x0001_0000
 	clkw_base_addr    = 0x0002_0000
 	clk_sel_base_addr = 0x0003_0000
+    clk_freq_reg1     = 0x0004_0000
+    clk_freq_reg2     = 0x0004_0008
+    clk_freq_reg3     = 0x0005_0000
 	
 	############################################################
 	# CONSTANTS for endpoint numbers:
@@ -364,27 +368,6 @@ class SuperLaserLand_JD_RP:
 		# Stop the residuals fifo from filling up
 		# self.setResidualsStreamingResetMode(1) #Not implemented in the Red Pitaya anymore
 		
-	def convertErrorCodeToString(self, error_code):
-		if self.bVerbose == True:
-			print('convertErrorCodeToString')
-			
-		error_string = 'Unknown error code'
-		
-		return error_string
-		
-	def read_flash(self):
-		if self.bVerbose == True:
-			print('read_flash')
-
-		print('read_flash(): empty function.')
-		
-	def SetWireInValue_wrapper(self, A, B):
-		if self.bVerbose == True:
-			print('SetWireInValue_wrapper')
-
-		print("SetWireInValue_wrapper: () ?? Need to trace what this is...")
-			
-		self.dev.SetWireInValue(A, B)
 		
 	def send_bus_cmd(self, bus_address, data1, data2):
 		if self.bVerbose == True:
@@ -395,15 +378,6 @@ class SuperLaserLand_JD_RP:
 			print('send_bus_cmd() %X' % bus_address)
 		
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, (int(data2)<<16) + int(data1))
-
-		# self.dev.SetWireInValue(self.ENDPOINT_CMD_ADDR,         int(bus_address))
-		# self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA1IN,      int(data1))
-		# self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA2IN,      int(data2))
-		# self.dev.UpdateWireIns()    # Write wires values to FPGA
-#        time.sleep(0.1)
-#        print('SuperLaserLand_JD2::send_bus_cmd(): TODO: REMOVE SLEEP()')
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CMD_STROBE)
-
 
 		
 	def send_bus_cmd_32bits(self, bus_address, data_32bits):
@@ -460,46 +434,6 @@ class SuperLaserLand_JD_RP:
 		# We don't strobe the trigger line because we want to give the user the
 		# chance to setup more stuff (system identification module for example) before launching the read
 
-#    def setup_crash_monitor_write(self, Num_samples):
-#        # The only difference between this procedure and setup_write()
-#        # is that we need to make sure to trigger the DDR2Logger before selecting the correct input because
-#        selector = self.SELECT_CRASH_MONITOR
-#        
-#        if self.bCommunicationLogging == True:
-#            self.log_file.write('setup_crash_monitor_write(), selector = {}, Num_samples = {}\n'.format(selector, Num_samples))
-#            
-#        print('setup_crash_monitor_write(), selector = {}, Num_samples = {}\n'.format(selector, Num_samples))
-#        
-#        
-#        # Make sure to select a different input in the mux, because otherwise it triggers the memory dump:
-#        self.dev.SetWireInValue(self.ENDPOINT_MUX_SELECTORS, self.SELECT_ADC0)
-#        self.dev.UpdateWireIns()    # Write wires values to FPGA
-#        
-#        # Set the clk divider, actual clock division ratio is twice clk_divider's value
-#        self.clk_divider = 1
-#        
-#        self.Num_samples_write = int(np.floor(Num_samples/64)*64)  # must be a multiple of 64 to yield 1024 bits per block
-#        self.Num_samples_read = self.Num_samples_write
-#        
-#        # Set the clock divider
-#        self.send_bus_cmd(self.BUS_ADDR_CLK_DIVIDER, self.clk_divider, 0)
-#        
-#        # Set the number of samples, actual number will be 1024*data_in1 value
-#        self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA1IN, int(self.Num_samples_write/1024) + 1)
-#        self.dev.SetWireInValue(self.ENDPOINT_CMD_ADDR, self.BUS_ADDR_WRITE_ENABLE)
-#        self.dev.UpdateWireIns()    # Write wires values to FPGA
-#
-#        # Start the DDR2Logger so that it is ready to accept the data:
-#        self.trigger_write()
-#
-#        # Select which data bus to put in the RAM:
-#        # Note that in the case of the crash monitor, this also triggers the memory dump from the blockRAM to the DDR2
-#        self.last_selector = selector
-#        print('selector in binary: %s' % bin(selector))
-#        self.dev.SetWireInValue(self.ENDPOINT_MUX_SELECTORS, self.last_selector)
-#        self.dev.UpdateWireIns()    # Write wires values to FPGA
-
-	
 	def setup_ADC0_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_ADC0_write')
@@ -648,20 +582,7 @@ class SuperLaserLand_JD_RP:
 		# Start the system identification process:
 		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_SYSTEM_IDENTIFICATION)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_SYSTEM_IDENTIFICATION*4, 0)
-		
-	def trigger_crash_memory_dump(self):
-		if self.bVerbose == True:
-			print('trigger_crash_memory_dump')
-			
-		if self.bCommunicationLogging == True:
-			self.log_file.write('trigger_crash_memory_dump()\n')
-		# Start writing data to the DDR2 RAM:
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CMD_STROBE)
-		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_WRITE, 0)
-		# Start the memory dumping process:
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CRASH_MEMORY_DUMP)   
-		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_CRASH_MEMORY_DUMP*4, 0)
-		
+				
 	def wait_for_write(self):
 		if self.bVerbose == True:
 			print('wait_for_write')
@@ -824,153 +745,7 @@ class SuperLaserLand_JD_RP:
 		data_delay = self.residuals_data_delay
 		
 		self.setResidualsStreamingSettings(data_delay, trigger_delay, boxcar_filter_size, rst_residuals_streaming)
-		
-	def setCrashMonitorThreshold(self, output_number, threshold_in_radians):
-		if self.bVerbose == True:
-			print('setCrashMonitorThreshold')
-			
-		# to convert from radians to the integers used in the fpga:
-		threshold_in_counts = int(np.round(threshold_in_radians/2/np.pi * 2**10))
-		if threshold_in_counts > 2**31-1:
-			threshold_in_counts = 2**31-1
-			
-		print('threshold_in_counts = %d' % threshold_in_counts)
-		self.send_bus_cmd_32bits(self.BUS_ADDR_phase_residuals_threshold[output_number], threshold_in_counts)
-		print('output %d' % output_number)
-			
-	def setFreqResidualsThreshold(self, output_number, threshold_in_Hz):
-		if self.bVerbose == True:
-			print('setFreqResidualsThreshold')
-			
-		# to convert from radians to the integers used in the fpga:
-		threshold_in_counts = int(np.round(threshold_in_Hz/self.fs * 2**10))
-		if threshold_in_counts > 2**9-1:
-			threshold_in_counts = 2**9-1
-			
-		print('threshold_in_counts = %d' % threshold_in_counts)
-		if output_number == 0:
-			self.send_bus_cmd_32bits(self.BUS_ADDR_freq_residuals0_threshold, threshold_in_counts)
-			print('output0')
-		elif output_number == 1:            
-#            self.send_bus_cmd_32bits(self.BUS_ADDR_freq_residuals1_threshold, threshold_in_counts)
-			print('output1')
-			
-	def checkCrashMonitor(self):
-		if self.bVerbose == True:
-			print('checkCrashMonitor')
-			
-		(output0_has_data, output1_has_data, PipeA1FifoEmpty, crash_monitor_has_data) = self.readStatusFlags()
-		
-		if crash_monitor_has_data:
-			print('crash_monitor_has_data')
-			# Protocol is: setup the DDR2 Logger, wait for the memory dump to finish
-			Num_actual_samples = 2*2**13   # we make sure to read a little bit more, since it doesn't hurt (the extra samples will simply be garbage)
-			Num_samples = 3*Num_actual_samples  # there are three RAMs each containing Num_actual_samples that will get dumped
-			
-			self.setup_write(self.SELECT_CRASH_MONITOR, Num_samples)
-			self.trigger_crash_memory_dump()
-			# wait for write:
-			self.wait_for_write()
-			# Read out the data. Format is the same as the ADC samples (16 bits), without the side information
-			(samples_out, ref_exp) = self.read_adc_samples_from_DDR2()
-			
-			# for now: return the raw samples
-			return samples_out
-#        else:
-#            print('No data')
-		return 0
-			
-	def read_zero_deadtime_freq_counter(self, output_number):
-		if self.bVerbose == True:
-			print('read_zero_deadtime_freq_counter')
-			
-		if self.bCommunicationLogging == True:
-			self.log_file.write('read_zero_deadtime_freq_counter()\n')
 
-		print("todo: read_zero_deadtime_freq_counter")
-		return (0, 0, 0, 0, 0)
-
-		
-		(output0_has_data, output1_has_data, PipeA1FifoEmpty, crash_monitor_has_data) = self.readStatusFlags()
-		
-#        print(bin(status_flags))
-#        print('read done')
-#        print('status_flags = %d' % status_flags)
-#        print('(status_flags & 0x1) = %d' % (status_flags & 0x1))
-		
-		Num_samples = 10 # We can read at most 10 samples at a time
-		bytes_per_sample = int(64/8)
-		Num_bytes_read = Num_samples * bytes_per_sample
-				
-		if output_number == 0:
-			if output0_has_data:
-				# The FIFO has at least 10 samples to give us (corresponds to 1 sec of counter data at the current rate).
-				raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_ZERO_DEADTIME_COUNTER0, Num_bytes_read)
-			else:
-				# The FIFO does not have enough data in, the values read out will be garbage:
-				return (0, 0, 0, 0, 0)
-				
-		elif output_number == 1:
-			if output1_has_data:
-				# The FIFO has at least 10 samples to give us (corresponds to 1 sec of counter data at the current rate).
-				raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_ZERO_DEADTIME_COUNTER1, Num_bytes_read)
-			else:
-				# The FIFO does not have enough data in, the values read out will be garbage:
-				return (0, 0, 0, 0, 0)
-					
-		
-		# Convert the raw bytes to actual counter values + time axis
-		data_buffer_reshaped = np.reshape(raw_bytes, (-1, bytes_per_sample))
-		convert_8bytes_unsigned = np.array((2**(6*8), 2**(7*8), 2**(4*8), 2**(5*8), 2**(2*8), 2**(3*8), 2**(0*8), 2**(1*8)), dtype=np.uint64)
-		samples_8bytes_unsigned = np.dot(data_buffer_reshaped[:, :].astype(np.uint64), convert_8bytes_unsigned)
-#        print(bin(samples_8bytes_unsigned[1]))
-		N_bits_freq_counter = 39
-		freq_counter_samples         = samples_8bytes_unsigned & ((1 << N_bits_freq_counter)-1)
-#        print(bin(freq_counter_samples[1]))
-#        print('start conv')
-		# Samples are signed 36 bits integers:
-		# The bit assignments are slightly different for output0 and and output1 pipes:
-		if output_number == 0:
-#            // Current bit assignments for pipe at address 0xA2:
-#            // 39 bits: counter_out0
-#            // 16 bits: DAC0 value
-#            // 9 bits: zdtc_samples_number_counter (modulo 2**9)
-			freq_counter_samples = freq_counter_samples.astype(np.int64)
-			freq_counter_samples = (freq_counter_samples & ((1 << (N_bits_freq_counter-1))-1 )) - (freq_counter_samples & (1 << (N_bits_freq_counter-1)))
-			time_axis            = (samples_8bytes_unsigned) >> (64-9)
-			DAC0_output          = ((samples_8bytes_unsigned) >> (N_bits_freq_counter)) & 0xFFFF
-			DAC1_output          = 0
-			DAC2_output          = 0
-			DAC0_output          = DAC0_output.astype(np.int64)
-			DAC0_output          = (DAC0_output & ((1 << (16-1))-1 )) - (DAC0_output & (1 << (16-1)))
-		else:
-#            // Current bit assignments for pipe at address 0xA3:
-#            // 39 bits: counter_out0
-#            // 16 bits: DAC1 value
-#            // 9 bits: DAC2 value (only the 9 MSBs)
-			freq_counter_samples = freq_counter_samples.astype(np.int64)
-			freq_counter_samples = (freq_counter_samples & ((1 << (N_bits_freq_counter-1))-1 )) - (freq_counter_samples.astype(np.int64) & (1 << (N_bits_freq_counter-1)))
-			time_axis               = 0
-			DAC0_output             = 0
-			DAC1_output             = ((samples_8bytes_unsigned) >> (N_bits_freq_counter)) & 0xFFFF
-			DAC2_output             = ((samples_8bytes_unsigned) >> (N_bits_freq_counter+16)) & (2**9-1)
-			# Convert the values to signed
-			DAC1_output          = DAC1_output.astype(np.int64)
-			DAC1_output          = (DAC1_output & ((1 << (16-1))-1 )) - (DAC1_output & (1 << (16-1)))
-			DAC2_output          = DAC2_output.astype(np.int64)
-			DAC2_output          = (DAC2_output & ((1 << (9-1))-1 )) - (DAC2_output & (1 << (9-1)))
-			
-			# DAC2 is really a 20 bits value internally, but only the 9 MSBs are output by the pipe, which means that DAC2_output really is the DAC output, divided by 2^(20-9)
-			DAC2_output = DAC2_output * 2**(20-9)
-			
-		# Scale the counter values into Hz units:
-		# f = data_out * fs / 2^N_INPUT_BITS / 2^LOG2_N_CYCLES_INTEGRATION / 2 / 3 / 5
-		N_INPUT_BITS = 10
-		LOG2_N_CYCLES_INTEGRATION = 23
-		freq_counter_samples = freq_counter_samples.astype(np.float) * self.fs / 2**(N_INPUT_BITS+LOG2_N_CYCLES_INTEGRATION) / 2 / 3 / 5
-
-		return (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
-			
 	def read_raw_bytes_from_pipe(self, PipeAddress, Num_bytes_read):
 		if self.bVerbose == True:
 			print('read_raw_bytes_from_pipe')
@@ -1430,33 +1205,6 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd(self.BUS_ADDR_nominal_ref_freq1_lsbs, frequency_in_int_bits15_to_0, frequency_in_int_bits31_to_16)
 		self.send_bus_cmd(self.BUS_ADDR_nominal_ref_freq1_msbs, frequency_in_int_bits48_to_32, 0)
 		
-
-		
-		
-	def set_pga_gains(self, ADC0_gain, ADC1_gain, DAC0_gain, DAC1_gain, bSendToFPGA = True):
-		if self.bVerbose == True:
-			print('set_pga_gains')
-			
-		if self.bCommunicationLogging == True:
-			self.log_file.write('set_pga_gains()\n')
-#        Each gain is a 3-bits variable 0 is minimum gain, 7 is maximum gain
-		# Allowed gains are 1, 2, 4 and 8:
-		print('{}, {}, {}, {}'.format(ADC0_gain, ADC1_gain, DAC0_gain, DAC1_gain))
-		ADC0_gain_log = int(round(np.log2(ADC0_gain)))
-		ADC1_gain_log = int(round(np.log2(ADC1_gain)))
-		DAC0_gain_log = int(round(np.log2(DAC0_gain)))
-		DAC1_gain_log = int(round(np.log2(DAC1_gain)))
-		print('{}, {}, {}, {}'.format(ADC0_gain_log, ADC1_gain_log, DAC0_gain_log, DAC1_gain_log))
-		
-		gain_register = (ADC0_gain_log << 9) + (ADC1_gain_log << 6) + (DAC0_gain_log << 3) + DAC1_gain_log
-		if bSendToFPGA == True:
-			self.send_bus_cmd(self.BUS_ADDR_pga_gains, gain_register, 0)
-		
-		self.ADC0_gain = ADC0_gain
-		self.ADC1_gain = ADC1_gain
-		self.DAC0_gain = DAC0_gain
-		self.DAC1_gain = DAC1_gain
-		
 		
 	def getFreqDiscriminatorGain(self):
 		if self.bVerbose == True:
@@ -1464,57 +1212,6 @@ class SuperLaserLand_JD_RP:
 			
 		return 2**10/self.fs
 		
-		
-		
-	# def getDACHighestVoltage(self, DAC_number):
-	# 	if self.bVerbose == True:
-	# 		print('getDACHighestVoltage')
-			
-	# 	if DAC_number == 0:
-	# 		return 1 * self.DAC0_gain
-	# 	elif DAC_number == 1:
-	# 		return 1 * self.DAC1_gain
-	# 	elif DAC_number == 2:
-	# 		return 55
-	# 	return 0
-		
-	# def getDACLowestVoltage(self, DAC_number):
-	# 	if self.bVerbose == True:
-	# 		print('getDACLowestVoltage')
-			
-	# 	if DAC_number == 0:
-	# 		return -1 * self.DAC0_gain
-	# 	elif DAC_number == 1:
-	# 		return -1 * self.DAC1_gain
-	# 	elif DAC_number == 2:
-	# 		return 0
-	# 	return 0
-		
-		
-	# def getDACFullScaleVoltageSpan(self, DAC_number):
-	# 	if self.bVerbose == True:
-	# 		print('getDACFullScaleVoltageSpan')
-			
-	# 	if DAC_number == 0:
-	# 		return 2 * self.DAC0_gain
-	# 	elif DAC_number == 1:
-	# 		return 2 * self.DAC1_gain
-	# 	elif DAC_number == 2:
-	# 		return 55
-	# 	return 0
-		
-	# def getDACFullScaleCounts(self, DAC_number):
-	# 	if self.bVerbose == True:
-	# 		print('getDACFullScaleCounts')
-			
-	# 	if DAC_number == 0:
-	# 		return (2**16-1)    # 16 bits
-	# 	elif DAC_number == 1:
-	# 		return (2**16-1)    # 16 bits
-	# 	elif DAC_number == 2:
-	# 		return (2**16-1)    # 16 bits
-	# 	return 0
-			
 	##
 	## HB, 4/27/2015, Added PWM support on DOUT0
 	##
@@ -1626,18 +1323,6 @@ class SuperLaserLand_JD_RP:
 		DDC_bits = 10.
 		
 		return counts.astype(dtype=np.float)  /  (2. **(DDC_bits)) * self.fs
-
-	def measureWireOutsPerformance(self, N_reads):
-		if self.bVerbose == True:
-			print('measureWireOutsPerformance')
-			
-		for k in range(N_reads):
-			self.dev.UpdateWireOuts()    # read values from FPGA into dev object
-			status_flags = self.dev.GetWireOutValue(self.ENDPOINT_CMD_DATAOUT_M25P32_CONFIG) # get value from dev object into our script
-			status_flags = self.dev.GetWireOutValue(self.ENDPOINT_STATUS_FLAGS_OUT) # get value from dev object into our script
-			status_flags = self.dev.GetWireOutValue(self.ENDPOINT_CMD_DATAOUT_M25P32_CONFIG) # get value from dev object into our script
-			status_flags = self.dev.GetWireOutValue(self.ENDPOINT_STATUS_FLAGS_OUT) # get value from dev object into our script
-		
 		
 	def setDitherLockInState(self, dac_number, bEnable):
 		if self.bVerbose == True:
@@ -1646,7 +1331,6 @@ class SuperLaserLand_JD_RP:
 		self.dither_enable[dac_number] = int(bEnable)
 		
 		self.setDitherLockInSettings(dac_number)
-
 
 	def setDitherLockInSettings(self, dac_number):
 		if self.bVerbose == True:
@@ -1696,25 +1380,6 @@ class SuperLaserLand_JD_RP:
 
 
 		return (modulation_period, N_periods, amplitude, self.dither_enable[dac_number], self.dither_mode_auto[dac_number])
-
-	def dither0TestSetup(self):
-		if self.bVerbose == True:
-			print('dither0TestSetup')
-			
-		f_modulation = 1e3
-		integration_time_in_seconds = 0.1
-		dac_number = 0
-		bEnable = 1
-		amplitude = int(round(0.1 * (2**15-1)))
-		
-		
-		modulation_period = int(round(self.fs/f_modulation))
-		modulation_period_in_seconds = float(modulation_period)/self.fs
-		N_periods = int(round(integration_time_in_seconds/modulation_period_in_seconds))
-		
-		print('modulation_period = %d, N_periods = %d' % (modulation_period, N_periods))
-		self.setupDitherLockIn(dac_number, modulation_period, N_periods, bEnable, amplitude)
-		
 
 	def ditherRead(self, N_samples, dac_number=0):
 		if self.bVerbose == True:
@@ -1830,36 +1495,6 @@ class SuperLaserLand_JD_RP:
 		return (hold, flip_sign, lock, gain_in_bits)
 
 
-
-	def set_clk_divider_settings(self, bOn, bPulses, modulus):
-		if self.bVerbose == True:
-			print('set_clk_divider_settings')
-			
-		#// DOUT[2] contains the output of a programmable clock divider, which runs off the x2 clock (200 MHz)
-		#// It has three modes: off, 50% duty cycle square wave, or 1 cycle long pulse
-		#// mode = 2'b00 is off
-		#// mode = 2'b01 is 50% duty cycle square wave
-		#// mode = 2'b10 is single cycle pulse
-		if bOn:
-			if bPulses:
-				mode = 2
-			else:
-				mode = 1
-		else:
-			mode = 0
-		data_32bits = modulus + (mode<<30)
-		print('mode = %d, data_32bits = %d' % (mode, data_32bits))
-		self.send_bus_cmd_32bits(self.BUS_ADDR_clk_divider_modulus, data_32bits)
-		
-	def adjust_clk_divider_phase(self, phase_increment):
-		if self.bVerbose == True:
-			print('adjust_clk_divider_phase')
-			
-		
-		self.send_bus_cmd_32bits(self.BUS_ADDR_clk_divider_phase_adjust, phase_increment)
-		time.sleep(50e-3)
-		self.send_bus_cmd_32bits(self.BUS_ADDR_clk_divider_phase_adjust, 0)
-
 	def frontend_DDC_processing(self, samples, ref_exp0, input_number):
 		if self.bVerbose == True:
 			print('frontend_DDC_processing, len(samples) = %d, samples[0] = %d' % (len(samples), samples[0]))
@@ -1956,15 +1591,6 @@ class SuperLaserLand_JD_RP:
 
 		return spc_filter
 		
-
-
-	def optimize_AD9783_timing(self):
-		if self.bVerbose == True:
-			print('optimize_AD9783_timing')
-
-		return
-			
-
 	def setCounterMode(self, bTriangular):
 		if self.bVerbose == True:
 			print('setCounterMode')
@@ -1979,100 +1605,31 @@ class SuperLaserLand_JD_RP:
 
 		self.bTriangularAveraging = self.read_RAM_dpll_wrapper(self.BUS_ADDR_triangular_averaging)
 		return self.bTriangularAveraging
-		
-	def read_dual_mode_counter_old_version(self, output_number):
-		if self.bVerbose == True:
-			print('read_dual_mode_counter_old_version')
-			
-		if self.bCommunicationLogging == True:
-			self.log_file.write('read_dual_mode_counter_old_version()\n')
-		
-		(output0_has_data, output1_has_data, PipeA1FifoEmpty, crash_monitor_has_data) = self.readStatusFlags()
 
-#        print('flags: output0_has_data = %d, output1_has_data = %d' % (output0_has_data, output1_has_data))
-		
-		Num_samples = 1 # We can read at most 1 samples at a time
-		bytes_per_sample = int(64/8)
-		Num_bytes_read = Num_samples * bytes_per_sample
-				
-		if output_number == 0:
-			if output0_has_data:
-				# The FIFO has at least 10 samples to give us (corresponds to 1 sec of counter data at the current rate).
-				raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_ZERO_DEADTIME_COUNTER0, Num_bytes_read)
-			else:
-				# The FIFO does not have enough data in, the values read out will be garbage:
-				return (0, 0, 0, 0, 0)
-				
-		elif output_number == 1:
-			if output1_has_data:
-				# The FIFO has at least 10 samples to give us (corresponds to 1 sec of counter data at the current rate).
-				raw_bytes = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_ZERO_DEADTIME_COUNTER1, Num_bytes_read)
-			else:
-				# The FIFO does not have enough data in, the values read out will be garbage:
-				return (0, 0, 0, 0, 0)
-					
-		
-		# Convert the raw bytes to a 64-bits signed integer:
-		freq_counter_samples = self.convert_raw_bytes_to_64bits_signed(raw_bytes)
-		
-
-		# Samples are signed 36 bits integers:
-		# The bit assignments are slightly different for output0 and and output1 pipes:
-		if output_number == 0:
-#            // Current bit assignments for pipe at address 0xA2:
-#            // 64 bits: counter_out0
-#            freq_counter_samples = freq_counter_samples.astype(np.uint64)
-
-			
-#            - (freq_counter_samples & (1 << (N_bits_freq_counter-1)))
-			time_axis            = 0
-			DAC0_output          = 0
-			DAC1_output          = 0
-			DAC2_output          = 0
-			DAC0_output          = 0
-		else:
-#            // Current bit assignments for pipe at address 0xA3:
-#            // 64 bits: counter_out1
-#            freq_counter_samples = freq_counter_samples.astype(np.int64)
-#            freq_counter_samples = (freq_counter_samples & ((1 << (N_bits_freq_counter-1))-1 )) - (freq_counter_samples.astype(np.int64) & (1 << (N_bits_freq_counter-1)))
-			time_axis            = 0
-			DAC0_output          = 0
-			DAC1_output          = 0
-			DAC2_output          = 0
-			DAC0_output          = 0
-			
-			
-#        print('freq_counter_samples = %d units' % freq_counter_samples)
-		
-		# Scale the counter values into Hz units:
-		# f = data_out * fs / 2^N_INPUT_BITS / conversion_gain
-		N_INPUT_BITS = 10
-		if self.bTriangularAveraging:
-			conversion_gain = self.N_CYCLES_GATE_TIME * (self.N_CYCLES_GATE_TIME + 1)
-		else:
-			# Rectangular averaging:
-			conversion_gain = self.N_CYCLES_GATE_TIME
-			
-		freq_counter_samples = np.array((freq_counter_samples,))
-		freq_counter_samples = freq_counter_samples.astype(np.float) * self.fs / 2**(N_INPUT_BITS) / conversion_gain
-
-#        print('freq_counter_samples = %f Hz' % freq_counter_samples)
-
-		return (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
-		
-	def scaleCounterReadingsIntoHz(self, freq_counter_samples):
+	def scaleCounterReadingsIntoHz(self, freq_counter_samples, f_ref=None, N_cycles_gate_time=None):
 		if self.bVerbose == True:
 			print('scaleCounterReadingsIntoHz')
+
+		if f_ref is None:
+			f_ref = self.fs
+		if N_cycles_gate_time is None:
+			N_cycles_gate_time = self.N_CYCLES_GATE_TIME
 			
 		# Scale the counter values into Hz units:
 		# f = data_out * fs / 2^N_INPUT_BITS / conversion_gain
 		N_INPUT_BITS = 10
 		if self.bTriangularAveraging:
-			conversion_gain = self.N_CYCLES_GATE_TIME * (self.N_CYCLES_GATE_TIME + 1)
+			conversion_gain = N_cycles_gate_time * (N_cycles_gate_time + 1)
 		else:
 			# Rectangular averaging:
-			conversion_gain = self.N_CYCLES_GATE_TIME
-		freq_counter_samples = freq_counter_samples.astype(np.float) * self.fs / 2**(N_INPUT_BITS) / conversion_gain
+			conversion_gain = N_cycles_gate_time
+		try:
+			freq_counter_samples = freq_counter_samples.astype(np.float)
+		except AttributeError:
+			# if freq_counter_samples is not a numpy type, we might get this exception
+			freq_counter_samples = float(freq_counter_samples)
+
+		freq_counter_samples = freq_counter_samples * f_ref / 2**(N_INPUT_BITS) / conversion_gain
 		return freq_counter_samples
 
 
@@ -2162,149 +1719,6 @@ class SuperLaserLand_JD_RP:
 		elif output_number == 1:
 			return (freq_counter1_sample, time_axis, dac0_samples, dac1_samples, dac2_samples)
 		
-		
-	def convert_raw_bytes_to_64bits_signed(self, raw_bytes):
-		if self.bVerbose == True:
-			print('convert_raw_bytes_to_64bits_signed')
-			
-		# this only works for one conversion at a time (8 bytes in, 1x 64-bits word out)
-		bytes_per_sample = 8
-		data_buffer_reshaped = np.reshape(raw_bytes, (-1, bytes_per_sample))
-		convert_8bytes_unsigned = np.array((2**(6*8), 2**(7*8), 2**(4*8), 2**(5*8), 2**(2*8), 2**(3*8), 2**(0*8), 2**(1*8)), dtype=np.uint64)
-		samples_8bytes_unsigned = np.dot(data_buffer_reshaped[:, :].astype(np.uint64), convert_8bytes_unsigned)
-#        print(bin(samples_8bytes_unsigned[1]))
-		N_bits = 64
-		freq_counter_samples         = samples_8bytes_unsigned & ((1 << N_bits)-1)
-#        print(bin(freq_counter_samples[1]))
-#        print('start conv')
-		
-		# Save sign bit for later
-		freq_counter_samples_signbit = (freq_counter_samples & (1 << (N_bits-1))) >> (N_bits-1)
-#        print('freq_counter_samples_signbit = %d' % freq_counter_samples_signbit)
-		# Strip off sign bit
-		freq_counter_samples = (freq_counter_samples & ((1 << (N_bits-1))-1 ))
-		# Add the correct weight for the sign bit
-		freq_counter_samples_signbit_value = freq_counter_samples_signbit * 2**63
-#        print('freq_counter_samples = %d, sign_weight = %d' % (freq_counter_samples, freq_counter_samples_signbit_value))
-		# this doesn't work if freq_counter_samples is an array (if we are recording more than one sample at a time)
-		# but we have to use this because numpy doesn't support long integers
-		freq_counter_samples = int(freq_counter_samples) - int(freq_counter_samples_signbit_value)
-		
-		return freq_counter_samples
-		
-	def convert_raw_bytes_to_64bits_unsigned(self, raw_bytes):
-		if self.bVerbose == True:
-			print('convert_raw_bytes_to_64bits_unsigned')
-			
-		# This is much simpler and works on multiple words at the same time (Nx8 bytes input, N 64-bits words output)
-		bytes_per_sample = 8
-		data_buffer_reshaped = np.reshape(raw_bytes, (-1, bytes_per_sample))
-		convert_8bytes_unsigned = np.array((2**(6*8), 2**(7*8), 2**(4*8), 2**(5*8), 2**(2*8), 2**(3*8), 2**(0*8), 2**(1*8)), dtype=np.uint64)
-		samples_8bytes_unsigned = np.dot(data_buffer_reshaped[:, :].astype(np.uint64), convert_8bytes_unsigned)
-		return samples_8bytes_unsigned
-		
-	def read_residuals_streaming(self, bForceRead=False):
-		if self.bVerbose == True:
-			print('read_residuals_streaming')
-			
-		if self.bCommunicationLogging == True:
-			self.log_file.write('read_residuals_streaming()\n')
-
-		print("todo: read_residuals_streaming")
-
-		return (None, None)
-		
-		(residuals0_fifo_has_data, residuals1_fifo_has_data) = self.readResidualsStreamingStatus()
-
-#        print('flags: residuals0_fifo_has_data = %d, residuals1_fifo_has_data = %d' % (residuals0_fifo_has_data, residuals1_fifo_has_data))
-		
-		Num_samples = 1000 # We can read at most 2000 samples at a time
-		bytes_per_sample = int(32/8)
-		Num_bytes_read = Num_samples * bytes_per_sample
-
-		# The two fifos should always have data or not at the same time.
-		if residuals0_fifo_has_data or bForceRead:
-			# The FIFO has at least Num_samples samples to give us (corresponds to 1 sec of counter data at the current rate).
-			raw_bytes0 = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_RESIDUALS0, Num_bytes_read)
-			raw_bytes1 = self.read_raw_bytes_from_pipe(self.PIPE_ADDRESS_RESIDUALS1, Num_bytes_read)
-			# verification: as soon as we have read a packet, the fifo should be almost empty:
-			(residuals0_fifo_has_data, residuals1_fifo_has_data) = self.readResidualsStreamingStatus()
-#            print('flags: residuals0_fifo_has_data = %d, residuals1_fifo_has_data = %d' % (residuals0_fifo_has_data, residuals1_fifo_has_data))
-		else:
-			# The FIFO does not have enough data in, the values read out will be garbage:
-			return (None, None)
-
-		# Convert the raw bytes to the 32-bits words that the FPGA is outputting
-#        print(raw_bytes0[:20])
-#        print(raw_bytes1[:20])
-		data_buffer_reshaped = np.reshape(raw_bytes0, (-1, bytes_per_sample))
-#        print(data_buffer_reshaped)
-		convert_4bytes_unsigned = np.array((2**(2*8), 2**(3*8), 2**(0*8), 2**(1*8)), dtype=np.uint64)
-		samples_4bytes_unsigned = np.dot(data_buffer_reshaped[:, :].astype(np.uint64), convert_4bytes_unsigned)
-		N_bits = 32
-		phase0_samples         = samples_4bytes_unsigned & ((1 << N_bits)-1)
-		phase0_samples = (phase0_samples & ((1 << (N_bits-1))-1 )) - (phase0_samples.astype(np.int64) & (1 << (N_bits-1)))
-		
-		# Convert the raw bytes to the 32-bits words that the FPGA is outputting
-		data_buffer_reshaped = np.reshape(raw_bytes1, (-1, bytes_per_sample))
-		convert_4bytes_unsigned = np.array((2**(2*8), 2**(3*8), 2**(0*8), 2**(1*8)), dtype=np.uint64)
-		samples_4bytes_unsigned = np.dot(data_buffer_reshaped[:, :].astype(np.uint64), convert_4bytes_unsigned)
-#        print('%x, %x, %x, %x' % (samples_4bytes_unsigned[0], samples_4bytes_unsigned[1], samples_4bytes_unsigned[2], samples_4bytes_unsigned[3]))
-		N_bits = 32
-		phase1_samples         = samples_4bytes_unsigned & ((1 << N_bits)-1)
-		phase1_samples = (phase1_samples & ((1 << (N_bits-1))-1 )) - (phase1_samples.astype(np.int64) & (1 << (N_bits-1)))
-
-#        print('phase1_samples = %f units' % phase1_samples[0])
-		# Scale the phase values into radians units:
-		# phi = phase0_samples * 2 * np.pi/ 2^N_INPUT_BITS / filter_gain
-		if self.residuals0_phase_or_freq == 0:
-			filter_gain0 = self.residuals_boxcar_filter_size
-		else:
-			filter_gain0 = 100.
-			
-		if self.residuals1_phase_or_freq == 0:
-			filter_gain1 = self.residuals_boxcar_filter_size
-		else:
-			filter_gain1 = 100.
-#        print('filter_gain = %f' % filter_gain)
-		N_INPUT_BITS = 10
-		phi0 = phase0_samples.astype(np.float) * 2 * np.pi / 2**(N_INPUT_BITS) / filter_gain0
-		phi1 = phase1_samples.astype(np.float) * 2 * np.pi / 2**(N_INPUT_BITS) / filter_gain1
-
-		return (phi0, phi1)
-		
-	def readDebugWire(self):
-		if self.bVerbose == True:
-			print('readDebugWire')
-			
-		# We first need to check if the fifo has enough samples to send us:        
-		self.dev.UpdateWireOuts()    # read values from FPGA into dev object
-		debug_value = self.dev.GetWireOutValue(self.ENDPOINT_DEBUGGING) # get value from dev object into our script
-		
-		return debug_value
-		
-		
-	def set_prbs(self, chip_length, number_of_chips, bPolarityInvert):
-		if self.bVerbose == True:
-			print('set_prbs')
-			
-		self.prbs_bSequencePolarityInvert = bPolarityInvert
-		self.send_bus_cmd(self.BUS_ADDR_prbs_size, chip_length, number_of_chips)
-		self.send_bus_cmd_16bits(self.BUS_ADDR_prbs_settings, 0 + 2*bPolarityInvert)
-		print('updated prbs settings.')
-		return
-
-	def prbs_manual_trigger(self):
-		if self.bVerbose == True:
-			print('prbs_manual_trigger')
-			
-		bPolarityInvert = self.prbs_bSequencePolarityInvert
-		self.send_bus_cmd_16bits(self.BUS_ADDR_prbs_settings, 1 + 2*bPolarityInvert)
-		time.sleep(100e-3)
-		self.send_bus_cmd_16bits(self.BUS_ADDR_prbs_settings, 0 + 2*bPolarityInvert)
-		print('triggering prbs...')
-		return
-		
 	def set_ddc_filter(self, adc_number, filter_select, angle_select = 0):
 		if self.bVerbose == True:
 			print('set_ddc_filter')
@@ -2316,18 +1730,6 @@ class SuperLaserLand_JD_RP:
 		elif adc_number == 1:
 			self.ddc1_filter_select = filter_select
 			self.ddc1_angle_select = angle_select
-			
-		self.set_ddc_filter_select_register()
-		
-	def set_residuals_phase_or_freq(self, adc_number, phase_or_freq):
-		if self.bVerbose == True:
-			print('set_residuals_phase_or_freq')
-			
-		
-		if adc_number == 0:
-			self.residuals0_phase_or_freq = phase_or_freq
-		elif adc_number == 1:
-			self.residuals1_phase_or_freq = phase_or_freq
 			
 		self.set_ddc_filter_select_register()
 		
@@ -2628,5 +2030,39 @@ class SuperLaserLand_JD_RP:
 		ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
 		return ZynqTempInDegC
 		
+    def getExtClockFreq(self):
+        # see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
+        read_all_regs = lambda : (self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg1),
+                                  self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg2),
+                                  self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg3))
+        data_index = lambda x: (x >> 24)
 
+        iAttempts = 0;
+        bSuccess = False
+        while iAttempts < 2:
+            (reg1, reg2, reg3) = read_all_regs()
+            # these three need to match.  If they don't, this means that the data changed in between our three reads.
+            # try another time to read all three registers.  It should succeed, since the counter updates only at 1 Hz
+            if data_index(reg1) == data_index(reg2) == data_index(reg3):
+                bSuccess = True
+                break
+            
+            iAttempts += 1
+
+        if not bSuccess:
+            return np.nan
+
+        freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
+                       ((reg2 & 0x00FFFFFF) << 24) + 
+                       ((reg3 & 0x0000FFFF) << 48))
+
+        # print("getExtClockFreq(): reg1=0x%08x, reg2=0x%08x, reg3=0x%08x" % (reg1, reg2, reg3))
+        # print("getExtClockFreq(): freq_64bits=0x%08x" % (freq_64bits))
+
+        freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, f_ref=200e6, N_cycles_gate_time=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
+        freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
+        # print("getExtClockFreq(): freq_Hz=%e Hz" % freq_Hz)
+
+        return freq_Hz
+        
 # end class definition

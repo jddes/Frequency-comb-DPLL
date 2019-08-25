@@ -61,7 +61,6 @@ class RP_PLL_device():
         # disconnect from socket, and start reconnection timer:
         if self.controller is not None:
             self.controller.socketErrorEvent()
-               
 
 
     def CloseTCPConnection(self):
@@ -212,7 +211,7 @@ class RP_PLL_device():
         return register_value_as_tuple[0]
 
     def read_Zynq_AXI_register_uint32(self, address_uint32):
-        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32)
+        data_buffer = self.read_Zynq_AXI_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32)
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 

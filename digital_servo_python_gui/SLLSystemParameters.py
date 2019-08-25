@@ -92,8 +92,7 @@ class SLLSystemParameters():
         # DAC0_gain = int(self.getValue('Input_Output_gain', 'DAC0'))
         # DAC1_gain = int(self.getValue('Input_Output_gain', 'DAC1'))
         
-        # sl.set_pga_gains(ADC0_gain, ADC1_gain, DAC0_gain, DAC1_gain, bSendToFPGA)
-        
+       
         # Set the DAC output limits:
         limit_low = float(self.getValue('Output_limits_low', 'DAC0'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC0'))    # the limit is in volts
