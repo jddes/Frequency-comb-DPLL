@@ -220,6 +220,10 @@ create_clock -period 4.000 -name rx_clk  [get_ports daisy_p_i[1]]
 #set_false_path -from [get_clocks dac_clk_out] -to [get_clocks dac_2clk_out]
 #set_false_path -from [get_clocks dac_clk_out] -to [get_clocks dac_2ph_out]
 
+create_clock -period 5.000 -name ext_clk  [get_ports exp_p_io[5]]
+
+# set_false_path -from [get_cells counter_gray_target] -to [get_cells counter_gray_ref_reg1]
+set_max_delay 3.00 -from [get_clocks clk_fpga_3] -to [get_clocks ext_clk] -datapath_only
 
 
 #set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets adc_clk_in]

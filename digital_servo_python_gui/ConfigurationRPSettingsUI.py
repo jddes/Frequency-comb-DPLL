@@ -27,7 +27,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
 	"""docstring for ConfigRP"""
 	def __init__(self, sl, sp, controller, custom_style_sheet='', custom_shorthand=''):
 		super(ConfigRPSettingsUI, self).__init__()  
-		print('ConfigRPSettingsUI::__init(): Entering')		
 		self.sl = weakref.proxy(sl)
 		self.sp = sp
 		self.setObjectName('MainWindow')
@@ -89,6 +88,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		# Push the values from the xml file to the red pitaya (load + send)
 		self.loadParameters()
 		self.pushValues()
+		self.startTimers()
 
 	def pushValues(self):
 		# Send the values in the different fields to the RP
@@ -138,6 +138,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		else:
 			self.qradio_external_clk.setChecked(True)
 
+
+		self.startTimers()
+
+	def startTimers(self):
+	# This gets called when we have a valid connection to a device.
+		self.timerXADC.start(1000)
+
+	def killTimers(self):
+	# This gets called by the controller object in XEM_GUI3.py when we lose connection to a device.
+		self.timerXADC.stop()
+
+
 	def initUI(self):
 
 		###################################################################################
@@ -151,9 +163,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qradio_internal_clk.setChecked(True)
 		self.qradio_internal_clk.clicked.connect(self.setClkSelect)
 		self.qradio_external_clk.clicked.connect(self.setClkSelect)
+		self.lblExtClkFreq = Qt.QLabel('Ext clk freq = %.6f MHz' % 0.0)
 
 		grid.addWidget(self.qradio_internal_clk, 0, 0)
 		grid.addWidget(self.qradio_external_clk, 1, 0)
+		grid.addWidget(self.lblExtClkFreq,       2, 0)
 
 		#grid.setRowStretch(2, 2)
 
@@ -165,14 +179,22 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qgroupbox_xadc.setAutoFillBackground(True)
 		grid = Qt.QGridLayout()
 
+		self.time_start = time.clock()
+		self.qplots = DataLoggingDisplayWidget.DataLoggingDisplayWidget(numPlots=1, numCurvesPerPlot=1)
+		self.qplots.pltItemsList[0].setLabel('left', 'Temp [degC]')
+		# self.qplots.show()
+
 
 		self.qlbl_Temp   = Qt.QLabel('Zynq temperature: %.2f degC' % 0.)
 		self.qlbl_vccint = Qt.QLabel('Vccint = %.2f V' % 0.)
 		self.qlbl_vccaux = Qt.QLabel('Vccaux = %.2f V' % 0.)
+		self.qbtn_OpenTempGraph = Qt.QPushButton('Open temperature display window')
+		self.qbtn_OpenTempGraph.clicked.connect(self.qplots.show)
 
-		grid.addWidget(self.qlbl_Temp, 0, 0)
+		grid.addWidget(self.qlbl_Temp, 0, 0, 1, 2)
 		grid.addWidget(self.qlbl_vccint, 1, 0)
 		grid.addWidget(self.qlbl_vccaux, 2, 0)
+		grid.addWidget(self.qbtn_OpenTempGraph, 2, 1)
 
 		#grid.setRowStretch(2, 2)
 
@@ -181,7 +203,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		# polling timer for the xadc values:
 		self.timerXADC = Qt.QTimer(self)
 		self.timerXADC.timeout.connect(self.timerXADCEvent)
-		self.timerXADC.start(1000)   # 1000 ms
 
 		###################################################################################
 
@@ -314,10 +335,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		grid.addWidget(self.group)
 		self.setLayout(grid)
 
-		self.time_start = time.clock()
-		self.qplots = DataLoggingDisplayWidget.DataLoggingDisplayWidget(numPlots=1, numCurvesPerPlot=1)
-		self.qplots.pltItemsList[0].setLabel('left', 'Temp [degC]')
-		self.qplots.show()
+
 
 
 
@@ -328,6 +346,8 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 	def timerXADCEvent(self):
 		# read from xadc registers:
+		# print(self.qplots.isVisible())
+
 		if not self.sl.dev.valid_socket:
 			return
 		try:
@@ -345,6 +365,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			self.qlbl_vccaux        = Qt.QLabel('Vccaux = N/A V')
 
 
+		# read ext clk frequency:
+		try:
+			self.lblExtClkFreq.setText('Ext clk freq = %.8f MHz' % (self.sl.getExtClockFreq()/1e6))
+		except:
+			self.lblExtClkFreq.setText('Ext clk freq = N/A MHz')
 
 
 	#Function to read the value in the RAM Block (channel 2) to an address

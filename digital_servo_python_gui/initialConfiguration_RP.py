@@ -19,6 +19,8 @@ import weakref
 
 import pdb
 
+import logging
+
 class initialConfiguration(QtWidgets.QDialog):
 	
 
@@ -26,6 +28,8 @@ class initialConfiguration(QtWidgets.QDialog):
 	def __init__(self, dev, controller, devices_data={}, strBroadcastAddress="192.168.2.255", strFPGAFirmware='', strCPUFirmware=''):
 		super(initialConfiguration, self).__init__()
 		
+		self.logger = logging.getLogger(__name__)
+		self.logger_name = ':initialConfiguration'
 		# copy init parameters to member variables
 		self.dev = dev
 		self.strBroadcastAddress = strBroadcastAddress
@@ -304,7 +308,6 @@ class initialConfiguration(QtWidgets.QDialog):
 			self.strSelectedPort = int(self.qedit_host_port.text())
 		
 	def okClicked(self):
-		print("initialConfiguration.py::okClicked(): enter")
 		self.bOk = True
 		self.bContinue = True
 
@@ -325,10 +328,9 @@ class initialConfiguration(QtWidgets.QDialog):
 				#print("No selected IP: returning")
 				return
 			#self.dev.OpenTCPConnection(self.strSelectedIP)
-			print("About to connect")
 			if self.controller is not None:
 				self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort)
-			print("initialConfiguration.py::okClicked():after pushDefaultValues")
+			#print("initialConfiguration.py::okClicked():after pushDefaultValues")
 
 		elif self.qradio_existingRP.isChecked():
 			# Reconnect to the selected RedPitaya.
@@ -351,7 +353,6 @@ class initialConfiguration(QtWidgets.QDialog):
 			if self.controller is not None:
 				self.controller.stopCommunication() #Call the function which kill the timers and call the fake socket
 
-		print("initialConfiguration.py::okClicked():after if")
 		# close UDP discovery server:
 		self.killTimer(self.timerID)    # is it guaranteed that no timerEvent will be called after this line? because we delete our reference to udp_discovery, which is used in the timer event
 		del self.udp_discovery
@@ -368,10 +369,14 @@ class initialConfiguration(QtWidgets.QDialog):
 			print("Error: no selected RedPitaya.")
 			return
 
+		self.logger.info('Red_Pitaya_GUI{}: Programming FPGA ({}) with new bitfile'.format(self.logger_name, self.strSelectedPort))
+
 		# connect to the selected RedPitaya, send new bitfile, then send programming command to the shell:
 		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
 		self.dev.write_file_on_remote(strFilenameLocal=str(self.qedit_firmware.text()), strFilenameRemote='/opt/red_pitaya_top.bit')
+		time.sleep(2) # to handle slow SD cards
 		print("File written to remote host at /opt/red_pitaya_top.bit.")
+
 		self.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
 		print("Program FPGA firmware command sent.")
 		
@@ -386,6 +391,8 @@ class initialConfiguration(QtWidgets.QDialog):
 		if not self.strSelectedIP:
 			print("Error: no selected RedPitaya.")
 			return
+
+		self.logger.info('Red_Pitaya_GUI{}: Programming CPU ({}) with new file'.format(self.logger_name, self.strSelectedPort))
 
 		# connect to the selected RedPitaya
 		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)

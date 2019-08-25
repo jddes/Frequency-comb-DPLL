@@ -9,6 +9,7 @@ import time
 import sys
 
 import numpy as np
+import logging
 #import matplotlib.pyplot as plt
 
 class socket_placeholder():
@@ -42,32 +43,30 @@ class RP_PLL_device():
 
 
     def __init__(self, controller=None):
+        self.logger = logging.getLogger(__name__)
+        self.logger_name = ':RP_PLL'
+
         self.sock = socket_placeholder()
         self.controller = controller
-        self.valid_socket = 0
-        self.reconnection_attempts = 0
+        self.valid_socket = False
+
+        self.type_to_format_string = {False: '=III',
+                                      True: '=IIi'}
+
 
         return
 
-    def disconnectEvent(self):
+
+    def socketErrorEvent(self):
+        # disconnect from socket, and start reconnection timer:
         if self.controller is not None:
-            self.controller.stopCommunication()
+            self.controller.socketErrorEvent()
 
-            # attempt to reconnect:
-
-            if self.reconnection_attempts < 10:
-                self.reconnection_attempts += 1
-                print("TCP connection lost. Attempting to reconnect %d/10..." % (self.reconnection_attempts))
-                self.OpenTCPConnection(self.HOST, self.PORT, True)
-                if self.valid_socket:
-                    self.reconnection_attempts = 0
-            else:
-                print("TCP connection lost. Will not attempt to reconnect because self.reconnection_attempts >= 10...")
 
     def CloseTCPConnection(self):
         print("RP_PLL_device::CloseTCPConnection()")
         self.sock = socket_placeholder()
-        self.valid_socket = 0
+        self.valid_socket = False
 
     def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True):
         print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
@@ -77,8 +76,12 @@ class RP_PLL_device():
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # this avoids a ~33 ms on Windows before our request packets are sent (!!)
         # self.sock.setblocking(1)
         self.sock.settimeout(2)
-        self.sock.connect((self.HOST, self.PORT))
-        self.valid_socket = valid_socket_for_general_comms
+        try:
+            self.sock.connect((self.HOST, self.PORT))
+            self.valid_socket = valid_socket_for_general_comms
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            self.valid_socket = False
 
     # from http://stupidpythonideas.blogspot.ca/2013/05/sockets-are-byte-streams-not-message.html
     def recvall(self, count):
@@ -107,7 +110,8 @@ class RP_PLL_device():
             self.sock.sendall(file_data.tobytes())
         except:
             print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
-            self.disconnectEvent()
+            self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
+            self.socketErrorEvent()
     # Function used to send a shell command to the Red Pitaya:
     def send_shell_command(self, strCommand):
         
@@ -119,7 +123,8 @@ class RP_PLL_device():
             self.sock.sendall(strCommand.encode('ascii'))
         except:
             print("RP_PLL.py: send_shell_command(): exception while sending command!")
-            self.disconnectEvent()
+            self.logger.warning('Red_Pitaya_GUI{}: send_shell_command(): exception while sending command!'.format(self.logger_name))
+            self.socketErrorEvent()
     # Function used to reboot the monitor-tcp program
     def send_reboot_command(self):
         
@@ -129,102 +134,91 @@ class RP_PLL_device():
             self.sock.sendall(packet_to_send)
         except:
             print("RP_PLL.py: send_reboot_command(): exception while sending command!")
-            self.disconnectEvent()
+            self.logger.warning('Red_Pitaya_GUI{}: send_reboot_command(): exception while sending command!'.format(self.logger_name))
+            self.socketErrorEvent()
+
+    def validate_address(self, addr):
+        if addr % 4:
+            raise Exception("validate_address", "non-32-bits-aligned write/read")
+
+        return True
 
     #######################################################
     # Functions used to access the memory-mapped registers of the Zynq
     #######################################################
 
-    def write_Zynq_register_uint32(self, address_uint32, data_uint32):
-        # print("write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32))
-        if address_uint32 % 4:
-            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
-            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
-            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
-            return
+    def send(self, packet_to_send):
         try:
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_uint32) & 0xFFFFFFFF)
             self.sock.sendall(packet_to_send)
         except:
-            self.disconnectEvent()
+            self.socketErrorEvent()
+
+    def read(self, bytes_to_read):
+        data_buffer = None
+        try:
+            data_buffer = self.recvall(bytes_to_read)
+        except:
+            logging.error(traceback.format_exc())
+            self.socketErrorEvent()
+
+        if data_buffer is None:
+            return bytes(bytes_to_read)
+        else:
+            return data_buffer
+
+    def write_Zynq_register_32bits(self, absolute_addr, data_32bits, bSigned=False):
+        self.validate_address(absolute_addr)
+        packet_to_send = struct.pack(self.type_to_format_string[bSigned], self.MAGIC_BYTES_WRITE_REG, absolute_addr, int(data_32bits) & 0xFFFFFFFF)
+        self.send(packet_to_send)
+
+    def read_Zynq_register_32bits(self, absolute_addr, bIsAXI=False):
+        self.validate_address(absolute_addr)
+        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, absolute_addr, 0)  # last value is reserved
+        self.send(packet_to_send)
+        return self.read(4)
+
+    def read_Zynq_buffer_int16(self, number_of_points):
+        if number_of_points > self.MAX_SAMPLES_READ_BUFFER:
+            number_of_points = self.MAX_SAMPLES_READ_BUFFER
+            print("number of points clamped to %d." % number_of_points)
+
+        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points)    # last value is reserved
+        self.send(packet_to_send)
+        return self.read(int(2*number_of_points))
+
+    #######################################################
+    # Functions used to access Zynq registers, but which do not interact directly with the socket,
+    # and instead use the lower-level functions above
+    #######################################################
+
+    def write_Zynq_register_uint32(self, address_uint32, data_uint32):
+        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_uint32, bSigned=False)
 
     def write_Zynq_register_int32(self, address_uint32, data_int32):
-        # print("write_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
-        if address_uint32 % 4:
-            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
-            print("write_Zynq_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
-            raise Exception("write_Zynq_register_uint32", "non-32-bits-aligned write")
-            return
-        try:
-            packet_to_send = struct.pack('=IIi', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR+address_uint32, int(data_int32) & 0xFFFFFFFF)
-            self.sock.sendall(packet_to_send)
-        except:
-            self.disconnectEvent()
-
-    def read_Zynq_register_uint32(self, address_uint32):
-        try:
-            #  print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
-            self.sock.sendall(packet_to_send)
-            data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
-        except:
-            self.disconnectEvent()
-
-        if data_buffer is None:
-            return 0
-        if len(data_buffer) != 4:
-            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
-        register_value_as_tuple = struct.unpack('I', data_buffer)
-        return register_value_as_tuple[0]
+        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_uint32, bSigned=True)
 
     def write_Zynq_AXI_register_uint32(self, address_uint32, data_uint32):
-        # print("write_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s, data = %d" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32), data_uint32))
-        if address_uint32 % 4:
-            # Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq
-            print("write_Zynq_AXI_register_uint32(0x%x, 0x%x) Error: Writing to non-32bits-aligned addresses is forbidden - it crashes the process running on the Zynq.")
-            raise Exception("write_Zynq_AXI_register_uint32", "non-32-bits-aligned write")
-            return
-        try:
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, int(data_uint32) & 0xFFFFFFFF)
-            self.sock.sendall(packet_to_send)
-        except:
-            self.disconnectEvent()
+        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32, data_uint32, bSigned=False)
 
-    def read_Zynq_AXI_register_uint32(self, address_uint32):
-        # print("read_Zynq_register_uint32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR_XADC+address_uint32, 0)  # last value is reserved
-        self.sock.sendall(packet_to_send)
-        data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
-        if data_buffer is None:
-            return 0
-        if len(data_buffer) != 4:
-            print("read_Zynq_AXI_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+    def read_Zynq_register_uint32(self, address_uint32):
+        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32)
         register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
     def read_Zynq_register_int32(self, address_uint32):
-        try:
-            # print("read_Zynq_register_int32(): address_uint32 = %s, self.FPGA_BASE_ADDR+address_uint32 = %s\n" % (hex(address_uint32), hex(self.FPGA_BASE_ADDR+address_uint32)))
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, self.FPGA_BASE_ADDR+address_uint32, 0)  # last value is reserved
-            self.sock.sendall(packet_to_send)
-            data_buffer = self.recvall(4)   # read 4 bytes (32 bits)
-        except:
-            self.disconnectEvent()
-
-        if data_buffer is None:
-            return 0
-        if len(data_buffer) != 4:
-            print("read_Zynq_register_uint32() Error: len(data_buffer) != 4: repr(data_buffer) = %s" % (repr(data_buffer)))
+        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32)
         register_value_as_tuple = struct.unpack('i', data_buffer)
+        return register_value_as_tuple[0]
+
+    def read_Zynq_AXI_register_uint32(self, address_uint32):
+        data_buffer = self.read_Zynq_AXI_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32)
+        register_value_as_tuple = struct.unpack('I', data_buffer)
         return register_value_as_tuple[0]
 
     def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
         print("read_Zynq_register_uint64()")
         results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
         results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
-
-        # print 'results_lsb = %d' % results_lsb
-        # print 'results_msb = %d' % results_msb
 
         # convert to 64 bits using numpy's casts
         results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
@@ -237,38 +231,11 @@ class RP_PLL_device():
         results_lsb = self.read_Zynq_register_uint32(address_uint32_lsb)
         results_msb = self.read_Zynq_register_uint32(address_uint32_msb)
 
-        # print 'results_lsb = %d' % results_lsb
-        # print 'results_msb = %d' % results_msb
-
         # convert to 64 bits using numpy's casts
         results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
         results = np.frombuffer(results, np.dtype(np.int64) )
 
         return results
-  
-    def read_Zynq_buffer_int16(self, address_uint32, number_of_points):
-        #return '\x00\x00'
-        address_uint32 = 0    # currently unused
-        if number_of_points > self.MAX_SAMPLES_READ_BUFFER:
-            number_of_points = self.MAX_SAMPLES_READ_BUFFER
-            print("number of points clamped to %d." % number_of_points)
-            #traceback.print_stack()
-        
-        try:
-            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR+address_uint32, number_of_points)    # last value is reserved
-    #        print "read_Zynq_buffer_int16: before sendall()"
-            self.sock.sendall(packet_to_send)
-    #        print "read_Zynq_buffer_int16: after sendall()"
-            data_buffer = self.recvall(int(2*number_of_points)) # read number_of_points samples (16 bits each)
-    #        print "read_Zynq_buffer_int16: len(data_buffer) = %d, data_buffer:" % (len(data_buffer))
-    #        print repr(data_buffer[0:10])
-        except:
-            self.disconnectEvent()
-
-        if data_buffer is None:
-            return b''
-        
-        return data_buffer    # returns a raw string buffer, to be read for example with np.fromstring(data_buffer, dtype=np.int16)
 
     #######################################################
     # Functions to emulate the Opal Kelly API:

@@ -9,6 +9,7 @@ from __future__ import print_function
 import socket
 import select
 import time
+import logging
 
 class AsyncSocketServer():
     
@@ -20,11 +21,15 @@ class AsyncSocketServer():
         
         self.bVerbose = False
         
+        self.logger = logging.getLogger(__name__)
+        self.logger_name = 'AsyncSocketServer'
+        
+        
         self.startListening()
         
     def startListening(self):
         # Initialization part: starts listening on the two ports
-        print('Creating server socket...')
+        print('AsyncSocketServer.startListening(): Creating server socket...')
         HOST = ''       # means local host
 
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,7 +45,7 @@ class AsyncSocketServer():
         # Check if there is a connection pending:
         # note the [0] at the end which selects only the first output of the select()
         if self.bVerbose:
-            print('First')
+            print('AsyncSocketServer.run(): First')
         ready_to_read = select.select([self.sock_server], [], [], 0)[0]
         
         if ready_to_read:
@@ -54,7 +59,7 @@ class AsyncSocketServer():
         # Second: try to read from the socket:
         # We need a try/catch around these lines as the socket could have been closed in the meantime (or any number of possible errors):
         if self.bVerbose:
-            print('Second')
+            print('AsyncSocketServer.run(): Second')
         if self.sock_conn:
             try:
                 (read_buffer, bSocketOpen) = self.readdata_async(self.sock_conn, self.read_buffer)
@@ -62,11 +67,12 @@ class AsyncSocketServer():
                 if not bSocketOpen:
                     # socket has been closed on the other side:
                     if self.bVerbose:
-                        print('Socket closed detected.')
+                        print('AsyncSocketServer.run(): Socket closed detected.')
                     self.sock_conn = None
             except Exception as e:
                 # probably better to just close the socket if we get here:
-                print('Read generated an exception')
+                print('AsyncSocketServer.run(): Read generated an exception')
+                self.logger.warning('{}: Read generated an exception'.format(self.logger_name))
                 print(e)
 #                self.sock_conn.close() # this can also throw an exception:
                 self.sock_conn = None
@@ -110,6 +116,9 @@ class AsyncSocketServer():
             print('readdata_async: exiting')
         return (read_buffer, True)
 
+    def close(self):
+        self.sock_server.close()
+
 class AsyncSocketClient():
     
     def __init__(self, PORT=50000):
@@ -117,10 +126,14 @@ class AsyncSocketClient():
         self.PORT = PORT
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((HOST, self.PORT))
+
+        self.logger = logging.getLogger(__name__)
+        self.logger_name = 'AsyncSocketClient'
         
     def send_text(self, txt_to_send):
         if type(txt_to_send)!=str:
             print('Error, txt_to_send is not a str')
+            self.logger.warning('{}: Trying to send a non-string text'.format(self.logger_name))
             return
         
         self.sock.send(txt_to_send.encode('utf-8'))

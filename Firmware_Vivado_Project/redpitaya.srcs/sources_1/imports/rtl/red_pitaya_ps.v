@@ -98,9 +98,14 @@ module red_pitaya_ps (
   output wire             ack_combine_o,
   
 
-  input  wire       clk_ext_in,
-  output wire       clk_to_adc,
-  output wire [1:0] gpio_io_o
+  input  wire          clk_ext_in,
+  output wire          clk_to_adc,
+  output wire    [1:0] gpio_io_o,
+  // for counting the external clk's frequency:
+  output wire          clk_ext_bufg,
+  input  wire [32-1:0] reg_to_axi1,
+  input  wire [32-1:0] reg_to_axi2,
+  input  wire [32-1:0] reg_to_axi3
 );
 
 //------------------------------------------------------------------------------
@@ -485,7 +490,11 @@ system_wrapper system_i (
 
   .clk_ext_in(clk_ext_in),
   .clk_to_adc(clk_to_adc),
-  .gpio_io_o(gpio_io_o)
+  .gpio_io_o(gpio_io_o),
+  .clk_ext_bufg(clk_ext_bufg),
+  .reg_to_axi1(reg_to_axi1),
+  .reg_to_axi2(reg_to_axi2),
+  .reg_to_axi3(reg_to_axi3)
 );
 
 endmodule

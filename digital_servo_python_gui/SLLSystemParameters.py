@@ -43,6 +43,9 @@ class SLLSystemParameters():
         self.root.append(ET.Element('Main_window_settings', refresh_delay='500', N_samples_adc='1.75e3', N_samples_ddc='1e6', Integration_limit='5e6'))
         self.root.append(ET.Element('Triangular_averaging', DAC1='1', DAC0='1'))
 
+        self.root.append(ET.Element('Auto_unlock', chkAutoUnlock='False', threshold='0.05'))
+        self.root.append(ET.Element('Temperature_control', chkControl='True', threshold_step='0.35', threshold_disable='0.05', step_size='0.05', step_delay='60', bIncrementalOnly="False"))
+
         self.root.append(ET.Element('Dither_frequency', DAC1='5.1e3', DAC0='1e3'))
         self.root.append(ET.Element('Dither_integration_time', DAC1='0.1', DAC0='0.1'))
         self.root.append(ET.Element('Dither_amplitude', DAC1='1e.3', DAC0='1e-3'))
@@ -89,8 +92,7 @@ class SLLSystemParameters():
         # DAC0_gain = int(self.getValue('Input_Output_gain', 'DAC0'))
         # DAC1_gain = int(self.getValue('Input_Output_gain', 'DAC1'))
         
-        # sl.set_pga_gains(ADC0_gain, ADC1_gain, DAC0_gain, DAC1_gain, bSendToFPGA)
-        
+       
         # Set the DAC output limits:
         limit_low = float(self.getValue('Output_limits_low', 'DAC0'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC0'))    # the limit is in volts
