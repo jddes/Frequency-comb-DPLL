@@ -37,6 +37,7 @@ import traceback
 # stuff for Python 3 port
 import pyqtgraph as pg
 
+import RP_PLL # for CommsError
 
 import logging
 
@@ -103,6 +104,21 @@ def smooth(x,window_len=11,window='hanning'):
 	y=np.convolve(w/w.sum(),s,mode='valid')
 	return y
 
+import functools
+
+def logCommsErrorsAndBreakoutOfFunction(function):
+	@functools.wraps(function)
+	def wrapper(*args, **kwargs):
+		try:
+			function(*args, **kwargs)
+		except RP_PLL.CommsLoggeableError as e:
+			# log exception
+			logging.error("Exception occurred", exc_info=True)
+		except RP_PLL.CommsError as e:
+			# do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
+			pass
+
+	return wrapper
 
 class XEM_GUI_MainWindow(QtGui.QWidget):
 
@@ -158,14 +174,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		self.initUI()	
 
-		
-#    def reject(self):
-#        print('User closed the window.')
-##        super(XEM_GUI_MainWindow, self).reject()
-		
-		
-#    def setDACOffset_event(self, e):
-
 	def getValues(self):
 		self.bFirstTimeLockCheckBoxClicked = False
 		self.getVCOGain()
@@ -193,7 +201,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Send values to FPGA
 		self.setVCOFreq_event()
 		self.setVCOGain_event()
-		# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway
 		self.chkLockClickedEvent()
 
 		self.timerIDDither = Qt.QTimer(self)
@@ -205,8 +212,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if self.output_controls[0] == True:
 			self.slowStart100VSwitchingSupply()
 
+
+	@logCommsErrorsAndBreakoutOfFunction
 	def slowStart100VSwitchingSupply(self):
-		# need to set the switching supply to it's default values:
+		# need to set the switching supply to its default values:
 		# do a slow start over ~ 100 ms.
 		f_switching = 200e3
 		Vtarget = 100.
@@ -226,6 +235,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			oscillator_modulus_active = int(round(  oscillator_modulus * current_duty_cycle ))
 			# print("slowStart100VSwitchingSupply(): here3")
 			self.sl.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
+			# try:
+			# 	self.sl.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
+			# except RP_PLL.CommsError:
+			# 	break
 			time.sleep(T_slow_start/N_steps)
 
 		print("slowStart100VSwitchingSupply(): finished")
@@ -259,10 +272,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		return VCO_gain_in_Hz_per_Volts
 
+	@logCommsErrorsAndBreakoutOfFunction
 	def setVCOGain_event(self):
-		# print('setVCOGain_event(): Entering')
-		# self.setFLL0_event()
-	
 		# Update the loop filters gain settings based on the new VCO gains:
 
 		# Also set the scale on the manual output sliders (and the steps)
@@ -273,24 +284,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		for k in range(3):
 			if self.output_controls[k]:
 				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
-				# try:
-				# 	VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
-				# except:
-				# 	VCO_gain_in_Hz_per_Volts = 1e9
-					
-				# print('DAC gain in V/Counts = %f' % self.sl.getDACGainInVoltsPerCounts(k))
+
 				# getFreqDiscriminatorGain is in DDC Counts/Hz
 				# getDACGainInVoltsPerCounts is in V/(DAC Counts)
 				VCO_gain_in_counts_per_counts = VCO_gain_in_Hz_per_Volts * self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k) #.sl.getFreqDiscriminatorGain() and self.sl.getDACGainInVoltsPerCounts(k) are constant (different for each k)
 
-				#print('k %f' % self.sl.getDACGainInVoltsPerCounts(k))
-				# print('VCO_gain_in_counts_per_counts = %f' % VCO_gain_in_counts_per_counts)
 				if k == 0 or k == 1:
 					self.qloop_filters[k].kc = VCO_gain_in_counts_per_counts
 					self.qloop_filters[k].checkFirmwareLimits()
 					self.qloop_filters[k].updateFilterSettings()
 					self.qloop_filters[k].updateGraph()
-					#print('2')
 				elif k == 2:
 					# DAC 2 loop settings are controlled by the same widget as DAC1
 					self.qloop_filters[1].kc_dac2 = VCO_gain_in_counts_per_counts
@@ -299,45 +302,49 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					self.qloop_filters[1].updateGraph()
 
 				self.sl.save_openLoop_gain(k, VCO_gain_in_counts_per_counts) #Save the value of the open-loop gain in the FPGA to allow reconnection (usefull to read Loop-Filter gain value)
-				#print('3')
 				
 				self.spectrum.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
-				#print('4')
 
 		# This function needs the VCO gain to compute the control effort so we have to update it if we have changed.
 		self.spectrum.setDACOffset_event()
-		#print('5')
 
+	@logCommsErrorsAndBreakoutOfFunction
 	def getVCOGain(self):
-		for k in range(3):
-			if self.output_controls[k]:
-				VCO_gain_in_counts_per_counts = self.sl.get_openLoop_gain(k)
-				# print("k = %d, VCO_gain_in_counts_per_counts=%f" % (k, VCO_gain_in_counts_per_counts))
-				VCO_gain_in_Hz_per_Volts = VCO_gain_in_counts_per_counts / (self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k))
-				# print("k = %d, VCO_gain_in_Hz_per_Volts=%f" % (k, VCO_gain_in_Hz_per_Volts))
-				# prevent divide-by-0 bug:
-				if VCO_gain_in_Hz_per_Volts == 0:
-					VCO_gain_in_Hz_per_Volts = 1.
+		if self.selected_ADC == 0:
+			dac_list = [0]
+		elif self.selected_ADC == 1:
+			dac_list = [1, 2]
 
-				self.qedit_vco_gain[k].blockSignals(True)
-				self.qedit_vco_gain[k].setText('{:.1e}'.format(VCO_gain_in_Hz_per_Volts))
-				self.qedit_vco_gain[k].blockSignals(False)
+		for k in dac_list:
+			# if self.output_controls[k]:
+			VCO_gain_in_counts_per_counts = self.sl.get_openLoop_gain(k)
+			# print("k = %d, VCO_gain_in_counts_per_counts=%f" % (k, VCO_gain_in_counts_per_counts))
+			VCO_gain_in_Hz_per_Volts = VCO_gain_in_counts_per_counts / (self.sl.getFreqDiscriminatorGain() * self.sl.getDACGainInVoltsPerCounts(k))
+			# print("k = %d, VCO_gain_in_Hz_per_Volts=%f" % (k, VCO_gain_in_Hz_per_Volts))
+			# prevent divide-by-0 bug:
+			if VCO_gain_in_Hz_per_Volts == 0:
+				VCO_gain_in_Hz_per_Volts = 1.
 
-				if k == 0 or k == 1:
-					self.qloop_filters[k].kc = VCO_gain_in_counts_per_counts
-					self.qloop_filters[k].checkFirmwareLimits()
-					self.qloop_filters[k].updateGraph()
-				elif k == 2:
-					# DAC 2 loop settings are controlled by the same widget as DAC1
-					self.qloop_filters[1].kc_dac2 = VCO_gain_in_counts_per_counts
-					self.qloop_filters[1].checkFirmwareLimits()
-					self.qloop_filters[1].updateGraph()
+			self.qedit_vco_gain[k].blockSignals(True)
+			self.qedit_vco_gain[k].setText('{:.1e}'.format(VCO_gain_in_Hz_per_Volts))
+			self.qedit_vco_gain[k].blockSignals(False)
+
+			if k == 0 or k == 1:
+				self.qloop_filters[k].kc = VCO_gain_in_counts_per_counts
+				self.qloop_filters[k].checkFirmwareLimits()
+				self.qloop_filters[k].updateGraph()
+			elif k == 2:
+				# DAC 2 loop settings are controlled by the same widget as DAC1
+				self.qloop_filters[1].kc_dac2 = VCO_gain_in_counts_per_counts
+				self.qloop_filters[1].checkFirmwareLimits()
+				self.qloop_filters[1].updateGraph()
 
 
-				self.spectrum.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
+			self.spectrum.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
 
+	@logCommsErrorsAndBreakoutOfFunction
 	def setVCOFreq_event(self):
-		# print("setVCOFreq_event")
+		# print("setVCOFreq_event: self.selected_ADC = %d" % self.selected_ADC)
 		try:
 			frequency_in_hz = float(self.qedit_ref_freq.text())
 		except:
@@ -355,6 +362,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.sl.set_ddc1_ref_freq(frequency_in_hz)
 		#print('frequency_in_hz = %e (after)' % frequency_in_hz)
 
+	@logCommsErrorsAndBreakoutOfFunction
 	def getVCOFreq(self):
 		if self.selected_ADC == 0:
 			frequency_in_hz = self.sl.get_ddc0_ref_freq_from_RAM()
@@ -400,7 +408,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def exportData(self):
 		# First need to create a unique file name template (with good probability)
 		# We simply use the system date and time, and hope that this function doesn't get called twice in a second
-		strNameTemplate = time.strftime("data_export\%m_%d_%Y_%H_%M_%S_")
+		strNameTemplate = time.strftime("data_export\\%m_%d_%Y_%H_%M_%S_")
 #        Data to write:
 #        self.inst_freq
 #        self.freq_noise_psd
@@ -447,9 +455,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 
 			
-	def grabAndExportData(self):
+	def grabAndExportData(self, bSyncReadOnNextTimeQuantization=True):
 		
-		start_time = time.clock()
+		start_time = time.perf_counter()
 		print('Grabbing and exporting data')
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
@@ -503,19 +511,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			##################################################
 			# Synchronize trigger as best as possible to the next multiple of time_quantum seconds:
-			time_quantum = 0.01
-			time_now = time.time()
-			time_target = np.ceil(time_now/time_quantum) * time_quantum
-			print('time_now = %f, time_target = %f' % (time_now, time_target))
-			
-			while time_target > time_now:
-				time.sleep(1e-3)
+			if bSyncReadOnNextTimeQuantization:
+				time_quantum = 0.01
 				time_now = time.time()
+				time_target = np.ceil(time_now/time_quantum) * time_quantum
+				print('time_now = %f, time_target = %f' % (time_now, time_target))
 				
-			
-			
+				while time_target > time_now:
+					time.sleep(1e-3)
+					time_now = time.time()
+				
 			self.sl.trigger_write()
-			print('time_now = %f, time_target = %f' % (time_now, time_target))
+			if bSyncReadOnNextTimeQuantization:
+				print('time_now = %f, time_target = %f' % (time_now, time_target))
 			self.sl.wait_for_write()
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 			samples_out = samples_out.astype(dtype=np.float)/2**15
@@ -528,11 +536,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Signal to other functions that they can use the DDR2 logger
 		self.sl.bDDR2InUse = False
 		
-		print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
-		start_time = time.clock()
+		print('Elapsed time (Comm) = %f' % (time.perf_counter()-start_time))
+		start_time = time.perf_counter()
 		
 		# Write the data to disk:
-		strNameTemplate = time.strftime("data_export\%m_%d_%Y_%H_%M_%S_")
+		strNameTemplate = time.strftime("data_export\\%m_%d_%Y_%H_%M_%S_")
 
 		self.make_sure_path_exists('data_export')
 
@@ -545,8 +553,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		except:
 			pass
 		
-		print('Elapsed time (write to disk) = %f' % (time.clock()-start_time))
-		start_time = time.clock()
+		print('Elapsed time (write to disk) = %f' % (time.perf_counter()-start_time))
+		start_time = time.perf_counter()
 		
 
 	def setLock(self):
@@ -850,7 +858,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		
 		# Create widgets to indicate performance
-		self.last_refresh = time.clock()
+		self.last_refresh = time.perf_counter()
 		self.qlabel_refreshrate_display = Qt.QLabel('Actual delay:')
 		self.qlabel_refreshrate = Qt.QLabel('1000 ms')
 #        self.qlabel_refreshrate.resize(self.qlabel_refreshrate.sizeHint())
@@ -1239,7 +1247,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if bUpdateFPGA == True:
 			self.setVCOFreq_event()
 			self.setVCOGain_event()
-			# self.setDACOffset_event()  # not needed because setVCOGain_event calls it anyway
 			self.chkLockClickedEvent()
 			if self.output_controls[0] == True:
 				self.setPWM0_event()
@@ -1286,6 +1293,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #            event.ignore()
 		return
 		
+	@logCommsErrorsAndBreakoutOfFunction
 	def timerDitherEvent(self):
 		# print('timerDitherEvent')
 
@@ -1300,7 +1308,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			return
 
 	
-		start_time = time.clock()
+		start_time = time.perf_counter()
 		for k in range(2): #There is no dither for the 2nd DAC
 			if self.output_controls[k]:
 				if self.sl.dither_enable[k] == False:
@@ -1314,23 +1322,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					# This means that the detected gain will be positive when the VCO sign checkbox is correctly tuned
 					samples = -samples
 					samples = np.mean(samples)
-#                    print('Dither output: %d' % np.real(samples))
 					# np.mean() returns a numpy.float, but the conversions functions expect an ndarray
-	#                print(type(samples))
 					samples = np.ndarray((1,), dtype=np.float, buffer=samples)
-	#                print(type(samples))
-					
-	#                rep1 = self.sl.scaleDitherResultsToHz(np.real(samples), k)
-	#                rep2 = self.sl.scaleDitherResultsToHzPerVolts(np.imag(samples), k)
-	#                print('Real part = %f Hz' % self.sl.scaleDitherResultsToHz(np.real(samples[0]), k))
-	#                print('Real part = %f Hz/V' % self.sl.scaleDitherResultsToHzPerVolts(np.real(samples[0]), k))
-					
+
 					# TODO: fancier things with the real and imaginary part, to try to detect invalid readings?  Is this necessary?
 					# TODO: Compare many different readings to try to sort out any incorrect ones?
 					VCO_detected_gain_in_Hz_per_Volts = self.sl.scaleDitherResultsToHzPerVolts(samples, k)
 					self.VCO_detected_gain_in_Hz_per_Volts[k] = VCO_detected_gain_in_Hz_per_Volts
 					self.qlabel_detected_vco_gain[k].setText('%.1e' % VCO_detected_gain_in_Hz_per_Volts)
-					elapsed_time = time.clock() - start_time
+					elapsed_time = time.perf_counter() - start_time
 	#                print('Elapsed time (timerDitherEvent) = %f ms' % (1000*elapsed_time))
 					
 					# If the detected gain is negative, the loop will be unstable when closed, so we switch to a red background so that the user can flip the sign

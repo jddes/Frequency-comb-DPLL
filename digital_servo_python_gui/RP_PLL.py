@@ -12,11 +12,19 @@ import numpy as np
 import logging
 #import matplotlib.pyplot as plt
 
+class CommsError(Exception):
+    pass
+
+class CommsLoggeableError(CommsError):
+    pass
+
+
 class socket_placeholder():
     def __init__(self):
         pass
     def sendall(*args):
         print("socket_placeholder::sendall(): No active socket. Was called from {}".format(sys._getframe().f_back.f_code.co_name))
+        traceback.print_stack()
         pass
     def recv(*args):
         print("socket_placeholder::recv(): No active socket")
