@@ -73,6 +73,53 @@ class PlotWidgetIntercept():
         self.strTitle = strTitle
         self.obj.setTitle(strTitle)
 
+def print_all_state(g):
+# this is used to determine what the "true" outputs should be
+    
+    print("--------------------- Output state -------------------")
+    print("g.filtered_baseband_snr = %f" % g.filtered_baseband_snr)
+
+    # GUI-based outputs:
+    print("g.qadc0_scale.value = %f" % g.qadc0_scale.value)
+    print("g.qthermo_baseband_snr.value = %f" % g.qthermo_baseband_snr.value)
+    print("g.qthermo_baseband_snr.value = %f" % g.qthermo_baseband_snr.value)
+
+    print("g.qlabel_adc_fill_value.text() = %s" % g.qlabel_adc_fill_value.text())
+    print("g.qlabel_rawdata_rbw.text() = %s" % g.qlabel_rawdata_rbw.text())
+    print("g.qlabel_baseband_snr_value.text() = %s" % g.qlabel_baseband_snr_value.text())
+
+    # "outputs" that were really calls to the plotting library (that we intercepted) or their effects:
+    print("g.qplt_IQ.xmin_val = %f" % g.qplt_IQ.xmin_val)
+    print("g.qplt_IQ.xmax_val = %f" % g.qplt_IQ.xmax_val)
+    print("g.qplt_IQ.ymin_val = %f" % g.qplt_IQ.ymin_val)
+    print("g.qplt_IQ.ymax_val = %f" % g.qplt_IQ.ymax_val)
+    print("g.qplt_IQ.bReplotCalls = %d" % g.qplt_IQ.bReplotCalls)
+
+    print("g.plt_spc.xmin_val = %f" % g.plt_spc.xmin_val)
+    print("g.plt_spc.xmax_val = %f" % g.plt_spc.xmax_val)
+    print("g.plt_spc.ymin_val = %f" % g.plt_spc.ymin_val)
+    print("g.plt_spc.ymax_val = %f" % g.plt_spc.ymax_val)
+    print("g.plt_spc.bReplotCalls = %d" % g.plt_spc.bReplotCalls)
+    print("g.plt_spc.strTitle = %s" % g.plt_spc.strTitle)
+
+    print("g.curve_spc.bVisible = %d" % g.curve_spc.bVisible)
+    print("g.curve_filter.bVisible = %d" % g.curve_filter.bVisible)
+    print("g.curve_IQ.bVisible = %d" % g.curve_IQ.bVisible)
+
+    decimals = 9
+    print("g.curve_spc.x = %s" % np.round(g.curve_spc.x, decimals=decimals).tolist())
+    print("g.curve_filter.x = %s" % np.round(g.curve_filter.x, decimals=decimals).tolist())
+    print("g.curve_IQ.x = %s" % np.round(g.curve_IQ.x, decimals=decimals).tolist())
+
+    print("g.curve_spc.y = %s" % np.round(g.curve_spc.y, decimals=decimals).tolist())
+    print("g.curve_filter.y = %s" % np.round(g.curve_filter.y, decimals=decimals).tolist())
+    print("g.curve_IQ.y = %s" % np.round(g.curve_IQ.y, decimals=decimals).tolist())
+
+    # internal state output variables
+    print("raw_adc_samples = %s" % repr(g.parent.raw_adc_samples.tolist()))
+    print("self.sl.bDDR2InUse = %s" % repr(g.parent.sl.bDDR2InUse))
+    print("------------------ End output state -------------------")
+
 # this is not called directly by pytest, but is called by our function which sets up the fixtures.
 # Note that we do not use pytest's fixtures feature directly.
 def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False):
@@ -120,49 +167,7 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
 
     # this is used to determine what the "true" outputs should be
     if bPrintAllOutputState:
-        print("--------------------- Output state -------------------")
-        print("g.filtered_baseband_snr = %f" % g.filtered_baseband_snr)
-
-        # GUI-based outputs:
-        print("g.qadc0_scale.value = %f" % g.qadc0_scale.value)
-        print("g.qthermo_baseband_snr.value = %f" % g.qthermo_baseband_snr.value)
-        print("g.qthermo_baseband_snr.value = %f" % g.qthermo_baseband_snr.value)
-
-        print("g.qlabel_adc_fill_value.text() = %s" % g.qlabel_adc_fill_value.text())
-        print("g.qlabel_rawdata_rbw.text() = %s" % g.qlabel_rawdata_rbw.text())
-        print("g.qlabel_baseband_snr_value.text() = %s" % g.qlabel_baseband_snr_value.text())
-
-        # "outputs" that were really calls to the plotting library (that we intercepted) or their effects:
-        print("g.qplt_IQ.xmin_val = %f" % g.qplt_IQ.xmin_val)
-        print("g.qplt_IQ.xmax_val = %f" % g.qplt_IQ.xmax_val)
-        print("g.qplt_IQ.ymin_val = %f" % g.qplt_IQ.ymin_val)
-        print("g.qplt_IQ.ymax_val = %f" % g.qplt_IQ.ymax_val)
-        print("g.qplt_IQ.bReplotCalls = %d" % g.qplt_IQ.bReplotCalls)
-
-        print("g.plt_spc.xmin_val = %f" % g.plt_spc.xmin_val)
-        print("g.plt_spc.xmax_val = %f" % g.plt_spc.xmax_val)
-        print("g.plt_spc.ymin_val = %f" % g.plt_spc.ymin_val)
-        print("g.plt_spc.ymax_val = %f" % g.plt_spc.ymax_val)
-        print("g.plt_spc.bReplotCalls = %d" % g.plt_spc.bReplotCalls)
-        print("g.plt_spc.strTitle = %s" % g.plt_spc.strTitle)
-
-        print("g.curve_spc.bVisible = %d" % g.curve_spc.bVisible)
-        print("g.curve_filter.bVisible = %d" % g.curve_filter.bVisible)
-        print("g.curve_IQ.bVisible = %d" % g.curve_IQ.bVisible)
-
-        decimals = 9
-        print("g.curve_spc.x = %s" % np.round(g.curve_spc.x, decimals=decimals).tolist())
-        print("g.curve_filter.x = %s" % np.round(g.curve_filter.x, decimals=decimals).tolist())
-        print("g.curve_IQ.x = %s" % np.round(g.curve_IQ.x, decimals=decimals).tolist())
-
-        print("g.curve_spc.y = %s" % np.round(g.curve_spc.y, decimals=decimals).tolist())
-        print("g.curve_filter.y = %s" % np.round(g.curve_filter.y, decimals=decimals).tolist())
-        print("g.curve_IQ.y = %s" % np.round(g.curve_IQ.y, decimals=decimals).tolist())
-
-        # internal state output variables
-        print("raw_adc_samples = %s" % repr(g.parent.raw_adc_samples.tolist()))
-        print("self.sl.bDDR2InUse = %s" % repr(g.parent.sl.bDDR2InUse))
-        print("------------------ End output state -------------------")
+        print_all_state(g)
 
     # Check the outputs against the expected:
     if check_grabAndDisplayADC_outputs(g, test_number):
@@ -386,14 +391,15 @@ g.parent.sl.bDDR2InUse = False"""
         expected.curve_IQ.y = np.array([0.04103, 0.0453, 0.04534, 0.04097, 0.03219, 0.02075, 0.00667, -0.00735, -0.02132, -0.03248, -0.04086, -0.04501, -0.04494, -0.04077, -0.0325, -0.02134, -0.0073, 0.00693, 0.02134, 0.03285, 0.04146, 0.04556, 0.04517, 0.04062, 0.03193, 0.02076, 0.00711, -0.00657, -0.02026, -0.03149, -0.04025, -0.0447, -0.04485, -0.04062, -0.03201, -0.02075, -0.00682, 0.00719, 0.02129, 0.03267, 0.04131, 0.04554, 0.04535, 0.04089, 0.03215, 0.02084, 0.00695, -0.00707, -0.02122, -0.03261, -0.04125, -0.04543, -0.04515, -0.04072, -0.03214, -0.02088, -0.00694, 0.00709, 0.02122, 0.03256, 0.04109, 0.04532, 0.04524, 0.04092, 0.03238, 0.02103, 0.00687, -0.0073, -0.02147, -0.03294, -0.0417, -0.046, -0.04583, -0.04137, -0.03263, -0.02118, -0.00703, 0.00704, 0.02102, 0.0323, 0.04087, 0.04511, 0.045, 0.04062])
         expected.parent.raw_adc_samples = np.array([3335.0, 1026.0, -2619.0, -2578.0, 1074.0, 3245.0, 1044.0, -2656.0, -2654.0, 1026.0, 3282.0, 1060.0, -2626.0, -2647.0, 1027.0, 3288.0, 1062.0, -2658.0, -2641.0, 985.0, 3193.0, 1034.0, -2623.0, -2675.0, 1087.0, 3229.0, 1014.0, -2657.0, -2601.0, 1061.0, 3282.0, 1025.0, -2680.0, -2716.0, 1001.0, 3282.0, 1053.0, -2612.0, -2664.0, 1003.0, 3242.0, 966.0, -2707.0, -2587.0, 996.0, 3262.0, 972.0, -2626.0, -2704.0, 1006.0, 3247.0, 1025.0, -2668.0, -2690.0, 1012.0, 3291.0, 1015.0, -2641.0, -2672.0, 1001.0, 3255.0, 1001.0, -2678.0, -2708.0, 1018.0, 3264.0, 959.0, -2636.0, -2681.0, 1014.0, 3301.0, 1017.0, -2614.0, -2691.0, 1026.0, 3254.0, 984.0, -2670.0, -2661.0, 1014.0, 3239.0, 1042.0, -2636.0, -2701.0, 1061.0, 3339.0, 1051.0, -2657.0, -2686.0, 1047.0, 3264.0, 1053.0, -2644.0, -2619.0, 1024.0, 3300.0, 1013.0, -2592.0, -2647.0, 1026.0])
 
+    return check_fields(g, test_number, expected, expected_outputs_as_text)
+
+def check_fields(g, test_number, expected, expected_outputs_as_text):
 
     (bPass, strFailedFields)       = compare_struct_fields(g, expected)
     (bPassNew, strFailedFieldsNew) = compare_text_fields(g, expected_outputs_as_text)
     # Combine the results of both types of comparisons:
     bPass = bPass and bPassNew
     strFailedFields += strFailedFieldsNew
-
-
 
     if bPass:
         print("Test #%d PASSED" % test_number)
