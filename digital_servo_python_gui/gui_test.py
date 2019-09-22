@@ -218,20 +218,6 @@ def inner_test_grabAndDisplayADC_withException(sl, gui_mainwindow):
         # check that the object state is still valid:
         assert(gui_mainwindow.sl.bDDR2InUse == False)
 
-    # this is used to determine what the "true" outputs should be
-    print_all_state(g)
-
-    # # Check the outputs against the expected:
-    # if check_grabAndDisplayADC_outputs(g, test_number):
-    #     return True
-    # else:
-    #     assert 0
-    #     return False
-
-
-
-
-
 def check_grabAndDisplayADC_outputs(g, test_number=0):
     bPass = True
     strFailedFields = ''
@@ -484,6 +470,7 @@ def test_grabAndDisplayADC_withException(bPrintAllOutputState=True):
     sl.initSubModules() # this should definitely be moved to SuperLaserLand_JD_RP.__init__()
     xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
     inner_test_grabAndDisplayADC_withException(sl, xem_gui_mainwindow)
+
 
 def test_grabAndDisplayADC(bPrintAllOutputState=True):
     app                = start_qt()

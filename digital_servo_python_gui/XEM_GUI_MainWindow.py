@@ -1818,14 +1818,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			samples_out = samples_out.astype(dtype=np.float)
 			self.raw_adc_samples = samples_out
 				
-		except:
-			# ADC read failed.
-			print('Unhandled exception in ADC read')
-			del self.sl
-			raise
-			
-		# Signal to other functions that they can use the DDR2 logger
-		self.sl.bDDR2InUse = False
+
+		except RP_PLL.CommsLoggeableError as e:
+			# log exception
+			logging.error("Exception occurred", exc_info=True)
+			return (None, None)
+
+		except RP_PLL.CommsError as e:
+			# do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
+			return (None, None)
+
+		finally:
+			# Tear-down, whether or not an exception occured: Signal to other functions that they can use the DDR2 logger
+			self.sl.bDDR2InUse = False
 		
 		if self.bDisplayTiming == True:
 			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))

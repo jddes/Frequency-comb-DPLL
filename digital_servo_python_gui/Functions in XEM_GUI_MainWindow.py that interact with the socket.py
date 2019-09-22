@@ -67,7 +67,7 @@ grabAndExportData(self): done
 chkLockClickedEvent(self): TODO!%!?%!?!%!?!
 timerDitherEvent(self): done
 timerEvent(self, e): this calls displayADC, displayDDC depending on internal state. do it after the other ones
-grabAndDisplayADC(): done
+grabAndDisplayADC(): done. now actually done, including exception recovery
 displayDAC(self):
 displayDDC(self):
 
