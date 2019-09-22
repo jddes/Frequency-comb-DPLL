@@ -30,7 +30,7 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 	# 	self.setup_write(self.SELECT_DAC2, Num_samples)
 
 	def read_adc_samples_from_DDR2(self):
-		# TODO: need to return a representative test vector (tone + noise maybe?)
+		# need to return a representative test vector (tone + noise maybe?)
 		samples_out = 0.1*np.cos(2*np.pi*25e6/self.fs*np.arange(0., self.Num_samples_read))
 		# add noise, but keep the same seed everytime for repeatable results:
 		np.random.seed(0)
