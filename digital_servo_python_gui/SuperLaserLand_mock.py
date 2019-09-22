@@ -2,6 +2,7 @@ import numpy as np
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 
+import RP_PLL
 
 # This is a subclass of SuperLaserLand_JD_RP, and we simply override
 # the methods that would not work without a physical setup attached.
@@ -10,6 +11,10 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 
 	def __init__(self):
 		super(SuperLaserLand_mock, self).__init__()
+		self.bIntroduceCommsException = {'setup_write': False, 
+		'read_adc_samples_from_DDR2': False, 
+		'trigger_write': False}
+
 		pass
 
 	def setup_write(self, selector, Num_samples):
@@ -17,6 +22,9 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		self.Num_samples_write = int(Num_samples)  # no such restriction with the Red Pitaya implementation
 		self.Num_samples_read = self.Num_samples_write
 		self.last_selector = selector
+
+		if self.bIntroduceCommsException['setup_write']:
+			raise RP_PLL.CommsError('test exception')
 	
 	# def setup_ADC0_write(self, Num_samples):
 	# 	self.setup_write(self.SELECT_ADC0, Num_samples)
@@ -30,6 +38,10 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 	# 	self.setup_write(self.SELECT_DAC2, Num_samples)
 
 	def read_adc_samples_from_DDR2(self):
+		if self.bIntroduceCommsException['read_adc_samples_from_DDR2']:
+			raise RP_PLL.CommsError('test exception')
+
+
 		# need to return a representative test vector (tone + noise maybe?)
 		samples_out = 0.1*np.cos(2*np.pi*25e6/self.fs*np.arange(0., self.Num_samples_read))
 		# add noise, but keep the same seed everytime for repeatable results:
@@ -41,6 +53,8 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 
 	# these don't need to do anything at the level of simulation we are choosing
 	def trigger_write(self):
+		if self.bIntroduceCommsException['trigger_write']:
+			raise RP_PLL.CommsError('test exception')
 		pass
 	def wait_for_write(self):
 		pass

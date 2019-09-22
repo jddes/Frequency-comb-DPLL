@@ -176,7 +176,61 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
         assert 0
         return False
 
+
+# this is not called directly by pytest, but is called by our function which sets up the fixtures.
+# Note that we do not use pytest's fixtures feature directly.
+def inner_test_grabAndDisplayADC_withException(sl, gui_mainwindow):
+    # shorthand:
+    # g = gui_mainwindow
+    g = gui_mainwindow.spectrum # almost all the displayADC functions has been re-factored into its ouw Widget
+
+    # set GUI-based inputs:
+    g.qedit_rawdata_length.setText("100") # only use 100 pts so that the outputs are easier to check
+    g.bDisplayTiming = False
+    # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+    g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Spectrum'))
+
+
+    # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
+    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
+    # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
+    # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
+
+
+    # replace the PyQtGraph objects that are acted on with our interceptors so that we can verify the correct outputs without requiring knowledge of the internal structure of the objects in PyQtGraph:
+    g.curve_spc    = PlotWindowIntercept(g.curve_spc)
+    g.curve_filter = PlotWindowIntercept(g.curve_filter)
+    g.curve_IQ     = PlotWindowIntercept(g.curve_IQ)
+    g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
+    g.plt_spc = PlotWidgetIntercept(g.plt_spc)
+
+
+    exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write']
+    for location in exception_locations:
+        # first clear all exceptions triggers:
+        for location_clear in exception_locations:
+            gui_mainwindow.sl.bIntroduceCommsException[location_clear] = False
+        # then add the one we actually want to test:
+        gui_mainwindow.sl.bIntroduceCommsException[location] = True
     
+        gui_mainwindow.grabAndDisplayADC() # this will throw (and hopefully handle gracefully) an Exception
+
+        # check that the object state is still valid:
+        assert(gui_mainwindow.sl.bDDR2InUse == False)
+
+    # this is used to determine what the "true" outputs should be
+    print_all_state(g)
+
+    # # Check the outputs against the expected:
+    # if check_grabAndDisplayADC_outputs(g, test_number):
+    #     return True
+    # else:
+    #     assert 0
+    #     return False
+
+
+
+
 
 def check_grabAndDisplayADC_outputs(g, test_number=0):
     bPass = True
@@ -408,7 +462,7 @@ def check_fields(g, test_number, expected, expected_outputs_as_text):
 
     return bPass
 
-def test_grabAndDisplayADC(bPrintAllOutputState=True):
+def start_qt():
     # Start Qt:
     app = QtCore.QCoreApplication.instance()
     if app is None:
@@ -419,7 +473,20 @@ def test_grabAndDisplayADC(bPrintAllOutputState=True):
         bEventLoopWasRunningAlready = True
         print("QCoreApplication already running.")
 
-        
+    return app
+
+
+def test_grabAndDisplayADC_withException(bPrintAllOutputState=True):
+    # This test adds a comms failure during the calls to grabAndDisplayADC and check that the GUI doesn't crash, and that it leaves everything in a correct state.
+    app                = start_qt()
+    sp                 = SLLSystemParameters()
+    sl                 = SuperLaserLand_mock()
+    sl.initSubModules() # this should definitely be moved to SuperLaserLand_JD_RP.__init__()
+    xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+    inner_test_grabAndDisplayADC_withException(sl, xem_gui_mainwindow)
+
+def test_grabAndDisplayADC(bPrintAllOutputState=True):
+    app                = start_qt()
     sp                 = SLLSystemParameters()
     sl                 = SuperLaserLand_mock()
     sl.initSubModules() # this should definitely be moved to SuperLaserLand_JD_RP.__init__()
@@ -429,8 +496,6 @@ def test_grabAndDisplayADC(bPrintAllOutputState=True):
         bPass = bPass and inner_test_grabAndDisplayADC(sl, xem_gui_mainwindow, test_number=test_case, bPrintAllOutputState=bPrintAllOutputState)
         del xem_gui_mainwindow
 
-
-
     # xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
     # bPass = bPass and test_grabAndDisplayADC(sl, xem_gui_mainwindow, test_number=2, bPrintAllOutputState=True)
     # xem_gui_mainwindow.show()
@@ -439,15 +504,6 @@ def test_grabAndDisplayADC(bPrintAllOutputState=True):
         print("All tests PASSED")
     else:
         print("Some tests FAILED")
-
-    # This code here is to handle weird interaction between IPython's event handler:
-    # Depending on the setting for the graphical backend in Spyder (Tools/Preferences/IPython Console/Graphics/Backend = (Automatic or Inline),
-    # the Qt event loop might be already running, so the proper way to teardown our application,
-    # for example to enable re-using the same console to run another instance afterwards,
-    # is different.
-    if bEventLoopWasRunningAlready == False:
-        # del xem_gui_mainwindow
-        del sl
     
 
 if __name__ == '__main__':
