@@ -14,6 +14,7 @@ from SLLSystemParameters import SLLSystemParameters
 from SuperLaserLand_mock import SuperLaserLand_mock
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
 
+from TestHelpers import *
 
 import time
 import pdb
@@ -160,8 +161,8 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
 
         # internal state output variables
         print("raw_adc_samples = %s" % repr(g.parent.raw_adc_samples.tolist()))
+        print("self.sl.bDDR2InUse = %s" % repr(g.parent.sl.bDDR2InUse))
         print("------------------ End output state -------------------")
-        
 
     # Check the outputs against the expected:
     if check_grabAndDisplayADC_outputs(g, test_number):
@@ -171,91 +172,6 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
         return False
 
     
-# finds the value of a field in a string, delimited between strStartToken and strStopToken
-# Example: strInput = "some field = whatever\nsome other field = nothing"
-# strStartToken = "some field", strStopToken = "\n"
-# output: "whatever"
-def find_field(strInput, strStartToken, strStopToken="\n"):
-    field_start_ind = strInput.find(strStartToken)
-    field_stop_ind = strInput.find(strStopToken, field_start_ind + 1)
-    if field_stop_ind == -1:
-        # end token not found: we output the value until the end of string
-        field_stop_ind = len(strInput)
-    result = strInput[field_start_ind+len(strStartToken):field_stop_ind]
-
-    return result
-
-# helper comparison function, which automatically handles either Python scalars or numpy arrays, including a little bit of slop:
-def close_enough(x, y):
-    if isinstance(x, np.ndarray):
-        if x.shape != y.shape:
-            print(x)
-            print(y)
-            print(type(x))
-            print(type(y))
-            print(str(x.shape))
-            print(str(y.shape))
-            print(type(x.shape))
-            print(type(y.shape))
-            print("close_enough(): incorrect shape: %s vs %s" % (x.shape, y.shape))
-            return False
-        else:
-            return np.max(np.abs(x - y)) < 1e-3
-    elif isinstance(x, float):
-        return bool(np.abs(float(x)-float(y)) < 1e-6)
-    else:
-        return (x == y)
-
-# use this to hold various fields for comparison purposes:
-class simple_struct:
-    pass
-
-def compare_struct_fields(actual, expected, parent_name=""):
-    bPass = True
-    strFailedFields = ''
-
-    for current_field in expected.__dict__.keys():
-        # we support nested objects through recursion:
-        if isinstance(expected.__dict__[current_field], simple_struct):
-            (bPassNew, strFailedFieldsNew) = compare_struct_fields(actual.__dict__[current_field], expected.__dict__[current_field], parent_name+'.'+current_field)
-            bPass = bPass and bPassNew
-            strFailedFields += strFailedFieldsNew
-            continue
-
-        # Apply the comparison function:
-        if not close_enough(actual.__dict__[current_field], expected.__dict__[current_field]):
-            bPass = False
-            strFailedFields += ('%s, ' % (parent_name+'.'+current_field))
-
-    return (bPass, strFailedFields)
-
-
-def compare_text_fields(actual, expected_outputs_as_text):
-    # print("compare_text_fields:")
-    bPass = True
-    strFailedFields = ''
-    for line in expected_outputs_as_text.split('\n'):
-        full_field_name = line.split('=')[0]
-        field_value_str = find_field(expected_outputs_as_text, full_field_name + '=')
-        field_sub_name = full_field_name[len('g.'):].strip()
-        # print("line = '%s'" % line)
-        # print("full_field_name = '%s'" % full_field_name)
-        # print("field_sub_name = '%s'" % field_sub_name)
-        # print("field_value_str = '%s'" % field_value_str)
-        # interpret the value as a float for comparison purposes (if possible)
-        try:
-            field_value = float(field_value_str)
-        except ValueError:
-            field_value = field_value_str[1:] # keep the comparison as string, removing the excess space character before the field
-
-        # print("field_value = '%s'" % field_value)
-
-        # compare against expected
-        if not close_enough(eval('actual.' + field_sub_name), field_value):
-            bPass = False
-            strFailedFields += full_field_name
-            print("Failed test: %s: actual : '%s', expected: '%s'" % (full_field_name, eval('actual.' + field_sub_name), field_value))
-    return (bPass, strFailedFields)
 
 def check_grabAndDisplayADC_outputs(g, test_number=0):
     bPass = True
@@ -290,7 +206,8 @@ g.plt_spc.bReplotCalls = 0
 g.plt_spc.strTitle = Spectrum, noise floor = 130 nV/sqrt(Hz)
 g.curve_spc.bVisible = -1
 g.curve_filter.bVisible = 1
-g.curve_IQ.bVisible = -1"""
+g.curve_IQ.bVisible = -1
+g.parent.sl.bDDR2InUse = False"""
 
         expected.parent.raw_adc_samples           = np.array([3335.0, 1026.0, -2619.0, -2578.0, 1074.0, 3245.0, 1044.0, -2656.0, -2654.0, 1026.0, 3282.0, 1060.0, -2626.0, -2647.0, 1027.0, 3288.0, 1062.0, -2658.0, -2641.0, 985.0, 3193.0, 1034.0, -2623.0, -2675.0, 1087.0, 3229.0, 1014.0, -2657.0, -2601.0, 1061.0, 3282.0, 1025.0, -2680.0, -2716.0, 1001.0, 3282.0, 1053.0, -2612.0, -2664.0, 1003.0, 3242.0, 966.0, -2707.0, -2587.0, 996.0, 3262.0, 972.0, -2626.0, -2704.0, 1006.0, 3247.0, 1025.0, -2668.0, -2690.0, 1012.0, 3291.0, 1015.0, -2641.0, -2672.0, 1001.0, 3255.0, 1001.0, -2678.0, -2708.0, 1018.0, 3264.0, 959.0, -2636.0, -2681.0, 1014.0, 3301.0, 1017.0, -2614.0, -2691.0, 1026.0, 3254.0, 984.0, -2670.0, -2661.0, 1014.0, 3239.0, 1042.0, -2636.0, -2701.0, 1061.0, 3339.0, 1051.0, -2657.0, -2686.0, 1047.0, 3264.0, 1053.0, -2644.0, -2619.0, 1024.0, 3300.0, 1013.0, -2592.0, -2647.0, 1026.0])
         expected.curve_spc.x                      = np.array([0.0, 0.97656, 1.95312, 2.92969, 3.90625, 4.88281, 5.85938, 6.83594, 7.8125, 8.78906, 9.76562, 10.74219, 11.71875, 12.69531, 13.67188, 14.64844, 15.625, 16.60156, 17.57812, 18.55469, 19.53125, 20.50781, 21.48438, 22.46094, 23.4375, 24.41406, 25.39062, 26.36719, 27.34375, 28.32031, 29.29688, 30.27344, 31.25, 32.22656, 33.20312, 34.17969, 35.15625, 36.13281, 37.10938, 38.08594, 39.0625, 40.03906, 41.01562, 41.99219, 42.96875, 43.94531, 44.92188, 45.89844, 46.875, 47.85156, 48.82812, 49.80469, 50.78125, 51.75781, 52.73438, 53.71094, 54.6875, 55.66406, 56.64062, 57.61719, 58.59375, 59.57031, 60.54688, 61.52344])
@@ -321,7 +238,8 @@ g.plt_spc.bReplotCalls = 0
 g.plt_spc.strTitle = Time, std = 70.74 mV, ampl = 200.09 mVpp
 g.curve_spc.bVisible = -1
 g.curve_filter.bVisible = 0
-g.curve_IQ.bVisible = -1"""
+g.curve_IQ.bVisible = -1
+g.parent.sl.bDDR2InUse = False"""
 
         expected.curve_spc.x = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         expected.curve_filter.x = np.array([-1])
@@ -355,7 +273,8 @@ g.plt_spc.bReplotCalls = 0
 g.plt_spc.strTitle = Time-domain phase, std = 7.62 radrms
 g.curve_spc.bVisible = -1
 g.curve_filter.bVisible = 0
-g.curve_IQ.bVisible = -1"""
+g.curve_IQ.bVisible = -1
+g.parent.sl.bDDR2InUse = False"""
 
         expected.curve_spc.x = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         expected.curve_filter.x = np.array([-1])
@@ -388,7 +307,8 @@ g.plt_spc.bReplotCalls = 0
 g.plt_spc.strTitle = Time-domain IQ signals (I: blue, Q: red)
 g.curve_spc.bVisible = -1
 g.curve_filter.bVisible = 1
-g.curve_IQ.bVisible = -1"""
+g.curve_IQ.bVisible = -1
+g.parent.sl.bDDR2InUse = False"""
 
         expected.curve_spc.x = np.array([0.0, 8e-09, 1.6e-08, 2.4e-08, 3.2e-08, 4e-08, 4.8e-08, 5.6e-08, 6.4e-08, 7.2e-08, 8e-08, 8.8e-08, 9.6e-08, 1.04e-07, 1.12e-07, 1.2e-07, 1.28e-07, 1.36e-07, 1.44e-07, 1.52e-07, 1.6e-07, 1.68e-07, 1.76e-07, 1.84e-07, 1.92e-07, 2e-07, 2.08e-07, 2.16e-07, 2.24e-07, 2.32e-07, 2.4e-07, 2.48e-07, 2.56e-07, 2.64e-07, 2.72e-07, 2.8e-07, 2.88e-07, 2.96e-07, 3.04e-07, 3.12e-07, 3.2e-07, 3.28e-07, 3.36e-07, 3.44e-07, 3.52e-07, 3.6e-07, 3.68e-07, 3.76e-07, 3.84e-07, 3.92e-07, 4e-07, 4.08e-07, 4.16e-07, 4.24e-07, 4.32e-07, 4.4e-07, 4.48e-07, 4.56e-07, 4.64e-07, 4.72e-07, 4.8e-07, 4.88e-07, 4.96e-07, 5.04e-07, 5.12e-07, 5.2e-07, 5.28e-07, 5.36e-07, 5.44e-07, 5.52e-07, 5.6e-07, 5.68e-07, 5.76e-07, 5.84e-07, 5.92e-07, 6e-07, 6.08e-07, 6.16e-07, 6.24e-07, 6.32e-07, 6.4e-07, 6.48e-07, 6.56e-07, 6.64e-07])
         expected.curve_filter.x = np.array([0.0, 8e-09, 1.6e-08, 2.4e-08, 3.2e-08, 4e-08, 4.8e-08, 5.6e-08, 6.4e-08, 7.2e-08, 8e-08, 8.8e-08, 9.6e-08, 1.04e-07, 1.12e-07, 1.2e-07, 1.28e-07, 1.36e-07, 1.44e-07, 1.52e-07, 1.6e-07, 1.68e-07, 1.76e-07, 1.84e-07, 1.92e-07, 2e-07, 2.08e-07, 2.16e-07, 2.24e-07, 2.32e-07, 2.4e-07, 2.48e-07, 2.56e-07, 2.64e-07, 2.72e-07, 2.8e-07, 2.88e-07, 2.96e-07, 3.04e-07, 3.12e-07, 3.2e-07, 3.28e-07, 3.36e-07, 3.44e-07, 3.52e-07, 3.6e-07, 3.68e-07, 3.76e-07, 3.84e-07, 3.92e-07, 4e-07, 4.08e-07, 4.16e-07, 4.24e-07, 4.32e-07, 4.4e-07, 4.48e-07, 4.56e-07, 4.64e-07, 4.72e-07, 4.8e-07, 4.88e-07, 4.96e-07, 5.04e-07, 5.12e-07, 5.2e-07, 5.28e-07, 5.36e-07, 5.44e-07, 5.52e-07, 5.6e-07, 5.68e-07, 5.76e-07, 5.84e-07, 5.92e-07, 6e-07, 6.08e-07, 6.16e-07, 6.24e-07, 6.32e-07, 6.4e-07, 6.48e-07, 6.56e-07, 6.64e-07])
@@ -421,7 +341,8 @@ g.plt_spc.bReplotCalls = 0
 g.plt_spc.strTitle = Time-domain IQ signals, phase aligned at t=0
 g.curve_spc.bVisible = -1
 g.curve_filter.bVisible = 1
-g.curve_IQ.bVisible = -1"""
+g.curve_IQ.bVisible = -1
+g.parent.sl.bDDR2InUse = False"""
 
 
         expected.curve_spc.x = np.array([0.0, 8e-09, 1.6e-08, 2.4e-08, 3.2e-08, 4e-08, 4.8e-08, 5.6e-08, 6.4e-08, 7.2e-08, 8e-08, 8.8e-08, 9.6e-08, 1.04e-07, 1.12e-07, 1.2e-07, 1.28e-07, 1.36e-07, 1.44e-07, 1.52e-07, 1.6e-07, 1.68e-07, 1.76e-07, 1.84e-07, 1.92e-07, 2e-07, 2.08e-07, 2.16e-07, 2.24e-07, 2.32e-07, 2.4e-07, 2.48e-07, 2.56e-07, 2.64e-07, 2.72e-07, 2.8e-07, 2.88e-07, 2.96e-07, 3.04e-07, 3.12e-07, 3.2e-07, 3.28e-07, 3.36e-07, 3.44e-07, 3.52e-07, 3.6e-07, 3.68e-07, 3.76e-07, 3.84e-07, 3.92e-07, 4e-07, 4.08e-07, 4.16e-07, 4.24e-07, 4.32e-07, 4.4e-07, 4.48e-07, 4.56e-07, 4.64e-07, 4.72e-07, 4.8e-07, 4.88e-07, 4.96e-07, 5.04e-07, 5.12e-07, 5.2e-07, 5.28e-07, 5.36e-07, 5.44e-07, 5.52e-07, 5.6e-07, 5.68e-07, 5.76e-07, 5.84e-07, 5.92e-07, 6e-07, 6.08e-07, 6.16e-07, 6.24e-07, 6.32e-07, 6.4e-07, 6.48e-07, 6.56e-07, 6.64e-07])
@@ -454,7 +375,8 @@ g.plt_spc.bReplotCalls = 0
 g.plt_spc.strTitle = Time, std = 70.74 mV, ampl = 200.09 mVpp
 g.curve_spc.bVisible = -1
 g.curve_filter.bVisible = 0
-g.curve_IQ.bVisible = -1"""
+g.curve_IQ.bVisible = -1
+g.parent.sl.bDDR2InUse = False"""
 
         expected.curve_spc.x = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         expected.curve_filter.x = np.array([])
