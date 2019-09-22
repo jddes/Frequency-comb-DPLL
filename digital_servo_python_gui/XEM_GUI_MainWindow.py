@@ -1438,21 +1438,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				start_time = time.clock()
 			
 				(samples_out, ref_exp0) = self.getADCdata(input_select="DAC%d" % k, N_samples=256)
-
 				if samples_out is None:
 					return
-				
 				elapsed_time = time.clock() - start_time
 				if self.bDisplayTiming == True:
 					print('Elapsed time (read dac values) = %f ms' % (1000*elapsed_time))
-				
-				
 				samples_out = samples_out.astype(dtype=np.float)
 
-				try:
-					VCO_gain_in_Hz_per_Volts = float(self.qedit_vco_gain[k].text())
-				except:
-					VCO_gain_in_Hz_per_Volts = 1e9
+				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
 					
 				# Update the display:           
 				# For the USB bug, compute the mean from the last points     
