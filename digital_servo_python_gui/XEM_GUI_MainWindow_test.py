@@ -10,6 +10,8 @@ from XEM_GUI_MainWindow import XEM_GUI_MainWindow
 
 import RP_PLL
 
+from TestHelpers import *
+
 def start_qt():
     # Start Qt:
     app = QtCore.QCoreApplication.instance()
@@ -57,15 +59,6 @@ def test_slowStart100VSwitchingSupply_with_exception():
     xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
     # we simply make sure that the function does not raise an exception:
     xem_gui_mainwindow.slowStart100VSwitchingSupply()
-
-class count_calls():
-    def __init__(self):
-        self.calls_number = 0
-        
-    def calls_counting(self, *args, **kwargs):
-        self.calls_number += 1
-
-
 
 # @pytest.mark.skiptest
 def test_setVCOGain_event():
@@ -284,6 +277,7 @@ def test_setVCOFreq_event():
     xem_gui_mainwindow.setVCOFreq_event()
     assert(xem_gui_mainwindow.sl.set_ddc0_ref_freq_called == 0)
     assert(xem_gui_mainwindow.sl.set_ddc1_ref_freq_called == 1)
+
 # @pytest.mark.skiptest
 def test_setVCOFreq_event_with_exception():
     # intercept the calls that are the "output" of the function that we want to test:
@@ -314,26 +308,6 @@ def test_setVCOFreq_event_with_exception():
     xem_gui_mainwindow.setVCOFreq_event()
 
 
-# This is a more advanced version of the object above:
-# it counts the calls to any method (and doesn't do anything else)
-class count_calls_obj():
-    def __init__(self, *args, **kwargs):
-        self.calls = [] # this will contain a list
-        # each entry in this dict will contain a tuple, where each entry is a particular call to a function
-        # each entry will then be a tuple of (name, args, kwargs)
-
-        self.mode = 'recording' # switch this to "checking" to facilitate checking the various calls
-
-    def __getattr__(self, name):
-        print("getattr(): %s" % name)
-        # create a new method that just logs every call to this function along with the arguments
-        def newfunc(*args, **kwargs):
-            if self.mode == 'recording':
-                self.calls.append((name, args, kwargs))
-            else:
-                return (name, args, kwargs)
-
-        return newfunc
 # @pytest.mark.skiptest
 def test_getVCOFreq():
     class SuperLaserLand_JD_RP_mock(SuperLaserLand_JD_RP):

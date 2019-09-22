@@ -380,7 +380,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qedit_ref_freq.blockSignals(False)
 		
 	def refreshChk_event(self):
-#        print('refreshChk_event()')
+		print('refreshChk_event()')
 		if self.qchk_refresh.isChecked():
 			# We are doing a not running->running transition
 			try:
@@ -1327,6 +1327,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		return
 		
+	@logCommsErrorsAndBreakoutOfFunction
 	def timerEvent(self, e):
 		# print 'timerEvent : %.3f sec' % (time.clock())
 
@@ -1338,8 +1339,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				pass
 					
 			# Handle the LEDs display
-			(LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2) = self.sl.readLEDs()
-			#print ('%d, %d, %d, %d, %d, %d' % (LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2))
+			ret = self.sl.readLEDs()
+			if ret is not None:
+				(LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2) = ret
+				print ('%d, %d, %d, %d, %d, %d' % (LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2))
 
 
 			# if self.selected_ADC == 0:

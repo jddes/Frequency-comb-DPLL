@@ -10,15 +10,16 @@ from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import numpy as np
 import pytest
 
+import time
+import pdb
+
 from SLLSystemParameters import SLLSystemParameters
 from SuperLaserLand_mock import SuperLaserLand_mock
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
 
 from TestHelpers import *
 
-import time
-import pdb
-
+import RP_PLL
 
 #sys._excepthook = sys.excepthook
 #def exception_hook(exctype, value, traceback):
@@ -445,6 +446,51 @@ def injectGrabDataException(sl, location):
             sl.bIntroduceCommsException[location_clear] = False
         # then add the one we actually want to test:
         sl.bIntroduceCommsException[location] = True
+
+# @pytest.mark.skip(reason="not fixed yet")
+def test_timerEvent():
+    (app, sp, sl) = initGuiObjects()
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+
+    # shorthand:
+    g = gui_mainwindow
+
+    # setup correct state:
+    g.qchk_phase_noise_fast_updates.setChecked(True)
+    g.qchk_refresh.setChecked(True)
+
+    # we can't have the timerEvent() function calling these since we didn't setup all the required mocks.
+    # so we just count how many times the functions are called instead
+
+    grabAndDisplayADC = count_calls()
+    displayDAC = count_calls()
+    displayDDC = count_calls()
+    readLEDs = count_calls()
+
+    g.grabAndDisplayADC = grabAndDisplayADC.calls_counting
+    g.displayDAC = displayDAC.calls_counting
+    g.displayDDC = displayDDC.calls_counting
+    g.sl.readLEDs = readLEDs.calls_counting
+
+    g.timerEvent(None)
+
+    assert(grabAndDisplayADC.calls_number == 1)
+    assert(displayDAC.calls_number == 1)
+    assert(displayDDC.calls_number == 1)
+    assert(readLEDs.calls_number == 1)
+
+    # try calling it again, this time throwing an exception from sl.readLEDs()
+    readLEDs.raise_exception = True
+    readLEDs.exception = RP_PLL.CommsError()
+    g.timerEvent(None)
+
+    assert(grabAndDisplayADC.calls_number == 1)
+    assert(displayDAC.calls_number == 1)
+    assert(displayDDC.calls_number == 1)
+    assert(readLEDs.calls_number == 2)
+
+
+    # assert(0)
 
 def inner_test_displayDDC(sl, gui_mainwindow, bCheckValues=True):
     # shorthand:

@@ -100,3 +100,36 @@ def compare_text_fields(actual, expected_outputs_as_text):
             print("Failed test: %s: actual : '%s', expected: '%s'" % (full_field_name, repr(result), repr(field_value)))
             print(close_enough(False, 'False'))
     return (bPass, strFailedFields)
+
+
+class count_calls():
+    def __init__(self):
+        self.calls_number = 0
+        self.raise_exception = False
+        self.exception = Exception("Exception from count_calls::calls_counting()")
+        
+    def calls_counting(self, *args, **kwargs):
+        self.calls_number += 1
+        if self.raise_exception:
+            raise self.exception
+
+# This is a more advanced version of the object above:
+# it counts the calls to any method (and doesn't do anything else)
+class count_calls_obj():
+    def __init__(self, *args, **kwargs):
+        self.calls = [] # this will contain a list
+        # each entry in this dict will contain a tuple, where each entry is a particular call to a function
+        # each entry will then be a tuple of (name, args, kwargs)
+
+        self.mode = 'recording' # switch this to "checking" to facilitate checking the various calls
+
+    def __getattr__(self, name):
+        print("getattr(): %s" % name)
+        # create a new method that just logs every call to this function along with the arguments
+        def newfunc(*args, **kwargs):
+            if self.mode == 'recording':
+                self.calls.append((name, args, kwargs))
+            else:
+                return (name, args, kwargs)
+
+        return newfunc
