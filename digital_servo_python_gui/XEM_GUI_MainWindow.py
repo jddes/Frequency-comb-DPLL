@@ -1509,7 +1509,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			N_decimation = 10
 			fs_new = self.sl.fs/N_decimation
 			#inst_freq_decimated = decimate(inst_freq, N_decimation, zero_phase=False)
-			inst_freq_decimated = decimate(inst_freq, N_decimation, zero_phase=False)
+			inst_freq_decimated = decimate(detrend(inst_freq), N_decimation, zero_phase=False)
 			
 #            inst_freq_decimated = inst_freq
 #            fs_new = self.sl.fs
@@ -1531,7 +1531,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			window_NEB = np.sum((window_function/np.sum(window_function))**2) * fs_new;
 #            print('window_NEB = %f Hz' % window_NEB)
 			
-			spc = np.fft.fft(detrend(inst_freq_decimated) * window_function, N_fft)
+			spc = np.fft.fft(inst_freq_decimated * window_function, N_fft)
 			spc = np.real(spc*np.conj(spc))/(sum(window_function)**2) # Spectrum is now scaled in power (Hz^2 per bin)
 			# Scale the spectrum to be a single-sided power spectral density in Hz^2/Hz:
 			spc[1:last_index_shown] = 2*spc[1:last_index_shown] / window_NEB

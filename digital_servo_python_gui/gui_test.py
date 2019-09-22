@@ -65,6 +65,16 @@ class PlotWidgetIntercept():
         self.ymax_val = max_val
         self.obj.setYRange(min_val, max_val)
 
+    def setLabel(self, *args, **kwargs):
+        pass
+
+    def getPlotItem(self):
+        # class PlotItemMock():
+        #     def setLogMode(self, *args, **kwargs):
+        #         pass
+        # obj = PlotItemMock()
+        return self.obj.getPlotItem()
+
     def replot(self):
         self.bReplotCalls += 1
         self.obj.replot()
@@ -426,7 +436,7 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
         # # Signal to other functions that they can use the DDR2 logger
         # self.sl.bDDR2InUse = False
 
-exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write']
+exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write', 'read_ddc_samples_from_DDR2']
 
 def injectGrabDataException(sl, location):
     for location in exception_locations:
@@ -435,6 +445,64 @@ def injectGrabDataException(sl, location):
             sl.bIntroduceCommsException[location_clear] = False
         # then add the one we actually want to test:
         sl.bIntroduceCommsException[location] = True
+
+def inner_test_displayDDC(sl, gui_mainwindow, bCheckValues=True):
+    # shorthand:
+    g = gui_mainwindow
+
+    g.qedit_ddc_length.setText('1000')
+    g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
+    g.qplt_DDC0_spc = PlotWidgetIntercept(g.qplt_DDC0_spc)
+
+    g.sl.random_seed = g.selected_ADC
+
+    g.displayDDC()
+
+    print("selected_ADC = %s" % str(gui_mainwindow.selected_ADC))
+    if bCheckValues == False:
+        print("skipped checking values.")
+        return
+
+    if g.selected_ADC == 0:
+        assert(g.qlbl_mean_freq_error.text() == "Freq error: 0.10 MHz")
+        assert(g.qplt_DDC0_spc.strTitle == "Phase noise PSD, std dev = 1.45 radrms")
+    elif g.selected_ADC == 1:
+        assert(g.qlbl_mean_freq_error.text() == "Freq error: 0.20 MHz")
+        assert(g.qplt_DDC0_spc.strTitle == "Phase noise PSD, std dev = 2.90 radrms")
+    else:
+        assert(0) # invalid
+
+
+def test_displayDDC():
+    (app, sp, sl) = initGuiObjects()
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+    inner_test_displayDDC(sl, gui_mainwindow)
+
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 1, (False, True, True), sp, '', '')
+    inner_test_displayDDC(sl, gui_mainwindow)
+
+# @pytest.mark.skip(reason="not fixed yet")
+def test_displayDDC_withException():
+    (app, sp, sl) = initGuiObjects()
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+
+    for location in exception_locations:
+        injectGrabDataException(sl, location)
+        inner_test_displayDDC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
+
+        # check that the object state is still valid:
+        assert(gui_mainwindow.sl.bDDR2InUse == False)
+
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (False, True, True), sp, '', '')
+
+
+    for location in exception_locations:
+        injectGrabDataException(sl, location)
+        inner_test_displayDDC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
+
+        # check that the object state is still valid:
+        assert(gui_mainwindow.sl.bDDR2InUse == False)
+
 
 def inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=True):
     if gui_mainwindow.output_controls[0] == True:

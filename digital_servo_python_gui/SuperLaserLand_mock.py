@@ -13,6 +13,7 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		super(SuperLaserLand_mock, self).__init__()
 		self.bIntroduceCommsException = {'setup_write': False, 
 		'read_adc_samples_from_DDR2': False, 
+		'read_ddc_samples_from_DDR2': False,
 		'trigger_write': False}
 		self.random_seed = 0
 
@@ -50,6 +51,27 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		samples_out = np.round(2.**(16-1) * samples_out)
 		ref_exp0 = 1. + 0.j
 		return (samples_out, ref_exp0)
+
+
+	def read_ddc_samples_from_DDR2(self):
+		if self.bIntroduceCommsException['read_ddc_samples_from_DDR2']:
+			raise RP_PLL.CommsError('test exception')
+
+
+		# need to return a representative test vector (tone + noise maybe?)
+		# samples_out = 0.1*np.cos(2*np.pi*1e6/self.fs*np.arange(0., self.Num_samples_read))
+		samples_out = np.zeros((self.Num_samples_read, ))
+		# make the two test cases different a bit:
+		if self.last_selector == self.LOGGER_MUX['DDC0']:
+			samples_out = samples_out + 1e5
+		elif self.last_selector == self.LOGGER_MUX['DDC1']:
+			samples_out = samples_out + 2e5
+		# # add noise, but keep the same seed everytime for repeatable results:
+		# np.random.seed(self.random_seed)
+		# samples_out = samples_out + 1e6 * np.diff(np.random.randn(self.Num_samples_read), prepend=(0,))
+		
+
+		return samples_out
 
 	# these don't need to do anything at the level of simulation we are choosing
 	def trigger_write(self):
