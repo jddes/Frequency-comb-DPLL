@@ -422,30 +422,113 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
         assert 0
         return False
 
-
-        #         # Update the display:           
-        #         # For the USB bug, compute the mean from the last points     
-        #         current_output_in_volts = self.sl.convertDACCountsToVolts(k, np.mean(samples_out[128:256]))
-        #         current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
-        #         self.spectrum.qthermo_dac_current[k].setValue(current_output_in_volts)
-        #         self.spectrum.qlabel_dac_current_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
-                
-        #         elapsed_time = time.clock() - start_time
-        #         if self.bDisplayTiming == True:
-        #             print('Elapsed time (displayDAC total) = %f ms' % (1000*elapsed_time))
-            
-        # # Signal to other functions that they can use the DDR2 logger
-        # self.sl.bDDR2InUse = False
-
 exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write', 'read_ddc_samples_from_DDR2']
 
-def injectGrabDataException(sl, location):
+def injectSLexception(sl, location, exception_locations):
     for location in exception_locations:
         # first clear all exceptions triggers:
         for location_clear in exception_locations:
             sl.bIntroduceCommsException[location_clear] = False
         # then add the one we actually want to test:
         sl.bIntroduceCommsException[location] = True
+
+def inner_test_chkLockClickedEvent(sl, sp, selected_ADC, checked, bCheckValues, updateFilterSettingsException=False, updateSettingsException=False):
+
+    if selected_ADC == 0:
+        output_controls = (True, False, False)
+
+    elif selected_ADC == 1:
+        output_controls = (False, True, True)
+
+    # Setup all and state:
+    g = XEM_GUI_MainWindow(sl, 'Testing window', selected_ADC, output_controls, sp, '', '')
+    # make sure that the VCO gain is equal to the detected VCO gain, to avoid creating MessageBoxes:
+    g.VCO_detected_gain_in_Hz_per_Volts[g.selected_ADC] = g.getVCOGainFromUI(g.selected_ADC)
+    g.bFirstTimeLockCheckBoxClicked = False
+    g.sl.dither_mode_auto = (1, 1) # need to test with this on too, because of the call to sl.setDitherLockInState()
+    g.sl.output_vco = [0, 0]
+    g.qchk_lock.setChecked(checked)
+
+    # setup mocks:
+    setDitherLockInState = count_calls()
+    updateFilterSettings = count_calls()
+    updateSettings       = count_calls()
+    if updateFilterSettingsException:
+        updateFilterSettings.raise_exception = True
+        updateFilterSettings.exception = RP_PLL.CommsError()
+    if updateSettingsException:
+        updateSettings.raise_exception = True
+        updateSettings.exception = RP_PLL.CommsError()
+    sl.setDitherLockInState = setDitherLockInState.calls_counting
+    if selected_ADC == 0:
+        g.qloop_filters[0].updateFilterSettings = updateFilterSettings.calls_counting
+    elif selected_ADC == 1:
+        g.qloop_filters[1].updateSettings = updateSettings.calls_counting
+    
+
+    # actual test call:
+    g.chkLockClickedEvent()
+
+    # bail out if we are just checking behavior during an exception:
+    if bCheckValues == False:
+        return
+
+    # check outputs:
+    if selected_ADC == 0:
+        assert(setDitherLockInState.calls_number == 1);
+        assert(updateFilterSettings.calls_number == 1);
+        assert(g.qloop_filters[0].qchk_lock.isChecked() == checked)
+    elif selected_ADC == 1:
+        if checked:
+            assert(g.qloop_filters[1].qradio_mode_off.isChecked() == False)
+            assert(g.qloop_filters[1].qradio_mode_slow.isChecked() == False)
+            assert(g.qloop_filters[1].qradio_mode_fast.isChecked() == False)
+            assert(g.qloop_filters[1].qradio_mode_both.isChecked() == True)
+            assert(setDitherLockInState.calls_number == 1);
+            assert(updateSettings.calls_number == 2);
+        else:
+            assert(g.qloop_filters[1].qradio_mode_off.isChecked() == True)
+            assert(g.qloop_filters[1].qradio_mode_slow.isChecked() == False)
+            assert(g.qloop_filters[1].qradio_mode_fast.isChecked() == False)
+            assert(g.qloop_filters[1].qradio_mode_both.isChecked() == False)
+            assert(setDitherLockInState.calls_number == 1);
+            assert(updateSettings.calls_number == 1);
+
+def test_chkLockClickedEvent():
+
+
+    # setup common stuff:
+    (app, sp, sl) = initGuiObjects()
+
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=False, bCheckValues=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=True, bCheckValues=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=False, bCheckValues=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=True, bCheckValues=True)
+
+
+    # # TODO: need a test case with exceptions being thrown. There are a few places that can throw:
+    # # these four fit in our previous pattern
+    exception_locations = ['setDitherLockInState', 'read_adc_samples_from_DDR2', 'set_dac_offset', 'set_integrator_settings']
+
+
+    for location in exception_locations:
+        injectSLexception(sl, location, exception_locations)
+        inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=False, bCheckValues=False)
+        inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=True, bCheckValues=False)
+        inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=False, bCheckValues=False)
+        inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=True, bCheckValues=False)
+        # nothing to check, we just verify that there is no unhandled exception
+
+    # two other places that can throw but do not fit our easy injectSLexception() pattern:
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=False, bCheckValues=False, updateFilterSettingsException=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=True, bCheckValues=False, updateFilterSettingsException=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=False, bCheckValues=False, updateFilterSettingsException=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=True, bCheckValues=False, updateFilterSettingsException=True)
+
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=False, bCheckValues=False, updateSettingsException=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=0, checked=True, bCheckValues=False, updateSettingsException=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=False, bCheckValues=False, updateSettingsException=True)
+    inner_test_chkLockClickedEvent(sl, sp, selected_ADC=1, checked=True, bCheckValues=False, updateSettingsException=True)
 
 # @pytest.mark.skip(reason="not fixed yet")
 def test_timerEvent():
@@ -527,13 +610,15 @@ def test_displayDDC():
     gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 1, (False, True, True), sp, '', '')
     inner_test_displayDDC(sl, gui_mainwindow)
 
+display_exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write', 'read_ddc_samples_from_DDR2']
+
 # @pytest.mark.skip(reason="not fixed yet")
 def test_displayDDC_withException():
     (app, sp, sl) = initGuiObjects()
     gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
 
     for location in exception_locations:
-        injectGrabDataException(sl, location)
+        injectSLexception(sl, location, display_exception_locations)
         inner_test_displayDDC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
 
         # check that the object state is still valid:
@@ -543,7 +628,7 @@ def test_displayDDC_withException():
 
 
     for location in exception_locations:
-        injectGrabDataException(sl, location)
+        injectSLexception(sl, location, display_exception_locations)
         inner_test_displayDDC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
 
         # check that the object state is still valid:
@@ -587,7 +672,7 @@ def test_displayDAC_withException():
     gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
 
     for location in exception_locations:
-        injectGrabDataException(sl, location)
+        injectSLexception(sl, location, display_exception_locations)
         inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
 
         # check that the object state is still valid:
@@ -597,7 +682,7 @@ def test_displayDAC_withException():
 
 
     for location in exception_locations:
-        injectGrabDataException(sl, location)
+        injectSLexception(sl, location, display_exception_locations)
         inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
 
         # check that the object state is still valid:
@@ -632,7 +717,7 @@ def inner_test_grabAndDisplayADC_withException(sl, gui_mainwindow):
 
 
     for location in exception_locations:
-        injectGrabDataException(sl, location)
+        injectSLexception(sl, location, display_exception_locations)
         gui_mainwindow.grabAndDisplayADC() # this will throw (and hopefully handle gracefully) an Exception
 
         # check that the object state is still valid:

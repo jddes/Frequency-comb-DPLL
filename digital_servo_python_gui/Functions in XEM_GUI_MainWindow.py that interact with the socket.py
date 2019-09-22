@@ -64,11 +64,26 @@ getVCOGain(self): done
 setVCOFreq_event(self): done
 getVCOFreq(self): done
 grabAndExportData(self): done, but test is not very thorough
-chkLockClickedEvent(self): TODO!%!?%!?!%!?!
 timerDitherEvent(self): done
-
 grabAndDisplayADC(): done. now actually done, including exception recovery
 displayDAC(self): done
 displayDDC(self): done
+timerEvent(self, e): done
+chkLockClickedEvent(self): done
 
-timerEvent(self, e): this calls displayADC, displayDDC depending on internal state. do it after the other ones
+
+------------- next up:
+
+-Test and make sure that our RP_PLL (and controller?) object is nicely behaved when the socket throws exceptions.
+    -FreqCounterWindow
+    -SettingsWindow
+-Make sure that every other file that interacts either with the socket or RP_PLL device handles comms exceptions correctly.
+
+-Make some kind of higher level test, where we can actually open the GUI?  One way would be to create a mock TCP server that returns reasonable values for each read
+    -Could start by reading the monitor-tcp or RP_PLL code.  There are a few packet types that we need to handle (reg_write, reg_read (2 types each), read_buffer.)
+    -This is will be very helpful in the future...
+
+-Do we forge ahead and start dealing with RP_PLL, or work on a higher level test?
+
+
+

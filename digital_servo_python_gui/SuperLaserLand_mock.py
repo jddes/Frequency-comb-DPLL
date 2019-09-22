@@ -14,7 +14,9 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		self.bIntroduceCommsException = {'setup_write': False, 
 		'read_adc_samples_from_DDR2': False, 
 		'read_ddc_samples_from_DDR2': False,
-		'trigger_write': False}
+		'trigger_write': False,
+		'setDitherLockInState': False,
+		'set_dac_offset': False}
 		self.random_seed = 0
 
 		pass
@@ -78,5 +80,19 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		if self.bIntroduceCommsException['trigger_write']:
 			raise RP_PLL.CommsError('test exception')
 		pass
+
+	def setDitherLockInState(self):
+		if self.bIntroduceCommsException['setDitherLockInState']:
+			raise RP_PLL.CommsError('test exception')
+		pass
+
 	def wait_for_write(self):
+		pass
+
+	def set_dac_offset(self, dac_number, offset):
+		if self.bIntroduceCommsException['set_dac_offset']:
+			raise RP_PLL.CommsError('test exception')
+		pass
+
+	def set_integrator_settings(self, integrator_number, hold, flip_sign, lock, gain_in_bits):
 		pass

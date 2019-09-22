@@ -549,6 +549,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		else:
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
 
+	@logCommsErrorsAndBreakoutOfFunction
 	def chkLockClickedEvent(self):
 		bLock = self.qchk_lock.isChecked()
 		if bLock:
