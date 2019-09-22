@@ -19,6 +19,9 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		pass
 
 	def setup_write(self, selector, Num_samples):
+		# input validation:
+		if not selector in self.LOGGER_MUX.values():
+			raise Exception('Invalid selector value')
 
 		self.Num_samples_write = int(Num_samples)  # no such restriction with the Red Pitaya implementation
 		self.Num_samples_read = self.Num_samples_write
@@ -34,6 +37,13 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 
 		# need to return a representative test vector (tone + noise maybe?)
 		samples_out = 0.1*np.cos(2*np.pi*25e6/self.fs*np.arange(0., self.Num_samples_read))
+		# if this is one of the dac, add an offset, different for each dac, so that we can test the reads easily:
+		if self.last_selector == self.LOGGER_MUX['DAC0']:
+			samples_out = samples_out + 1e-4
+		elif self.last_selector == self.LOGGER_MUX['DAC1']:
+			samples_out = samples_out + 2e-4
+		elif self.last_selector == self.LOGGER_MUX['DAC2']:
+			samples_out = samples_out + 3e-4
 		# add noise, but keep the same seed everytime for repeatable results:
 		np.random.seed(self.random_seed)
 		samples_out = samples_out + 1e-3 * np.random.randn(self.Num_samples_read)

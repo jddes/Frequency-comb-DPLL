@@ -291,8 +291,18 @@ class SuperLaserLand_JD_RP:
 	SELECT_CRASH_MONITOR = 2**4
 	SELECT_IN10          = 2**4 + 2**3
 	LOGGER_MUX = {
-	
-	}
+		'ADC0':          0,
+		'ADC1':          1,
+		'DDC0':          2,
+		'DDC1':          3,
+		'VNA':           4,
+		'COUNTER':       5,
+		'DAC0':          6,
+		'DAC1':          7,
+		'DAC2':          8,
+		'CRASH_MONITOR': 2**4,
+		'IN10':          2**4 + 2**3,
+		}
 	############################################################
 	
 	def __init__(self, controller = None):
@@ -444,43 +454,43 @@ class SuperLaserLand_JD_RP:
 		if self.bVerbose == True:
 			print('setup_ADC0_write')
 			
-		self.setup_write(self.SELECT_ADC0, Num_samples)
+		self.setup_write(self.LOGGER_MUX['ADC0'], Num_samples)
 	def setup_ADC1_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_ADC1_write')
 			
-		self.setup_write(self.SELECT_ADC1, Num_samples)
+		self.setup_write(self.LOGGER_MUX['ADC1'], Num_samples)
 	def setup_DDC0_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_DDC0_write')
 			
-		self.setup_write(self.SELECT_DDC0, Num_samples)
+		self.setup_write(self.LOGGER_MUX['DDC0'], Num_samples)
 	def setup_DDC1_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_DDC1_write')
 			
-		self.setup_write(self.SELECT_DDC1, Num_samples)
+		self.setup_write(self.LOGGER_MUX['DDC1'], Num_samples)
 	def setup_counter_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_counter_write')
 			
-		self.setup_write(self.SELECT_COUNTER, Num_samples)
+		self.setup_write(self.LOGGER_MUX['COUNTER'], Num_samples)
 	def setup_DAC0_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_DAC0_write')
 			
-		self.setup_write(self.SELECT_DAC0, Num_samples)
+		self.setup_write(self.LOGGER_MUX['DAC0'], Num_samples)
 	def setup_DAC1_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_DAC1_write')
 			
-		self.setup_write(self.SELECT_DAC1, Num_samples)
+		self.setup_write(self.LOGGER_MUX['DAC1'], Num_samples)
 		
 	def setup_DAC2_write(self, Num_samples):
 		if self.bVerbose == True:
 			print('setup_DAC2_write')
 			
-		self.setup_write(self.SELECT_DAC2, Num_samples)
+		self.setup_write(self.LOGGER_MUX['DAC2'], Num_samples)
 		
 	def compute_integration_time_for_syst_ident(self, System_settling_time, first_modulation_frequency_in_hz):
 		# There are four constraints on this value:
@@ -557,7 +567,7 @@ class SuperLaserLand_JD_RP:
 		print('setup_system_identification(): Num_samples = %d' % Num_samples)
 		print('Num_samples = %d' % Num_samples)
 #        print('self.number_of_frequencies = %d' % self.number_of_frequencies)
-		self.setup_write(self.SELECT_VNA, Num_samples)
+		self.setup_write(self.LOGGER_MUX['VNA'], Num_samples)
 		
 	def setVNA_mode_register(self, trigger_dither, stop_flag, bSquareWave):
 		if self.bVerbose == True:
@@ -834,7 +844,7 @@ class SuperLaserLand_JD_RP:
 			self.log_file.write('read_adc_samples_from_DDR2()\n')
 
 		data_buffer = self.read_raw_bytes_from_DDR2()
-		if self.last_selector == self.SELECT_DAC2:
+		if self.last_selector == self.LOGGER_MUX['DAC2']:
 			# DAC 2 samples are unsigned 16-bits
 			samples_out = np.frombuffer(data_buffer, dtype=np.uint16)
 		else:

@@ -464,7 +464,6 @@ def test_grabAndExportData():
         def __init__(self):
             super(SuperLaserLand_JD_RP_mock, self).__init__()
 
-        # intercept inputs, this time throwing an exception:
         def read_adc_samples_from_DDR2(self):
             self.samples_returned = np.random.randn(self.Num_samples_read)
             return (self.samples_returned, 1+1j*0)
@@ -508,9 +507,7 @@ def test_grabAndExportData_with_exception():
     # actual test call:
     xem_gui_mainwindow.grabAndExportData(bSyncReadOnNextTimeQuantization=False)
 
-    # actual output is writing out the samples to file, (after converting to normalized units?)
-    # we don't bother checking it
-
+    assert(xem_gui_mainwindow.bDDR2InUse == False)
 
 
 def test_timerDitherEvent():

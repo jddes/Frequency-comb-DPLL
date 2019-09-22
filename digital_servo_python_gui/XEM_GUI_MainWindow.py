@@ -480,34 +480,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Block access to the DDR2 Logger to any other function until we are done:
 		self.sl.bDDR2InUse = True
 
-#        try:
-#            N_points = int(float(self.qedit_rawdata_length.text()))
-#        except:
-#            N_points = 4e3
 		try:
 			N_points = int(float(N_points_str))
 		except:
 			N_points = 4e3
 		
-		# if N_points < 4e3:
-		#     N_points = 4e3
-			
 		if N_points < 64:
 			N_points = 64
 	
-#        currentSelector = self.qcombo_adc_plot.currentIndex()
-		# Python doesn't have switch-case statements
-		# Apparently the best way is to use a dictionary instead:
-		setup_func_dict = {'ADC0': self.sl.setup_ADC0_write,
-						   'ADC1': self.sl.setup_ADC1_write,
-						   'DAC0': self.sl.setup_DAC0_write,
-						   'DAC1': self.sl.setup_DAC1_write,
-						   'DAC2': self.sl.setup_DAC2_write}
-		
-			
 		try:
 			# Read from selected source
-			setup_func_dict[currentSelector](N_points)
+			self.setup_write(self.sl.LOGGER_MUX[currentSelector], N_points)
 			
 			##################################################
 			# Synchronize trigger as best as possible to the next multiple of time_quantum seconds:
@@ -555,7 +538,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		print('Elapsed time (write to disk) = %f' % (time.perf_counter()-start_time))
 		start_time = time.perf_counter()
-		
 
 	def setLock(self):
 		bLock = self.qloop_filters[self.selected_ADC].qchk_lock.isChecked()
@@ -1445,9 +1427,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
 			print('displayDAC(): DDR2 logger in use, cannot get data from dac')
-			return
-		# Block access to the DDR2 Logger to any other function until we are done:
-		self.sl.bDDR2InUse = True        
+			return  
 		
 		# For now: we grab the smallest chunk of points from the output (so as to not use too much time to refresh)
 		# and display the current average:
@@ -1456,18 +1436,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# Read from DAC #k
 				start_time = time.clock()
 			
-				# For the USB bug, changed this from 64 to 256
-				N_points = 256   # I think that this is the smallest chunk we can read at a time with the current design of the DDR2 controller
-				if k == 0:
-					self.sl.setup_DAC0_write(N_points)
-				elif k == 1:
-					self.sl.setup_DAC1_write(N_points)
-				elif k == 2:
-					self.sl.setup_DAC2_write(N_points)
-					
-				self.sl.trigger_write()
-				self.sl.wait_for_write()
-				(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+				input_select_from_dac = {0: 2, 1: 3, 2: 4}
+				(samples_out, ref_exp0) = self.getADCdata(input_select_from_dac[k], N_samples=256)
+
+				if samples_out is None:
+					return
 				
 				elapsed_time = time.clock() - start_time
 				if self.bDisplayTiming == True:
@@ -1492,8 +1465,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				if self.bDisplayTiming == True:
 					print('Elapsed time (displayDAC total) = %f ms' % (1000*elapsed_time))
 			
-		# Signal to other functions that they can use the DDR2 logger
-		self.sl.bDDR2InUse = False
 
 	def displayDDC(self):
 		# self.bDisplayTiming = True
@@ -1799,16 +1770,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		# Python doesn't have switch-case statements
 		# Apparently the best way is to use a dictionary instead:
-		setup_func_dict = {0: self.sl.setup_ADC0_write,
-						   1: self.sl.setup_ADC1_write,
-						   2: self.sl.setup_DAC0_write,
-						   3: self.sl.setup_DAC1_write,
-						   4: self.sl.setup_DAC2_write}
+		selector_dict   = {0: 'ADC0',
+						   1: 'ADC1',
+						   2: 'DAC0',
+						   3: 'DAC1',
+						   4: 'DAC2'}
 
 		time_start = time.perf_counter()
 		try:
 			# Read from selected source
-			setup_func_dict[input_select](N_samples)
+			self.sl.setup_write(self.sl.LOGGER_MUX[selector_dict[input_select]], N_samples)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
@@ -1840,6 +1811,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
 				print('getADCdata(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
 				return (None, None)
+		else:
+			ref_exp0 = 1.0
 
 		return (samples_out, ref_exp0)
 

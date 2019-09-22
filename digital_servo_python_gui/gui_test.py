@@ -8,7 +8,7 @@ from __future__ import print_function
 import sys
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import numpy as np
-
+import pytest
 
 from SLLSystemParameters import SLLSystemParameters
 from SuperLaserLand_mock import SuperLaserLand_mock
@@ -426,35 +426,6 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
         # # Signal to other functions that they can use the DDR2 logger
         # self.sl.bDDR2InUse = False
 
-
-def inner_test_displayDAC(sl, gui_mainwindow):
-    if gui_mainwindow.output_controls[0] == True:
-        gui_mainwindow.sl.random_seed = 0
-        expected_dacs = [326e-6, 0, 0]
-        expected_labels = ["0.0003 V\n0 MHz", "", ""]
-    else:
-        gui_mainwindow.sl.random_seed = 1
-        expected_dacs = [0, 460e-6, 760e-6]
-        expected_labels = ["", "0.0005 V\n0 MHz", "0.0008 V\n1 MHz"]
-
-    gui_mainwindow.displayDAC()
-
-    print("output_controls = %s" % str(gui_mainwindow.output_controls))
-    for k in range(3):
-        if gui_mainwindow.output_controls[k]:
-            print("k = %d" % k)
-            assert(close_enough(gui_mainwindow.spectrum.qthermo_dac_current[k].value, expected_dacs[k]))
-            assert(str(gui_mainwindow.spectrum.qlabel_dac_current_value[k].text()) == expected_labels[k])
-
-
-def test_displayDAC():
-    (app, sp, sl) = initGuiObjects()
-    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
-    inner_test_displayDAC(sl, gui_mainwindow)
-
-    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (False, True, True), sp, '', '')
-    inner_test_displayDAC(sl, gui_mainwindow)
-
 exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write']
 
 def injectGrabDataException(sl, location):
@@ -465,25 +436,55 @@ def injectGrabDataException(sl, location):
         # then add the one we actually want to test:
         sl.bIntroduceCommsException[location] = True
 
-def test_displayDAC_withException():
+def inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=True):
+    if gui_mainwindow.output_controls[0] == True:
+        gui_mainwindow.sl.random_seed = 0
+        expected_dacs = [326e-6+1e-4, 0, 0]
+        expected_labels = ["0.0004 V\n0 MHz", "", ""]
+    else:
+        gui_mainwindow.sl.random_seed = 1
+        expected_dacs = [0, 460e-6+2e-4, 1.254e-3]
+        expected_labels = ["", "0.0007 V\n1 MHz", "0.0013 V\n1 MHz"]
+
+    gui_mainwindow.displayDAC()
+
+    print("output_controls = %s" % str(gui_mainwindow.output_controls))
+    if bCheckValues == False:
+        print("skipped checking values.")
+        return
+        
+    for k in range(3):
+        if gui_mainwindow.output_controls[k]:
+            print("k = %d" % k)
+            assert(close_enough(gui_mainwindow.spectrum.qthermo_dac_current[k].value, expected_dacs[k]))
+            assert(str(gui_mainwindow.spectrum.qlabel_dac_current_value[k].text()) == expected_labels[k])
+
+def test_displayDAC():
     (app, sp, sl) = initGuiObjects()
     gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
     inner_test_displayDAC(sl, gui_mainwindow)
 
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (False, True, True), sp, '', '')
+    inner_test_displayDAC(sl, gui_mainwindow)
+
+# @pytest.mark.skip(reason="not fixed yet")
+def test_displayDAC_withException():
+    (app, sp, sl) = initGuiObjects()
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+
     for location in exception_locations:
         injectGrabDataException(sl, location)
-        gui_mainwindow.displayDAC() # this will throw (and hopefully handle gracefully) an Exception
+        inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
 
         # check that the object state is still valid:
         assert(gui_mainwindow.sl.bDDR2InUse == False)
 
     gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (False, True, True), sp, '', '')
-    inner_test_displayDAC(sl, gui_mainwindow)
 
 
     for location in exception_locations:
         injectGrabDataException(sl, location)
-        gui_mainwindow.displayDAC() # this will throw (and hopefully handle gracefully) an Exception
+        inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=False) # no point in checking the outputs values, we just want to gracefully ignore the exception
 
         # check that the object state is still valid:
         assert(gui_mainwindow.sl.bDDR2InUse == False)
