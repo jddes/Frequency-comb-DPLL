@@ -507,7 +507,7 @@ def test_grabAndExportData_with_exception():
     # actual test call:
     xem_gui_mainwindow.grabAndExportData(bSyncReadOnNextTimeQuantization=False)
 
-    assert(xem_gui_mainwindow.bDDR2InUse == False)
+    assert(xem_gui_mainwindow.sl.bDDR2InUse == False)
 
 
 def test_timerDitherEvent():
