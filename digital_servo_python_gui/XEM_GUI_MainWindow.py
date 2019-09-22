@@ -1778,6 +1778,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
 		if (samples_out is None) or (ref_exp0 is None):
 			return
+		self.raw_adc_samples = samples_out.astype(dtype=np.float)
 
 		self.spectrum.plotADCdata(input_select, plot_type, samples_out, ref_exp0)
 
