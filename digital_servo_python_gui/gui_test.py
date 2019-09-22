@@ -120,103 +120,6 @@ def print_all_state(g):
     print("self.sl.bDDR2InUse = %s" % repr(g.parent.sl.bDDR2InUse))
     print("------------------ End output state -------------------")
 
-# this is not called directly by pytest, but is called by our function which sets up the fixtures.
-# Note that we do not use pytest's fixtures feature directly.
-def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False):
-    # shorthand:
-    # g = gui_mainwindow
-    g = gui_mainwindow.spectrum # almost all the displayADC functions has been re-factored into its ouw Widget
-
-    # set GUI-based inputs:
-    g.qedit_rawdata_length.setText("100") # only use 100 pts so that the outputs are easier to check
-    g.bDisplayTiming = False
-    if test_number == 0:
-        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
-        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Spectrum'))
-    elif test_number == 1:
-        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
-        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: raw input'))
-    elif test_number == 2:
-        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
-        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: Phase'))
-    elif test_number == 3:
-        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
-        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: IQ'))
-    elif test_number == 4:
-        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
-        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: IQ, synced'))
-    else:
-        print("Error: unknown test number (%d)" % test_number)
-        return
-
-
-    # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
-    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
-    # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
-    # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
-
-
-    # replace the PyQtGraph objects that are acted on with our interceptors so that we can verify the correct outputs without requiring knowledge of the internal structure of the objects in PyQtGraph:
-    g.curve_spc    = PlotWindowIntercept(g.curve_spc)
-    g.curve_filter = PlotWindowIntercept(g.curve_filter)
-    g.curve_IQ     = PlotWindowIntercept(g.curve_IQ)
-    g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
-    g.plt_spc = PlotWidgetIntercept(g.plt_spc)
-
-    gui_mainwindow.grabAndDisplayADC() # this is the only call that is still in the gui_mainwindow object instead of the SpectrumWidget object
-
-    # this is used to determine what the "true" outputs should be
-    if bPrintAllOutputState:
-        print_all_state(g)
-
-    # Check the outputs against the expected:
-    if check_grabAndDisplayADC_outputs(g, test_number):
-        return True
-    else:
-        assert 0
-        return False
-
-
-# this is not called directly by pytest, but is called by our function which sets up the fixtures.
-# Note that we do not use pytest's fixtures feature directly.
-def inner_test_grabAndDisplayADC_withException(sl, gui_mainwindow):
-    # shorthand:
-    # g = gui_mainwindow
-    g = gui_mainwindow.spectrum # almost all the displayADC functions has been re-factored into its ouw Widget
-
-    # set GUI-based inputs:
-    g.qedit_rawdata_length.setText("100") # only use 100 pts so that the outputs are easier to check
-    g.bDisplayTiming = False
-    # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
-    g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Spectrum'))
-
-
-    # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
-    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
-    # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
-    # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
-
-
-    # replace the PyQtGraph objects that are acted on with our interceptors so that we can verify the correct outputs without requiring knowledge of the internal structure of the objects in PyQtGraph:
-    g.curve_spc    = PlotWindowIntercept(g.curve_spc)
-    g.curve_filter = PlotWindowIntercept(g.curve_filter)
-    g.curve_IQ     = PlotWindowIntercept(g.curve_IQ)
-    g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
-    g.plt_spc = PlotWidgetIntercept(g.plt_spc)
-
-
-    exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write']
-    for location in exception_locations:
-        # first clear all exceptions triggers:
-        for location_clear in exception_locations:
-            gui_mainwindow.sl.bIntroduceCommsException[location_clear] = False
-        # then add the one we actually want to test:
-        gui_mainwindow.sl.bIntroduceCommsException[location] = True
-    
-        gui_mainwindow.grabAndDisplayADC() # this will throw (and hopefully handle gracefully) an Exception
-
-        # check that the object state is still valid:
-        assert(gui_mainwindow.sl.bDDR2InUse == False)
 
 def check_grabAndDisplayADC_outputs(g, test_number=0):
     bPass = True
@@ -448,6 +351,181 @@ def check_fields(g, test_number, expected, expected_outputs_as_text):
 
     return bPass
 
+
+
+
+
+# this is not called directly by pytest, but is called by our function which sets up the fixtures.
+# Note that we do not use pytest's fixtures feature directly.
+def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutputState=False):
+    # shorthand:
+    # g = gui_mainwindow
+    g = gui_mainwindow.spectrum # almost all the displayADC functions has been re-factored into its ouw Widget
+
+    # set GUI-based inputs:
+    g.qedit_rawdata_length.setText("100") # only use 100 pts so that the outputs are easier to check
+    g.bDisplayTiming = False
+    if test_number == 0:
+        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Spectrum'))
+    elif test_number == 1:
+        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: raw input'))
+    elif test_number == 2:
+        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: Phase'))
+    elif test_number == 3:
+        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: IQ'))
+    elif test_number == 4:
+        # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+        g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Time: IQ, synced'))
+    else:
+        print("Error: unknown test number (%d)" % test_number)
+        return
+
+
+    # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
+    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
+    # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
+    # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
+
+
+    # replace the PyQtGraph objects that are acted on with our interceptors so that we can verify the correct outputs without requiring knowledge of the internal structure of the objects in PyQtGraph:
+    g.curve_spc    = PlotWindowIntercept(g.curve_spc)
+    g.curve_filter = PlotWindowIntercept(g.curve_filter)
+    g.curve_IQ     = PlotWindowIntercept(g.curve_IQ)
+    g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
+    g.plt_spc = PlotWidgetIntercept(g.plt_spc)
+
+    gui_mainwindow.grabAndDisplayADC() # this is the only call that is still in the gui_mainwindow object instead of the SpectrumWidget object
+
+    # this is used to determine what the "true" outputs should be
+    if bPrintAllOutputState:
+        print_all_state(g)
+
+    # Check the outputs against the expected:
+    if check_grabAndDisplayADC_outputs(g, test_number):
+        return True
+    else:
+        assert 0
+        return False
+
+
+        #         # Update the display:           
+        #         # For the USB bug, compute the mean from the last points     
+        #         current_output_in_volts = self.sl.convertDACCountsToVolts(k, np.mean(samples_out[128:256]))
+        #         current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
+        #         self.spectrum.qthermo_dac_current[k].setValue(current_output_in_volts)
+        #         self.spectrum.qlabel_dac_current_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
+                
+        #         elapsed_time = time.clock() - start_time
+        #         if self.bDisplayTiming == True:
+        #             print('Elapsed time (displayDAC total) = %f ms' % (1000*elapsed_time))
+            
+        # # Signal to other functions that they can use the DDR2 logger
+        # self.sl.bDDR2InUse = False
+
+
+def inner_test_displayDAC(sl, gui_mainwindow):
+    if gui_mainwindow.output_controls[0] == True:
+        gui_mainwindow.sl.random_seed = 0
+        expected_dacs = [326e-6, 0, 0]
+        expected_labels = ["0.0003 V\n0 MHz", "", ""]
+    else:
+        gui_mainwindow.sl.random_seed = 1
+        expected_dacs = [0, 460e-6, 760e-6]
+        expected_labels = ["", "0.0005 V\n0 MHz", "0.0008 V\n1 MHz"]
+
+    gui_mainwindow.displayDAC()
+
+    print("output_controls = %s" % str(gui_mainwindow.output_controls))
+    for k in range(3):
+        if gui_mainwindow.output_controls[k]:
+            print("k = %d" % k)
+            assert(close_enough(gui_mainwindow.spectrum.qthermo_dac_current[k].value, expected_dacs[k]))
+            assert(str(gui_mainwindow.spectrum.qlabel_dac_current_value[k].text()) == expected_labels[k])
+
+
+def test_displayDAC():
+    (app, sp, sl) = initGuiObjects()
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+    inner_test_displayDAC(sl, gui_mainwindow)
+
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (False, True, True), sp, '', '')
+    inner_test_displayDAC(sl, gui_mainwindow)
+
+exception_locations = ['setup_write', 'read_adc_samples_from_DDR2', 'trigger_write']
+
+def injectGrabDataException(sl, location):
+    for location in exception_locations:
+        # first clear all exceptions triggers:
+        for location_clear in exception_locations:
+            sl.bIntroduceCommsException[location_clear] = False
+        # then add the one we actually want to test:
+        sl.bIntroduceCommsException[location] = True
+
+def test_displayDAC_withException():
+    (app, sp, sl) = initGuiObjects()
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
+    inner_test_displayDAC(sl, gui_mainwindow)
+
+    for location in exception_locations:
+        injectGrabDataException(sl, location)
+        gui_mainwindow.displayDAC() # this will throw (and hopefully handle gracefully) an Exception
+
+        # check that the object state is still valid:
+        assert(gui_mainwindow.sl.bDDR2InUse == False)
+
+    gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (False, True, True), sp, '', '')
+    inner_test_displayDAC(sl, gui_mainwindow)
+
+
+    for location in exception_locations:
+        injectGrabDataException(sl, location)
+        gui_mainwindow.displayDAC() # this will throw (and hopefully handle gracefully) an Exception
+
+        # check that the object state is still valid:
+        assert(gui_mainwindow.sl.bDDR2InUse == False)
+
+# this is not called directly by pytest, but is called by our function which sets up the fixtures.
+# Note that we do not use pytest's fixtures feature directly.
+def inner_test_grabAndDisplayADC_withException(sl, gui_mainwindow):
+    # shorthand:
+    # g = gui_mainwindow
+    g = gui_mainwindow.spectrum # almost all the displayADC functions has been re-factored into its ouw Widget
+
+    # set GUI-based inputs:
+    g.qedit_rawdata_length.setText("100") # only use 100 pts so that the outputs are easier to check
+    g.bDisplayTiming = False
+    # Possible values: 'Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'
+    g.qcombo_adc_plottype.setCurrentIndex(g.qcombo_adc_plottype.findText('Spectrum'))
+
+
+    # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
+    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
+    # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
+    # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
+
+
+    # replace the PyQtGraph objects that are acted on with our interceptors so that we can verify the correct outputs without requiring knowledge of the internal structure of the objects in PyQtGraph:
+    g.curve_spc    = PlotWindowIntercept(g.curve_spc)
+    g.curve_filter = PlotWindowIntercept(g.curve_filter)
+    g.curve_IQ     = PlotWindowIntercept(g.curve_IQ)
+    g.qplt_IQ = PlotWidgetIntercept(g.qplt_IQ)
+    g.plt_spc = PlotWidgetIntercept(g.plt_spc)
+
+
+    for location in exception_locations:
+        injectGrabDataException(sl, location)
+        gui_mainwindow.grabAndDisplayADC() # this will throw (and hopefully handle gracefully) an Exception
+
+        # check that the object state is still valid:
+        assert(gui_mainwindow.sl.bDDR2InUse == False)
+
+
+
+
 def start_qt():
     # Start Qt:
     app = QtCore.QCoreApplication.instance()
@@ -461,22 +539,23 @@ def start_qt():
 
     return app
 
-
-def test_grabAndDisplayADC_withException(bPrintAllOutputState=True):
-    # This test adds a comms failure during the calls to grabAndDisplayADC and check that the GUI doesn't crash, and that it leaves everything in a correct state.
+def initGuiObjects():
     app                = start_qt()
     sp                 = SLLSystemParameters()
     sl                 = SuperLaserLand_mock()
     sl.initSubModules() # this should definitely be moved to SuperLaserLand_JD_RP.__init__()
+    return (app, sp, sl)
+
+def test_grabAndDisplayADC_withException(bPrintAllOutputState=True):
+    # This test adds a comms failure during the calls to grabAndDisplayADC and check that the GUI doesn't crash, and that it leaves everything in a correct state.
+    (app, sp, sl) = initGuiObjects()
     xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
     inner_test_grabAndDisplayADC_withException(sl, xem_gui_mainwindow)
 
 
+
 def test_grabAndDisplayADC(bPrintAllOutputState=True):
-    app                = start_qt()
-    sp                 = SLLSystemParameters()
-    sl                 = SuperLaserLand_mock()
-    sl.initSubModules() # this should definitely be moved to SuperLaserLand_JD_RP.__init__()
+    (app, sp, sl) = initGuiObjects()
     bPass = True
     for test_case in range(5):
         xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')

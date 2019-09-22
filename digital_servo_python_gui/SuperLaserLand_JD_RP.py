@@ -290,6 +290,9 @@ class SuperLaserLand_JD_RP:
 	SELECT_DAC2          = 8
 	SELECT_CRASH_MONITOR = 2**4
 	SELECT_IN10          = 2**4 + 2**3
+	LOGGER_MUX = {
+	
+	}
 	############################################################
 	
 	def __init__(self, controller = None):

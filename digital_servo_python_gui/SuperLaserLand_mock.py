@@ -14,6 +14,7 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		self.bIntroduceCommsException = {'setup_write': False, 
 		'read_adc_samples_from_DDR2': False, 
 		'trigger_write': False}
+		self.random_seed = 0
 
 		pass
 
@@ -25,17 +26,6 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 
 		if self.bIntroduceCommsException['setup_write']:
 			raise RP_PLL.CommsError('test exception')
-	
-	# def setup_ADC0_write(self, Num_samples):
-	# 	self.setup_write(self.SELECT_ADC0, Num_samples)
-	# def setup_ADC1_write(self, Num_samples):
-	# 	self.setup_write(self.SELECT_ADC1, Num_samples)
-	# def setup_DAC0_write(self, Num_samples):
-	# 	self.setup_write(self.SELECT_DAC0, Num_samples)
-	# def setup_DAC1_write(self, Num_samples):
-	# 	self.setup_write(self.SELECT_DAC1, Num_samples)
-	# def setup_DAC2_write(self, Num_samples):
-	# 	self.setup_write(self.SELECT_DAC2, Num_samples)
 
 	def read_adc_samples_from_DDR2(self):
 		if self.bIntroduceCommsException['read_adc_samples_from_DDR2']:
@@ -45,7 +35,7 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 		# need to return a representative test vector (tone + noise maybe?)
 		samples_out = 0.1*np.cos(2*np.pi*25e6/self.fs*np.arange(0., self.Num_samples_read))
 		# add noise, but keep the same seed everytime for repeatable results:
-		np.random.seed(0)
+		np.random.seed(self.random_seed)
 		samples_out = samples_out + 1e-3 * np.random.randn(self.Num_samples_read)
 		samples_out = np.round(2.**(16-1) * samples_out)
 		ref_exp0 = 1. + 0.j
