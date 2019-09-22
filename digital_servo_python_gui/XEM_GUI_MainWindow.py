@@ -1462,13 +1462,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def displayDDC(self):
 		# self.bDisplayTiming = True
 		
-		# Check if another function is currently using the DDR2 logger:
-		if self.sl.bDDR2InUse:
-			print('displayDDC(): DDR2 logger in use, cannot get data from adc')
-			return
-		# Block access to the DDR2 Logger to any other function until we are done:
-		self.sl.bDDR2InUse = True
-		
 		# Read from DDC0
 		try:
 			try:
@@ -1479,26 +1472,28 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				N_points = 64
 				
 			start_time = time.clock()
-			if self.selected_ADC == 0:
-				self.sl.setup_DDC0_write(N_points)
-			elif self.selected_ADC == 1:
-				self.sl.setup_DDC1_write(N_points)
-			self.sl.trigger_write()
-			self.sl.wait_for_write()
-			if self.bDisplayTiming == True:
-				print('Elapsed time (setup write) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
-			inst_freq = self.sl.read_ddc_samples_from_DDR2()
+
+
+			# if self.selected_ADC == 0:
+			# 	self.sl.setup_DDC0_write(N_points)
+			# elif self.selected_ADC == 1:
+			# 	self.sl.setup_DDC1_write(N_points)
+			# self.sl.trigger_write()
+			# self.sl.wait_for_write()
+			# if self.bDisplayTiming == True:
+			# 	print('Elapsed time (setup write) = %f' % (time.clock()-start_time))
+			# start_time = time.clock()
+			# inst_freq = self.sl.read_ddc_samples_from_DDR2()
+
+			inst_freq = self.getADCdata(input_select='DDC%d' % self.selected_ADC, N_samples=N_points, bReadAsDDC=True)
+			if inst_freq is None:
+				return
+
 			self.inst_freq = inst_freq
 			
 			if self.bDisplayTiming == True:
 				print('Elapsed time (communication) = %f' % (time.clock()-start_time))
-				
-				
-			# Signal to other functions that they can use the DDR2 logger
-			self.sl.bDDR2InUse = False
-		
-			
+
 			
 #            print('mean freq error = %f MHz, raw code = %f' % (np.mean(inst_freq)/1e6, np.mean(inst_freq)*2**10 / self.sl.fs*4))
 			self.qlbl_mean_freq_error.setText('Freq error: %.2f MHz' % (np.mean(inst_freq)/1e6))
@@ -1751,7 +1746,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.spectrum.updateScaleDisplays(samples_out)
 
 
-	def getADCdata(self, input_select, N_samples):
+	def getADCdata(self, input_select, N_samples, bReadAsDDC=False):
 
 		start_time = time.clock()
 		
@@ -1762,21 +1757,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Block access to the DDR2 Logger to any other function until we are done:
 		self.sl.bDDR2InUse = True
 
-		# Python doesn't have switch-case statements
-		# Apparently the best way is to use a dictionary instead:
-		selector_dict   = {0: 'ADC0',
-						   1: 'ADC1',
-						   2: 'DAC0',
-						   3: 'DAC1',
-						   4: 'DAC2'}
-
 		time_start = time.perf_counter()
 		try:
 			# Read from selected source
 			self.sl.setup_write(self.sl.LOGGER_MUX[input_select], N_samples)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
-			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+			if bReadAsDDC == False:
+				# read from ADC:
+				(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+			else:
+				# read from DDC:
+				samples_out = self.sl.read_ddc_samples_from_DDR2()
+				return samples_out
 
 			max_abs = np.max(np.abs(samples_out))
 
@@ -1787,11 +1780,17 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		except RP_PLL.CommsLoggeableError as e:
 			# log exception
 			logging.error("Exception occurred", exc_info=True)
-			return (None, None)
+			if bReadAsDDC == False:
+				return (None, None)
+			else:
+				return None
 
 		except RP_PLL.CommsError as e:
 			# do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
-			return (None, None)
+			if bReadAsDDC == False:
+				return (None, None)
+			else:
+				return None
 
 		finally:
 			# Tear-down, whether or not an exception occured: Signal to other functions that they can use the DDR2 logger

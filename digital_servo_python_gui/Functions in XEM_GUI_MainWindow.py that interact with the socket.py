@@ -66,7 +66,9 @@ getVCOFreq(self): done
 grabAndExportData(self): done, but test is not very thorough
 chkLockClickedEvent(self): TODO!%!?%!?!%!?!
 timerDitherEvent(self): done
-timerEvent(self, e): this calls displayADC, displayDDC depending on internal state. do it after the other ones
+
 grabAndDisplayADC(): done. now actually done, including exception recovery
-displayDAC(self): done, including exception recovery
-displayDDC(self): 
+displayDAC(self): done
+displayDDC(self): done
+
+timerEvent(self, e): this calls displayADC, displayDDC depending on internal state. do it after the other ones
