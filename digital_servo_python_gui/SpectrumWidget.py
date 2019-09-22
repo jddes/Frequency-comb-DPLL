@@ -154,7 +154,7 @@ class SpectrumWidget(QtGui.QWidget):
         # Input select        
         self.qlabel_adc_plot_input = Qt.QLabel('Input:')
         self.qcombo_adc_plot = Qt.QComboBox()
-        self.qcombo_adc_plot.addItems(['ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'])
+        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
         
         # Set a few global PyQtGraph settings before creating plots:
@@ -319,7 +319,7 @@ class SpectrumWidget(QtGui.QWidget):
 
     def getGUIsettingsForADCdata(self):
         # Get settings from the GUI:
-        input_select = self.qcombo_adc_plot.currentIndex()
+        input_select = str(self.qcombo_adc_plot.currentText())
         plot_type    = self.qcombo_adc_plottype.currentIndex()
         try:
             N_samples = int(float(self.qedit_rawdata_length.text()))
@@ -340,7 +340,7 @@ class SpectrumWidget(QtGui.QWidget):
             self.plotADCorDACtimeDomain(samples_out, input_select)
 
 
-        if not (input_select == 0 or input_select == 1):
+        if not input_select.startswith('ADC'):
             # Not sure what to put in the baseband IQ plot.  For now we simply don't update it
             self.qthermo_baseband_snr.setValue(0)
             return
@@ -431,7 +431,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
         self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
 
-        if input_select == 0 or input_select == 1:
+        if input_select.startswith('ADC'):
             self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
 
     def plotADCorDACtimeDomain(self, samples_out, input_select):
@@ -511,7 +511,7 @@ class SpectrumWidget(QtGui.QWidget):
         
 
     def scaleDataToVolts(self, samples_out, input_select):
-        if input_select == 0 or input_select == 1:
+        if input_select.startswith('ADC'):
             # Convert ADC counts to voltage
             return self.sl.convertADCCountsToVolts(input_select, samples_out)
         else:

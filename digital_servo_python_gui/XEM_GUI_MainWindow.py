@@ -490,6 +490,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	
 		try:
 			# Read from selected source
+			print("currentSelector = %s" % currentSelector)
 			self.setup_write(self.sl.LOGGER_MUX[currentSelector], N_points)
 			
 			##################################################
@@ -1436,8 +1437,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# Read from DAC #k
 				start_time = time.clock()
 			
-				input_select_from_dac = {0: 2, 1: 3, 2: 4}
-				(samples_out, ref_exp0) = self.getADCdata(input_select_from_dac[k], N_samples=256)
+				(samples_out, ref_exp0) = self.getADCdata(input_select="DAC%d" % k, N_samples=256)
 
 				if samples_out is None:
 					return
@@ -1744,6 +1744,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def grabAndDisplayADC(self):
 		(input_select, plot_type, N_samples) = self.spectrum.getGUIsettingsForADCdata()
+		print("input_select = %s" % input_select)
 		# Grab data from the FPGA:
 		start_time = time.perf_counter()
 		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
@@ -1779,7 +1780,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		time_start = time.perf_counter()
 		try:
 			# Read from selected source
-			self.sl.setup_write(self.sl.LOGGER_MUX[selector_dict[input_select]], N_samples)
+			self.sl.setup_write(self.sl.LOGGER_MUX[input_select], N_samples)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()

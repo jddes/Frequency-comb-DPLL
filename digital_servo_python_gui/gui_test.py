@@ -386,7 +386,7 @@ def inner_test_grabAndDisplayADC(sl, gui_mainwindow, test_number, bPrintAllOutpu
 
 
     # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
-    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
+    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC0'))
     # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
     # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
 
@@ -452,7 +452,7 @@ def inner_test_displayDAC(sl, gui_mainwindow, bCheckValues=True):
     if bCheckValues == False:
         print("skipped checking values.")
         return
-        
+
     for k in range(3):
         if gui_mainwindow.output_controls[k]:
             print("k = %d" % k)
@@ -504,7 +504,7 @@ def inner_test_grabAndDisplayADC_withException(sl, gui_mainwindow):
 
 
     # possible values: 'ADC 0', 'ADC 1', 'DAC 0', 'DAC 1', 'DAC 2'
-    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC 0'))
+    g.qcombo_adc_plot.setCurrentIndex(g.qcombo_adc_plot.findText('ADC0'))
     # possible values: 'Freq', 'Phase', 'Freq: time domain', 'Phase: time domain'
     # g.qcombo_ddc_plot.setCurrentIndex(g.qcombo_ddc_plot.findText('Phase'))
 
@@ -531,12 +531,12 @@ def start_qt():
     # Start Qt:
     app = QtCore.QCoreApplication.instance()
     if app is None:
-        print("QCoreApplication not running yet. creating.")
+        # print("QCoreApplication not running yet. creating.")
         bEventLoopWasRunningAlready = False
         app = QtWidgets.QApplication(sys.argv)
     else:
         bEventLoopWasRunningAlready = True
-        print("QCoreApplication already running.")
+        # print("QCoreApplication already running.")
 
     return app
 
