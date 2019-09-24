@@ -346,17 +346,17 @@ class SpectrumWidget(QtGui.QWidget):
             return
         
         # If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
-        start_time = time.clock()
+        start_time = time.perf_counter()
         complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
         if self.bDisplayTiming == True:
-            print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
+            print('Elapsed time (Compute complex baseband) = %f' % (time.perf_counter()-start_time))
 
         self.handleComplexBaseband(complex_baseband, plot_type)
         
     def handleComplexBaseband(self, complex_baseband, plot_type):
 
 
-        start_time = time.clock()
+        start_time = time.perf_counter()
 
         self.updateIQdisplay(complex_baseband)
         self.updateSNRdisplay(complex_baseband)
@@ -373,13 +373,13 @@ class SpectrumWidget(QtGui.QWidget):
 
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (complex baseband plots) = %f' % (time.clock()-start_time))
-        start_time = time.clock()
+            print('Elapsed time (complex baseband plots) = %f' % (time.perf_counter()-start_time))
+        start_time = time.perf_counter()
 
 
     def plotADCorDACspectrum(self, samples_out, input_select):
 
-        start_time = time.clock()
+        start_time = time.perf_counter()
 
         # Normalize samples to +/- 1:
         samples_out = samples_out/2**15
@@ -394,8 +394,8 @@ class SpectrumWidget(QtGui.QWidget):
         samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (pre-FFT2) = %f' % (time.clock()-start_time))
-        start_time = time.clock()
+            print('Elapsed time (pre-FFT2) = %f' % (time.perf_counter()-start_time))
+        start_time = time.perf_counter()
         
         # Compute the spectrum of the raw data:
         N_fft = 2**(int(np.ceil(np.log2(len(samples_out)))))
@@ -403,8 +403,8 @@ class SpectrumWidget(QtGui.QWidget):
         last_index_shown = int(np.round(N_fft/2))
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
-        start_time = time.clock()
+            print('Elapsed time (FFT) = %f' % (time.perf_counter()-start_time))
+        start_time = time.perf_counter()
                     
         spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
         spc_single_sided_psd = spc*2/self.computeNEB(window_function, self.sl.fs) * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
@@ -423,8 +423,8 @@ class SpectrumWidget(QtGui.QWidget):
         
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (10log10 abs(FFT) = %f' % (time.clock()-start_time))
-        start_time = time.clock()
+            print('Elapsed time (10log10 abs(FFT) = %f' % (time.perf_counter()-start_time))
+        start_time = time.perf_counter()
         
         # Update the graph data:
         frequency_axis = self.fftFrequencyAxis(N_fft, self.sl.fs)
@@ -457,14 +457,14 @@ class SpectrumWidget(QtGui.QWidget):
 
 
     def updateFilterSpcDisplay(self, frequency_axis):
-        start_time = time.clock()
+        start_time = time.perf_counter()
         # Compute the spectrum of the filter:
         spc_filter = self.sl.get_frontend_filter_response(frequency_axis, self.selected_ADC)
         self.curve_filter.setData(frequency_axis/1e6, spc_filter)
         self.curve_filter.setVisible(True)
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (Spectrum of filter) = %f' % (time.clock()-start_time))
+            print('Elapsed time (Spectrum of filter) = %f' % (time.perf_counter()-start_time))
         
 
 
@@ -474,7 +474,7 @@ class SpectrumWidget(QtGui.QWidget):
 
     # N_max_IQ is the max number of points to display in the IQ graph
     def updateIQdisplay(self, complex_baseband, N_max_IQ = 10e3):
-        start_time = time.clock()
+        start_time = time.perf_counter()
 
         complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
         mean_amplitude = np.mean(np.abs(complex_baseband))
@@ -484,7 +484,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.qplt_IQ.setYRange(-1.5*mean_amplitude, 1.5*mean_amplitude)
         
         if self.bDisplayTiming == True:
-            print('Elapsed time (Display IQ) = %f' % (time.clock()-start_time))
+            print('Elapsed time (Display IQ) = %f' % (time.perf_counter()-start_time))
 
     # Compute the SNR on the amplitude of the baseband signal:    
     def updateSNRdisplay(self, complex_baseband):

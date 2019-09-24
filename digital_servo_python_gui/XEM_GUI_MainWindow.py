@@ -1330,7 +1330,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 	@logCommsErrorsAndBreakoutOfFunction
 	def timerEvent(self, e):
-		# print 'timerEvent : %.3f sec' % (time.clock())
+		# print 'timerEvent : %.3f sec' % (time.perf_counter())
 
 		# Check if the sl object exists: otherwise this timer will keep throwing exceptions, filling up the console messages
 		# and preventing us form seeing the real cause.  We let only one exception go through and then disable 
@@ -1423,8 +1423,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.qchk_refresh.setChecked(False)
 			raise
 		
-		self.qlabel_refreshrate.setText('%.0f ms' % (1000*(time.clock() - self.last_refresh)))
-		self.last_refresh = time.clock()
+		self.qlabel_refreshrate.setText('%.0f ms' % (1000*(time.perf_counter() - self.last_refresh)))
+		self.last_refresh = time.perf_counter()
 
 	# timerEvent()
 	def displayDAC(self):
@@ -1439,12 +1439,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		for k in range(3):
 			if self.output_controls[k]:
 				# Read from DAC #k
-				start_time = time.clock()
+				start_time = time.perf_counter()
 			
 				(samples_out, ref_exp0) = self.getADCdata(input_select="DAC%d" % k, N_samples=256)
 				if samples_out is None:
 					return
-				elapsed_time = time.clock() - start_time
+				elapsed_time = time.perf_counter() - start_time
 				if self.bDisplayTiming == True:
 					print('Elapsed time (read dac values) = %f ms' % (1000*elapsed_time))
 				samples_out = samples_out.astype(dtype=np.float)
@@ -1458,7 +1458,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.spectrum.qthermo_dac_current[k].setValue(current_output_in_volts)
 				self.spectrum.qlabel_dac_current_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 				
-				elapsed_time = time.clock() - start_time
+				elapsed_time = time.perf_counter() - start_time
 				if self.bDisplayTiming == True:
 					print('Elapsed time (displayDAC total) = %f ms' % (1000*elapsed_time))
 			
@@ -1475,7 +1475,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if N_points < 64:
 				N_points = 64
 				
-			start_time = time.clock()
+			start_time = time.perf_counter()
 
 
 			# if self.selected_ADC == 0:
@@ -1485,8 +1485,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			# self.sl.trigger_write()
 			# self.sl.wait_for_write()
 			# if self.bDisplayTiming == True:
-			# 	print('Elapsed time (setup write) = %f' % (time.clock()-start_time))
-			# start_time = time.clock()
+			# 	print('Elapsed time (setup write) = %f' % (time.perf_counter()-start_time))
+			# start_time = time.perf_counter()
 			# inst_freq = self.sl.read_ddc_samples_from_DDR2()
 
 			inst_freq = self.getADCdata(input_select='DDC%d' % self.selected_ADC, N_samples=N_points, bReadAsDDC=True)
@@ -1496,7 +1496,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.inst_freq = inst_freq
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (communication) = %f' % (time.clock()-start_time))
+				print('Elapsed time (communication) = %f' % (time.perf_counter()-start_time))
 
 			
 #            print('mean freq error = %f MHz, raw code = %f' % (np.mean(inst_freq)/1e6, np.mean(inst_freq)*2**10 / self.sl.fs*4))
@@ -1504,7 +1504,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 			# Compute the spectrum:
 			# We first perform decimation on the data since we don't have useful information above the cut-off frequency anyway:
-			start_time = time.clock()
+			start_time = time.perf_counter()
 			N_decimation = 10
 			fs_new = self.sl.fs/N_decimation
 			#inst_freq_decimated = decimate(inst_freq, N_decimation, zero_phase=False)
@@ -1518,11 +1518,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #            print('Data std dev = %f Hz' % np.std(inst_freq_decimated))
 #            print('Data variance = %f Hz^2' % np.var(inst_freq_decimated))
 			if self.bDisplayTiming == True:
-				print('Elapsed time (decimation) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (decimation) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 			
 			# Compute the spectrum of the decimated signal:
-			start_time = time.clock()
+			start_time = time.perf_counter()
 			N_fft = 2**(int(np.ceil(np.log2(len(inst_freq_decimated)))))
 			frequency_axis = np.linspace(0, (N_fft-1)/float(N_fft)*fs_new, N_fft)
 			last_index_shown = int(np.round(len(frequency_axis)/2))
@@ -1573,7 +1573,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #            spc = np.abs(spc)
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
+				print('Elapsed time (FFT) = %f' % (time.perf_counter()-start_time))
 				
 				
 			try:
@@ -1752,7 +1752,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def getADCdata(self, input_select, N_samples, bReadAsDDC=False):
 
-		start_time = time.clock()
+		start_time = time.perf_counter()
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
@@ -1801,7 +1801,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.sl.bDDR2InUse = False
 		
 		if self.bDisplayTiming == True:
-			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
+			print('Elapsed time (Comm) = %f' % (time.perf_counter()-start_time))
 
 		# A little bit of data validation:
 		if input_select == 0 or input_select == 1:
