@@ -13,19 +13,19 @@ import logging
 
 class AsyncSocketServer():
     
-    def __init__(self, port_number=50000):
+    def __init__(self, port_number=50000, bStartListening=True):
         self.port_number = port_number
         self.sock_conn = None
         self.sock_server = None
-        self.read_buffer = ''
+        self.read_buffer = bytearray()
         
         self.bVerbose = False
         
         self.logger = logging.getLogger(__name__)
         self.logger_name = 'AsyncSocketServer'
         
-        
-        self.startListening()
+        if bStartListening:
+            self.startListening()
         
     def startListening(self):
         # Initialization part: starts listening on the two ports
@@ -40,7 +40,7 @@ class AsyncSocketServer():
     def closeServer(self):
         self.sock_server.close()
 
-    def run(self):
+    def run(self, bParseBufferIntoLines=True):
         # First: check if there is any connection pending:
         # Check if there is a connection pending:
         # note the [0] at the end which selects only the first output of the select()
@@ -64,6 +64,7 @@ class AsyncSocketServer():
             try:
                 (read_buffer, bSocketOpen) = self.readdata_async(self.sock_conn, self.read_buffer)
                 self.read_buffer = read_buffer
+                # print(self.read_buffer)
                 if not bSocketOpen:
                     # socket has been closed on the other side:
                     if self.bVerbose:
@@ -78,12 +79,16 @@ class AsyncSocketServer():
                 self.sock_conn = None
 #                raise
             
-        # parse the receive buffer:
+        if not bParseBufferIntoLines:
+            return
+
+        # default option: parse the receive buffer into separate lines:
+        self.read_buffer = self.read_buffer.decode("utf-8") #bytes -> str
         delim='\n'
         line = None
         while self.read_buffer.find(delim) != -1:
             line, self.read_buffer = self.read_buffer.split('\n', 1)
-        
+        self.read_buffer = self.read_buffer.encode("utf-8") # str => bytes
         
         # if we have a valid line, this is what we output:
         return line
@@ -99,7 +104,7 @@ class AsyncSocketServer():
             ready_to_read = select.select([sock], [], [], 0)[0]
             if ready_to_read:
                 data = sock.recv(recv_buffer)
-                data = data.decode("utf-8") #bytes -> str
+                # data = data.decode("utf-8") #bytes -> str
                 if not data:
                     # This means that the other end has closed the socket:
                     if self.bVerbose:
@@ -108,7 +113,7 @@ class AsyncSocketServer():
                     return (read_buffer, False)
                     
                 read_buffer += data
-#                print('read buffer: %s' % read_buffer)
+#                 print('read buffer: %s' % read_buffer)
             else:
                 break
             
