@@ -53,7 +53,7 @@ logging.basicConfig(level=logging.INFO)
 
 class controller(object):
 	"""Main class of the GUI. It contains most of the elements of the GUI, the main_window and the communication class"""
-	def __init__(self):
+	def __init__(self, bManualStartupForTests=False):
 		self.logger = logging.getLogger()
 		self.logger.addHandler(logging.handlers.SysLogHandler(address = (SYSLOG_IP,SYSLOG_PORT)))
 		self.logger_name = '' #To be replaced with FPGA's shorthand
@@ -78,8 +78,10 @@ class controller(object):
 			self.bEventLoopWasRunningAlready = True
 			print("QCoreApplication already running.")
 
-		self.main()
+		self.initUI()
 
+		if bManualStartupForTests==False:
+			self.runEventLoop()
 
 	def updateDeviceData(self):
 		# xml file containing the known Red Pitaya's and their MAC addresses, UI color and shorthand name
@@ -133,7 +135,7 @@ class controller(object):
 		self.initial_config = initialConfiguration(self.sl.dev, self, self.devices_data, strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
 		
 
-	def main(self):
+	def initUI(self):
 
 		# Start the User Interface
 		bTriggerEvents = False
@@ -249,27 +251,20 @@ class controller(object):
 
 		app_icon = QtGui.QIcon()
 		app_icon.addFile('icons/red_pitaya.png', QtCore.QSize(32,32))
+		self.app.setWindowIcon(app_icon)
 
 		self.main_windows.show()
 
-		
 		self.connectionGUI()
-		
-		# Enter main event loop
+
+	def runEventLoop(self):
+		# Main event loop
 		try:
-			#print("before app.exec_()")
-			self.app.setWindowIcon(app_icon)
-
 			self.app.exec_()
-			
-			
-
-			#print("after app.exec_()")
 		except Exception as e:
 			print("XEM_GUI3.py: Exception during app.exec_():")
-			self.logger.emergency('Red_Pitaya_GUI{}: Exception during app.exec_():{}'.format(self.logger_name, e))
+			self.logger.error('Red_Pitaya_GUI{}: Exception during app.exec_():{}'.format(self.logger_name, e))
 			print(e)
-
 
 	def loadDefaultValueFromConfigFile(self, strSelectedSerial, bSendToFPGA = True):
 		try:
@@ -363,6 +358,9 @@ class controller(object):
 			self.sl.dev.CloseTCPConnection()
 			
 		self.sl.dev.OpenTCPConnection(ip_addr, port)
+		if not self.sl.dev.valid_socket:
+			self.logger.error('Connection to host %s, port %s failed.' % (ip_addr, port))
+			return
 		# Now we just need to reset the frontend to make sure we start everything in a nice state
 		self.sl.resetFrontend()
 
@@ -382,33 +380,6 @@ class controller(object):
 		for window in target_windows:
 			window.pushDefaultValues()
 		
-
-		self.setTemperatureControlPort(strSelectedSerial)
-
-	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
-		self.strSelectedSerial = strSelectedSerial
-		self.ip_addr           = ip_addr
-		self.port              = port
-
-		self.setCustomStyleSheet(strSelectedSerial)
-		self.setCustomShorthand(strSelectedSerial)
-
-		self.logger.info('Red_Pitaya_GUI{}: Pushing actual values from GUI'.format(self.logger_name))
-
-		if self.sl.dev.valid_socket:
-			self.sl.dev.CloseTCPConnection()
-		self.sl.dev.OpenTCPConnection(ip_addr, port)
-
-		target_windows = [
-			self.xem_gui_mainwindow2,
-			self.xem_gui_mainwindow,
-			self.freq_error_window1,
-			self.freq_error_window2,
-		]
-
-		for window in target_windows:
-			window.pushActualValues()
-
 
 		self.setTemperatureControlPort(strSelectedSerial)
 
@@ -446,6 +417,32 @@ class controller(object):
 
 		self.setTemperatureControlPort(strSelectedSerial)
 
+	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
+		self.strSelectedSerial = strSelectedSerial
+		self.ip_addr           = ip_addr
+		self.port              = port
+
+		self.setCustomStyleSheet(strSelectedSerial)
+		self.setCustomShorthand(strSelectedSerial)
+
+		self.logger.info('Red_Pitaya_GUI{}: Pushing actual values from GUI'.format(self.logger_name))
+
+		if self.sl.dev.valid_socket:
+			self.sl.dev.CloseTCPConnection()
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
+
+		target_windows = [
+			self.xem_gui_mainwindow2,
+			self.xem_gui_mainwindow,
+			self.freq_error_window1,
+			self.freq_error_window2,
+		]
+
+		for window in target_windows:
+			window.pushActualValues()
+
+
+		self.setTemperatureControlPort(strSelectedSerial)
 
 	def stopCommunication(self):
 
@@ -454,8 +451,8 @@ class controller(object):
 		if self.timerReconnect is not None:
 			self.timerReconnect = None
 
-		if self.sl.dev.valid_socket:
-			self.sl.dev.CloseTCPConnection()
+		self.sl.dev.CloseTCPConnection()
+
 		try:
 			self.xem_gui_mainwindow2.killTimers()
 			self.xem_gui_mainwindow.killTimers()
@@ -466,18 +463,24 @@ class controller(object):
 			print("Error while killing the timers:")
 			print(e)
 
-	def socketErrorEvent(self):
+	def socketErrorEvent(self, e):
+		# this gets called by the socket-using functions in RP_PLL
+		# in the event of a socket exception, while we thought we had a valid connection
+		# The right things to do in this case is to:
+		# -drop the current socket (because the data stream is left in an uncertain state)
+		# -start a reconnection timer that will attempt to reconnect automatically
+		# -raise a CommsLoggeableError
 
 		# check if we need to start the reconnection attempt timer:
 		if self.timerReconnect is None:
 			# disconnect from socket, and start reconnection timer:
 			self.stopCommunication()
 
-			print("TCP connection lost. Starting reconnection timer")
-			self.timerReconnect = QtCore.QTimer()
-			self.reconnection_attempts = 0
-			self.timerReconnect.timeout.connect(self.reconnectionAttempt)
-			self.timerReconnect.start(1000) # 1000 ms update period
+			# print("TCP connection lost. Starting reconnection timer")
+			# self.timerReconnect = QtCore.QTimer()
+			# self.reconnection_attempts = 0
+			# self.timerReconnect.timeout.connect(self.reconnectionAttempt)
+			# self.timerReconnect.start(3000) # 3000 ms update period (needs to be longer than the delay...)
 
 		# target_windows = [
 		# 	self.xem_gui_mainwindow2,
@@ -496,7 +499,7 @@ class controller(object):
 			self.getActualValues(self.strSelectedSerial, self.ip_addr, self.port)
 		except:
 			print("Reconnection attempt #%d failed." % self.reconnection_attempts)
-			logging.error(traceback.format_exc())
+			self.logger.error(traceback.format_exc())
 
 		if self.sl.dev.valid_socket:
 			# success!

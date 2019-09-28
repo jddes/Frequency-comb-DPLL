@@ -10,6 +10,7 @@ from AsyncSocketComms import AsyncSocketServer
 from AsyncSocketComms import AsyncSocketClient
 
 import RP_PLL
+import XEM_GUI3
 
 class MonitorTCP_mock():
 
@@ -43,7 +44,7 @@ class MonitorTCP_mock():
             print("Error: unrecognized magic_bytes 0x%x" % magic_bytes)
         else:
             (data_to_send_back, bytes_consumed_from_buffer) = handler_func(data_buffer)
-            print("parse_buffer(): data_to_send_back=%s, bytes_consumed_from_buffer=%d" % (repr(data_to_send_back), bytes_consumed_from_buffer))
+            # print("parse_buffer(): data_to_send_back=%s, bytes_consumed_from_buffer=%d" % (repr(data_to_send_back), bytes_consumed_from_buffer))
             data_buffer[0:bytes_consumed_from_buffer] = bytearray()
             return data_to_send_back
 
@@ -137,9 +138,12 @@ class ServerThread(QtCore.QThread):
     def run(self):
         print("ServerThread::run()")
 
+        k = 0
         while 1:
-            print(".", end="")
-            time.sleep(100e-3)
+            k += 1
+            if k % 100 == 0:
+                print(".", end="")
+            time.sleep(1e-3)
 
             if not self.bReadEnable:
                 continue
@@ -150,7 +154,7 @@ class ServerThread(QtCore.QThread):
 
             # reply after the prescribed delay
             if data_to_send_back is not None:
-                print("run(): data_to_send_back = %s" % repr(data_to_send_back))
+                # print("run(): data_to_send_back = %s" % repr(data_to_send_back))
                 time.sleep(self.monitor_tcp.reply_latency)
                 self.server.sock_conn.sendall(data_to_send_back)
 
@@ -242,14 +246,15 @@ def test_monitorTCP_mock():
     # actual test
     check_readreg(dev)
 
+@pytest.mark.skip(reason="can only run one test at a time currently")
 def test1():
     app = start_qt()
 
     server_thread = objSocketMock()
     time.sleep(0.1)
 
-    timerMaxTestDuration = QtCore.QTimer()
-    timerMaxTestDuration.singleShot(1000, server_thread.timerQuit)
+    # timerMaxTestDuration = QtCore.QTimer()
+    # timerMaxTestDuration.singleShot(1000, server_thread.timerQuit)
 
     dev = RP_PLL.RP_PLL_device()
 
@@ -257,8 +262,35 @@ def test1():
     assert dev.valid_socket
 
     # actual test
-    server_thread.setReplyLatency.emit(1.0)
-    check_readreg(dev)
+    for latency in [0., 1., 4., 5.]:
+        print("Setting reply latency = %f" % latency)
+        server_thread.setReplyLatency.emit(latency)
+        time.sleep(10e-3)
+        try:
+            check_readreg(dev)
+        except RP_PLL.CommsLoggeableError:
+            print("Read timed out, with latency=%f and timeout=%f" % (latency, dev.sock.gettimeout()))
+            assert latency >= dev.sock.gettimeout()
+
+
+
+
+@pytest.mark.skip(reason="can only run one test at a time currently")
+def test2():
+    server_thread = objSocketMock()
+    time.sleep(0.1)
+
+    controller = XEM_GUI3.controller(bManualStartupForTests=True)
+
+    def timerConnectAfterEventLoopIsRunning():
+        controller.pushDefaultValues(strSelectedSerial = "000000000000", ip_addr = "127.0.0.1", port=5000)
+
+    app = start_qt()
+    timer = QtCore.QTimer.singleShot(1000, timerConnectAfterEventLoopIsRunning)
+    
+    app.exec_()
+
+    assert(0)
 
 @pytest.mark.skip(reason="used only while developping tests")
 def test_socket():
@@ -288,7 +320,7 @@ if __name__ == '__main__':
     # server.run()
 
     # test_socketMock()
-    test1()
+    test2()
 
     pass
 

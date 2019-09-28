@@ -38,6 +38,7 @@ import traceback
 import pyqtgraph as pg
 
 import RP_PLL # for CommsError
+from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 
 import logging
 
@@ -104,21 +105,7 @@ def smooth(x,window_len=11,window='hanning'):
 	y=np.convolve(w/w.sum(),s,mode='valid')
 	return y
 
-import functools
 
-def logCommsErrorsAndBreakoutOfFunction(function):
-	@functools.wraps(function)
-	def wrapper(*args, **kwargs):
-		try:
-			function(*args, **kwargs)
-		except RP_PLL.CommsLoggeableError as e:
-			# log exception
-			logging.error("Exception occurred", exc_info=True)
-		except RP_PLL.CommsError as e:
-			# do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
-			pass
-
-	return wrapper
 
 class XEM_GUI_MainWindow(QtGui.QWidget):
 

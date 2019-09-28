@@ -32,9 +32,6 @@ class socket_placeholder():
 
 class RP_PLL_device():
 
-    
-    
-    
     MAGIC_BYTES_WRITE_REG       = 0xABCD1233
     MAGIC_BYTES_READ_REG        = 0xABCD1234
     MAGIC_BYTES_READ_BUFFER     = 0xABCD1235
@@ -43,7 +40,6 @@ class RP_PLL_device():
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
     MAGIC_BYTES_REBOOT_MONITOR  = 0xABCD1239
     
-
     FPGA_BASE_ADDR              = 0x40000000    # address of the main PS <-> PL memory map (GP 0 AXI master on PS)
     FPGA_BASE_ADDR_XADC         = 0x80000000    # address of the XADC PS <-> PL memory map (GP 1 AXI master on PS)
 
@@ -61,19 +57,18 @@ class RP_PLL_device():
         self.type_to_format_string = {False: '=III',
                                       True: '=IIi'}
 
-
-        return
-
-
-    def socketErrorEvent(self):
+    def socketErrorEvent(self, e):
         # disconnect from socket, and start reconnection timer:
         if self.controller is not None:
-            self.controller.socketErrorEvent()
-
+            self.controller.socketErrorEvent(e)
+        else:
+            # we are running in stand-alone mode
+            self.CloseTCPConnection()
+            raise CommsLoggeableError(e)
 
     def CloseTCPConnection(self):
         print("RP_PLL_device::CloseTCPConnection()")
-        self.sock = socket_placeholder()
+        self.sock = None # socket_placeholder()
         self.valid_socket = False
 
     def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True):
@@ -103,7 +98,6 @@ class RP_PLL_device():
             
         return buf
 
-
     # Function used to send a file write command:
     def write_file_on_remote(self, strFilenameLocal, strFilenameRemote):
         # open local file and load into memory:
@@ -116,34 +110,34 @@ class RP_PLL_device():
             self.sock.sendall(strFilenameRemote.encode('ascii'))
             # send actual file
             self.sock.sendall(file_data.tobytes())
-        except:
+        except socket.error as e:
             print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
             self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
-            self.socketErrorEvent()
+            self.socketErrorEvent(e)
+
     # Function used to send a shell command to the Red Pitaya:
     def send_shell_command(self, strCommand):
-        
         try:
             # send header
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_SHELL_COMMAND, len(strCommand), 0)
             self.sock.sendall(packet_to_send)
-            # send filename
+            # send command
             self.sock.sendall(strCommand.encode('ascii'))
-        except:
+        except socket.error as e:
             print("RP_PLL.py: send_shell_command(): exception while sending command!")
             self.logger.warning('Red_Pitaya_GUI{}: send_shell_command(): exception while sending command!'.format(self.logger_name))
-            self.socketErrorEvent()
+            self.socketErrorEvent(e)
+
     # Function used to reboot the monitor-tcp program
     def send_reboot_command(self):
-        
         try:
             # send header
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_REBOOT_MONITOR, 0, 0)
             self.sock.sendall(packet_to_send)
-        except:
+        except socket.error as e:
             print("RP_PLL.py: send_reboot_command(): exception while sending command!")
             self.logger.warning('Red_Pitaya_GUI{}: send_reboot_command(): exception while sending command!'.format(self.logger_name))
-            self.socketErrorEvent()
+            self.socketErrorEvent(e)
 
     def validate_address(self, addr):
         if addr % 4:
@@ -156,18 +150,24 @@ class RP_PLL_device():
     #######################################################
 
     def send(self, packet_to_send):
+        if self.valid_socket == False:
+            raise CommsError
+
         try:
             self.sock.sendall(packet_to_send)
-        except:
-            self.socketErrorEvent()
+        except socket.error as e:
+            self.socketErrorEvent(e)
 
     def read(self, bytes_to_read):
+        if self.valid_socket == False:
+            raise CommsError
+
         data_buffer = None
         try:
             data_buffer = self.recvall(bytes_to_read)
-        except:
+        except socket.error as e:
             logging.error(traceback.format_exc())
-            self.socketErrorEvent()
+            self.socketErrorEvent(e)
 
         if data_buffer is None:
             return bytes(bytes_to_read)
@@ -260,9 +260,6 @@ class RP_PLL_device():
         # this only needs to update the internal state
         # for this, there would need to be two versions of the internal state, so that we can diff them and commit only the addresses that have changed
         # but its much simpler for now to just commit the change directly
-
-        #print('SetWireInValue(): TODO')
-
         # the multiply by 4 is because right now the zynq code doesn't work unless reading on a 32-bits boundary, so we map the addresses to different values
         if value_16bits < 0:
             # write as a signed value
@@ -293,27 +290,13 @@ class RP_PLL_device():
         # and this function is completely unecessary
         return 0
 
-        # we basically need to read all the state...
-        # in fact, this feature is currently used only for:
-        # readLEDs(), just 6 bits
-        # readStatusFlags() (which indicate a bunch of 1-bit values)
-        # readResidualsStreamingStatus(), again, just 2 bits
-        # get_AD9783_SPI_register(), which makes no sense on the new hardware platform
-        # ditherRead(), which reads 3x 16 bits values
-        # so we could easily overhaul this to something more manageable...
-
-        # print('UpdateWireOuts(): TODO')
-        return 0
-
     def ReadFromPipeOut(self, pipe_address, buffer):
         # read bytes into the buffer, which is a pre-allocated string of the right length
         #buffer = "\x00"*len(buffer)    # for now, return all zeros only
 #        print "ReadFromPipeOut: address = %d" % pipe_address
         buffer = self.read_Zynq_buffer_int16(pipe_address, int(round(len(buffer)/2)))
 
-        
-        bytes_read = len(buffer)
-        return bytes_read
+        return len(buffer)
 
 
 
@@ -444,23 +427,3 @@ if __name__ == '__main__':
 ##    data_np = main()
     data_np = main2()
     
-
-
-                
-
-# # Stuff for the initialization, which has to be completely re-done anyway:
-# self.dev = ok.FrontPanel()
-# n_devices = self.dev.GetDeviceCount()
-
-# self.dev_list[k] = self.dev.GetDeviceListSerial(k)
-
-
-# self.dev = ok.FrontPanel()
-
-# self.dev.OpenBySerial(self.dev.GetDeviceListSerial(0))
-
-# self.dev.OpenBySerial(str(strSerial))
-
-# #if self.dev.IsOpen():
-
-# error_code = self.dev.ConfigureFPGA(strFirmware)
