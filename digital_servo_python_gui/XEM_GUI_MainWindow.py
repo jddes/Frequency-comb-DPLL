@@ -200,7 +200,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.slowStart100VSwitchingSupply()
 
 
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def slowStart100VSwitchingSupply(self):
 		# need to set the switching supply to its default values:
 		# do a slow start over ~ 100 ms.
@@ -259,7 +259,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		return VCO_gain_in_Hz_per_Volts
 
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def setVCOGain_event(self):
 		# Update the loop filters gain settings based on the new VCO gains:
 
@@ -295,7 +295,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# This function needs the VCO gain to compute the control effort so we have to update it if we have changed.
 		self.spectrum.setDACOffset_event()
 
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def getVCOGain(self):
 		if self.selected_ADC == 0:
 			dac_list = [0]
@@ -329,7 +329,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 			self.spectrum.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
 
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def setVCOFreq_event(self):
 		# print("setVCOFreq_event: self.selected_ADC = %d" % self.selected_ADC)
 		try:
@@ -349,7 +349,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.sl.set_ddc1_ref_freq(frequency_in_hz)
 		#print('frequency_in_hz = %e (after)' % frequency_in_hz)
 
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def getVCOFreq(self):
 		if self.selected_ADC == 0:
 			frequency_in_hz = self.sl.get_ddc0_ref_freq_from_RAM()
@@ -536,7 +536,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		else:
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
 
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def chkLockClickedEvent(self):
 		bLock = self.qchk_lock.isChecked()
 		if bLock:
@@ -1264,7 +1264,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #            event.ignore()
 		return
 		
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def timerDitherEvent(self):
 		# print('timerDitherEvent')
 
@@ -1315,7 +1315,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		return
 		
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def timerEvent(self, e):
 		# print 'timerEvent : %.3f sec' % (time.perf_counter())
 
