@@ -18,6 +18,8 @@ from user_friendly_QLineEdit import user_friendly_QLineEdit
 # stuff for Python 3 port
 import pyqtgraph as pg
 
+from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
+
 class LoopFiltersUI(Qt.QWidget):
 	
 	MINIMUM_GAIN_DISPLAY = 10**(-120/20)
@@ -663,6 +665,7 @@ class LoopFiltersUI(Qt.QWidget):
 			
 		return (P_gain, I_gain, II_gain, D_gain, D_coef, bLock)
 		
+	@logCommsErrorsAndBreakoutOfFunction
 	def updateFilterSettings(self):
 #        print('LoopFiltersUI::updateFilterSettings(): Entering')
 #		traceback.print_stack()
@@ -670,7 +673,6 @@ class LoopFiltersUI(Qt.QWidget):
 		(P_gain, I_gain, II_gain, D_gain, D_coef, bLock) = self.getActualControllerDesign()
 		
 		self.sl.pll[self.filter_number].set_pll_settings(self.sl, P_gain, I_gain, II_gain, D_gain, D_coef, bLock)
-		
 #        print('LoopFiltersUI::updateFilterSettings(): Exiting')
 		
 	def getFilterSettings(self):

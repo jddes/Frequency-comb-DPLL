@@ -347,6 +347,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 	def timerXADCEvent(self):
 		# read from xadc registers:
 		# print(self.qplots.isVisible())
+		return
 
 		if not self.sl.dev.valid_socket:
 			return

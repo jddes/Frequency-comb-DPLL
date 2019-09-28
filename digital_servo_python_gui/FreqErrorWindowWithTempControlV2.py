@@ -29,6 +29,7 @@ import weakref
 import pyqtgraph as pg
 import logging
 
+from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 
 class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
@@ -234,7 +235,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.file_output_dac1 = open(strCurrentName5, 'wb')
         self.file_output_dac2 = open(strCurrentName6, 'wb')
         
-
+    @logCommsErrorsAndBreakoutOfFunction
     def chkTriangular_checked(self):
         if self.qchk_triangular.isChecked():
             self.sl.setCounterMode(True)
@@ -243,6 +244,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # self.addTempControlWidget()
         # print('Updating counter mode')
 
+    @logCommsErrorsAndBreakoutOfFunction
     def getTriangular_checked(self):
         self.bTriangularAveraging = self.sl.getCounterMode()
         
@@ -607,6 +609,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
        # else:
 #            print('Temp control disactivated.')
 
+    @logCommsErrorsAndBreakoutOfFunction
     def runAutoRecover(self, output_number, current_dac):
         # Try to read the lock state
         try:
@@ -671,23 +674,25 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.logger.critical('Red_Pitaya_GUI{}: Channel {} lost lock. DAC too close to the rail.'.format(self.logger_name, output_number))
                 # logger.warning("{}: channel {} lost lock. Doing lock to unlock transition".format(time.strftime('%c'),output_number))
    
-        
+    @logCommsErrorsAndBreakoutOfFunction
     def displayFreqCounter(self):
-        try:
-            (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_dual_mode_counter(self.output_number)   
-            # print (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
+        (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_dual_mode_counter(self.output_number)
+        print(freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
+        # try:
             
-        except:
-            print('Exception occured reading counter data. Disabling further updates.')
-            self.logger.warning('Red_Pitaya_GUI{}: Exception occured reading counter data. Disabling further updates.'.format(self.logger_name))
-            self.killTimer(self.timerID)
-            freq_counter_samples = 0
-            time_axis = 0
-            DAC0_output = 0
-            DAC1_output = 0
-            DAC2_output = 0
+        #     # print (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
             
-            raise
+        # except:
+        #     print('Exception occured reading counter data. Disabling further updates.')
+        #     self.logger.warning('Red_Pitaya_GUI{}: Exception occured reading counter data. Disabling further updates.'.format(self.logger_name))
+        #     self.killTimer(self.timerID)
+        #     freq_counter_samples = 0
+        #     time_axis = 0
+        #     DAC0_output = 0
+        #     DAC1_output = 0
+        #     DAC2_output = 0
+            
+        #     raise
             
         try:
             if time_axis is not None:
