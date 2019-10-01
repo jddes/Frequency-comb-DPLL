@@ -10,6 +10,7 @@ from PyQt5 import QtGui, Qt
 import numpy as np
 
 import weakref
+from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 #from DisplayTransferFunctionWindow import DisplayTransferFunctionWindow
 
@@ -38,9 +39,7 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 		self.loadParameters()
 		self.pushValues()
 
-
 	def loadParameters(self):
-	
 		filter_select_1	= int((self.sp.getValue('Filter_select', "DAC1")))
 
 		if filter_select_1 == 0:
@@ -86,6 +85,7 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 		elif angle_select_0 == 4:
 			self.qchk_inphase_lsb0.setChecked(True)
 
+	@logCommsErrorsAndBreakoutOfFunction()
 	def getValues(self):
 		#Get filter_select(0, 1 or 2) for both adc
 		(filter_select_1, filter_select_0) = self.sl.get_ddc_filter_select()
@@ -131,7 +131,6 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 			self.qchk_inphase_lsb0.setChecked(True)
 
 	def ddcClicked(self):
-
 		adc_number = 0
 		if self.qchk_Wideband0.isChecked():
 			filter_select = 0
@@ -173,11 +172,7 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 			angle_select = 4
 		self.sl.set_ddc_filter(adc_number, filter_select, angle_select)
 		 
-		
-		
-	def initUI(self):
-
-		
+	def initUI(self):		
 		######################################################################
 		# Create the widgets which control the DDC settings
 		######################################################################
@@ -315,11 +310,8 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 		self.center()
 		self.setWindowTitle(self.custom_shorthand + ': Peripherals settings')    
 		#self.show()
-		
-
-		
+			
 	def center(self):
-		
 		qr = self.frameGeometry()
 		cp = QtGui.QDesktopWidget().availableGeometry().center()
 		qr.moveCenter(cp)

@@ -18,8 +18,8 @@ import traceback
 
 from user_friendly_QLineEdit import user_friendly_QLineEdit
 
-
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
+from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 import DataLoggingDisplayWidget
 
 
@@ -98,6 +98,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setFan()
 		self.setClkSelect()
 
+	@logCommsErrorsAndBreakoutOfFunction()
 	def getValues(self):
 		#get value from the memory of the red pitaya 
 
@@ -344,10 +345,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		#self.show()
 		#self.show()
 
+	@logCommsErrorsAndBreakoutOfFunction()
 	def timerXADCEvent(self):
 		# read from xadc registers:
 		# print(self.qplots.isVisible())
-		return
 
 		if not self.sl.dev.valid_socket:
 			return
@@ -375,6 +376,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 	#Function to read the value in the RAM Block (channel 2) to an address
 	#The data we should read are the data sent to dpll_wrapper module (channel 0)
+	@logCommsErrorsAndBreakoutOfFunction()
 	def read_RP(self):
 		addr = int(self.qedit_addr.text(),16)
 		bus_address = (2 << 20) + addr*4
@@ -404,12 +406,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		#self.move(qr.topLeft())
 		#self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
 
-
+	@logCommsErrorsAndBreakoutOfFunction()
 	def setFan(self):
 		# Set the output of 2 IO pins (0 or 3.3V) for the activation of the fan
 		self.sl.setFan(self.qradio_fan_on.isChecked())
 
-
+	@logCommsErrorsAndBreakoutOfFunction()
 	def setClkSelect(self):
 		if self.qradio_external_clk.isChecked():
 			# Valid VCO range is 600 MHz-1600 MHz according to DS181
@@ -439,6 +441,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.controller.xem_gui_mainwindow.setVCOFreq_event()
 		self.controller.xem_gui_mainwindow2.setVCOFreq_event()
 
+	@logCommsErrorsAndBreakoutOfFunction()
 	def mux_vco_Action(self):
 		if self.qradio_VCO_to_DAC0.isChecked():
 			data = 1
@@ -448,7 +451,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			data = 0
 		self.sl.set_mux_vco(data)
 
-
+	@logCommsErrorsAndBreakoutOfFunction()
 	def setInternalVCO_offset(self):
 		try:
 			int_vco_offset = float(self.qedit_int_vco_offset.text())
@@ -459,6 +462,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		
 		self.sl.set_internal_VCO_offset(int_vco_offset)
 
+	@logCommsErrorsAndBreakoutOfFunction()
 	def setInternalVCO_amplitude(self):
 		try:
 			int_vco_amplitude = float(self.qedit_int_vco_amplitude.text())
@@ -472,6 +476,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		
 		self.sl.set_internal_VCO_amplitude(int_vco_amplitude)
 	  
+	@logCommsErrorsAndBreakoutOfFunction()
 	def mux_pll2_Action(self):
 		if self.qradio_ddc1_to_pll2.isChecked():
 			data = 1
