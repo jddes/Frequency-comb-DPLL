@@ -665,7 +665,7 @@ class LoopFiltersUI(Qt.QWidget):
 			
 		return (P_gain, I_gain, II_gain, D_gain, D_coef, bLock)
 		
-	@logCommsErrorsAndBreakoutOfFunction
+	@logCommsErrorsAndBreakoutOfFunction()
 	def updateFilterSettings(self):
 #        print('LoopFiltersUI::updateFilterSettings(): Entering')
 #		traceback.print_stack()
@@ -675,6 +675,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.sl.pll[self.filter_number].set_pll_settings(self.sl, P_gain, I_gain, II_gain, D_gain, D_coef, bLock)
 #        print('LoopFiltersUI::updateFilterSettings(): Exiting')
 		
+	@logCommsErrorsAndBreakoutOfFunction()
 	def getFilterSettings(self):
 
 		(P_gain, I_gain, II_gain, D_gain, D_coef, bLock) = self.sl.pll[self.filter_number].get_pll_settings(self.sl)

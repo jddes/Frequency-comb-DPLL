@@ -15,7 +15,7 @@ from ThermometerWidget import ThermometerWidget # to replace Qwt's thermometer w
 
 from SLLSystemParameters import SLLSystemParameters
 from SuperLaserLand_mock import SuperLaserLand_mock
-
+from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 
 def round_to_N_sig_figs(x, Nsigfigs):
     leading_pos = np.floor(np.log10(np.abs(x)))
@@ -559,7 +559,7 @@ class SpectrumWidget(QtGui.QWidget):
             self.plt_spc.setTitle('Time-domain IQ signals (I: blue, Q: red)')
 
 
-
+    @logCommsErrorsAndBreakoutOfFunction()
     def setDACOffset_event(self):
         for k in range(3):
             if self.output_controls[k] == True:
@@ -576,6 +576,7 @@ class SpectrumWidget(QtGui.QWidget):
                 current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
                 self.qlabel_dac_offset_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 
+    @logCommsErrorsAndBreakoutOfFunction()
     def getDACoffset(self):
         for k in range(3):
             if self.output_controls[k] == True:
@@ -594,7 +595,7 @@ class SpectrumWidget(QtGui.QWidget):
                 current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
                 self.qlabel_dac_offset_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 
-
+    @logCommsErrorsAndBreakoutOfFunction()
     def setSliderStepSize(self, output_number, VCO_gain_in_Hz_per_Volts):
         # Units for the slider are millionth of fullscale (goes from 0 to 1e6), which maps to [DAC_limit_low, DAC_limit_high]
         # The times three is because the scroll wheel actually does 3 small_steps (this is settings in Windows and can change from one computer to the next..)

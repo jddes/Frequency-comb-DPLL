@@ -235,7 +235,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.file_output_dac1 = open(strCurrentName5, 'wb')
         self.file_output_dac2 = open(strCurrentName6, 'wb')
         
-    @logCommsErrorsAndBreakoutOfFunction
+    @logCommsErrorsAndBreakoutOfFunction()
     def chkTriangular_checked(self):
         if self.qchk_triangular.isChecked():
             self.sl.setCounterMode(True)
@@ -244,7 +244,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # self.addTempControlWidget()
         # print('Updating counter mode')
 
-    @logCommsErrorsAndBreakoutOfFunction
+    @logCommsErrorsAndBreakoutOfFunction()
     def getTriangular_checked(self):
         self.bTriangularAveraging = self.sl.getCounterMode()
         
@@ -609,7 +609,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
        # else:
 #            print('Temp control disactivated.')
 
-    @logCommsErrorsAndBreakoutOfFunction
+    @logCommsErrorsAndBreakoutOfFunction(((np.nan, np.nan)))
     def runAutoRecover(self, output_number, current_dac):
         # Try to read the lock state
         try:
@@ -674,7 +674,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.logger.critical('Red_Pitaya_GUI{}: Channel {} lost lock. DAC too close to the rail.'.format(self.logger_name, output_number))
                 # logger.warning("{}: channel {} lost lock. Doing lock to unlock transition".format(time.strftime('%c'),output_number))
    
-    @logCommsErrorsAndBreakoutOfFunction
+    @logCommsErrorsAndBreakoutOfFunction()
     def displayFreqCounter(self):
         (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_dual_mode_counter(self.output_number)
         print(freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)

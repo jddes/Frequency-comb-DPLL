@@ -45,6 +45,7 @@ def test_slowStart100VSwitchingSupply():
 
     xem_gui_mainwindow.slowStart100VSwitchingSupply()
     assert(sl.setTestOscillator_calls == 11)
+    
 # @pytest.mark.skiptest
 def test_slowStart100VSwitchingSupply_with_exception():
     # intercept the calls that are the "output" of the function that we want to test:
@@ -78,6 +79,9 @@ def test_setVCOGain_event():
 
         def save_openLoop_gain(self, dac_number, value):
             self.openloopgain[dac_number] = value
+
+        def read_pll2_mux(self):
+            return 0
 
     app = start_qt()
     sp = SLLSystemParameters()

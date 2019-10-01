@@ -7,7 +7,7 @@ def logCommsErrorsAndBreakoutOfFunction(return_value_on_failure=None):
         @functools.wraps(function)
         def wrapper(*args, **kwargs):
             try:
-                function(*args, **kwargs)
+                return function(*args, **kwargs)
             except RP_PLL.CommsLoggeableError as e:
                 # log exception
                 logging.error("Exception occurred", exc_info=True)
