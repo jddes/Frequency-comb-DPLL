@@ -476,11 +476,11 @@ class controller(object):
 			# disconnect from socket, and start reconnection timer:
 			self.stopCommunication()
 
-			# print("TCP connection lost. Starting reconnection timer")
-			# self.timerReconnect = QtCore.QTimer()
-			# self.reconnection_attempts = 0
-			# self.timerReconnect.timeout.connect(self.reconnectionAttempt)
-			# self.timerReconnect.start(3000) # 3000 ms update period (needs to be longer than the delay...)
+			print("TCP connection lost. Starting reconnection timer")
+			self.timerReconnect = QtCore.QTimer()
+			self.reconnection_attempts = 0
+			self.timerReconnect.timeout.connect(self.reconnectionAttempt)
+			self.timerReconnect.start(3000) # 3000 ms update period (needs to be longer than the delay...)
 
 		# target_windows = [
 		# 	self.xem_gui_mainwindow2,
