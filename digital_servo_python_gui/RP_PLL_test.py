@@ -5,6 +5,7 @@ import time
 import struct
 import numpy as np
 import pytest
+from functools import partial
 
 from AsyncSocketComms import AsyncSocketServer
 from AsyncSocketComms import AsyncSocketClient
@@ -12,10 +13,38 @@ from AsyncSocketComms import AsyncSocketClient
 import RP_PLL
 import XEM_GUI3
 
+class Hardware_mock():
+    def __init__(self):
+
+        self.dpll_to_zynq_addr = lambda x: RP_PLL.RP_PLL_device.FPGA_BASE_ADDR+(1<<20)+x*4
+
+        self.reads_handlers = {
+            self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[0]): partial(self.get_dac_offset, 0),
+            self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[1]): partial(self.get_dac_offset, 1),
+            self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[2]): partial(self.get_dac_offset, 2),
+        }
+
+        self.writes_handlers = {
+            self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[0]): partial(self.set_dac_offset, 0),
+            self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[1]): partial(self.set_dac_offset, 1),
+            self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[2]): partial(self.set_dac_offset, 2),
+        }
+
+        self.DACs_offset = RP_PLL.RP_PLL_device.DACs_offset
+
+    ##################################
+    # Specialized read/write handlers which replicate part of the functionality of the real hardware
+    ##################################
+    def get_dac_offset(self, dac_number):
+        return struct.pack('=i', self.sys.DACs_offset[dac_number])
+
+    def set_dac_offset(self, dac_number, data):
+        self.sys.DACs_offset[dac_number] = data
+
+
 class MonitorTCP_mock():
 
     invalid_read = -1111 # default value if memory has not been written to before
-
 
     def __init__(self):
         self.reply_latency = 0
@@ -24,12 +53,8 @@ class MonitorTCP_mock():
         self.regs = {}
         self.data_to_send_back = bytearray()
 
+        self.hardware = Hardware_mock()
 
-        self.magic_bytes_to_handler = {
-            RP_PLL.RP_PLL_device.MAGIC_BYTES_WRITE_REG: self.write_reg_handler,
-            RP_PLL.RP_PLL_device.MAGIC_BYTES_READ_REG: self.read_reg_handler,
-            RP_PLL.RP_PLL_device.MAGIC_BYTES_READ_BUFFER: self.read_buf_handler,
-        }
 
     def parse_buffer(self, data_buffer):
         # parse the buffer, similar to what monitor-tcp does.
@@ -59,6 +84,15 @@ class MonitorTCP_mock():
             return (None, 0)
 
         (magic_bytes, addr, data) = struct.unpack('=III', data_buffer[:bytes_consumed])
+
+        # check if we have a specialized handler for this memory location:
+        if addr in self.hardware.writes_handlers.keys():
+            # call this handler:
+            print("MonitorTCP_mock: using specialized handler for write at addr 0x%8x" % addr)
+            bytes_to_send = self.hardware.writes_handlers[addr](data)
+            return (bytes_to_send, bytes_consumed)
+
+        # generic writes:
         self.regs[int(addr/4)] = data
         return (None, bytes_consumed)
 
@@ -73,6 +107,15 @@ class MonitorTCP_mock():
 
         (magic_bytes, addr, reserved) = struct.unpack('=III', data_buffer[:bytes_consumed])
 
+        # check if we have a specialized handler for this memory location:
+        if addr in self.hardware.reads_handlers.keys():
+            # call this handler:
+            print("MonitorTCP_mock: using specialized handler for read at addr 0x%8x" % addr)
+            bytes_to_send = self.hardware.reads_handlers[addr]()
+            return (bytes_to_send, bytes_consumed)
+
+
+        # generic reads:
         try:
             data = self.regs[int(addr/4)]
         except KeyError:
@@ -119,6 +162,7 @@ class MonitorTCP_mock():
 
     def read_mock(self, bytes_to_read):
         return self.remove_from_queue(self.data_to_send_back, bytes_to_read)
+
         
 class ServerThread(QtCore.QThread):
     statusUpdate = QtCore.pyqtSignal(str)
@@ -250,11 +294,11 @@ def test_monitorTCP_mock():
 def test1():
     app = start_qt()
 
-    server_thread = objSocketMock()
+    mock_server = objSocketMock()
     time.sleep(0.1)
 
     # timerMaxTestDuration = QtCore.QTimer()
-    # timerMaxTestDuration.singleShot(1000, server_thread.timerQuit)
+    # timerMaxTestDuration.singleShot(1000, mock_server.timerQuit)
 
     dev = RP_PLL.RP_PLL_device()
 
@@ -264,7 +308,7 @@ def test1():
     # actual test
     for latency in [0., 1., 4., 5.]:
         print("Setting reply latency = %f" % latency)
-        server_thread.setReplyLatency.emit(latency)
+        mock_server.setReplyLatency.emit(latency)
         time.sleep(10e-3)
         try:
             check_readreg(dev)
@@ -277,13 +321,19 @@ def test1():
 
 @pytest.mark.skip(reason="can only run one test at a time currently")
 def test2():
-    server_thread = objSocketMock()
+    mock_server = objSocketMock()
     time.sleep(0.1)
 
     controller = XEM_GUI3.controller(bManualStartupForTests=True)
 
     def timerConnectAfterEventLoopIsRunning():
         controller.pushDefaultValues(strSelectedSerial = "000000000000", ip_addr = "127.0.0.1", port=5000)
+        timer = QtCore.QTimer.singleShot(1000, timerConnectAfterEventLoopIsRunning)
+
+    def timerForceTimeout():
+        latency = controller.dev.sock.gettimeout()+1
+        print("Setting reply latency = %f" % latency)
+        mock_server.setReplyLatency.emit(latency)
 
     app = start_qt()
     timer = QtCore.QTimer.singleShot(1000, timerConnectAfterEventLoopIsRunning)
@@ -296,10 +346,10 @@ def test2():
 def test_socket():
     app = start_qt()
 
-    server_thread = objSocketMock()
+    mock_server = objSocketMock()
 
     timer = QtCore.QTimer()
-    timer.singleShot(3000, server_thread.timerQuit)
+    timer.singleShot(3000, mock_server.timerQuit)
 
     client = AsyncSocketClient(5000)
     print("client connected.")
