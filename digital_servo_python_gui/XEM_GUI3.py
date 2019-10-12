@@ -34,6 +34,7 @@ import pdb
 import traceback
 
 import socket
+from RP_PLL import CommsLoggeableError
 
 import logging, logging.handlers
 SYSLOG_IP = '127.0.0.1' #To log on this computer
@@ -378,6 +379,17 @@ class controller(object):
 		self.setTemperatureControlPort(strSelectedSerial)
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
+
+		if self.sl.dev.valid_socket:
+			self.sl.dev.CloseTCPConnection()
+
+		self.sl.dev.OpenTCPConnection(ip_addr, port)
+		if self.sl.dev.valid_socket == False:
+			logging.error('Connection failed.')
+			return
+
+		self.logger.info('Red_Pitaya_GUI{}: Updating GUI from FPGA'.format(self.logger_name))
+
 		self.strSelectedSerial = strSelectedSerial
 		self.ip_addr           = ip_addr
 		self.port              = port
@@ -387,12 +399,6 @@ class controller(object):
 		self.setCustomStyleSheet(strSelectedSerial)
 		self.setCustomShorthand(strSelectedSerial)
 
-		self.logger.info('Red_Pitaya_GUI{}: Updating GUI from FPGA'.format(self.logger_name))
-
-		if self.sl.dev.valid_socket:
-			self.sl.dev.CloseTCPConnection()
-
-		self.sl.dev.OpenTCPConnection(ip_addr, port)
 		self.loadDefaultValueFromConfigFile(strSelectedSerial, False) #read xml file to update some values. False means not updating the FPGA
 
 		target_windows = [
@@ -458,6 +464,7 @@ class controller(object):
 			print(e)
 
 	def socketErrorEvent(self, e):
+		print("XEM_GUI3.py:Controller::socketErrorEvent()")
 		# this gets called by the socket-using functions in RP_PLL
 		# in the event of a socket exception, while we thought we had a valid connection
 		# The right things to do in this case is to:
@@ -475,6 +482,8 @@ class controller(object):
 			self.reconnection_attempts = 0
 			self.timerReconnect.timeout.connect(self.reconnectionAttempt)
 			self.timerReconnect.start(3000) # 3000 ms update period (needs to be longer than the delay...)
+
+			raise CommsLoggeableError
 
 		# target_windows = [
 		# 	self.xem_gui_mainwindow2,
@@ -498,6 +507,7 @@ class controller(object):
 		if self.sl.dev.valid_socket:
 			# success!
 			self.timerReconnect.stop()
+			self.timerReconnect = None
 			return
 
 		if self.reconnection_attempts == 10:

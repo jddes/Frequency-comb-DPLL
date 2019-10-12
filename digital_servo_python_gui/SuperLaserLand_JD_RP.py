@@ -1396,8 +1396,7 @@ class SuperLaserLand_JD_RP:
 		return (modulation_period, N_periods, amplitude, self.dither_enable[dac_number], self.dither_mode_auto[dac_number])
 
 	def ditherRead(self, N_samples, dac_number=0):
-		if self.bVerbose == True:
-			print('ditherRead')
+		# print('ditherRead')
 			
 		# Read N samples from the dither lock-in
 		samples = np.zeros(N_samples, dtype=np.complexfloating)
@@ -1882,11 +1881,7 @@ class SuperLaserLand_JD_RP:
 			self.logger.warning('Red_Pitaya_GUI{}: Warning! You received the default value when asking for data at address {}"'.format(self.logger_name, hex(int(addr))))
 		return value
 
-	def read_clk_select(self):
-		clk_select = self.read_RAM_dpll_wrapper(self.BUS_ADDR_CLK_SEL)
-		self.clk_select = clk_select
-		return clk_select
-		
+
 
 	def read_pll2_mux(self):
 		if self.bVerbose == True:
@@ -1947,22 +1942,22 @@ class SuperLaserLand_JD_RP:
 
 	# clock select register. 0 = internal, 1 = external
 	def setClockSelector(self, bExternalClock=0):
-		
-		# self.send_bus_cmd_32bits(self.BUS_ADDR_CLK_SEL, int(bExternalClock))
-
 		# in the actual register, 1 means internal clock, 0 means external
 		reg = int(not bExternalClock)
 		print("setClockSelector: bExternalClock=%d. writing 0x%x (decimal %d) to 0x%x" % (bExternalClock, reg, reg, self.clk_sel_base_addr))
 		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg)
 
-
+	def read_clk_select(self):
+		# in the actual register, 1 means internal clock, 0 means external
+		reg = self.dev.read_Zynq_register_32bits(self.clk_sel_base_addr)		
+		self.clk_select = (not reg)
+		return self.clk_select
 
 	# f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode)
 	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
 		DIVCLK_DIVIDE = 1
 		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
 		print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
-
 
 		# From PG065:
 		# "You should first write all the required clock configuration registers and then check for the

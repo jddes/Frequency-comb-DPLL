@@ -59,6 +59,7 @@ class RP_PLL_device():
 
     def socketErrorEvent(self, e):
         # disconnect from socket, and start reconnection timer:
+        print("RP_PLL::socketErrorEvent()")
         if self.controller is not None:
             self.controller.socketErrorEvent(e)
         else:
@@ -110,7 +111,7 @@ class RP_PLL_device():
             self.sock.sendall(strFilenameRemote.encode('ascii'))
             # send actual file
             self.sock.sendall(file_data.tobytes())
-        except socket.error as e:
+        except OSError as e:
             print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
             self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
             self.socketErrorEvent(e)
@@ -123,7 +124,7 @@ class RP_PLL_device():
             self.sock.sendall(packet_to_send)
             # send command
             self.sock.sendall(strCommand.encode('ascii'))
-        except socket.error as e:
+        except OSError as e:
             print("RP_PLL.py: send_shell_command(): exception while sending command!")
             self.logger.warning('Red_Pitaya_GUI{}: send_shell_command(): exception while sending command!'.format(self.logger_name))
             self.socketErrorEvent(e)
@@ -134,7 +135,7 @@ class RP_PLL_device():
             # send header
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_REBOOT_MONITOR, 0, 0)
             self.sock.sendall(packet_to_send)
-        except socket.error as e:
+        except OSError as e:
             print("RP_PLL.py: send_reboot_command(): exception while sending command!")
             self.logger.warning('Red_Pitaya_GUI{}: send_reboot_command(): exception while sending command!'.format(self.logger_name))
             self.socketErrorEvent(e)
@@ -155,8 +156,12 @@ class RP_PLL_device():
 
         try:
             self.sock.sendall(packet_to_send)
-        except socket.error as e:
+        except OSError as e:
+            print("RP_PLL::send(): caught exception")
+            logging.error(traceback.format_exc())
             self.socketErrorEvent(e)
+        except:
+            print("RP_PLL::read(): unhandled exception")
 
     def read(self, bytes_to_read):
         if self.valid_socket == False:
@@ -165,9 +170,12 @@ class RP_PLL_device():
         data_buffer = None
         try:
             data_buffer = self.recvall(bytes_to_read)
-        except socket.error as e:
+        except OSError as e:
+            print("RP_PLL::read(): caught exception")
             logging.error(traceback.format_exc())
             self.socketErrorEvent(e)
+        except:
+            print("RP_PLL::read(): unhandled exception")
 
         if data_buffer is None:
             return bytes(bytes_to_read)

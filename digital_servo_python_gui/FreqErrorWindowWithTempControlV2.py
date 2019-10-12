@@ -677,7 +677,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
     @logCommsErrorsAndBreakoutOfFunction()
     def displayFreqCounter(self):
         (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output) = self.sl.read_dual_mode_counter(self.output_number)
-        print(freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
+        # print(freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)
         # try:
             
         #     # print (freq_counter_samples, time_axis, DAC0_output, DAC1_output, DAC2_output)

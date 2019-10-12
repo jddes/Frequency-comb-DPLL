@@ -367,7 +367,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qedit_ref_freq.blockSignals(False)
 		
 	def refreshChk_event(self):
-		print('refreshChk_event()')
 		if self.qchk_refresh.isChecked():
 			# We are doing a not running->running transition
 			try:
@@ -1268,9 +1267,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def timerDitherEvent(self):
 		# print('timerDitherEvent')
 
-
-		#print("timerDitherEvent: self.qthermo_baseband_snr.sizeHint() = ", self.qthermo_baseband_snr.sizeHint())
-
 		# Check if the sl object exists: otherwise this timer will keep throwing exceptions, filling up the console messages
 		# and preventing us form seeing the real cause
 		if not hasattr(self, 'sl'):
@@ -1313,8 +1309,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #                        self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: %s" % Qt.QColor(Qt.Qt.red).name())
 						self.qlabel_detected_vco_gain[k].setStyleSheet("color: white; background-color: red")
 		
-		return
-		
 	@logCommsErrorsAndBreakoutOfFunction()
 	def timerEvent(self, e):
 		# print 'timerEvent : %.3f sec' % (time.perf_counter())
@@ -1330,7 +1324,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			ret = self.sl.readLEDs()
 			if ret is not None:
 				(LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2) = ret
-				print ('%d, %d, %d, %d, %d, %d' % (LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2))
+				# print ('%d, %d, %d, %d, %d, %d' % (LED_G0, LED_R0, LED_G1, LED_R1, LED_G2, LED_R2))
 
 
 			# if self.selected_ADC == 0:
@@ -1723,7 +1717,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def grabAndDisplayADC(self):
 		(input_select, plot_type, N_samples) = self.spectrum.getGUIsettingsForADCdata()
-		print("input_select = %s" % input_select)
+		# print("input_select = %s" % input_select)
 		# Grab data from the FPGA:
 		start_time = time.perf_counter()
 		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
