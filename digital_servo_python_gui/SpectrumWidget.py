@@ -560,7 +560,7 @@ class SpectrumWidget(QtGui.QWidget):
 
 
     @logCommsErrorsAndBreakoutOfFunction()
-    def setDACOffset_event(self, value):
+    def setDACOffset_event(self, value=0):
         for k in range(3):
             if self.output_controls[k] == True:
                 # We need to convert between the units of the slider (0 to 1e6 integers) to counts.
