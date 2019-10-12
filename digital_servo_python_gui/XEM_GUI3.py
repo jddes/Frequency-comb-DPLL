@@ -138,13 +138,7 @@ class controller(object):
 	def initUI(self):
 
 		# Start the User Interface
-		bTriggerEvents = False
-		bConnectedRP = False
 		self.strSelectedSerial = "000000000000"
-
-		bUpdateFPGA = bTriggerEvents
-		bSendToFPGA = bTriggerEvents
-
 		
 		# Start the init process (this sets the PLL gain/settings registers and the residuals streaming)
 		self.sl.initSubModules()
@@ -185,7 +179,7 @@ class controller(object):
 		temp_control_port = 0
 		
 		
-		strNameTemplate = 'data_logging\%s' % strOfTime
+		strNameTemplate = 'data_logging\\%s' % strOfTime
 		# strNameTemplate = '%s_%s_' % (strNameTemplate, self.initial_config.strSelectedSerial)
 		strNameTemplate = '%s_%s_' % (strNameTemplate, self.strSelectedSerial)
 		self.freq_error_window1 = FreqErrorWindowWithTempControlV2(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0, self.xem_gui_mainwindow)
@@ -285,7 +279,7 @@ class controller(object):
 				
 				# print('Warning: Could not parse config file "%s" for FPGA serial: %s, falling back on script-defined defaults' % (strFileDefaultConfig, self.initial_config.strSelectedSerial))
 				print('Warning: Could not parse config file "%s" for FPGA serial: %s, falling back on script-defined defaults' % (strFileDefaultConfig, strSelectedSerial))
-				self.sp.loadDefaults()
+				self.sp.populateDefaults()
 		
 		# self.sp.loadDefaults()
 		# self.sp.saveToFile('system_parameters_current.xml')

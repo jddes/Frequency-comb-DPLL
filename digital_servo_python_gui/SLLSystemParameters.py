@@ -108,9 +108,9 @@ class SLLSystemParameters():
         ##
         ## HB, 4/27/2015, Added PWM support on DOUT0
         ##
-        PWM0_standard = float(self.getValue('PWM0_settings', 'standard'));
-        PWM0_levels   = int(self.getValue('PWM0_settings', 'levels'));
-        PWM0_default  = float(self.getValue('PWM0_settings', 'default'));
+        PWM0_standard = float(self.getValue('PWM0_settings', 'standard'))
+        PWM0_levels   = int(self.getValue('PWM0_settings', 'levels'))
+        PWM0_default  = float(self.getValue('PWM0_settings', 'default'))
         # Convert to counts
         value_in_counts = sl.convertPWMVoltsToCounts(PWM0_standard, PWM0_levels, PWM0_default)
         # Send to FPGA
