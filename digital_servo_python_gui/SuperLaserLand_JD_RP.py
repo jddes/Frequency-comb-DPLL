@@ -309,7 +309,7 @@ class SuperLaserLand_JD_RP:
 		self.logger = logging.getLogger(__name__)
 		self.logger_name = ':SuperLaserLand_JD_RP'
 
-		strNameTemplate = time.strftime("data_logging\%m_%d_%Y_%H_%M_%S_")
+		strNameTemplate = time.strftime("data_logging\\%m_%d_%Y_%H_%M_%S_")
 		# Create the subdirectory if it doesn't exist:
 		self.make_sure_path_exists('data_logging')
 		
