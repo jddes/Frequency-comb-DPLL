@@ -12,6 +12,7 @@ from AsyncSocketComms import AsyncSocketClient
 
 import RP_PLL
 import XEM_GUI3
+from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP as SL
 
 class Hardware_mock():
     def __init__(self):
@@ -30,7 +31,7 @@ class Hardware_mock():
             self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[2]): partial(self.set_dac_offset, 2),
         }
 
-        self.DACs_offset = RP_PLL.RP_PLL_device.DACs_offset
+        self.DACs_offset = SL.DACs_offset
 
     ##################################
     # Specialized read/write handlers which replicate part of the functionality of the real hardware
@@ -55,6 +56,11 @@ class MonitorTCP_mock():
 
         self.hardware = Hardware_mock()
 
+        self.magic_bytes_to_handler = {
+            RP_PLL.RP_PLL_device.MAGIC_BYTES_WRITE_REG: self.write_reg_handler,
+            RP_PLL.RP_PLL_device.MAGIC_BYTES_READ_REG: self.read_reg_handler,
+            RP_PLL.RP_PLL_device.MAGIC_BYTES_READ_BUFFER: self.read_buf_handler,
+        }
 
     def parse_buffer(self, data_buffer):
         # parse the buffer, similar to what monitor-tcp does.
