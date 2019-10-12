@@ -31,7 +31,12 @@ class Hardware_mock():
             self.dpll_to_zynq_addr(SL.BUS_ADDR_DAC_offset[2]): partial(self.set_dac_offset, 2),
         }
 
-        self.DACs_offset = SL.DACs_offset
+        class System:
+            def __init__(self):
+                self.DACs_offset = SL.DACs_offset
+            pass
+
+        self.sys = System()
 
     ##################################
     # Specialized read/write handlers which replicate part of the functionality of the real hardware

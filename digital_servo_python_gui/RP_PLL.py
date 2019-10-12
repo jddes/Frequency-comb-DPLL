@@ -203,7 +203,7 @@ class RP_PLL_device():
         self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_uint32, bSigned=False)
 
     def write_Zynq_register_int32(self, address_uint32, data_int32):
-        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_uint32, bSigned=True)
+        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_int32, bSigned=True)
 
     def write_Zynq_AXI_register_uint32(self, address_uint32, data_uint32):
         self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32, data_uint32, bSigned=False)
@@ -294,7 +294,7 @@ class RP_PLL_device():
         # read bytes into the buffer, which is a pre-allocated string of the right length
         #buffer = "\x00"*len(buffer)    # for now, return all zeros only
 #        print "ReadFromPipeOut: address = %d" % pipe_address
-        buffer = self.read_Zynq_buffer_int16(pipe_address, int(round(len(buffer)/2)))
+        buffer = self.read_Zynq_buffer_int16(int(round(len(buffer)/2)))
 
         return len(buffer)
 
@@ -404,7 +404,7 @@ def main2():
  
     address_uint32 = 0  # apparently this is currently unused
     number_of_points = rp.MAX_SAMPLES_READ_BUFFER   
-    data_buffer = rp.read_Zynq_buffer_int16(address_uint32, number_of_points)
+    data_buffer = rp.read_Zynq_buffer_int16(number_of_points)
 #   print("after recvall")
     data_np = np.fromstring(data_buffer, dtype=np.int16)
     print(data_np)
@@ -425,5 +425,5 @@ def main2():
         
 if __name__ == '__main__':
 ##    data_np = main()
-    data_np = main2()
+    main2()
     
