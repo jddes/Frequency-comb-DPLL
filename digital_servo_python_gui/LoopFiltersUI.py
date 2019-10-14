@@ -821,7 +821,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qslider_fi.blockSignals(True)
 		self.qslider_fi.setValue((100*np.log10(np.max((fi, fmin)))))
 		self.qslider_fi.blockSignals(False)
-		self.textboxChanged_withoutUpdateFPGA() # To update the sliders
+		self.textboxChanged_withoutUpdatingFPGA() # To update the sliders
 		self.textboxChanged()
 		
 		

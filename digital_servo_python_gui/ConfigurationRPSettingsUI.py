@@ -377,7 +377,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 	#Function to read the value in the RAM Block (channel 2) to an address
 	#The data we should read are the data sent to dpll_wrapper module (channel 0)
 	@logCommsErrorsAndBreakoutOfFunction()
-	def read_RP(self):
+	def read_RP(self, checked=False):
 		addr = int(self.qedit_addr.text(),16)
 		bus_address = (2 << 20) + addr*4
 		value = str(self.sl.dev.read_Zynq_register_uint32(bus_address))
@@ -407,12 +407,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		#self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
 
 	@logCommsErrorsAndBreakoutOfFunction()
-	def setFan(self):
+	def setFan(self, checked=False):
 		# Set the output of 2 IO pins (0 or 3.3V) for the activation of the fan
 		self.sl.setFan(self.qradio_fan_on.isChecked())
 
 	@logCommsErrorsAndBreakoutOfFunction()
-	def setClkSelect(self):
+	def setClkSelect(self, checked=False):
 		if self.qradio_external_clk.isChecked():
 			# Valid VCO range is 600 MHz-1600 MHz according to DS181
 
@@ -442,7 +442,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.controller.xem_gui_mainwindow2.setVCOFreq_event()
 
 	@logCommsErrorsAndBreakoutOfFunction()
-	def mux_vco_Action(self):
+	def mux_vco_Action(self, checked=False):
 		if self.qradio_VCO_to_DAC0.isChecked():
 			data = 1
 		elif self.qradio_VCO_to_DAC1.isChecked():
@@ -477,7 +477,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.sl.set_internal_VCO_amplitude(int_vco_amplitude)
 	  
 	@logCommsErrorsAndBreakoutOfFunction()
-	def mux_pll2_Action(self):
+	def mux_pll2_Action(self, checked=False):
 		if self.qradio_ddc1_to_pll2.isChecked():
 			data = 1
 		elif self.qradio_pll1_to_pll2.isChecked():

@@ -330,7 +330,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.spectrum.setSliderStepSize(k, VCO_gain_in_Hz_per_Volts)
 
 	@logCommsErrorsAndBreakoutOfFunction()
-	def setVCOFreq_event(self):
+	def setVCOFreq_event(self, checked=False):
 		# print("setVCOFreq_event: self.selected_ADC = %d" % self.selected_ADC)
 		try:
 			frequency_in_hz = float(self.qedit_ref_freq.text())
@@ -536,7 +536,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.qchk_lock.setStyleSheet('font-size: 18pt; color: white; background-color: red')
 
 	@logCommsErrorsAndBreakoutOfFunction()
-	def chkLockClickedEvent(self):
+	def chkLockClickedEvent(self, checked=False):
 		bLock = self.qchk_lock.isChecked()
 		if bLock:
 			# we are doing an unlocked->locked transition.

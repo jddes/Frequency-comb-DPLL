@@ -81,7 +81,7 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 			raise RP_PLL.CommsError('test exception')
 		pass
 
-	def setDitherLockInState(self):
+	def setDitherLockInState(self, *args, **kwargs):
 		if self.bIntroduceCommsException['setDitherLockInState']:
 			raise RP_PLL.CommsError('test exception')
 		pass

@@ -236,7 +236,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.file_output_dac2 = open(strCurrentName6, 'wb')
         
     @logCommsErrorsAndBreakoutOfFunction()
-    def chkTriangular_checked(self):
+    def chkTriangular_checked(self, checked=False):
         if self.qchk_triangular.isChecked():
             self.sl.setCounterMode(True)
         else:
