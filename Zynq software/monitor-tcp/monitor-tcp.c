@@ -59,7 +59,7 @@
 
 static bool app_exit = false;
 pid_t parent_pid;
-
+bool bVerbose = false; // this allows enabling lots of debugging messages. currently not available unless the code is recompiled
 
 // Packet formats definitions
 #pragma pack(push)
@@ -262,12 +262,14 @@ void acq_GetDataFromLogger(uint32_t* size, int16_t* buffer_in)
     const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
     //const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + OSC_CHB_OFFSET);
 
-    printf("acq_GetDataFromLogger: reading %u points, starting from address 0x%lX\n", *size, LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
+    if (bVerbose)
+    	printf("acq_GetDataFromLogger: reading %u points, starting from address 0x%lX\n", *size, LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
 
     for (uint32_t i = 0; i < (*size); ++i) {
         buffer_in[i] = (raw_buffer[i % LOGGER_BUFFER_SIZE]);
     }
-    printf("buffer_in[0] = %hd\n", buffer_in[0]);
+    if (bVerbose)
+    	printf("buffer_in[0] = %hd\n", buffer_in[0]);
 }
 
 
@@ -747,7 +749,7 @@ static int handleConnection(int connfd) {
     // Variables for the "reboot" message
     bool bReboot = false;
 
-    bool bVerbose = false; // this allows enabling lots of debugging messages. currently not available unless the code is recompiled
+    
 
     //Receive a message from client
     while( (read_size = recv(connfd , buffer , MAX_BUFF_SIZE , 0)) > 0 )
