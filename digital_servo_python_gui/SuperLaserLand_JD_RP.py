@@ -2028,7 +2028,7 @@ class SuperLaserLand_JD_RP:
 		time_start = time.clock()
 		# average 10 readings because otherwise they are quite noisy:
 		# this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
-		N_average = 100.
+		N_average = 10.
 		reg_avg = 0.
 		for k in range(int(N_average)):
 			reg = self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x200)
