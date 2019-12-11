@@ -109,9 +109,9 @@ class DisplayVNAWindow(QtGui.QWidget):
         ## Read out the results from the FPGA:
         try:
             (transfer_function_complex, frequency_axis) = self.sl.read_VNA_samples_from_DDR2()
-            print('len(transfer_function_complex) = %d, len(frequency_axis) = %d' % (len(transfer_function_complex), len(frequency_axis)))
-            print(np.real(transfer_function_complex))
-            print(np.imag(transfer_function_complex))
+            # print('len(transfer_function_complex) = %d, len(frequency_axis) = %d' % (len(transfer_function_complex), len(frequency_axis)))
+            # print(np.real(transfer_function_complex))
+            # print(np.imag(transfer_function_complex))
         except:
             self.sl.bDDR2InUse = False
             print("Exception reading VNA samples from DDR2")
