@@ -1785,13 +1785,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			print('Elapsed time (Comm) = %f' % (time.perf_counter()-start_time))
 
 		# A little bit of data validation:
-		if input_select == 0 or input_select == 1:
+		if input_select in ['ADC0', 'ADC1']:
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
 				print('getADCdata(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
 				return (None, None)
 		else:
 			ref_exp0 = 1.0
-
 		return (samples_out, ref_exp0)
 
 
