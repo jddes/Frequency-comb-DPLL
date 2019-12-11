@@ -1732,13 +1732,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 
 	def getADCdata(self, input_select, N_samples, bReadAsDDC=False):
-
+		if bReadAsDDC:
+			empty_return_value = None
+		else:
+			empty_return_value = (None, None)
 		start_time = time.perf_counter()
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
 			print('grabAndDisplayADC(): DDR2 logger in use, cannot get data from adc')
-			return (None, None)
+			return empty_return_value
 		# Block access to the DDR2 Logger to any other function until we are done:
 		self.sl.bDDR2InUse = True
 
@@ -1765,17 +1768,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		except RP_PLL.CommsLoggeableError as e:
 			# log exception
 			logging.error("Exception occurred", exc_info=True)
-			if bReadAsDDC == False:
-				return (None, None)
-			else:
-				return None
+			return empty_return_value
 
 		except RP_PLL.CommsError as e:
 			# do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
-			if bReadAsDDC == False:
-				return (None, None)
-			else:
-				return None
+			return empty_return_value
 
 		finally:
 			# Tear-down, whether or not an exception occured: Signal to other functions that they can use the DDR2 logger
@@ -1788,7 +1785,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		if input_select in ['ADC0', 'ADC1']:
 			if np.real(ref_exp0) == 0 and np.imag(ref_exp0) == 0:
 				print('getADCdata(): Invalid complex exponential. Probably because of a version mismatch between the RP firmware and Python GUI.')
-				return (None, None)
+				return empty_return_value
 		else:
 			ref_exp0 = 1.0
 		return (samples_out, ref_exp0)
