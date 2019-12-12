@@ -211,9 +211,9 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
 		MUX_vco = Qt.QGridLayout()
 
-		self.qradio_VCO_to_DAC0 = Qt.QRadioButton('VCO connected to DAC A')
-		self.qradio_VCO_to_DAC1 = Qt.QRadioButton('VCO connected to DAC B')
-		self.qradio_no_VCO = Qt.QRadioButton('VCO not connected')
+		self.qradio_VCO_to_DAC0 = Qt.QRadioButton('PLL A -> VCO -> DAC A')
+		self.qradio_VCO_to_DAC1 = Qt.QRadioButton('PLL B -> VCO -> DAC B')
+		self.qradio_no_VCO = Qt.QRadioButton('VCO not used')
 		self.qradio_no_VCO.setChecked(True)
 		self.qradio_VCO_to_DAC0.clicked.connect(self.mux_vco_Action)
 		self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
