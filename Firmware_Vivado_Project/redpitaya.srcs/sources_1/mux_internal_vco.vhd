@@ -11,8 +11,8 @@ Generic (
 port (
 	clk									   : in  std_logic;
 	-- input
-    DACin0								   : in std_logic_vector(DATA_IN_WIDTH-1 downto 0); 	-- data out for DACa
-    DACin1								   : in std_logic_vector(DATA_IN_WIDTH-1 downto 0);  	-- data out for DACb	
+    DACin0								   : in  std_logic_vector(DATA_IN_WIDTH-1 downto 0); 	-- data out for DACa
+    DACin1								   : in  std_logic_vector(DATA_IN_WIDTH-1 downto 0);  	-- data out for DACb	
     -- internal configuration bus
     sys_addr                               : in  std_logic_vector(32-1 downto 0);  				-- bus address
     sys_wdata                              : in  std_logic_vector(32-1 downto 0); 				-- bus write data
@@ -40,37 +40,37 @@ architecture Behavioral of mux_internal_vco is
 	-- instanciation of the internal VCO
 	component internal_vco 
 		Generic (
-			DATA_WIDTH			: integer := 16;	-- this cannot be changed without recompiling the DDS core
-			AMPLITUDE_WIDTH : integer := 16			-- this should fit in a DSP47 mult
+			DATA_WIDTH      : integer := 16;	-- this cannot be changed without recompiling the DDS core
+			AMPLITUDE_WIDTH : integer := 16		-- this should fit in a DSP47 mult
 		);
 		
 		port (
-			clk : in std_logic;
-			frequency : in  std_logic_vector(48-1 downto 0);
-
-			sys_addr : in  std_logic_vector(32-1 downto 0);   -- bus address
-			sys_wdata : in  std_logic_vector(32-1 downto 0);   -- bus write data
-			sys_sel : in  std_logic_vector(4-1 downto 0);   -- bus write byte select
-			sys_wen : in  std_logic;   -- bus write enable
-			sys_ren : in  std_logic;   -- bus read enable
-			sys_rdata : out std_logic_vector(32-1 downto 0);  -- bus read data
-			sys_err  : out std_logic;  -- bus error indicator
-			sys_ack  : out std_logic;  -- bus acknowledge signal
-
-			cosine_out : out std_logic_vector (DATA_IN_WIDTH-1 downto 0);
-			sine_out : out std_logic_vector (DATA_IN_WIDTH-1 downto 0)
+            clk        : in  std_logic;
+            frequency  : in  std_logic_vector(48-1 downto 0);
+            
+            sys_addr   : in  std_logic_vector(32-1 downto 0);  -- bus address
+            sys_wdata  : in  std_logic_vector(32-1 downto 0);  -- bus write data
+            sys_sel    : in  std_logic_vector(4-1 downto 0);   -- bus write byte select
+            sys_wen    : in  std_logic;                        -- bus write enable
+            sys_ren    : in  std_logic;                        -- bus read enable
+            sys_rdata  : out std_logic_vector(32-1 downto 0);  -- bus read data
+            sys_err    : out std_logic;                        -- bus error indicator
+            sys_ack    : out std_logic;                        -- bus acknowledge signal
+            
+            cosine_out : out std_logic_vector (DATA_IN_WIDTH-1 downto 0);
+            sine_out   : out std_logic_vector (DATA_IN_WIDTH-1 downto 0)
 		);
 	end component;
 
-	signal selector_vco			: std_logic_vector (2-1 downto 0)	:= (others => '0') ; -- signal to select which DAC will get the VCO signal as output
-	signal vco_offset 			: std_logic_vector (14-1 downto 0)  := (others => '0') ; -- intermediate signal to change the selected value that controls the frequency of the VCO
-	signal vco_input_voltage	: std_logic_vector (16-1 downto 0)  := (others => '0') ; -- intermediate signal to change the selected value that controls the frequency of the VCO
-	signal vco_frequency 		: std_logic_vector (48-1 downto 0)  := (others => '0') ; -- signal that contains the value of the frequency of the vco
-	signal vco_cos_signal 		: std_logic_vector (16-1 downto 0)  := (others => '0') ; -- output value of the vco
-	signal vco_sin_signal 		: std_logic_vector (16-1 downto 0)  := (others => '0') ; -- output value of the vco
+	signal selector_vco			: std_logic_vector ( 2-1 downto 0) := (others => '0') ; -- signal to select which DAC will get the VCO signal as output
+	signal vco_offset 			: std_logic_vector (14-1 downto 0) := (others => '0') ; -- intermediate signal to change the selected value that controls the frequency of the VCO
+	signal vco_input_voltage	: std_logic_vector (16-1 downto 0) := (others => '0') ; -- intermediate signal to change the selected value that controls the frequency of the VCO
+	signal vco_frequency 		: std_logic_vector (48-1 downto 0) := (others => '0') ; -- signal that contains the value of the frequency of the vco
+	signal vco_cos_signal 		: std_logic_vector (16-1 downto 0) := (others => '0') ; -- output value of the vco
+	signal vco_sin_signal 		: std_logic_vector (16-1 downto 0) := (others => '0') ; -- output value of the vco
 	
-	signal mux_a_out 		    : std_logic_vector (14-1 downto 0)  := (others => '0') ; -- signal for the DAC
-	signal mux_b_out 		    : std_logic_vector (14-1 downto 0)  := (others => '0') ; -- signal for the DAC
+	signal mux_a_out 		    : std_logic_vector (14-1 downto 0) := (others => '0') ; -- signal for the DAC
+	signal mux_b_out 		    : std_logic_vector (14-1 downto 0) := (others => '0') ; -- signal for the DAC
 	
 
 begin
@@ -142,8 +142,8 @@ vco_frequency <= std_logic_vector(signed(vco_input_voltage & "000000000000000000
         end if;
     end process;
 
-DACa_out <= mux_a_out;
-DACb_out <= mux_b_out;
+    DACa_out <= mux_a_out;
+    DACb_out <= mux_b_out;
 
 -----------------------------------------
     -- registers
