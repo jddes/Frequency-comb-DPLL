@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from RegistersDisplay import RegisterInfo as r
 from RegistersDisplay import RegisterState
+import RegistersDisplay
 
 def testReverseLookup():
     # RegisterInfo = namedtuple('RegisterInfo', ['subsystem', 'display_name', 'addr', 'show', 'formatting_func'])
@@ -15,3 +16,9 @@ def testReverseLookup():
     # check that the reverse lookup indeed does the inverse of the forward mapping:
     for key in reg_definitions:
         assert state.name_from_addr[state.reg_definitions[key].addr] == key
+
+
+def test_conditional_map():
+    assert RegistersDisplay.map_if_list(str, 5) == '5'
+    assert RegistersDisplay.map_if_list(int, '555') == 555
+    assert list(RegistersDisplay.map_if_list(str, [1, 2, 3])) == ['1', '2', '3']

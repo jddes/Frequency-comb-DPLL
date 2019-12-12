@@ -53,9 +53,10 @@ class RegisterState():
         # first need to figure out if arguments use addr or field_names:
         if addr is not None:
             # must perform lookups from addresses to names:
-
-            field_names_internal = 0
-
+            if not isinstance(addr, list):
+                field_names_internal = self.name_from_addr[addr]
+            else:
+                field_names_internal = [self.name_from_addr[x] for x in addr]
 
         if addr is not None and isinstance(addr, list):
             for current_addr in addr:
@@ -64,6 +65,17 @@ class RegisterState():
 
         if field_names is not None and isinstance(addr, list):
             pass
+
+    def _read_event_from_fieldname(self, field_name):
+        if not isinstance(field_name, list):
+            self._read_event_single(field_name)
+        else:
+            for x in field_name:
+                self._read_event_single()
+
+
+
+
     def _read_event_single(self, field_name):
         """ Actual function that does the work, called from read_event.
         Only handles one register at a time. """
@@ -73,3 +85,12 @@ class RegisterState():
                                   marking_type=MarkingType.read)
         self.unmark_queue.append(reg_info)
         pass
+
+
+def map_if_list(func, obj_list_or_not):
+    if isinstance(obj_list_or_not, list):
+        return map(func, obj_list_or_not)
+    else:
+        # scalar case:
+        return func(obj_list_or_not)
+
