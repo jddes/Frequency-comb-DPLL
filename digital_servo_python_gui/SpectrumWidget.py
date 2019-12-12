@@ -516,7 +516,7 @@ class SpectrumWidget(QtGui.QWidget):
             return self.sl.convertADCCountsToVolts(input_select, samples_out)
         else:
             # Convert DAC counts to voltage
-            DAC_number = input_select-2
+            DAC_number = int(input_select[3])
             return self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 
     def plotPhaseData(self, complex_baseband):
