@@ -118,7 +118,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qedit_int_vco_amplitude.blockSignals(False)
 
 		#get value for the VCO offset
-		offset = self.sl.get_internal_VCO_offset()
+		offset = self.sl.get_internal_VCO_DC_offset()
 		self.qedit_int_vco_offset.blockSignals(True)
 		self.qedit_int_vco_offset.setText('{:.3f}'.format(offset))
 		self.qedit_int_vco_offset.blockSignals(False)
@@ -207,7 +207,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		###################################################################################
 
-		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select VCO connection')
+		self.qgroupbox_MUX_vco = Qt.QGroupBox('Select internal VCO connection')
 		self.qgroupbox_MUX_vco.setAutoFillBackground(True)
 		MUX_vco = Qt.QGridLayout()
 
@@ -219,6 +219,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
 		self.qradio_no_VCO.clicked.connect(self.mux_vco_Action)
 
+		self.qlabel_int_vco_freq_offset = Qt.QLabel('Internal VCO Frequency Offset [0-fs/2, in Hz]')
+		self.qedit_int_vco_freq_offset = user_friendly_QLineEdit('31.25e6')
+		self.qedit_int_vco_freq_offset.returnPressed.connect(self.setInternalVCO_freq_offset)
+		self.qedit_int_vco_freq_offset.setMaximumWidth(100)
+
 		self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude [0-1]')
 		self.qedit_int_vco_amplitude = user_friendly_QLineEdit('0.5')
 		self.qedit_int_vco_amplitude.returnPressed.connect(self.setInternalVCO_amplitude)
@@ -226,18 +231,34 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		self.qlabel_int_vco_offset = Qt.QLabel('Internal VCO offset [0-1]')
 		self.qedit_int_vco_offset = user_friendly_QLineEdit('0.0')
-		self.qedit_int_vco_offset.returnPressed.connect(self.setInternalVCO_offset)
+		self.qedit_int_vco_offset.returnPressed.connect(self.setInternalVCO_DC_offset)
 		self.qedit_int_vco_offset.setMaximumWidth(60)
+
+		self.qlabel_int_vco_gain = Qt.QLabel('Internal VCO effective gain [Hz/V]')
+		self.qcombo_vco_gain = Qt.QComboBox()
+		self.qcombo_vco_gain.addItems(['480 Hz/V', '30 kHz/V', '244 kHz/V', '31.25 MHz/V'])
+		self.qcombo_vco_gain.setCurrentIndex(3)
+		self.qcombo_vco_gain.currentIndexChanged.connect(self.setInternalVCO_gain)
+
+		print("TODO! Load VCO settings from RP's memory when reconnecting!")
+
 
 		MUX_vco.addWidget(self.qradio_VCO_to_DAC0,	 0, 0)	
 		MUX_vco.addWidget(self.qradio_VCO_to_DAC1,	 1, 0)
 		MUX_vco.addWidget(self.qradio_no_VCO, 		 2, 0)
+
+		MUX_vco.addWidget(self.qlabel_int_vco_freq_offset, 0,1)
+		MUX_vco.addWidget(self.qedit_int_vco_freq_offset, 0,2)
 		MUX_vco.addWidget(self.qlabel_int_vco_offset, 1,1)
 		MUX_vco.addWidget(self.qedit_int_vco_offset, 1,2)
 		MUX_vco.addWidget(self.qlabel_int_vco_amplitude, 2,1)
 		MUX_vco.addWidget(self.qedit_int_vco_amplitude, 2,2)
-		MUX_vco.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
-		MUX_vco.setRowStretch(2, 2)
+
+		MUX_vco.addWidget(self.qlabel_int_vco_gain, 3,1)
+		MUX_vco.addWidget(self.qcombo_vco_gain, 3,2)
+
+		MUX_vco.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 3, 0)
+		MUX_vco.setRowStretch(3, 2)
 
 		self.qgroupbox_MUX_vco.setLayout(MUX_vco)
 
@@ -452,7 +473,28 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.sl.set_mux_vco(data)
 
 	@logCommsErrorsAndBreakoutOfFunction()
-	def setInternalVCO_offset(self):
+	def setInternalVCO_freq_offset(self):
+		try:
+			int_vco_freq_offset = float(self.qedit_int_vco_freq_offset.text())
+		except:
+			int_vco_freq_offset = self.sl.fs.fs/4
+
+		if int_vco_freq_offset < 0:
+			int_vco_freq_offset = 0
+
+		if int_vco_freq_offset > self.sl.fs/2:
+			int_vco_freq_offset = self.sl.fs.fs/2
+		
+		self.sl.set_internal_VCO_freq_offset(int_vco_freq_offset)
+
+	@logCommsErrorsAndBreakoutOfFunction()
+	def setInternalVCO_gain(self, value):
+		gain_index = self.qcombo_vco_gain.currentIndex()
+		# no translation needed since the values/indices are already in the correct order
+		self.sl.set_internal_VCO_gain(gain_index)
+
+	@logCommsErrorsAndBreakoutOfFunction()
+	def setInternalVCO_DC_offset(self):
 		try:
 			int_vco_offset = float(self.qedit_int_vco_offset.text())
 		except:
@@ -460,7 +502,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		if int_vco_offset < -1.0 or int_vco_offset > 1.0:
 			int_vco_offset = 0.0
 		
-		self.sl.set_internal_VCO_offset(int_vco_offset)
+		self.sl.set_internal_VCO_DC_offset(int_vco_offset)
 
 	@logCommsErrorsAndBreakoutOfFunction()
 	def setInternalVCO_amplitude(self):

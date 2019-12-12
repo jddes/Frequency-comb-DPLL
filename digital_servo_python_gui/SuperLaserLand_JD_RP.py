@@ -133,11 +133,14 @@ class SuperLaserLand_JD_RP:
 	
 	# Address to change the amplitude and the offset of the VCO
 	BUS_ADDR_vco_amplitude                              = (6 << 20) + 0x00000
-	BUS_ADDR_vco_offset                            		= (5 << 20) + 0x00004
+	BUS_ADDR_vco_dc_offset                            	= (5 << 20) + 0x00004
 
 	# This mux connect the VCO to the selected DAC 
 	BUS_ADDR_vco_mux                                    = (5 << 20) + 0x00000
-	
+	# other VCO parameters: gain between input "voltage" and frequency change, and frequency offset at "0V" input
+	BUS_ADDR_vco_gain                                   = (5 << 20) + 0x00008
+	BUS_ADDR_vco_freq_offset_lsb                        = (5 << 20) + 0x0000C
+	BUS_ADDR_vco_freq_offset_msb                        = (5 << 20) + 0x00010
 	
 	
 	PIPE_ADDRESS_DDR2_LOGGER                            = 0xA1
@@ -1797,24 +1800,69 @@ class SuperLaserLand_JD_RP:
 		
 	# scales the offset of the output tone produced by the VCO right before the ADC.
 	# offset = [-1 to 1]
-	def set_internal_VCO_offset(self, offset):
+	def set_internal_VCO_DC_offset(self, offset):
 		if self.bVerbose == True:
-			print('set_internal_VCO_offset')
+			print('set_internal_VCO_DC_offset')
 		self.vco_offset_in_volt = offset
-		vco_offset = round(offset*(2**13-1)) #13 bits, because offset is signed
-		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_offset, vco_offset)
+		vco_offset = round(offset*(2**13-1)) #13 bits, because offset is signed.
+		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_dc_offset, vco_offset)
 
-	def get_internal_VCO_offset(self):
+	def get_internal_VCO_DC_offset(self):
 		if self.bVerbose == True:
-			print('get_internal_VCO_offset')
-		raw = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_vco_offset)   
+			print('get_internal_VCO_DC_offset')
+		raw = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_vco_dc_offset)   
 		if raw > ((1<<13)-1):
 			raw = -(0b11111111111111-raw+1) 	#Because the value is consider as an signed integer
 		offset = raw/(2**13-1)
 		self.vco_offset_in_volt = offset
 		return offset
 
+	def set_internal_VCO_freq_offset(self, freq_offset):
+		""" Changes the VCO frequency offset.
+		Exact frequency offset will be a function of fs:
+		freq_offset = fs * n/2^48,
+		where n is the calculated register value:
+		that gives the closest to the requested frequency.
+		For fs=125 MHz, the resolution is thus ~450 nHz,
+		way beyond anything that would ever be required """
 
+		if self.bVerbose == True:
+			print('set_internal_VCO_freq_offset')
+		freq_offset_reg = int(round(freq_offset/self.fs*2**48))
+		print("log2(freq_offset_reg)=%f" % (np.log2(freq_offset_reg)))
+		self.dev.write_Zynq_register_uint64(self.BUS_ADDR_vco_freq_offset_lsb,
+											self.BUS_ADDR_vco_freq_offset_msb,
+											freq_offset_reg)
+
+	def get_internal_VCO_freq_offset(self):
+		if self.bVerbose == True:
+			print('get_internal_VCO_DC_offset')
+		freq_offset_reg = self.dev.read_Zynq_register_uint64(self.BUS_ADDR_vco_freq_offset_lsb,
+															 self.BUS_ADDR_vco_freq_offset_msb)   
+
+		return freq_offset_reg/2**48 * self.fs
+
+	def set_internal_VCO_gain(self, gain_setting):
+		""" Changes the VCO gain.  Effective VCO gains are:
+			gain_setting = 0: 31.25/2**16 Hz/V
+			gain_setting = 1: 31.25/2**10 Hz/V
+			gain_setting = 2: 31.25*2**16 Hz/V
+			gain_setting = 3: 31.25 Hz/V (default value)
+			(see mux_internal_vco.vhd for the implementation).
+			This is for the equivalent gain that is simulated
+			(ie. it matches the gain that an analog VCO directly
+			connected to the DAC would have) """
+		if self.bVerbose == True:
+			print('set_internal_VCO_gain')
+		if int(gain_setting) not in [0, 1, 2, 3]:
+			print("Warning: incorrect VCO gain setting. Expected integer between 0 and 3 inclusively, got %s" % (str(gain_setting)))
+			return
+		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_gain, gain_setting)
+
+	def get_internal_VCO_gain(self):
+		if self.bVerbose == True:
+			print('get_internal_VCO_gain')
+		return self.dev.read_Zynq_register_uint64(self.BUS_ADDR_vco_gain)
 
 	# scales the output tone produced by the VCO right before the ADC.
 	# amplitude = [0 to 1]

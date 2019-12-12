@@ -72,7 +72,8 @@ architecture Behavioral of mux_internal_vco is
 	signal mux_a_out 		    : std_logic_vector (14-1 downto 0) := (others => '0') ; -- signal for the DAC
 	signal mux_b_out 		    : std_logic_vector (14-1 downto 0) := (others => '0') ; -- signal for the DAC
 	
-
+    signal vco_gain_setting_reg : std_logic_vector( 2-1 downto 0)  := b"11"; -- highest gain setting, able to address the full Nyquist range in frequency
+    signal vco_freq_offset_reg  : std_logic_vector(48-1 downto 0)  := std_logic_vector(shift_left(to_unsigned(1, 48), 48-2)); -- offset is equal to dec2bin(31.25e6/125e6 * 2^48, 48) = 2^(48-2)
 begin
 
 	internal_vco_inst : internal_vco
@@ -108,11 +109,27 @@ begin
 		end if;
 	end process;
 
+    -- scale VCO control voltage into frequency codeword,
+    -- now with two possible gains, and register-controlled offset (necessary so we can still address the full frequency range when the lower-gain settings are used)
+    process (clk)
+    begin
+        if rising_edge(clk) then
+            case vco_gain_setting_reg is
+                when b"00" =>   -- highest gain / 2^16 (not sure this is super useful, but who knows)
+                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-16) + signed(vco_freq_offset_reg));
+                when b"01" =>   -- highest gain / 2^10
+                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-10) + signed(vco_freq_offset_reg));
+                when b"10" =>   -- highest gain / 2^7
+                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-7) + signed(vco_freq_offset_reg));
+                when b"11" =>   -- highest gain
+                    -- Gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
+                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1   ) + signed(vco_freq_offset_reg));
+                when others => -- same as lowest gain, not used in synthesis
+                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1   ) + signed(vco_freq_offset_reg));
+            end case;
+        end if;
+    end process;
 
--- This alternative gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
--- offset is equal to dec2bin(31.25e6/125e6 * 2^48, 48)
--- in verilog : vco_frequency <= (signed(vco_input_voltage)<<<(48-16-1)) + signed(48'b0100000000000000000000000000000_00000000000000000);
-vco_frequency <= std_logic_vector(signed(vco_input_voltage & "0000000000000000000000000000000") + "010000000000000000000000000000000000000000000000") ;
 
 	-- select which signal (DPLL0 or vco) will control the DAC0
 	output_muxa : process (clk)
@@ -145,7 +162,7 @@ vco_frequency <= std_logic_vector(signed(vco_input_voltage & "000000000000000000
     DACa_out <= mux_a_out;
     DACb_out <= mux_b_out;
 
------------------------------------------
+    -----------------------------------------
     -- registers
 
     ibus_manager : process (clk) is
@@ -157,8 +174,12 @@ vco_frequency <= std_logic_vector(signed(vco_input_voltage & "000000000000000000
             -- Write
             if sys_wen_mux = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"00000" =>	selector_vco  <= sys_wdata(2-1 downto 0); --select where will the vco be connected
-                    when x"00004" =>	vco_offset    <= sys_wdata(14-1 downto 0); --change the vco offset
+                    when x"00000" =>	selector_vco                        <= sys_wdata(2-1 downto 0); --select where will the vco be connected
+                    when x"00004" =>	vco_offset                          <= sys_wdata(14-1 downto 0); --change the vco offset
+                    when x"00008" =>    vco_gain_setting_reg                <= sys_wdata(2-1 downto 0);
+                    when x"0000C" =>    vco_freq_offset_reg(32-1 downto 0)  <= sys_wdata; -- LSBs of freq offset
+                    when x"00010" =>    vco_freq_offset_reg(48-1 downto 32) <= sys_wdata(16-1 downto 0); -- MSBs of freq offset
+
                     when others => selector_vco <= (others => '0');
                 end case;
             end if;
@@ -166,8 +187,12 @@ vco_frequency <= std_logic_vector(signed(vco_input_voltage & "000000000000000000
             -- Read
             if sys_ren_mux = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"00000" => sys_rdata_mux <= std_logic_vector(resize(unsigned(selector_vco), 32));
-                    when x"00004" => sys_rdata_mux <= std_logic_vector(resize(  signed(vco_offset)	, 32));
+                    when x"00000" => sys_rdata_mux <= std_logic_vector(resize(unsigned(selector_vco)        , 32));
+                    when x"00004" => sys_rdata_mux <= std_logic_vector(resize(  signed(vco_offset)	        , 32));
+                    when x"00008" => sys_rdata_mux <= std_logic_vector(resize(unsigned(vco_gain_setting_reg), 32));
+                    when x"0000C" => sys_rdata_mux <= std_logic_vector(vco_freq_offset_reg(32-1 downto 0));  -- LSBs of freq offset, no sign-extension because that would make no sense
+                    when x"00010" => sys_rdata_mux <= std_logic_vector(resize(  signed(vco_freq_offset_reg(48-1 downto 32)) , 32));  -- MSBs of freq offset
+
                     when others => sys_rdata_mux <=  (others => '0');
                 end case;
             end if;
