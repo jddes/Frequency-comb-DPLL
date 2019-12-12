@@ -23,7 +23,7 @@ class RegisterState():
 
         self.reg_definitions = reg_definitions
         # build addr -> field_name lookup table for faster lookup at runtime
-        self.name_from_addr = {reg_info.addr, fieldname for fieldname, reg_info in self.reg_definitions.items()}
+        self.name_from_addr = {reg_info.addr: fieldname for (fieldname, reg_info) in self.reg_definitions.items()}
 
     def unmark_reg(self, field_name):
         print("unmark_reg at time t=%.2f: %s" % (time.perf_counter(), field_name))
@@ -54,7 +54,7 @@ class RegisterState():
         if addr is not None:
             # must perform lookups from addresses to names:
 
-            field_names_internal = 
+            field_names_internal = 0
 
 
         if addr is not None and isinstance(addr, list):
@@ -63,8 +63,8 @@ class RegisterState():
 
 
         if field_names is not None and isinstance(addr, list):
-
-    def _read_event_single(self, field_name)
+            pass
+    def _read_event_single(self, field_name):
         """ Actual function that does the work, called from read_event.
         Only handles one register at a time. """
         # TODO: mark this register as read at current time (change color), scheduled to be unmarked at time+Tread

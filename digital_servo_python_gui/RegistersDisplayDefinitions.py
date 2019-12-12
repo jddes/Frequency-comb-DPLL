@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from RegisterDisplay import RegisterInfo as r
+from RegistersDisplay import RegisterInfo as r
 
 # need this for the bus addresses values
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP as c
