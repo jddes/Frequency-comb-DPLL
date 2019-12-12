@@ -477,7 +477,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		try:
 			# Read from selected source
 			print("currentSelector = %s" % currentSelector)
-			self.setup_write(self.sl.LOGGER_MUX[currentSelector], N_points)
+			self.sl.setup_write(self.sl.LOGGER_MUX[currentSelector], N_points)
 			
 			##################################################
 			# Synchronize trigger as best as possible to the next multiple of time_quantum seconds:
