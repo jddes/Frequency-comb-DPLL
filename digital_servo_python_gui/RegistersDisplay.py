@@ -25,6 +25,9 @@ class RegisterState():
         # build addr -> field_name lookup table for faster lookup at runtime
         self.name_from_addr = {reg_info.addr: fieldname for (fieldname, reg_info) in self.reg_definitions.items()}
 
+    def mark_reg(self, field_name):
+        print("mark_reg at time t=%.2f: %s" % (time.perf_counter(), field_name))
+
     def unmark_reg(self, field_name):
         print("unmark_reg at time t=%.2f: %s" % (time.perf_counter(), field_name))
 
@@ -33,6 +36,7 @@ class RegisterState():
         read/written/changed long enough ago. """
         current_time = time.perf_counter()
 
+        list_del = []
         for index, reg_info in enumerate(self.unmark_queue):
             # check if this register is not yet ready to get unmarked:
             if reg_info.unmark_time > current_time:
@@ -40,8 +44,11 @@ class RegisterState():
             # time to unmark this register.
             self.unmark_reg(reg_info.field_name)
 
-
             # remove item from the queue
+            list_del.append(index)
+
+        # do the deletion after we are done iterating through the deque itself (otherwise it throws an error)
+        for index in list_del:
             del self.unmark_queue[index]
 
     def read_event(self, addr=None, field_names=None):
@@ -57,24 +64,11 @@ class RegisterState():
                 field_names_internal = self.name_from_addr[addr]
             else:
                 field_names_internal = [self.name_from_addr[x] for x in addr]
-
-        if addr is not None and isinstance(addr, list):
-            for current_addr in addr:
-                self._read_event_single(addr)
-
-
-        if field_names is not None and isinstance(addr, list):
-            pass
-
-    def _read_event_from_fieldname(self, field_name):
-        if not isinstance(field_name, list):
-            self._read_event_single(field_name)
         else:
-            for x in field_name:
-                self._read_event_single()
+            field_names_internal = field_names
 
-
-
+        # now do the actual work:
+        map_if_list(self._read_event_single, field_names_internal)
 
     def _read_event_single(self, field_name):
         """ Actual function that does the work, called from read_event.
@@ -83,9 +77,11 @@ class RegisterState():
         reg_info = RegMarkingInfo(unmark_time=time.perf_counter()+self.Tread,
                                   field_name=field_name,
                                   marking_type=MarkingType.read)
+        self.mark_reg(field_name)
         self.unmark_queue.append(reg_info)
         pass
 
+# End class RegisterState
 
 def map_if_list(func, obj_list_or_not):
     if isinstance(obj_list_or_not, list):
