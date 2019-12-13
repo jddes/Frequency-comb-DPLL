@@ -5,6 +5,7 @@ from functools import partial
 
 from RegistersDisplay import RegisterInfo as r
 from RegistersDisplay import RegisterState
+from RegistersDisplay import EventTypes
 import RegistersDisplay
 
 @pytest.fixture(scope="function")
@@ -31,8 +32,8 @@ def test_conditional_map(state):
     assert RegistersDisplay.map_if_list(int, '555') == 555
     assert list(RegistersDisplay.map_if_list(str, [1, 2, 3])) == ['1', '2', '3']
 
-@pytest.mark.parametrize('bUseAddr', (False, True))
-def test_marking(state, bUseAddr):
+@pytest.mark.parametrize('bUseAddr,event_type', [(False, EventTypes.read), (True, EventTypes.written)])
+def test_marking(state, bUseAddr, event_type):
 
     # monkey-patch time.perf_counter() so that the test is deterministic.
     mock_time = 0
@@ -40,14 +41,14 @@ def test_marking(state, bUseAddr):
 
     # "output" is mark_reg and unmark_reg function:
     is_marked = {'reg_name2': False}
-    def mark_mock(self, field_name=None):
-        print("mark_mock: %s" % field_name)
+    def mark_mock(self, field_name, event_type):
+        print("mark_mock: %s, event_type=%s" % (field_name, event_type))
         is_marked[field_name] = True
-        self.mark_reg_bck(field_name)
-    def unmark_mock(self, field_name):
-        print("unmark_mock: %s" % field_name)
+        self.mark_reg_bck(field_name, event_type)
+    def unmark_mock(self, field_name, event_type):
+        print("unmark_mock: %s, event_type=%s" % (field_name, event_type))
         is_marked[field_name] = False
-        self.unmark_reg_bck(field_name)
+        self.unmark_reg_bck(field_name, event_type)
 
     
     state.mark_reg_bck   = state.mark_reg
@@ -64,13 +65,13 @@ def test_marking(state, bUseAddr):
         elif k == 10:
             # fake a read event:
             if bUseAddr:
-                state.read_event(addr=2)
+                state.reg_event(addr=2, event_type=event_type)
             else:
-                state.read_event(field_names='reg_name2')
+                state.reg_event(field_names='reg_name2', event_type=event_type)
 
             mark_time = mock_time
         else:
-            if mock_time < mark_time + state.Tread:
+            if mock_time < mark_time + state.mark_timeouts[event_type]:
                 assert is_marked['reg_name2'] == True
             else:
                 assert is_marked['reg_name2'] == False
