@@ -28,11 +28,13 @@ class RegisterState():
         # build addr -> field_name lookup table for faster lookup at runtime
         self.name_from_addr = {reg_info.addr: fieldname for (fieldname, reg_info) in self.reg_definitions.items()}
 
-    def mark_reg(self, field_name, event_type):
-        print("mark_reg at time t=%.2f: %s" % (time.perf_counter(), field_name))
-
-    def unmark_reg(self, field_name, event_type):
-        print("unmark_reg at time t=%.2f: %s" % (time.perf_counter(), field_name))
+    def setMarkCallback(self, callback):
+        """ This callback will get called with individual register info
+        and event info whenever the GUI needs to mark or unmark the event as recent.
+        Prototype should look like:
+        def callback(field_name, event_type, bMark)
+        (use partial if you need to transfer state) """
+        self.mark_reg = callback
 
     def timerColorCoding(self):
         """ TODO: update the color coding status of the registers that have been
@@ -45,7 +47,7 @@ class RegisterState():
             if reg_info.unmark_time > current_time:
                 continue
             # time to unmark this register.
-            self.unmark_reg(reg_info.field_name, reg_info.event_type)
+            self.mark_reg(reg_info.field_name, reg_info.event_type, bMark=False)
 
             # remove item from the queue
             list_del.append(index)
@@ -83,9 +85,8 @@ class RegisterState():
         reg_info = RegMarkingInfo(unmark_time=time.perf_counter()+self.mark_timeouts[event_type],
                                   field_name=field_name,
                                   event_type=event_type)
-        self.mark_reg(field_name, event_type)
+        self.mark_reg(field_name, event_type, bMark=True)
         self.unmark_queue.append(reg_info)
-        pass
 
 # End class RegisterState
 

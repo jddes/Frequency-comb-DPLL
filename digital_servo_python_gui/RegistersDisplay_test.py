@@ -41,20 +41,11 @@ def test_marking(state, bUseAddr, event_type):
 
     # "output" is mark_reg and unmark_reg function:
     is_marked = {'reg_name2': False}
-    def mark_mock(self, field_name, event_type):
-        print("mark_mock: %s, event_type=%s" % (field_name, event_type))
-        is_marked[field_name] = True
-        self.mark_reg_bck(field_name, event_type)
-    def unmark_mock(self, field_name, event_type):
-        print("unmark_mock: %s, event_type=%s" % (field_name, event_type))
-        is_marked[field_name] = False
-        self.unmark_reg_bck(field_name, event_type)
+    def mark_mock(self, field_name, event_type, bMark):
+        print("mark_mock: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
+        is_marked[field_name] = bMark
 
-    
-    state.mark_reg_bck   = state.mark_reg
-    state.unmark_reg_bck = state.unmark_reg
-    state.mark_reg   = partial(mark_mock, state)
-    state.unmark_reg = partial(unmark_mock, state)
+    state.setMarkCallback(partial(mark_mock, state))
 
     for k in range(200): # fake test duration = 2 secs
         mock_time = float(k)/100
