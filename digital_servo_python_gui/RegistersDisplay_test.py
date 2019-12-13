@@ -70,5 +70,32 @@ def test_marking(state, bUseAddr, event_type):
             else:
                 assert is_marked['reg_name2'] == False
 
+def test_save_values(state):
+    reg_values = {}
+    def reg_update_callback(field_name, value):
+        reg_values[field_name] = value
 
+    state.setRegUpdateCallback(reg_update_callback)
+    # check starting state (unknown/None for all values)
+    assert state.reg_values['reg_name1'] == None
+    assert state.reg_values['reg_name2'] == None
+    assert state.reg_values['reg_name3'] == None
+    # read/write a few values
+    state.reg_event(field_names='reg_name1', event_type=EventTypes.read, values=3)
+    state.reg_event(field_names='reg_name2', event_type=EventTypes.written, values=5)
+    state.reg_event(field_names='reg_name3', event_type=EventTypes.written, values=10)
+    assert state.reg_values['reg_name1'] == 3
+    assert state.reg_values['reg_name2'] == 5
+    assert state.reg_values['reg_name3'] == 10
+    # check that our callback has been called properly
+    assert reg_values['reg_name1'] == 3
+    assert reg_values['reg_name2'] == 5
+    assert reg_values['reg_name3'] == 10
+    # overwrite values:
+    state.reg_event(field_names='reg_name2', event_type=EventTypes.written, values=6)
+    state.reg_event(field_names='reg_name2', event_type=EventTypes.written, values=7)
+    state.reg_event(field_names='reg_name2', event_type=EventTypes.written, values=8)
+    assert state.reg_values['reg_name2'] == 8
+    # check that our callback has been called properly
+    assert reg_values['reg_name2'] == 8
 

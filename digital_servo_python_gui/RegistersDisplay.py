@@ -30,13 +30,27 @@ class RegisterState():
         # start with unknown register values
         self.reg_values = {key:None for key in self.reg_definitions.keys()}
 
+        # empty callbacks for now:
+        def this_func_does_nothing(*args, **kwargs):
+            pass
+        self.mark_reg_callback = this_func_does_nothing
+        self.reg_changed_callback = this_func_does_nothing
+
     def setMarkCallback(self, callback):
         """ This callback will get called with individual register info
         and event info whenever the GUI needs to mark or unmark the event as recent.
         Prototype should look like:
         def callback(field_name, event_type, bMark)
         (use partial if you need to transfer state) """
-        self.mark_reg = callback
+        self.mark_reg_callback = callback
+
+    def setRegUpdateCallback(self, callback):
+        """ This callback will get called with individual register
+        name and value whenever the value changes.
+        Prototype should look like:
+        def callback(field_name, value)
+        (use partial if you need to transfer state) """
+        self.reg_changed_callback = callback
 
     def timerColorCoding(self):
         """ TODO: update the color coding status of the registers that have been
@@ -49,7 +63,7 @@ class RegisterState():
             if unmark_time > current_time:
                 continue
             # time to unmark this register.
-            self.mark_reg(reg_info.field_name, reg_info.event_type, bMark=False)
+            self.mark_reg_callback(reg_info.field_name, reg_info.event_type, bMark=False)
 
             # remove item from the queue once we are done looping through
             list_del.append(reg_info)
@@ -87,11 +101,14 @@ class RegisterState():
         Only handles one register at a time. """
 
         # update the GUI only if this value is actually different than it was last time:
-
+        last_value = self.reg_values[field_name]
+        if value != last_value:
+            self.reg_changed_callback(field_name, value)
+            self.reg_values[field_name] = value # save new state
 
         # mark this register as reg at current time (change color)
         reg_info = RegEventInfo(field_name, event_type)
-        self.mark_reg(field_name, event_type, bMark=True)
+        self.mark_reg_callback(field_name, event_type, bMark=True)
         # schedule the expiration of this marking at a later time:
         unmark_time = time.perf_counter()+self.mark_timeouts[event_type]
         self.unmark_queue[reg_info] = unmark_time
