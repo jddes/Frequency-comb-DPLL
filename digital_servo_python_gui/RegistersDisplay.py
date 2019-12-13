@@ -90,10 +90,12 @@ class RegisterState():
 
 # End class RegisterState
 
-def map_if_list(func, obj_list_or_not):
-    if isinstance(obj_list_or_not, list):
-        return map(func, obj_list_or_not)
+def map_if_list(func, *args):
+    if isinstance(args[0], list):
+        return map(func, *args)
     else:
         # scalar case:
-        return func(obj_list_or_not)
+        return func(*args)
+
+
 

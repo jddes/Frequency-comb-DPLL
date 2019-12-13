@@ -32,6 +32,9 @@ def test_conditional_map(state):
     assert RegistersDisplay.map_if_list(int, '555') == 555
     assert list(RegistersDisplay.map_if_list(str, [1, 2, 3])) == ['1', '2', '3']
 
+    # test functions with more than one argument:
+    assert list(RegistersDisplay.map_if_list(lambda x, y: str(x)+str(y), [1, 2, 3], ['a', 'b', 'c'])) == ['1a', '2b', '3c']
+
 @pytest.mark.parametrize('bUseAddr,event_type', [(False, EventTypes.read), (True, EventTypes.written)])
 def test_marking(state, bUseAddr, event_type):
 
