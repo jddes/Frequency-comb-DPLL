@@ -38,7 +38,7 @@ begin
         if rising_edge(clk) then
             dump_results <= '0';
             if clk_enable_in = '1' then
-                if counter < unsigned(period) then
+                if counter < unsigned(period)-1 then
                     counter <= counter + 1;
                 else
                     counter <= (others => '0');
@@ -54,7 +54,7 @@ begin
         end if;
     end process;
 
-    running_minmax_inst : entity work.running_minmax
+    running_minmax_inst : entity work.running_minmax_signed
     generic map (
         DATA_WIDTH => DATA_WIDTH
     ) port map (
@@ -66,5 +66,5 @@ begin
         max_value    => max_out
     );
     clk_enable_out <= clk_enable_out_internal;
-
+    counter_out    <= std_logic_vector(sync_counter);
 end;
