@@ -41,8 +41,8 @@ begin
                 -- need to dump our results and reset
                 min_value_internal <= current_min;
                 max_value_internal <= current_max;
-                current_min <= (others => '1'); -- max of an unsigned number
-                current_max <= (others => '0'); -- min of an unsigned number
+                current_min <= unsigned(data);
+                current_max <= unsigned(data);
 
             else
                 -- normal mode:
