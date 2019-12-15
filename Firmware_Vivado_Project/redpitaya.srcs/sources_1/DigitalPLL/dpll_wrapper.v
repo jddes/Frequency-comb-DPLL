@@ -444,7 +444,7 @@ multiplexer_NbitsxMsignals_to_Nbits
     .in7({1'b1, DACout1}), 
     .in8({1'b1, DACout2}),
     //.in9({crash_monitor_output_to_logger_clk_enable, crash_monitor_output_to_logger}),
-    .in9({0'b0, 8'b0}),
+    .in9({minmax_clk_enable_out, max_out}),
     .selector(selector[4:0]), 
     .selected_output({LoggerData_clk_enable, LoggerData})
     );
@@ -464,6 +464,39 @@ multiplexer_NbitsxMsignals_to_Nbits
          .update_flag()
          );
 
+    // Decimate one data channel (currently ADC0) using a running-max dumped at a lower rate
+    // This could benefit from having a mux on its input (maybe all ADCs+DACs would be nice)
+    wire minmax_clk_enable_out;
+    wire [16-1:0] min_out;
+    wire [16-1:0] max_out;
+    wire [32-1:0] decimation_ratio;
+    minmax_decimator # (
+        .DATA_WIDTH        (16),
+        .SYNC_COUNTER_WIDTH(4)
+    ) minmax_decimator_inst (
+        .clk           (clk1),
+        .clk_enable_in (1'b1),
+        .data          (ADCraw0),
+        .period        (decimation_ratio),
+        .clk_enable_out(minmax_clk_enable_out),
+        .counter_out   (),
+        .min_out       (min_out),
+        .max_out       (max_out)
+    );
+
+    parallel_bus_register_32bits_or_less # (
+        .REGISTER_SIZE(16),
+        .REGISTER_DEFAULT_VALUE(1'b0),
+        .ADDRESS(16'h4)
+    )
+    parallel_bus_register_decimation_ratio (
+         .clk(clk1), 
+         .bus_strobe(cmd_trig), 
+         .bus_address(cmd_addr), 
+         .bus_data({cmd_data2in, cmd_data1in}), 
+         .register_output(decimation_ratio), 
+         .update_flag()
+         );
 
 ///////////////////////////////////////////////////////////////////////////////
 // Another multiplexer.  This one is more specialized, as it monitors the state of the DDR2 logger and adds auxilary data to the start of the data stream.
