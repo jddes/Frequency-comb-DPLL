@@ -622,7 +622,7 @@ wire [3:0] angleSelect_0, angleSelect_1;
      
 // The actual DDC:
 DDC_wideband_filters # (
-    bUseDiff(1'b1)
+        .bUseDiff(1'b1)
     ) DDC0_inst (
     .rst(rst_frontend0), 
     .clk(clk1), 
@@ -758,7 +758,7 @@ wire        [10-1:0]    DDC1_output;            // diff(phi)/(2*pi) * 2**10
      
 // The actual DDC:
 DDC_wideband_filters # (
-    bUseDiff(1'b0) // set to 0 for a PDH lock!
+        .bUseDiff(1'b0) // set to 0 for a PDH lock!
     ) DC1_inst (
     .rst(rst_frontend1), 
     .clk(clk1), 
@@ -1357,7 +1357,7 @@ complex_mult # (
     .LOG2_DIVIDE_AFTER_MULT(16),
     .OUTPUT_WIDTH          (16)
 ) complex_mult_inst (
-    .clk          (clk),
+    .clk          (clk1),
     .a_real       (ref_cosine_1),
     .a_imag       (ref_sine_1),
     .b_real       (ref_gain_real),
