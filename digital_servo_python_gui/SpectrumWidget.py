@@ -152,9 +152,9 @@ class SpectrumWidget(QtGui.QWidget):
         # Input select        
         self.qlabel_adc_plot_input = Qt.QLabel('Input:')
         self.qcombo_adc_plot = Qt.QComboBox()
-        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC0decim'])
+        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC1decim'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
-        self.qcombo_adc_plot.currentIndexChanged.connect(self.qcombo_adc_plot_currentIndexChanged)
+        self.qcombo_adc_plot.currentIndexChanged.connect(self._qcombo_adc_plot_currentIndexChanged)
 
         # Decimation ratio
         self.qlabel_decimation = Qt.QLabel('Decimation ratio:')
@@ -287,7 +287,8 @@ class SpectrumWidget(QtGui.QWidget):
         vbox.addWidget(self.qgroupbox_diagnostics)
         self.setLayout(vbox)
 
-    def qcombo_adc_plot_currentIndexChanged(self, index):
+    def _qcombo_adc_plot_currentIndexChanged(self, index):
+        (input_select, plot_type, N_samples, decimation_ratio) = self.getGUIsettingsForADCdata()
         if input_select.endswith('decim'):
             self.qedit_decimation.setEnabled(True)
         else:
@@ -301,7 +302,6 @@ class SpectrumWidget(QtGui.QWidget):
     # Update the scale which indicates the ADC fill ratio in numbers of bits:
     # samples must be in integer units (same as raw ADC data)
     def updateScaleDisplays(self, samples):
-        
         max_abs = np.max(np.abs(samples))
         if max_abs == 0:
             max_abs = 1 # to prevent passing a 0 value to the log function, which throws an exception
@@ -316,7 +316,6 @@ class SpectrumWidget(QtGui.QWidget):
         return np.sum((window_function/np.sum(window_function))**2) * fs
 
     def _updateNEBdisplay(self, window_NEB):
-        
         # Show the RBW:
         if window_NEB > 1e6:
             self.qlabel_rawdata_rbw.setText('RBW: %.1f MHz; Points:' % (round(window_NEB*1e5)/1e5/1e6))
@@ -325,9 +324,6 @@ class SpectrumWidget(QtGui.QWidget):
         else:
             self.qlabel_rawdata_rbw.setText('RBW: %.0f Hz; Points:' % (round(window_NEB)))
         
-
-
-
     def getGUIsettingsForADCdata(self):
         # Get settings from the GUI:
         input_select = str(self.qcombo_adc_plot.currentText())
@@ -340,7 +336,7 @@ class SpectrumWidget(QtGui.QWidget):
         if input_select.endswith('decim'):
             try:
                 decimation_ratio = int(float(self.qedit_decimation.text()))
-                decimation_ratio = min(decimation_ratio, 1)
+                decimation_ratio = max(decimation_ratio, 1)
             except:
                 decimation_ratio = 2000
         else:
@@ -434,8 +430,11 @@ class SpectrumWidget(QtGui.QWidget):
         ind_max_psd = index_from_freq(20e6)
         spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
         # reject the biggest outlier (biases the result, but by a very small amount, and avoids the large error if there is a spur in the chosen bandwidth)
-        worst_outlier_index = np.argmax(spc_single_sided_psd)
-        spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+        try:
+            worst_outlier_index = np.argmax(spc_single_sided_psd)
+            spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+        except:
+            pass
         avg_psd = np.mean(spc_single_sided_psd) # compute the mean
         # 
         spc = spc*4. # scale relative to 0 dBFS sine wave

@@ -1720,7 +1720,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def grabAndDisplayADC(self):
 		(input_select, plot_type, N_samples, decimation_ratio) = self.spectrum.getGUIsettingsForADCdata()
-		# print("input_select = %s" % input_select)
 		# Grab data from the FPGA:
 		start_time = time.perf_counter()
 		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples, bReadAsDDC=False, decimation_ratio=decimation_ratio)

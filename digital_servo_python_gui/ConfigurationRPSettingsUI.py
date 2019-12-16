@@ -263,6 +263,27 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 
 		###################################################################################
+		self.qgroupbox_ref_out = Qt.QGroupBox('LO 1 output on DAC0')
+		self.qgroupbox_ref_out.setAutoFillBackground(True)
+		grid = Qt.QGridLayout()
+
+		self.qedit_LO_amplitude = user_friendly_QLineEdit('0.5')
+		self.qedit_LO_amplitude.returnPressed.connect(self.setLO)
+		self.qedit_LO_amplitude.setMaximumWidth(100)
+
+		self.qedit_LO_phase = user_friendly_QLineEdit('0.0')
+		self.qedit_LO_phase.returnPressed.connect(self.setLO)
+		self.qedit_LO_phase.setMaximumWidth(100)
+
+		grid.addWidget(Qt.QLabel('Amplitude [Vpp, 0-1V]'), 0, 0)
+		grid.addWidget(self.qedit_LO_amplitude,          0, 1)
+		grid.addWidget(Qt.QLabel('Phase offset [rad]'),  1, 0)
+		grid.addWidget(self.qedit_LO_phase,              1, 1)
+		# grid.setRowStretch(2, 0)
+
+		self.qgroupbox_ref_out.setLayout(grid)
+
+		###################################################################################
 		self.qgroupbox_read_data = Qt.QGroupBox('Read data from dpll (channel 2)')
 		self.qgroupbox_read_data.setAutoFillBackground(True)
 		read_data = Qt.QGridLayout()
@@ -323,7 +344,9 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		group.addWidget(self.qgroupbox_clkselect, 0, 0, 1, 1)
 		group.addWidget(self.qgroupbox_xadc,      0, 1, 1, 2)
 		group.addWidget(self.qgroupbox_MUX_vco,   1, 0, 1, 3)
-		group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 3)
+		group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 2)
+		group.addWidget(self.qgroupbox_ref_out,   2, 2, 1, 1)
+		
 		group.addWidget(self.qgroupbox_read_data, 3, 0, 1, 3)
 		group.addWidget(self.qgroupbox_fanUI,     4, 0, 1, 1)
 		group.addWidget(self.qbtn_reconnect,      4, 1, 1, 1)
@@ -344,6 +367,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setWindowTitle(self.custom_shorthand + ': RP Configuration')    
 		#self.show()
 		#self.show()
+
+	@logCommsErrorsAndBreakoutOfFunction()
+	def setLO(self):
+		try:
+			amplitude = float(str(self.qedit_LO_amplitude.text()))
+		except:
+			amplitude = 0.1
+		try:
+			phase_shift = float(str(self.qedit_LO_phase.text()))
+		except:
+			phase_shift = 0.0
+		self.sl.setRefOutAmplitude(amplitude, phase_shift)
 
 	@logCommsErrorsAndBreakoutOfFunction()
 	def timerXADCEvent(self):

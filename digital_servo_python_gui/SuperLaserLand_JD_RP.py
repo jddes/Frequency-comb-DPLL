@@ -2067,5 +2067,16 @@ class SuperLaserLand_JD_RP:
 		freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
 		# print("getExtClockFreq(): freq_Hz=%e Hz" % freq_Hz)
 		return freq_Hz
+
+	def setRefOutAmplitude(self, amplitude, phase_shift):
+		""" Phase shift is in radians, amplitude is in volts pk-pk, in 50 ohms """
+		gain_real = round(self.convertDACVoltsToCounts(DAC_number=0, voltage=amplitude)/2**16 * 2**16 * np.cos(phase_shift))
+		gain_imag = round(self.convertDACVoltsToCounts(DAC_number=0, voltage=amplitude)/2**16 * 2**16 * np.sin(phase_shift))
+		print("setRefOutAmplitude(): amplitude=%fV,gain_real=%d,gain_imag=%d" % (amplitude, gain_real, gain_imag))
+		self.send_bus_cmd_32bits(self.BUS_ADDR_PDH_REF_OUT_GAIN_REAL, gain_real)
+		self.send_bus_cmd_32bits(self.BUS_ADDR_PDH_REF_OUT_GAIN_IMAG, gain_imag)
+		
+		
+
         
 # end class definition
