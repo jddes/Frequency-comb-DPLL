@@ -9,8 +9,8 @@ architecture behavior of complex_mult_testbench is
 
     constant A_WIDTH                : integer := 16;
     constant B_WIDTH                : integer := 8;
-    constant LOG2_DIVIDE_AFTER_MULT : integer := 15;
-    constant OUTPUT_WIDTH           : integer := 32;
+    constant LOG2_DIVIDE_AFTER_MULT : integer := 8;
+    constant OUTPUT_WIDTH           : integer := 16;
 
     -- Inputs
     signal clk : std_logic := '0';
@@ -23,8 +23,8 @@ architecture behavior of complex_mult_testbench is
     signal user_flag_out : std_logic := '0';
     
     -- Outputs
-    signal out_real : std_logic_vector(a_width+b_width+1-1 downto 0);
-    signal out_imag : std_logic_vector(a_width+b_width+1-1 downto 0);
+    signal out_real : std_logic_vector(OUTPUT_WIDTH-1 downto 0);
+    signal out_imag : std_logic_vector(OUTPUT_WIDTH-1 downto 0);
     
     -- Clock period definition
     constant clk_period : time := 5 ns;
@@ -34,7 +34,9 @@ begin
     complex_mult_inst : entity work.complex_mult
     generic map (
         A_WIDTH => A_WIDTH,
-        B_WIDTH => B_WIDTH
+        B_WIDTH => B_WIDTH,
+        LOG2_DIVIDE_AFTER_MULT => LOG2_DIVIDE_AFTER_MULT,
+        OUTPUT_WIDTH => OUTPUT_WIDTH
 
     ) port map (
         clk           => clk,

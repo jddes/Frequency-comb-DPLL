@@ -11,7 +11,11 @@ use ieee.numeric_std.all;
 --
 -- There is no limiting applied internally: user is responsible to choose sufficient bitwidth
 -- to avoid overflow problems.
--- Hint: For LOG2_DIVIDE_AFTER_MULT=0, setting OUTPUT_WIDTH=A_WIDTH+B_WIDTH+1 avoids any overflow.
+-- Hint: Setting OUTPUT_WIDTH=A_WIDTH+B_WIDTH-LOG2_DIVIDE_AFTER_MULT+1 should avoid any overflow (not 100% tested)
+
+library work;
+use work.maths_helper.all;
+
 entity complex_mult is
 Generic (
     A_WIDTH : integer := 16;
@@ -47,8 +51,8 @@ architecture Behavioral of complex_mult is
     signal ar_times_bi  : signed(A_WIDTH+B_WIDTH+1-1 downto 0) := (others => '0');
     signal ai_times_br  : signed(A_WIDTH+B_WIDTH+1-1 downto 0) := (others => '0');
     signal ai_times_bi  : signed(A_WIDTH+B_WIDTH+1-1 downto 0) := (others => '0');
-    signal results_real : signed(A_WIDTH+B_WIDTH+1-1 downto 0) := (others => '0');
-    signal results_imag : signed(A_WIDTH+B_WIDTH+1-1 downto 0) := (others => '0');
+    signal results_real : signed(A_WIDTH+B_WIDTH-LOG2_DIVIDE_AFTER_MULT+1-1 downto 0) := (others => '0');
+    signal results_imag : signed(A_WIDTH+B_WIDTH-LOG2_DIVIDE_AFTER_MULT+1-1 downto 0) := (others => '0');
 
     signal flag_d1, flag_d2, flag_d3 : std_logic := '0';
 begin
