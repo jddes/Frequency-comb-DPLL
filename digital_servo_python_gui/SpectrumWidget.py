@@ -149,13 +149,16 @@ class SpectrumWidget(QtGui.QWidget):
         self.qcombo_adc_plottype = Qt.QComboBox()
         self.qcombo_adc_plottype.addItems(['Spectrum', 'Time: raw input', 'Time: Phase', 'Time: IQ', 'Time: IQ, synced'])
 
-        
-
         # Input select        
         self.qlabel_adc_plot_input = Qt.QLabel('Input:')
         self.qcombo_adc_plot = Qt.QComboBox()
         self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC0decim'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
+
+        # Decimation ratio
+        self.qlabel_decimation = Qt.QLabel('Decimation ratio:')
+        self.qedit_decimation = Qt.QLineEdit('2000')
+        self.qedit_decimation.setMaximumWidth(60)
         
         # Set a few global PyQtGraph settings before creating plots:
         pg.setConfigOption('leftButtonPan', False)
@@ -265,11 +268,13 @@ class SpectrumWidget(QtGui.QWidget):
         grid.addWidget(self.qlabel_adc_plot_input,  2, 2+N_dac_controls)
         grid.addWidget(self.qlabel_adc_plot_type,   3, 2+N_dac_controls)
         grid.addWidget(self.qlabel_rawdata_rbw,     4, 2+N_dac_controls)
+        grid.addWidget(self.qlabel_decimation,      5, 2+N_dac_controls)
         
         grid.addWidget(self.qcombo_adc_plot,        2, 3+N_dac_controls)
         grid.addWidget(self.qcombo_adc_plottype,    3, 3+N_dac_controls)
         grid.addWidget(self.qedit_rawdata_length,   4, 3+N_dac_controls)
-        
+        grid.addWidget(self.qedit_decimation,       5, 3+N_dac_controls)
+
 #        grid.addItem(spacerItem, 9, 0, 1, 2)
 
         if self.PalNormal is not None:
@@ -326,8 +331,19 @@ class SpectrumWidget(QtGui.QWidget):
         except:
             N_samples = 4e3
 
+        if input_select.endswith('decim'):
+            try:
+                decimation_ratio = int(float(self.qedit_decimation.text()))
+                decimation_ratio = min(decimation_ratio, 1)
+            except:
+                decimation_ratio = 2000
+        else:
+            decimation_ratio = 1
+
+            
+
         N_samples = max(N_samples, 64) # apply limit
-        return (input_select, plot_type, N_samples)
+        return (input_select, plot_type, N_samples, decimation_ratio)
 
     def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0, decimation_ratio=1):
 
