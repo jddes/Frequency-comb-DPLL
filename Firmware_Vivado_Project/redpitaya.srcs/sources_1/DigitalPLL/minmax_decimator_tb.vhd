@@ -15,7 +15,7 @@ architecture behavior of minmax_decimator_testbench is
     signal clk           : std_logic                               := '0';
     signal clk_enable_in : std_logic                               := '1';
     signal data          : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
-    signal period        : std_logic_vector(32-1 downto 0)         := (others => '0');
+    signal period        : std_logic_vector(32-1 downto 0)         := std_logic_vector(to_unsigned(10, 32));
     -- Outputs
     signal clk_enable_out : std_logic;
     signal counter_out    : std_logic_vector(SYNC_COUNTER_WIDTH-1 downto 0);
@@ -54,7 +54,7 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            data = std_logic_vector(signed(data)-1); -- down-ramp
+            data <= std_logic_vector(signed(data)-1); -- down-ramp
 
         end if;
     end process;

@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 
-entity running_minmax is
+entity running_minmax_unsigned is
 Generic (
     DATA_WIDTH    : integer := 16
 );
@@ -21,16 +21,13 @@ port (
     );
 end entity;
 
-architecture Behavioral of running_minmax is
+architecture Behavioral of running_minmax_unsigned is
 
-
-    signal current_min                  : unsigned(DATA_WIDTH-1 downto 0) := (others => '0');
-    signal current_max                  : unsigned(DATA_WIDTH-1 downto 0) := (others => '0');
+    signal current_min        : unsigned(DATA_WIDTH-1 downto 0) := (others => '0');
+    signal current_max        : unsigned(DATA_WIDTH-1 downto 0) := (others => '0');
     
     signal min_value_internal : unsigned(DATA_WIDTH-1 downto 0) := (others => '0');
     signal max_value_internal : unsigned(DATA_WIDTH-1 downto 0) := (others => '0');
-    
-
 
 begin
 
@@ -41,8 +38,8 @@ begin
                 -- need to dump our results and reset
                 min_value_internal <= current_min;
                 max_value_internal <= current_max;
-                current_min <= (others => '1'); -- max of an unsigned number
-                current_max <= (others => '0'); -- min of an unsigned number
+                current_min <= unsigned(data);
+                current_max <= unsigned(data);
 
             else
                 -- normal mode:

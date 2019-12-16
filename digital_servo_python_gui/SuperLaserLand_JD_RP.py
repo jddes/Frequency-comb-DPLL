@@ -29,6 +29,7 @@ class SuperLaserLand_JD_RP:
 	############################################################
 	# System parameters:
 	fs = 125e6  # adc sampling rate
+	decimation_ratio = 1. # used only for minmax decimator (hard-wired to ADC1 for now)
 	bDDR2InUse = False  # Each function that uses the DDR2 logger module should make sure that this isn't set before changing any setting
 	bCommunicationLogging = False   # Turn On/Off logging of the USB communication with the FPGA box
 	bVerbose = False
@@ -99,7 +100,7 @@ class SuperLaserLand_JD_RP:
 	ENDPOINT_CMD_DATA1IN                                = 0x1
 	ENDPOINT_CMD_DATA2IN                                = 0x2
 	BUS_ADDR_MUX_SELECTORS                              = 0x3
-	ENDPOINT_MUX_CLOCK_SOURCE                           = 0x4
+	BUS_ADDR_DECIMATION_RATIO                           = 0x4
 	ENDPOINT_EXTERNAL_FIFO_RESET                        = 0x5
 	ENDPOINT_CMD_TRIG                                   = 0x40
 	
@@ -300,7 +301,7 @@ class SuperLaserLand_JD_RP:
 		'DAC0':          6,
 		'DAC1':          7,
 		'DAC2':          8,
-		'CRASH_MONITOR': 2**4,
+		'ADC0decim':     2**4,
 		'IN10':          2**4 + 2**3,
 		}
 	############################################################
@@ -417,15 +418,12 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, data_lsbs)
 		
 		
-	def setup_write(self, selector, Num_samples):
+	def setup_write(self, selector, Num_samples, decimation_ratio=1.):
 		if self.bVerbose == True:
 			print('setup_write')
 			
 		if self.bCommunicationLogging == True:
 			self.log_file.write('setup_write(), selector = {}, Num_samples = {}\n'.format(selector, Num_samples))
-		
-		# Set the clk divider (not implemented)
-		self.clk_divider = 1
 		
 		# self.Num_samples_write = int(np.floor(Num_samples/64)*64)  # legacy: must be a multiple of 64 to yield 1024 bits per block
 		self.Num_samples_write = int(Num_samples)  # no such restriction with the Red Pitaya implementation
@@ -434,8 +432,9 @@ class SuperLaserLand_JD_RP:
 #            print('Warning: Number of samples changed from %d to %d.' % (Num_samples, self.Num_samples_write))
 		self.Num_samples_read = self.Num_samples_write
 		
-		# Set the clock divider (never used)
-		# self.send_bus_cmd(self.BUS_ADDR_CLK_DIVIDER, self.clk_divider, 0)
+		# Set the decimation ratio(currently only affects input ADC0decim)
+		decimation_ratio = decimation_ratio
+		self.send_bus_cmd_32bits(self.BUS_ADDR_DECIMATION_RATIO, decimation_ratio)
 		
 		# Set the number of samples, actual number will be 1024*data_in1 value
 		# self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA1IN, int(self.Num_samples_write/1024) + 1)
@@ -604,7 +603,7 @@ class SuperLaserLand_JD_RP:
 			print('wait_for_write')
 			
 		# Wait, seems necessary because setting the DDR2Logger to 'read' mode overrides the 'write' mode
-		write_delay = 1.1*1024*(int(self.Num_samples_write/1024) + 1)/(self.fs/(2*self.clk_divider))
+		write_delay = 1.1*1024*(int(self.Num_samples_write/1024) + 1)/(self.fs/(2*self.decimation_ratio)) # really not sure why there is a factor of 2 there.. maybe just being overly cautious?
 		time.sleep(write_delay)
 		
 	def get_system_identification_wait_time(self):

@@ -29,18 +29,6 @@ architecture Behavioral of minmax_decimator is
     signal dump_results : std_logic := '0';
     signal sync_counter : unsigned(SYNC_COUNTER_WIDTH-1 downto 0) := (others => '0');
     signal clk_enable_out_internal : std_logic := '0';
----- running_minmax signals
----- Generics as constants
---constant DATA_WIDTH : integer := 16;
----- Inputs
---signal clk          : std_logic                               := '0';
---signal clk_enable   : std_logic                               := '0';
---signal data         : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
---signal dump_results : std_logic                               := '0';
----- Outputs
---signal min_value : std_logic_vector(DATA_WIDTH-1 downto 0);
---signal max_value : std_logic_vector(DATA_WIDTH-1 downto 0);
---
 
 begin
 
@@ -50,7 +38,7 @@ begin
         if rising_edge(clk) then
             dump_results <= '0';
             if clk_enable_in = '1' then
-                if counter < unsigned(period) then
+                if counter < unsigned(period)-1 then
                     counter <= counter + 1;
                 else
                     counter <= (others => '0');
@@ -66,7 +54,7 @@ begin
         end if;
     end process;
 
-    running_minmax_inst : entity work.running_minmax
+    running_minmax_inst : entity work.running_minmax_signed
     generic map (
         DATA_WIDTH => DATA_WIDTH
     ) port map (
@@ -78,17 +66,5 @@ begin
         max_value    => max_out
     );
     clk_enable_out <= clk_enable_out_internal;
-
-    ---- FSM process example
-    --process (clk)
-    --begin
-    --  if rising_edge(clk) then
-    --      case FSM_state is
-    --          when STATE_IDLE =>
-    --          when others =>
-    --              FSM_state <= STATE_IDLE;
-    --      end case;
-    --  end if;
-    --end process;
-
+    counter_out    <= std_logic_vector(sync_counter);
 end;
