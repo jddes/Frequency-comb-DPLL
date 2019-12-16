@@ -615,7 +615,9 @@ wire [3:0] angleSelect_0, angleSelect_1;
          );
      
 // The actual DDC:
-DDC_wideband_filters DDC0_inst (
+DDC_wideband_filters # (
+    bUseDiff(1'b1)
+    ) DDC0_inst (
     .rst(rst_frontend0), 
     .clk(clk1), 
     .clk_times_N(clk1_timesN),
@@ -749,7 +751,9 @@ wire        [10-1:0]    DDC1_output;            // diff(phi)/(2*pi) * 2**10
 
      
 // The actual DDC:
-DDC_wideband_filters DDC1_inst (
+DDC_wideband_filters # (
+    bUseDiff(1'b0) // set to 0 for a PDH lock!
+    ) DC1_inst (
     .rst(rst_frontend1), 
     .clk(clk1), 
     .clk_times_N(clk1_timesN),
