@@ -615,7 +615,9 @@ wire [3:0] angleSelect_0, angleSelect_1;
          );
      
 // The actual DDC:
-DDC_wideband_filters DDC0_inst (
+DDC_wideband_filters # (
+    bUseDiff(1'b1)
+    ) DDC0_inst (
     .rst(rst_frontend0), 
     .clk(clk1), 
     .clk_times_N(clk1_timesN),
@@ -749,7 +751,9 @@ wire        [10-1:0]    DDC1_output;            // diff(phi)/(2*pi) * 2**10
 
      
 // The actual DDC:
-DDC_wideband_filters DDC1_inst (
+DDC_wideband_filters # (
+    bUseDiff(1'b0) // set to 0 for a PDH lock!
+    ) DC1_inst (
     .rst(rst_frontend1), 
     .clk(clk1), 
     .clk_times_N(clk1_timesN),
@@ -1334,6 +1338,59 @@ parallel_bus_register_manual_offset_dac2 (
     .update_flag()
     );
 
+// Changed by JDD 2019-12-15:
+// DAC0's output now also can contain the PLL1 reference tone,
+// scaled in amplitude and phase by a complex vector.
+// This is to support a PDH lock (this tone would go to the EOM)
+
+wire [16-1:0] pll1_ref_tone;
+wire [16-1:0] ref_gain_real, ref_gain_imag;
+complex_mult # (
+    .A_WIDTH               (16),
+    .B_WIDTH               (16),
+    .LOG2_DIVIDE_AFTER_MULT(16),
+    .OUTPUT_WIDTH          (16)
+) complex_mult_inst (
+    .clk          (clk),
+    .a_real       (ref_cosine_1),
+    .a_imag       (ref_sine_1),
+    .b_real       (ref_gain_real),
+    .b_imag       (ref_gain_imag),
+    .user_flag_in (1'b0),
+    .user_flag_out(),
+    .out_real     (pll1_ref_tone),
+    .out_imag     ()
+);
+
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(16),
+    .REGISTER_DEFAULT_VALUE(32'b0),
+    .ADDRESS(16'h6200)
+)
+parallel_bus_register_ref_gain_real (
+     .clk(clk1), 
+     .bus_strobe(cmd_trig), 
+     .bus_address(cmd_addr), 
+     .bus_data({cmd_data2in, cmd_data1in}), 
+     .register_output(ref_gain_real), 
+     .update_flag()
+     );
+
+parallel_bus_register_32bits_or_less # (
+    .REGISTER_SIZE(16),
+    .REGISTER_DEFAULT_VALUE(32'b0),
+    .ADDRESS(16'h6201)
+)
+parallel_bus_register_ref_gain_imag (
+     .clk(clk1), 
+     .bus_strobe(cmd_trig), 
+     .bus_address(cmd_addr), 
+     .bus_data({cmd_data2in, cmd_data1in}), 
+     .register_output(ref_gain_imag), 
+     .update_flag()
+     );
+
+
 // Output summing and limiting, DAC0
 output_summing # (
     .INPUT_SIZE       (16),
@@ -1343,7 +1400,7 @@ output_summing_dac0
 (
     .clk              (  clk1                       ), 
     .in0              (  modulation_output_to_dac0  ), 
-    .in1              (                             ), 
+    .in1              (  pll1_ref_tone              ), 
     .in2              (  pll0_output                ), 
     .in3              (  manual_offset_dac0         ), 
     .data_output      (  DACout0                    ), 

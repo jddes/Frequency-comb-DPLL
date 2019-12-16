@@ -32,7 +32,8 @@ use IEEE.NUMERIC_STD.ALL;
     entity DDC_wideband_filters is
     Generic(
         INPUT_DATA_WIDTH    : positive := 16;
-        WRAPPED_PHASE_WIDTH : positive := 10
+        WRAPPED_PHASE_WIDTH : positive := 10;
+        bUseDiff            : std_logic := '1' -- apply a diff operation between the phase signal and the inst_freq? Set to 0 for PDH operation
     );
     Port ( 
         rst                 : in  std_logic;
@@ -365,7 +366,11 @@ begin
             else
                 wrapped_phase_internal_last  <= wrapped_phase_internal;    -- one sample delay
                 wrapped_phase_internal_last2 <= wrapped_phase_internal_last;
-                inst_freq_internal <= std_logic_vector(signed(wrapped_phase_internal) - signed(wrapped_phase_internal_last) + inst_freq_adjust);
+                if bUseDiff = '1' then
+                    inst_freq_internal <= std_logic_vector(signed(wrapped_phase_internal) - signed(wrapped_phase_internal_last) + inst_freq_adjust);
+                else
+                    inst_freq_internal <= wrapped_phase_internal;
+                end if;
                 
                 -- this is to ensure lock at 0 phase error, instead of at some arbitrary offset
                 lock_last <= lock;

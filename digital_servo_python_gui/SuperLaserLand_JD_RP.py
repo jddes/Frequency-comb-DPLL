@@ -274,7 +274,8 @@ class SuperLaserLand_JD_RP:
 
 	BUS_ADDR_openLoopGain 								= [0x9010, 0x9011, 0x9012]
 
-
+	BUS_ADDR_PDH_REF_OUT_GAIN_REAL                      = 0x6200
+	BUS_ADDR_PDH_REF_OUT_GAIN_IMAG                      = 0x6201
 
 	############################################################
 	
