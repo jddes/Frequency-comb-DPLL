@@ -154,6 +154,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.qcombo_adc_plot = Qt.QComboBox()
         self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC0decim'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
+        self.qcombo_adc_plot.currentIndexChanged.connect(self.qcombo_adc_plot_currentIndexChanged)
 
         # Decimation ratio
         self.qlabel_decimation = Qt.QLabel('Decimation ratio:')
@@ -227,11 +228,11 @@ class SpectrumWidget(QtGui.QWidget):
         grid = QtGui.QGridLayout()
         grid.setSpacing(5)
         grid.addWidget(self.qlabel_adc_fill,        0, 0)
-        grid.addWidget(self.qadc0_scale,            1, 0, 3, 1)
-        grid.addWidget(self.qlabel_adc_fill_value,  4, 0, 1, 1)
+        grid.addWidget(self.qadc0_scale,            1, 0, 4, 1)
+        grid.addWidget(self.qlabel_adc_fill_value,  5, 0, 1, 1)
         grid.addWidget(self.qlabel_baseband_snr,    0, 1)
-        grid.addWidget(self.qthermo_baseband_snr,   1, 1, 3, 1)
-        grid.addWidget(self.qlabel_baseband_snr_value,  4, 1, 1, 1)
+        grid.addWidget(self.qthermo_baseband_snr,   1, 1, 4, 1)
+        grid.addWidget(self.qlabel_baseband_snr_value,  5, 1, 1, 1)
 
         
 
@@ -240,11 +241,11 @@ class SpectrumWidget(QtGui.QWidget):
         for k in range(3):
             if self.output_controls[k] == True:
                 grid.addWidget(self.qlabel_dac_current[k],     0, 2+N_dac_controls)
-                grid.addWidget(self.qthermo_dac_current[k],    1, 2+N_dac_controls, 3, 1)
-                grid.addWidget(self.qlabel_dac_current_value[k],4, 2+N_dac_controls, 1, 1)
+                grid.addWidget(self.qthermo_dac_current[k],    1, 2+N_dac_controls, 4, 1)
+                grid.addWidget(self.qlabel_dac_current_value[k],5, 2+N_dac_controls, 1, 1)
                 grid.addWidget(self.qlabel_dac_offset[k],      0, 3+N_dac_controls)
-                grid.addWidget(self.q_dac_offset[k],           1, 3+N_dac_controls, 3, 1)
-                grid.addWidget(self.qlabel_dac_offset_value[k],4, 3+N_dac_controls, 1, 1)
+                grid.addWidget(self.q_dac_offset[k],           1, 3+N_dac_controls, 4, 1)
+                grid.addWidget(self.qlabel_dac_offset_value[k],5, 3+N_dac_controls, 1, 1)
                 
                 
                 N_dac_controls = N_dac_controls + 2
@@ -261,7 +262,7 @@ class SpectrumWidget(QtGui.QWidget):
         grid.addLayout(qhoriz,                      0, 2+N_dac_controls, 2, 2)
 
         #grid.addWidget(self.qplt_IQ,                0, 2+N_dac_controls, 2, 2)
-        grid.addWidget(self.plt_spc,                0, 4+N_dac_controls, 5, 1)        
+        grid.addWidget(self.plt_spc,                0, 4+N_dac_controls, 6, 1)        
         grid.setColumnStretch(4+N_dac_controls, 1)
 #        
         # The controls below the IQ plot:
@@ -286,6 +287,11 @@ class SpectrumWidget(QtGui.QWidget):
         vbox.addWidget(self.qgroupbox_diagnostics)
         self.setLayout(vbox)
 
+    def qcombo_adc_plot_currentIndexChanged(self, index):
+        if input_select.endswith('decim'):
+            self.qedit_decimation.setEnabled(True)
+        else:
+            self.qedit_decimation.setEnabled(False)
 
     def setDacOffset(self, k, slider_units):
         self.q_dac_offset[k].blockSignals(True)
