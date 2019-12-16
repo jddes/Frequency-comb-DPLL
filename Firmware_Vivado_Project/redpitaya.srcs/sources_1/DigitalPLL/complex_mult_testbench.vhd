@@ -7,8 +7,10 @@ end complex_mult_testbench;
 
 architecture behavior of complex_mult_testbench is
 
-    constant A_WIDTH : integer := 16;
-    constant B_WIDTH : integer := 8;
+    constant A_WIDTH                : integer := 16;
+    constant B_WIDTH                : integer := 8;
+    constant LOG2_DIVIDE_AFTER_MULT : integer := 15;
+    constant OUTPUT_WIDTH           : integer := 32;
 
     -- Inputs
     signal clk : std_logic := '0';
@@ -35,15 +37,15 @@ begin
         B_WIDTH => B_WIDTH
 
     ) port map (
-        clk => clk,
-        a_real => a_real,
-        a_imag => a_imag,
-        b_real => b_real,
-        b_imag => b_imag,
-        user_flag_in => user_flag_in,
+        clk           => clk,
+        a_real        => a_real,
+        a_imag        => a_imag,
+        b_real        => b_real,
+        b_imag        => b_imag,
+        user_flag_in  => user_flag_in,
         user_flag_out => user_flag_out,
-        out_real => out_real,
-        out_imag => out_imag
+        out_real      => out_real,
+        out_imag      => out_imag
     );
 
     -- Clock process definition for "clk"
