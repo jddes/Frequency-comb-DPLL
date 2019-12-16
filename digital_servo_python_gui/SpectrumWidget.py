@@ -39,10 +39,10 @@ class SpectrumWidget(QtGui.QWidget):
         self.bDisplayTiming  = False
         self.filtered_baseband_snr = 0.
 
-        self.initUI()
+        self._initUI()
         pass
 
-    def initUI(self):
+    def _initUI(self):
 
         ######################################################################
         # Spectrum analyzer/Diagnostics
@@ -154,7 +154,7 @@ class SpectrumWidget(QtGui.QWidget):
         # Input select        
         self.qlabel_adc_plot_input = Qt.QLabel('Input:')
         self.qcombo_adc_plot = Qt.QComboBox()
-        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2'])
+        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC0decim'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
         
         # Set a few global PyQtGraph settings before creating plots:
@@ -301,10 +301,10 @@ class SpectrumWidget(QtGui.QWidget):
 
 
 
-    def computeNEB(self, window_function, fs):
+    def _computeNEB(self, window_function, fs):
         return np.sum((window_function/np.sum(window_function))**2) * fs
 
-    def updateNEBdisplay(self, window_NEB):
+    def _updateNEBdisplay(self, window_NEB):
         
         # Show the RBW:
         if window_NEB > 1e6:
@@ -329,18 +329,16 @@ class SpectrumWidget(QtGui.QWidget):
         N_samples = max(N_samples, 64) # apply limit
         return (input_select, plot_type, N_samples)
 
-
-
-    def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
+    def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0, decimation_ratio=1):
 
         if plot_type == 0:    # Display Spectrum
-            self.plotADCorDACspectrum(samples_out, input_select)
+            self._plotADCorDACspectrum(samples_out, input_select, decimation_ratio)
 
         elif plot_type == 1:
-            self.plotADCorDACtimeDomain(samples_out, input_select)
+            self._plotADCorDACtimeDomain(samples_out, input_select, decimation_ratio)
 
 
-        if not input_select.startswith('ADC'):
+        if not input_select.startswith('ADC') or input_select.endswith('decim'):
             # Not sure what to put in the baseband IQ plot.  For now we simply don't update it
             self.qthermo_baseband_snr.setValue(0)
             return
@@ -351,25 +349,25 @@ class SpectrumWidget(QtGui.QWidget):
         if self.bDisplayTiming == True:
             print('Elapsed time (Compute complex baseband) = %f' % (time.perf_counter()-start_time))
 
-        self.handleComplexBaseband(complex_baseband, plot_type)
+        self._handleComplexBaseband(complex_baseband, plot_type)
         
-    def handleComplexBaseband(self, complex_baseband, plot_type):
+    def _handleComplexBaseband(self, complex_baseband, plot_type):
 
 
         start_time = time.perf_counter()
 
-        self.updateIQdisplay(complex_baseband)
-        self.updateSNRdisplay(complex_baseband)
+        self._updateIQdisplay(complex_baseband)
+        self._updateSNRdisplay(complex_baseband)
 
         
         if plot_type == 2 or plot_type == 3 or plot_type == 4:
             # NEB doesn't make that much sense here, but we still plot 1/Total time
-            self.updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
+            self._updateNEBdisplay(self.sl.fs/len(complex_baseband)) 
             
         if plot_type == 2:
-            self.plotPhaseData(complex_baseband)
+            self._plotPhaseData(complex_baseband)
         elif plot_type == 3 or plot_type == 4:
-            self.plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
+            self._plotIQData(complex_baseband, bPhaseAligned=(plot_type==4))
 
         
         if self.bDisplayTiming == True:
@@ -377,17 +375,17 @@ class SpectrumWidget(QtGui.QWidget):
         start_time = time.perf_counter()
 
 
-    def plotADCorDACspectrum(self, samples_out, input_select):
-
+    def _plotADCorDACspectrum(self, samples_out, input_select, decimation_ratio=1.):
         start_time = time.perf_counter()
+        fs = self.sl.fs/decimation_ratio
 
         # Normalize samples to +/- 1:
         samples_out = samples_out/2**15
         
         # Compute window function:
         window_function = np.blackman(len(samples_out))
-        window_NEB = self.computeNEB(window_function, self.sl.fs)
-        self.updateNEBdisplay(window_NEB)
+        window_NEB = self._computeNEB(window_function, fs)
+        self._updateNEBdisplay(window_NEB)
 
 
         # Apply window function to the data:
@@ -407,9 +405,9 @@ class SpectrumWidget(QtGui.QWidget):
         start_time = time.perf_counter()
                     
         spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
-        spc_single_sided_psd = spc*2/self.computeNEB(window_function, self.sl.fs) * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
+        spc_single_sided_psd = spc*2/self._computeNEB(window_function, fs) * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
         # Measure average PSD level by looking at out-of-band noise and rejecting outliers:
-        index_from_freq = lambda freq: round(freq*N_fft/self.sl.fs)# f_axis = index/N_fft*fs
+        index_from_freq = lambda freq: round(freq*N_fft/fs)# f_axis = index/N_fft*fs
         ind_min_psd = index_from_freq(10e6)
         ind_max_psd = index_from_freq(20e6)
         spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
@@ -427,20 +425,20 @@ class SpectrumWidget(QtGui.QWidget):
         start_time = time.perf_counter()
         
         # Update the graph data:
-        frequency_axis = self.fftFrequencyAxis(N_fft, self.sl.fs)
+        frequency_axis = self._fftFrequencyAxis(N_fft, fs)
         self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
         self.plt_spc.setTitle('Spectrum, noise floor = %.0f nV/sqrt(Hz)' % (round_to_N_sig_figs(1e9*np.sqrt(avg_psd), 2)))
 
         if input_select.startswith('ADC'):
-            self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
+            self._updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
 
-    def plotADCorDACtimeDomain(self, samples_out, input_select):
-        samples_out = self.scaleDataToVolts(samples_out, input_select)
+    def _plotADCorDACtimeDomain(self, samples_out, input_select, decimation_ratio=1):
+        samples_out = self._scaleDataToVolts(samples_out, input_select)
 
-
-        self.updateNEBdisplay(self.sl.fs/len(samples_out)) # NEB doesn't make that much sense here, but we still plot 1/Total time
+        fs = self.sl.fs/decimation_ratio
+        self._updateNEBdisplay(fs/len(samples_out)) # NEB doesn't make that much sense here, but we still plot 1/Total time
         
-        time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/self.sl.fs
+        time_axis = np.linspace(0, len(samples_out)-1, len(samples_out))/fs
         
         self.curve_spc.setData(time_axis, samples_out)
         self.curve_filter.setVisible(False)
@@ -456,7 +454,7 @@ class SpectrumWidget(QtGui.QWidget):
         
 
 
-    def updateFilterSpcDisplay(self, frequency_axis):
+    def _updateFilterSpcDisplay(self, frequency_axis):
         start_time = time.perf_counter()
         # Compute the spectrum of the filter:
         spc_filter = self.sl.get_frontend_filter_response(frequency_axis, self.selected_ADC)
@@ -468,12 +466,12 @@ class SpectrumWidget(QtGui.QWidget):
         
 
 
-    def fftFrequencyAxis(self, N_fft, fs):
+    def _fftFrequencyAxis(self, N_fft, fs):
         return np.linspace(0, (N_fft-1)/float(N_fft)*fs, N_fft)
 
 
     # N_max_IQ is the max number of points to display in the IQ graph
-    def updateIQdisplay(self, complex_baseband, N_max_IQ = 10e3):
+    def _updateIQdisplay(self, complex_baseband, N_max_IQ = 10e3):
         start_time = time.perf_counter()
 
         complex_baseband = complex_baseband[:int(np.min((len(complex_baseband), N_max_IQ)))]
@@ -487,7 +485,7 @@ class SpectrumWidget(QtGui.QWidget):
             print('Elapsed time (Display IQ) = %f' % (time.perf_counter()-start_time))
 
     # Compute the SNR on the amplitude of the baseband signal:    
-    def updateSNRdisplay(self, complex_baseband):
+    def _updateSNRdisplay(self, complex_baseband):
         amplitude = np.abs(complex_baseband)
         mean_amplitude = np.mean(amplitude)
         std_dev_amplitude = np.std(amplitude)
@@ -510,7 +508,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
         
 
-    def scaleDataToVolts(self, samples_out, input_select):
+    def _scaleDataToVolts(self, samples_out, input_select):
         if input_select.startswith('ADC'):
             # Convert ADC counts to voltage
             return self.sl.convertADCCountsToVolts(input_select, samples_out)
@@ -519,7 +517,7 @@ class SpectrumWidget(QtGui.QWidget):
             DAC_number = int(input_select[3])
             return self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 
-    def plotPhaseData(self, complex_baseband):
+    def _plotPhaseData(self, complex_baseband):
         phi = np.unwrap(np.angle(complex_baseband))
         time_axis = np.linspace(0, len(complex_baseband)-1, len(complex_baseband))/self.sl.fs
         
@@ -534,7 +532,7 @@ class SpectrumWidget(QtGui.QWidget):
     
         self.plt_spc.setTitle('Time-domain phase, std = %.2f radrms' % np.std(phi))
 
-    def plotIQData(self, complex_baseband, bPhaseAligned):
+    def _plotIQData(self, complex_baseband, bPhaseAligned):
 
         if bPhaseAligned:
             # Sync the phase to be equal to 0 at t=0:
