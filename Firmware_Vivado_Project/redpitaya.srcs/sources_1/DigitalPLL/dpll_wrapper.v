@@ -476,7 +476,7 @@ multiplexer_NbitsxMsignals_to_Nbits
     ) minmax_decimator_inst (
         .clk           (clk1),
         .clk_enable_in (1'b1),
-        .data          (ADCraw0),
+        .data          (ADCraw1),
         .period        (decimation_ratio),
         .clk_enable_out(minmax_clk_enable_out),
         .counter_out   (),

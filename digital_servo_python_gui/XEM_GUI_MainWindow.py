@@ -202,6 +202,9 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	@logCommsErrorsAndBreakoutOfFunction()
 	def slowStart100VSwitchingSupply(self):
+		print("slowStart100VSwitchingSupply(): DISABLED FOR PDH LOCK FOR NOW")
+		self.sl.setTestOscillator(bEnable=0)
+		return
 		# need to set the switching supply to its default values:
 		# do a slow start over ~ 100 ms.
 		f_switching = 200e3
@@ -1717,21 +1720,25 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 	def grabAndDisplayADC(self):
 		(input_select, plot_type, N_samples) = self.spectrum.getGUIsettingsForADCdata()
+		if input_select.endswith('decim'):
+			decimation_ratio = 10.
+		else:
+			decimation_ratio = 1.
 		# print("input_select = %s" % input_select)
 		# Grab data from the FPGA:
 		start_time = time.perf_counter()
-		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
+		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples, bReadAsDDC=False, decimation_ratio=decimation_ratio)
 		if (samples_out is None) or (ref_exp0 is None):
 			return
 		self.raw_adc_samples = samples_out.astype(dtype=np.float)
 
-		self.spectrum.plotADCdata(input_select, plot_type, samples_out, ref_exp0)
+		self.spectrum.plotADCdata(input_select, plot_type, samples_out, ref_exp0, decimation_ratio)
 
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.spectrum.updateScaleDisplays(samples_out)
 
 
-	def getADCdata(self, input_select, N_samples, bReadAsDDC=False):
+	def getADCdata(self, input_select, N_samples, bReadAsDDC=False, decimation_ratio=1):
 		if bReadAsDDC:
 			empty_return_value = None
 		else:
@@ -1748,7 +1755,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		time_start = time.perf_counter()
 		try:
 			# Read from selected source
-			self.sl.setup_write(self.sl.LOGGER_MUX[input_select], N_samples)
+			self.sl.setup_write(self.sl.LOGGER_MUX[input_select], N_samples, decimation_ratio)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			if bReadAsDDC == False:
