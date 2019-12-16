@@ -8,14 +8,11 @@ module MMCM_freq_multiplier (
     // Will have frequency equal to N times the frequency of clk_in
     output logic clk_out_oddr,
 
-
-
     // Bus signals:
     input logic clk_bus,
     input logic bus_strobe,
     input logic bus_address,
     input logic bus_data
-
 );
 
 logic clk_fb;

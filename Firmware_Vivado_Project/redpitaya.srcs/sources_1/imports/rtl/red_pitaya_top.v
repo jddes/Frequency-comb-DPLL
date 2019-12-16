@@ -498,6 +498,9 @@ wire debug_out_2;
 wire debug_out_3;
 wire debug_out_4;
 
+wire clk_to_be_multiplied;
+wire multiplied_clk;
+
 reg [26-1:0] led_counter;
 
 assign ADCraw0 = {adc_a, 2'b0};
@@ -520,8 +523,10 @@ dpll_wrapper dpll_wrapper_inst (
   .DACout1                 (  DACout1                    ),
   .DACout2                 (  DACout2                    ),
 
-  .osc_output(osc_output),
+  .osc_output              (  osc_output                 ),
   //.clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
+  .clk_to_be_multiplied    (  clk_to_be_multiplied       ),
+  .multiplied_clk          (  multiplied_clk             ),
 
   // Data logger port:
   .LoggerData              (  LoggerData                 ),
@@ -552,6 +557,8 @@ addr_packed addr_packed_inst (
   .out_empty              ( fifo_empty                ),
   .out_full               ( fifo_full                 )
 );
+  assign clk_to_be_multiplied = exp_p_in[2];
+  assign exp_p_out[3] = multiplied_clk;
 
 
 // assign  = selected_output;
@@ -803,12 +810,11 @@ assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest
 
 assign exp_n_out[2] = osc_output;
 assign exp_n_out[5] = 1'b0;   // unused GPIO set as output with 0V for the moment
-assign exp_n_out[3] = 1'b0;   // unused GPIO set as output with 0V for the moment
 // assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
 //assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
 
 // // 125 MHz generated from 200 MHz, either internal or external clocks
-ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
+//ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );

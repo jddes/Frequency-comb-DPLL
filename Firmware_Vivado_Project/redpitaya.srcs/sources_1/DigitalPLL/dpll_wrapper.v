@@ -19,6 +19,12 @@ module dpll_wrapper(
 
     output wire osc_output,
     output wire clk_ext_or_int, // clock select register. 1 = internal, 0 = external
+    // Clock to be multiplied
+    output wire clk_to_be_multiplied,
+    // Output clock signal.
+    // This is the output of an ODDR and thus needs to be connected directly to a top-level pin.
+    // Will have frequency equal to N times the frequency of clk_in
+    output wire multiplied_clk,
 
     // Data logger port:
     output wire [16-1:0]      LoggerData,
@@ -1459,6 +1465,25 @@ output_summing_dac2 (
     // the 17-bits values only use the positive range
     assign DACout2 = DACout2_17bitssigned[15:0];
     //assign DACout2 = positive_limit_dac2;//manual_offset_dac2;
+
+///////////////////////////////////////////////////////////////////////////////
+// Multiplies a digital signal's frequency using a PLL (rather than the MMCM written in the name)
+///////////////////////////////////////////////////////////////////////////////
+MMCM_freq_multiplier MMCM_freq_multiplier_inst (
+
+    // Clock to be multiplied
+    .clk_in(clk_to_be_multiplied),
+    // Output clock signal.
+    // This is the output of an ODDR and thus needs to be connected directly to a top-level pin.
+    // Will have frequency equal to N times the frequency of clk_in
+    .clk_out_oddr(multiplied_clk),
+
+    // Bus signals:
+    .clk_bus(clk1), 
+    .bus_strobe(cmd_trig), 
+    .bus_address(cmd_addr), 
+    .bus_data({cmd_data2in, cmd_data1in})
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Vector Network Analyzer (VNA) which performs transfer function measurements
