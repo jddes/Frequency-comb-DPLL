@@ -302,7 +302,7 @@ class SuperLaserLand_JD_RP:
 		'DAC0':          6,
 		'DAC1':          7,
 		'DAC2':          8,
-		'ADC0decim':     2**4,
+		'ADC1decim':     2**4,
 		'IN10':          2**4 + 2**3,
 		}
 	############################################################
@@ -434,7 +434,7 @@ class SuperLaserLand_JD_RP:
 		self.Num_samples_read = self.Num_samples_write
 		
 		# Set the decimation ratio(currently only affects input ADC0decim)
-		decimation_ratio = decimation_ratio
+		self.decimation_ratio = decimation_ratio
 		self.send_bus_cmd_32bits(self.BUS_ADDR_DECIMATION_RATIO, decimation_ratio)
 		
 		# Set the number of samples, actual number will be 1024*data_in1 value
