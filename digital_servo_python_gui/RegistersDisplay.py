@@ -3,9 +3,8 @@ import time, sys
 from collections import namedtuple, deque, OrderedDict
 from enum import Enum, auto
 from functools import partial
-import RegistersDisplayDefinitions
-
 RegisterInfo = namedtuple('RegisterInfo', ['subsystem', 'display_name', 'addr', 'show', 'formatting_func'])
+import RegistersDisplayDefinitions # this needs to be here to avoid a circular import issue
 
 
 class EventTypes(Enum):
@@ -27,7 +26,6 @@ class RegisterState(Qt.QObject):
 
         self.reg_definitions = reg_definitions
         # build addr -> field_name lookup table for faster lookup at runtime
-        print(self.reg_definitions.items())
         self.name_from_addr = {reg_info.addr: fieldname for (fieldname, reg_info) in self.reg_definitions.items()}
 
         # start with unknown register values
@@ -41,7 +39,7 @@ class RegisterState(Qt.QObject):
 
         # start timer which handles color-coding:
         self.timer = Qt.QTimer()
-        self.timer.timeout.connect(timerColorCoding)
+        self.timer.timeout.connect(self.timerColorCoding)
         self.timer.start(100)
 
     def setMarkCallback(self, callback):
@@ -145,10 +143,10 @@ class RegistersDisplayWidget(Qt.QWidget):
         """ Flags this event in the correct row by changing some color appropriately """
         print("mark_register: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
         
-    def reg_update_callback(field_name, value):
+    def reg_update_callback(self, field_name, value):
         """ TODO: Change the QStandardItem value field.
         This is also where we need to use the proper formatting function from reg_info """
-        print("reg_update_callback: %s to %s" (field_name, value))
+        print("reg_update_callback: %s to %s" % (field_name, value))
 
     def initUI(self, reg_definitions):
         # create brushes for various background colors:
@@ -158,7 +156,7 @@ class RegistersDisplayWidget(Qt.QWidget):
         self.brushes['green'] = Qt.QBrush(Qt.QColor(0, 165, 114))
 
         self.reg_definitions = reg_definitions
-        self.max_rows = 400
+        self.max_rows = 40
         self.views = [] # the registers get split into multiple views/models
         self.models = [] # the registers get split into multiple views/models
         self._populate_views(self.reg_definitions)
@@ -265,11 +263,13 @@ def main():
 
     GUI = RegistersDisplayWidget(None, reg_definitions)
     # connect callbacks between our registerstate and
-    # state.setRegUpdateCallback(GUI.reg_update_callback)
-    # state.setMarkCallback(GUI.mark_register)
+    state.setRegUpdateCallback(GUI.reg_update_callback)
+    state.setMarkCallback(GUI.mark_register)
 
     # todo next: user needs to call the state.reg_event() function whenever there is an interaction with the registers
-
+    timers = list()
+    timers.append(Qt.QTimer.singleShot(1000, partial(state.reg_event, field_names='ddc_filter_select', event_type=EventTypes.read, values=3)))
+    timers.append(Qt.QTimer.singleShot(5000, partial(state.reg_event, field_names='dac2_setpoint', event_type=EventTypes.written, values=1000)))
 
 
     # GUI.show()
