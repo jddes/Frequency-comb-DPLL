@@ -216,6 +216,18 @@ class RP_PLL_device():
     def write_Zynq_AXI_register_uint32(self, address_uint32, data_uint32):
         self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32, data_uint32, bSigned=False)
 
+    def write_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb, data_uint64):
+        # split into two 32-bits writes:
+        bitmask = (1<<32)-1
+        # poor man's test suite:
+        assert bitmask&(1<<32) == 0
+        assert bitmask&(1<<31) == (1<<31)
+        data_lsb = ( data_uint64      & bitmask)
+
+        data_msb = ((data_uint64>>32) & bitmask)
+        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32_lsb, data_lsb, bSigned=False)
+        self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32_msb, data_msb, bSigned=False)
+
     def read_Zynq_register_uint32(self, address_uint32):
         data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32)
         register_value_as_tuple = struct.unpack('I', data_buffer)
