@@ -97,8 +97,9 @@ class RegisterState():
         map_if_list(partial(self._reg_event_single, event_type), field_names_internal, values)
 
     def _reg_event_single(self, event_type, field_name, value):
-        """ Actual function that does the work, called from reg_event.
-        Only handles one register at a time. """
+        """ Called from reg_event, only handles one register at a time. """
+
+        self._reg_event_add_to_queue(event_type, field_name)
 
         # update the GUI only if this value is actually different than it was last time:
         last_value = self.reg_values[field_name]
@@ -106,7 +107,11 @@ class RegisterState():
             self.reg_changed_callback(field_name, value)
             self.reg_values[field_name] = value # save new state
 
-        # mark this register as reg at current time (change color)
+            # add an "updated" event to the queue:
+            self._reg_event_add_to_queue(event_type=EventTypes.changed, field_name=field_name)
+
+    def _reg_event_add_to_queue(self, event_type, field_name):
+        # mark this register as read/written/updated at current time (change color)
         reg_info = RegEventInfo(field_name, event_type)
         self.mark_reg_callback(field_name, event_type, bMark=True)
         # schedule the expiration of this marking at a later time:
