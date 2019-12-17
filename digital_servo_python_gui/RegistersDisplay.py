@@ -16,8 +16,9 @@ RegEventInfo = namedtuple('RegEventInfo', ('field_name', 'event_type'))
 
 class RegisterState(Qt.QObject):
     def __init__(self, reg_definitions):
+        super().__init__()
         self.mark_timeouts = {  # how long to keep register marked in a different color after each event has happened
-            EventTypes.read: 0.1,
+            EventTypes.read: 0.2,
             EventTypes.written: 1,
             EventTypes.changed: 1,
         }
@@ -38,9 +39,9 @@ class RegisterState(Qt.QObject):
         self.reg_changed_callback = this_func_does_nothing
 
         # start timer which handles color-coding:
-        self.timer = Qt.QTimer()
-        self.timer.timeout.connect(self.timerColorCoding)
-        self.timer.start(100)
+        self.timer_obj = Qt.QTimer(self)
+        self.timer_obj.timeout.connect(self.timerColorCoding)
+        self.timer_obj.start(100)
 
     def setMarkCallback(self, callback):
         """ This callback will get called with individual register info
@@ -62,6 +63,7 @@ class RegisterState(Qt.QObject):
         """ update the color coding status of the registers that have been
         read/written/changed long enough ago. """
         current_time = time.perf_counter()
+        print("timerColorCoding()")
 
         list_del = []
         for reg_info, unmark_time in self.unmark_queue.items():
@@ -142,18 +144,45 @@ class RegistersDisplayWidget(Qt.QWidget):
     def mark_register(self, field_name, event_type, bMark):
         """ Flags this event in the correct row by changing some color appropriately """
         print("mark_register: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
+
+        # child4.setBackground(self.brushes['green'])
+        # child5.setBackground(self.brushes['red'])
+        item_name, item_addr, item_value, item_r, item_w, item_dummy = self.field_name_to_row[field_name]
+        if event_type == EventTypes.changed:
+            if bMark:
+                item_value.setBackground(self.brushes['yellow'])
+            else:
+                item_value.setBackground(self.default_brushes[field_name])
+
+        elif event_type == EventTypes.read:
+            if bMark:
+                item_r.setBackground(self.brushes['green'])
+            else:
+                item_r.setBackground(self.default_brushes[field_name])
+
+        elif event_type == EventTypes.written:
+            if bMark:
+                item_r.setBackground(self.brushes['red'])
+            else:
+                item_r.setBackground(self.default_brushes[field_name])
         
     def reg_update_callback(self, field_name, value):
         """ TODO: Change the QStandardItem value field.
         This is also where we need to use the proper formatting function from reg_info """
         print("reg_update_callback: %s to %s" % (field_name, value))
 
+
+        # child4.setBackground(self.brushes['green'])
+
     def initUI(self, reg_definitions):
         # create brushes for various background colors:
         self.brushes = {}
-        self.brushes['red'] = Qt.QBrush(Qt.QColor(255, 0, 0))
+        self.brushes['red']    = Qt.QBrush(Qt.QColor(255, 0, 0))
         self.brushes['yellow'] = Qt.QBrush(Qt.QColor(255, 255, 0))
-        self.brushes['green'] = Qt.QBrush(Qt.QColor(0, 165, 114))
+        self.brushes['green']  = Qt.QBrush(Qt.QColor(0, 165, 114))
+
+        self.default_brushes = {}
+        self.field_name_to_row = {}
 
         self.reg_definitions = reg_definitions
         self.max_rows = 40
@@ -226,10 +255,13 @@ class RegistersDisplayWidget(Qt.QWidget):
             child3 = Qt.QStandardItem('0')
             child4 = Qt.QStandardItem('')
             child5 = Qt.QStandardItem('')
-            child4.setBackground(self.brushes['green'])
-            child5.setBackground(self.brushes['red'])
+            # child4.setBackground(self.brushes['green'])
+            # child5.setBackground(self.brushes['red'])
+            self.default_brushes[field_name] = child1.background()
             parent = self._get_item_parent_from_subsystem(reg_info.subsystem, view, model) # this creates the subsystem item if it doesn't exist
-            parent.appendRow([child1, child2, child3, child4, child5, Qt.QStandardItem('')])
+            row = [child1, child2, child3, child4, child5, Qt.QStandardItem('')]
+            self.field_name_to_row[field_name] = row
+            parent.appendRow(row)
             self.rowCount += 1
 
             if self.rowCount >= self.max_rows:
