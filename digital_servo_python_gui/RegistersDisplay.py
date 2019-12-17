@@ -1,6 +1,6 @@
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import time, sys
-from collections import namedtuple, deque
+from collections import namedtuple, deque, OrderedDict
 from enum import Enum, auto
 from functools import partial
 import RegistersDisplayDefinitions
@@ -136,32 +136,27 @@ class RegistersDisplayWidget(Qt.QWidget):
         self.initUI(reg_definitions)
 
     def initUI(self, reg_definitions):
-        self.view = Qt.QTreeView(self)
-        self.view.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
-        self.model = Qt.QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Register', 'Addr', 'Value', 'R', 'W'])
-        self.view.setModel(self.model)
-        self.view.setUniformRowHeights(True)
-        self.view.setAlternatingRowColors(True)
-        self.view.setColumnWidth(3, 10)
-        self.view.setColumnWidth(4, 10)
-
         # create brushes for various background colors:
         self.brushes = {}
         self.brushes['red'] = Qt.QBrush(Qt.QColor(255, 0, 0))
         self.brushes['yellow'] = Qt.QBrush(Qt.QColor(255, 255, 0))
         self.brushes['green'] = Qt.QBrush(Qt.QColor(0, 165, 114))
 
-        self._populate_model(reg_definitions)
+        self.reg_definitions = reg_definitions
+        self.max_rows = 40
+        self.views = [] # the registers get split into multiple views/models
+        self.models = [] # the registers get split into multiple views/models
+        self._populate_views(self.reg_definitions)
 
         hbox = Qt.QHBoxLayout(self)
         hbox.setContentsMargins(0, 0, 0, 0)
-        hbox.addWidget(self.view) # TODO: multiple TV next to each other? How to handle the split model/items ?
+        for view in self.views:
+            hbox.addWidget(view)
         self.setLayout(hbox)
 
         self.setWindowTitle('Registers')
 
-    def _get_item_parent_from_subsystem(self, subsystem):
+    def _get_item_parent_from_subsystem(self, subsystem, view, model):
         """ This either creates an data item if subsystem is not represented yet
         in the model, or just finds the pre-existing element.
         It maintains a dict of the subsystems in order to do this task. """
@@ -178,27 +173,42 @@ class RegistersDisplayWidget(Qt.QWidget):
             child = Qt.QStandardItem(lower_level_name)
             self.subsystems[subsystem] = child
 
-            parent = self._get_item_parent_from_subsystem(names_to)
+            parent = self._get_item_parent_from_subsystem(names_to, view, model)
             parent.appendRow(child)
+            self.rowCount += 1
 
-            index = self.model.indexFromItem(child)
-            self.view.expand(index)
+            index = model.indexFromItem(child)
+            view.expand(index)
+            # self.view.setFirstColumnSpanned(parent.rowCount()-1, self.model.indexFromItem(parent), True)
 
             return_value = child
 
         return return_value
 
-    def _populate_model(self, reg_definitions):
-        self.reg_definitions = reg_definitions
+    def _populate_views(self, reg_definitions_subset):
 
+        view = Qt.QTreeView(self)
+        view.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
+        model = Qt.QStandardItemModel()
+        model.setHorizontalHeaderLabels(['Register', 'Addr', 'Value', 'R', 'W'])
+        view.setModel(model)
+        view.setUniformRowHeights(True)
+        view.setAlternatingRowColors(True)
+        view.setColumnWidth(3, 10)
+        view.setColumnWidth(4, 10)
+
+        self.views.append(view)
+        self.models.append(model)
+
+        self.rowCount = 0
         self.subsystems = dict()
-        self.subsystems[''] = self.model # root item is the model itself
+        self.subsystems[''] = model # root item is the model itself
 
-        # first determine hierarchy by looking at the subsystem fields
         # nested subsystems can be specified by separating names by "/",
         # example: "pll/demodulator/oscillator"
         # ['subsystem', 'display_name', 'addr', 'show', 'formatting_func']
-        for (field_name, reg_info) in self.reg_definitions.items():
+        for index, field_name in enumerate(reg_definitions_subset):
+            reg_info = reg_definitions_subset[field_name]
             child1 = Qt.QStandardItem(field_name)
             child2 = Qt.QStandardItem(field_name)
             child3 = Qt.QStandardItem('0')
@@ -206,12 +216,24 @@ class RegistersDisplayWidget(Qt.QWidget):
             child5 = Qt.QStandardItem('')
             child4.setBackground(self.brushes['green'])
             child5.setBackground(self.brushes['red'])
-            parent = self._get_item_parent_from_subsystem(reg_info.subsystem) # this creates the subsystem item if it doesn't exist
+            parent = self._get_item_parent_from_subsystem(reg_info.subsystem, view, model) # this creates the subsystem item if it doesn't exist
             parent.appendRow([child1, child2, child3, child4, child5])
+            self.rowCount += 1
 
+            if self.rowCount >= self.max_rows:
+                # split off the rest of the registers into a separate treeview
+                print("Splitting at row %d" % self.rowCount)
+                keys = list(reg_definitions_subset.keys())
+                reg_definitions_subset_new = OrderedDict()
+                for key in keys[index+1:]:
+                    reg_definitions_subset_new[key] = reg_definitions_subset[key]
 
+                self._populate_views(reg_definitions_subset_new)
+                break
+
+        # print(self.model.indexFromItem(child1).data())
             # # span container columns (what does that mean??)
-            # view.setFirstColumnSpanned(i, view.rootIndex(), True)
+            # 
 
 
 ################################################################
