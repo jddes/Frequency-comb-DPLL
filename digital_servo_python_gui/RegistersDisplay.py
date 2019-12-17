@@ -15,7 +15,7 @@ class EventTypes(Enum):
 
 RegEventInfo = namedtuple('RegEventInfo', ('field_name', 'event_type'))
 
-class RegisterState():
+class RegisterState(Qt.QObject):
     def __init__(self, reg_definitions):
         self.mark_timeouts = {  # how long to keep register marked in a different color after each event has happened
             EventTypes.read: 0.1,
@@ -27,6 +27,7 @@ class RegisterState():
 
         self.reg_definitions = reg_definitions
         # build addr -> field_name lookup table for faster lookup at runtime
+        print(self.reg_definitions.items())
         self.name_from_addr = {reg_info.addr: fieldname for (fieldname, reg_info) in self.reg_definitions.items()}
 
         # start with unknown register values
@@ -37,6 +38,11 @@ class RegisterState():
             pass
         self.mark_reg_callback = this_func_does_nothing
         self.reg_changed_callback = this_func_does_nothing
+
+        # start timer which handles color-coding:
+        self.timer = Qt.QTimer()
+        self.timer.timeout.connect(timerColorCoding)
+        self.timer.start(100)
 
     def setMarkCallback(self, callback):
         """ This callback will get called with individual register info
@@ -55,7 +61,7 @@ class RegisterState():
         self.reg_changed_callback = callback
 
     def timerColorCoding(self):
-        """ TODO: update the color coding status of the registers that have been
+        """ update the color coding status of the registers that have been
         read/written/changed long enough ago. """
         current_time = time.perf_counter()
 
@@ -135,6 +141,15 @@ class RegistersDisplayWidget(Qt.QWidget):
         # uic.loadUi("RegistersDisplayWidget.ui", self) # no need for this at the moment since the UI is super simple
         self.initUI(reg_definitions)
 
+    def mark_register(self, field_name, event_type, bMark):
+        """ Flags this event in the correct row by changing some color appropriately """
+        print("mark_register: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
+        
+    def reg_update_callback(field_name, value):
+        """ TODO: Change the QStandardItem value field.
+        This is also where we need to use the proper formatting function from reg_info """
+        print("reg_update_callback: %s to %s" (field_name, value))
+
     def initUI(self, reg_definitions):
         # create brushes for various background colors:
         self.brushes = {}
@@ -143,7 +158,7 @@ class RegistersDisplayWidget(Qt.QWidget):
         self.brushes['green'] = Qt.QBrush(Qt.QColor(0, 165, 114))
 
         self.reg_definitions = reg_definitions
-        self.max_rows = 40
+        self.max_rows = 400
         self.views = [] # the registers get split into multiple views/models
         self.models = [] # the registers get split into multiple views/models
         self._populate_views(self.reg_definitions)
@@ -190,12 +205,11 @@ class RegistersDisplayWidget(Qt.QWidget):
         view = Qt.QTreeView(self)
         view.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
         model = Qt.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['Register', 'Addr', 'Value', 'R', 'W'])
+        model.setHorizontalHeaderLabels(['Register', 'Addr', 'Value', 'R', 'W', ''])
+        view.header().setMinimumSectionSize(0)
         view.setModel(model)
         view.setUniformRowHeights(True)
         view.setAlternatingRowColors(True)
-        view.setColumnWidth(3, 10)
-        view.setColumnWidth(4, 10)
 
         self.views.append(view)
         self.models.append(model)
@@ -217,7 +231,7 @@ class RegistersDisplayWidget(Qt.QWidget):
             child4.setBackground(self.brushes['green'])
             child5.setBackground(self.brushes['red'])
             parent = self._get_item_parent_from_subsystem(reg_info.subsystem, view, model) # this creates the subsystem item if it doesn't exist
-            parent.appendRow([child1, child2, child3, child4, child5])
+            parent.appendRow([child1, child2, child3, child4, child5, Qt.QStandardItem('')])
             self.rowCount += 1
 
             if self.rowCount >= self.max_rows:
@@ -231,9 +245,11 @@ class RegistersDisplayWidget(Qt.QWidget):
                 self._populate_views(reg_definitions_subset_new)
                 break
 
-        # print(self.model.indexFromItem(child1).data())
-            # # span container columns (what does that mean??)
-            # 
+
+        #view.setColumnWidth(3, 10)
+        #view.setColumnWidth(4, 5)
+        for k in [0, 1, 2, 3, 4]:
+            view.resizeColumnToContents(k)
 
 
 ################################################################
@@ -245,7 +261,17 @@ def main():
     app = QtWidgets.QApplication(sys.argv) # Qt5
 
     reg_definitions = RegistersDisplayDefinitions.reg_definitions
+    state = RegisterState(reg_definitions)
+
     GUI = RegistersDisplayWidget(None, reg_definitions)
+    # connect callbacks between our registerstate and
+    # state.setRegUpdateCallback(GUI.reg_update_callback)
+    # state.setMarkCallback(GUI.mark_register)
+
+    # todo next: user needs to call the state.reg_event() function whenever there is an interaction with the registers
+
+
+
     # GUI.show()
     GUI.showMaximized()
     app.exec_()
