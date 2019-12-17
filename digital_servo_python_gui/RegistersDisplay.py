@@ -1,7 +1,9 @@
-import time
+from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+import time, sys
 from collections import namedtuple, deque
 from enum import Enum, auto
 from functools import partial
+import RegistersDisplayDefinitions
 
 RegisterInfo = namedtuple('RegisterInfo', ['subsystem', 'display_name', 'addr', 'show', 'formatting_func'])
 
@@ -126,6 +128,110 @@ def map_if_list(func, *args):
     else:
         # scalar case:
         return func(*args)
+
+class RegistersDisplayWidget(Qt.QWidget):
+    def __init__(self, parent, reg_definitions):
+        super().__init__(parent)
+        # uic.loadUi("RegistersDisplayWidget.ui", self) # no need for this at the moment since the UI is super simple
+        self.initUI(reg_definitions)
+
+    def initUI(self, reg_definitions):
+        self.view = Qt.QTreeView(self)
+        self.view.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
+        self.model = Qt.QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Register', 'Addr', 'Value', 'R', 'W'])
+        self.view.setModel(self.model)
+        self.view.setUniformRowHeights(True)
+        self.view.setAlternatingRowColors(True)
+        self.view.setColumnWidth(3, 10)
+        self.view.setColumnWidth(4, 10)
+
+        # create brushes for various background colors:
+        self.brushes = {}
+        self.brushes['red'] = Qt.QBrush(Qt.QColor(255, 0, 0))
+        self.brushes['yellow'] = Qt.QBrush(Qt.QColor(255, 255, 0))
+        self.brushes['green'] = Qt.QBrush(Qt.QColor(0, 165, 114))
+
+        self._populate_model(reg_definitions)
+
+        hbox = Qt.QHBoxLayout(self)
+        hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.addWidget(self.view) # TODO: multiple TV next to each other? How to handle the split model/items ?
+        self.setLayout(hbox)
+
+        self.setWindowTitle('Registers')
+
+    def _get_item_parent_from_subsystem(self, subsystem):
+        """ This either creates an data item if subsystem is not represented yet
+        in the model, or just finds the pre-existing element.
+        It maintains a dict of the subsystems in order to do this task. """
+
+        try:
+            return_value = self.subsystems[subsystem]
+        except KeyError:
+            # create that node
+            accumulated_name = ''
+            all_names = subsystem.split('/')
+            names_to = '/'.join(all_names[:-1])
+            lower_level_name = all_names[-1]
+
+            child = Qt.QStandardItem(lower_level_name)
+            self.subsystems[subsystem] = child
+
+            parent = self._get_item_parent_from_subsystem(names_to)
+            parent.appendRow(child)
+
+            index = self.model.indexFromItem(child)
+            self.view.expand(index)
+
+            return_value = child
+
+        return return_value
+
+    def _populate_model(self, reg_definitions):
+        self.reg_definitions = reg_definitions
+
+        self.subsystems = dict()
+        self.subsystems[''] = self.model # root item is the model itself
+
+        # first determine hierarchy by looking at the subsystem fields
+        # nested subsystems can be specified by separating names by "/",
+        # example: "pll/demodulator/oscillator"
+        # ['subsystem', 'display_name', 'addr', 'show', 'formatting_func']
+        for (field_name, reg_info) in self.reg_definitions.items():
+            child1 = Qt.QStandardItem(field_name)
+            child2 = Qt.QStandardItem(field_name)
+            child3 = Qt.QStandardItem('0')
+            child4 = Qt.QStandardItem('')
+            child5 = Qt.QStandardItem('')
+            child4.setBackground(self.brushes['green'])
+            child5.setBackground(self.brushes['red'])
+            parent = self._get_item_parent_from_subsystem(reg_info.subsystem) # this creates the subsystem item if it doesn't exist
+            parent.appendRow([child1, child2, child3, child4, child5])
+
+
+            # # span container columns (what does that mean??)
+            # view.setFirstColumnSpanned(i, view.rootIndex(), True)
+
+
+################################################################
+## Main code, for testing the widget with no other container
+################################################################
+def main():
+    # Qt4:
+    # app = QtGui.QApplication(sys.argv) # Qt4
+    app = QtWidgets.QApplication(sys.argv) # Qt5
+
+    reg_definitions = RegistersDisplayDefinitions.reg_definitions
+    GUI = RegistersDisplayWidget(None, reg_definitions)
+    # GUI.show()
+    GUI.showMaximized()
+    app.exec_()
+    del GUI
+    
+    
+if __name__ == '__main__':
+    main()
 
 
 
