@@ -63,7 +63,6 @@ class RegisterState(Qt.QObject):
         """ update the color coding status of the registers that have been
         read/written/changed long enough ago. """
         current_time = time.perf_counter()
-        print("timerColorCoding()")
 
         list_del = []
         for reg_info, unmark_time in self.unmark_queue.items():
@@ -143,10 +142,8 @@ class RegistersDisplayWidget(Qt.QWidget):
 
     def mark_register(self, field_name, event_type, bMark):
         """ Flags this event in the correct row by changing some color appropriately """
-        print("mark_register: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
+        # print("mark_register: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
 
-        # child4.setBackground(self.brushes['green'])
-        # child5.setBackground(self.brushes['red'])
         item_name, item_addr, item_value, item_r, item_w, item_dummy = self.field_name_to_row[field_name]
         if event_type == EventTypes.changed:
             if bMark:
@@ -162,17 +159,19 @@ class RegistersDisplayWidget(Qt.QWidget):
 
         elif event_type == EventTypes.written:
             if bMark:
-                item_r.setBackground(self.brushes['red'])
+                item_w.setBackground(self.brushes['red'])
             else:
-                item_r.setBackground(self.default_brushes[field_name])
+                item_w.setBackground(self.default_brushes[field_name])
         
     def reg_update_callback(self, field_name, value):
-        """ TODO: Change the QStandardItem value field.
+        """ Change the QStandardItem value field.
         This is also where we need to use the proper formatting function from reg_info """
         print("reg_update_callback: %s to %s" % (field_name, value))
-
-
-        # child4.setBackground(self.brushes['green'])
+        item_name, item_addr, item_value, item_r, item_w, item_dummy = self.field_name_to_row[field_name]
+        print("value = %s"% value)
+        display_text = self.reg_definitions[field_name].formatting_func(value)
+        print("display_text = %s"% display_text)
+        item_value.setText(display_text)
 
     def initUI(self, reg_definitions):
         # create brushes for various background colors:
@@ -301,7 +300,7 @@ def main():
     # todo next: user needs to call the state.reg_event() function whenever there is an interaction with the registers
     timers = list()
     timers.append(Qt.QTimer.singleShot(1000, partial(state.reg_event, field_names='ddc_filter_select', event_type=EventTypes.read, values=3)))
-    timers.append(Qt.QTimer.singleShot(5000, partial(state.reg_event, field_names='dac2_setpoint', event_type=EventTypes.written, values=1000)))
+    timers.append(Qt.QTimer.singleShot(3000, partial(state.reg_event, field_names='dac2_setpoint', event_type=EventTypes.written, values=1000)))
 
 
     # GUI.show()
