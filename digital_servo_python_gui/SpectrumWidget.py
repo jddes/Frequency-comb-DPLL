@@ -152,7 +152,7 @@ class SpectrumWidget(QtGui.QWidget):
         # Input select        
         self.qlabel_adc_plot_input = Qt.QLabel('Input:')
         self.qcombo_adc_plot = Qt.QComboBox()
-        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC1decim'])
+        self.qcombo_adc_plot.addItems(['ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'ADC1decim', 'DAC1decim'])
         self.qcombo_adc_plot.setCurrentIndex(self.selected_ADC)
         self.qcombo_adc_plot.currentIndexChanged.connect(self._qcombo_adc_plot_currentIndexChanged)
 
