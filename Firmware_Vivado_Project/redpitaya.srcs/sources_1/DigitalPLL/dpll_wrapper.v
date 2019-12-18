@@ -470,25 +470,38 @@ multiplexer_NbitsxMsignals_to_Nbits
          .update_flag()
          );
 
-    // Decimate one data channel (currently ADC0) using a running-max dumped at a lower rate
+    // Decimate one data channel (currently ADC1 or DAC1) using a running-max dumped at a lower rate
     // This could benefit from having a mux on its input (maybe all ADCs+DACs would be nice)
     wire minmax_clk_enable_out;
     wire [16-1:0] min_out;
     wire [16-1:0] max_out;
     wire [32-1:0] decimation_ratio;
+    reg  [16-1:0] to_decimator;
+    wire [ 8-1:0] decimator_select;
+
+
     minmax_decimator # (
         .DATA_WIDTH        (16),
         .SYNC_COUNTER_WIDTH(4)
     ) minmax_decimator_inst (
         .clk           (clk1),
         .clk_enable_in (1'b1),
-        .data          (ADCraw1),
+        .data          (to_decimator),
         .period        (decimation_ratio),
         .clk_enable_out(minmax_clk_enable_out),
         .counter_out   (),
         .min_out       (min_out),
         .max_out       (max_out)
     );
+
+    always @(posedge clk1) begin
+        if (decimator_select == 8'd0) begin
+            to_decimator <= ADCraw1;
+        end else begin
+            to_decimator <= DACout1;
+            // could add more stuff here...
+        end
+    end
 
     parallel_bus_register_32bits_or_less # (
         .REGISTER_SIZE(16),
@@ -501,6 +514,21 @@ multiplexer_NbitsxMsignals_to_Nbits
          .bus_address(cmd_addr), 
          .bus_data({cmd_data2in, cmd_data1in}), 
          .register_output(decimation_ratio), 
+         .update_flag()
+         );
+
+
+    parallel_bus_register_32bits_or_less # (
+        .REGISTER_SIZE(8),
+        .REGISTER_DEFAULT_VALUE(1'b0),
+        .ADDRESS(16'h5)
+    )
+    parallel_bus_register_decimation_select (
+         .clk(clk1), 
+         .bus_strobe(cmd_trig), 
+         .bus_address(cmd_addr), 
+         .bus_data({cmd_data2in, cmd_data1in}), 
+         .register_output(decimator_select), 
          .update_flag()
          );
 
@@ -2028,3 +2056,5 @@ registers_read registers_read_inst
 //okWireOut   ep37 (.ok1(ok1), .ok2(ok2x[ 27*17 +: 17 ]), .ep_addr(8'h37), .ep_datain(dither2_lockin_output_to_wires[ 5*16 +: 16 ]));
 
 endmodule
+
+`default_nettype wire

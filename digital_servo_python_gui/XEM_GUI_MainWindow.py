@@ -480,7 +480,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		try:
 			# Read from selected source
 			print("currentSelector = %s" % currentSelector)
-			self.sl.setup_write(self.sl.LOGGER_MUX[currentSelector], N_points)
+			self.sl.setup_write(currentSelector, N_points)
 			
 			##################################################
 			# Synchronize trigger as best as possible to the next multiple of time_quantum seconds:
@@ -640,7 +640,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					if self.selected_ADC == 0:
 						# Go and measure the current DAC DC value:
 						N_points = 10e3
-						self.sl.setup_DAC0_write(N_points)
+						self.sl.setup_write('DAC0', N_points)
 						self.sl.trigger_write()
 						self.sl.wait_for_write()
 						(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
@@ -651,7 +651,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 						
 					elif self.selected_ADC == 1:
 						N_points = 10e3
-						self.sl.setup_DAC1_write(N_points)
+						self.sl.setup_write('DAC1', N_points)
 						self.sl.trigger_write()
 						self.sl.wait_for_write()
 						(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
@@ -1750,7 +1750,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		time_start = time.perf_counter()
 		try:
 			# Read from selected source
-			self.sl.setup_write(self.sl.LOGGER_MUX[input_select], N_samples, decimation_ratio)
+			self.sl.setup_write(input_select, N_samples, decimation_ratio)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
 			if bReadAsDDC == False:

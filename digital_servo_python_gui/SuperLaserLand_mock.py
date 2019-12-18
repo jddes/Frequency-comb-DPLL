@@ -21,14 +21,14 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 
 		pass
 
-	def setup_write(self, selector, Num_samples):
+	def setup_write(self, input_select, Num_samples):
 		# input validation:
-		if not selector in self.LOGGER_MUX.values():
+		if input_select not in self.LOGGER_MUX:
 			raise Exception('Invalid selector value')
 
 		self.Num_samples_write = int(Num_samples)  # no such restriction with the Red Pitaya implementation
 		self.Num_samples_read = self.Num_samples_write
-		self.last_selector = selector
+		self.last_selector = self.LOGGER_MUX[input_select]
 
 		if self.bIntroduceCommsException['setup_write']:
 			raise RP_PLL.CommsError('test exception')

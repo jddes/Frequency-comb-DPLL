@@ -101,7 +101,7 @@ class SuperLaserLand_JD_RP:
 	ENDPOINT_CMD_DATA2IN                                = 0x2
 	BUS_ADDR_MUX_SELECTORS                              = 0x3
 	BUS_ADDR_DECIMATION_RATIO                           = 0x4
-	ENDPOINT_EXTERNAL_FIFO_RESET                        = 0x5
+	BUS_ADDR_DECIMATION_SELECT                          = 0x5
 	ENDPOINT_CMD_TRIG                                   = 0x40
 	
 	# # LEGACY, Opal-Kelly-style "endpoints":
@@ -306,8 +306,23 @@ class SuperLaserLand_JD_RP:
 		'DAC1':          7,
 		'DAC2':          8,
 		'ADC1decim':     2**4,
+		'DAC1decim':     2**4,
 		'IN10':          2**4 + 2**3,
 		}
+	DECIMATOR_MUX = {
+		'ADC0':          0,
+		'ADC1':          0,
+		'DDC0':          0,
+		'DDC1':          0,
+		'VNA':           0,
+		'COUNTER':       0,
+		'DAC0':          0,
+		'DAC1':          0,
+		'DAC2':          0,
+		'ADC1decim':     0,
+		'DAC1decim':     1,
+		'IN10':          0,
+	}
 	############################################################
 	
 	def __init__(self, controller = None):
@@ -422,12 +437,15 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, data_lsbs)
 		
 		
-	def setup_write(self, selector, Num_samples, decimation_ratio=1.):
+	def setup_write(self, input_select, Num_samples, decimation_ratio=1.):
 		if self.bVerbose == True:
 			print('setup_write')
-			
+
 		if self.bCommunicationLogging == True:
-			self.log_file.write('setup_write(), selector = {}, Num_samples = {}\n'.format(selector, Num_samples))
+			self.log_file.write('setup_write(), input_select = {}, Num_samples = {}\n'.format(input_select, Num_samples))
+
+		selector = self.LOGGER_MUX[input_select]
+		decimator_select = self.DECIMATOR_MUX[input_select]
 		
 		# self.Num_samples_write = int(np.floor(Num_samples/64)*64)  # legacy: must be a multiple of 64 to yield 1024 bits per block
 		self.Num_samples_write = int(Num_samples)  # no such restriction with the Red Pitaya implementation
@@ -439,6 +457,8 @@ class SuperLaserLand_JD_RP:
 		# Set the decimation ratio(currently only affects input ADC0decim)
 		self.decimation_ratio = decimation_ratio
 		self.send_bus_cmd_32bits(self.BUS_ADDR_DECIMATION_RATIO, decimation_ratio)
+		# decimated input now also has its own mux
+		self.send_bus_cmd_32bits(self.BUS_ADDR_DECIMATION_SELECT, decimator_select)
 		
 		# Set the number of samples, actual number will be 1024*data_in1 value
 		# self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA1IN, int(self.Num_samples_write/1024) + 1)
@@ -453,47 +473,6 @@ class SuperLaserLand_JD_RP:
 		# We don't strobe the trigger line because we want to give the user the
 		# chance to setup more stuff (system identification module for example) before launching the read
 
-	def setup_ADC0_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_ADC0_write')
-			
-		self.setup_write(self.LOGGER_MUX['ADC0'], Num_samples)
-	def setup_ADC1_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_ADC1_write')
-			
-		self.setup_write(self.LOGGER_MUX['ADC1'], Num_samples)
-	def setup_DDC0_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DDC0_write')
-			
-		self.setup_write(self.LOGGER_MUX['DDC0'], Num_samples)
-	def setup_DDC1_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DDC1_write')
-			
-		self.setup_write(self.LOGGER_MUX['DDC1'], Num_samples)
-	def setup_counter_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_counter_write')
-			
-		self.setup_write(self.LOGGER_MUX['COUNTER'], Num_samples)
-	def setup_DAC0_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DAC0_write')
-			
-		self.setup_write(self.LOGGER_MUX['DAC0'], Num_samples)
-	def setup_DAC1_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DAC1_write')
-			
-		self.setup_write(self.LOGGER_MUX['DAC1'], Num_samples)
-		
-	def setup_DAC2_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DAC2_write')
-			
-		self.setup_write(self.LOGGER_MUX['DAC2'], Num_samples)
 		
 	def compute_integration_time_for_syst_ident(self, System_settling_time, first_modulation_frequency_in_hz):
 		# There are four constraints on this value:
@@ -570,7 +549,7 @@ class SuperLaserLand_JD_RP:
 		print('setup_system_identification(): Num_samples = %d' % Num_samples)
 		print('Num_samples = %d' % Num_samples)
 #        print('self.number_of_frequencies = %d' % self.number_of_frequencies)
-		self.setup_write(self.LOGGER_MUX['VNA'], Num_samples)
+		self.setup_write('VNA', Num_samples)
 		
 	def setVNA_mode_register(self, trigger_dither, stop_flag, bSquareWave):
 		if self.bVerbose == True:
