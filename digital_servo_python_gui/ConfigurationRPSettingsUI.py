@@ -236,7 +236,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		self.qlabel_int_vco_gain = Qt.QLabel('Internal VCO effective gain [Hz/V]')
 		self.qcombo_vco_gain = Qt.QComboBox()
-		self.qcombo_vco_gain.addItems(['480 Hz/V', '30 kHz/V', '244 kHz/V', '31.25 MHz/V'])
+		self.qcombo_vco_gain.addItems(['30.5 kHz/V', '244 kHz/V', '7.81 MHz/V', '31.25 MHz/V'])
 		self.qcombo_vco_gain.setCurrentIndex(3)
 		self.qcombo_vco_gain.currentIndexChanged.connect(self.setInternalVCO_gain)
 

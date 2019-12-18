@@ -1844,9 +1844,9 @@ class SuperLaserLand_JD_RP:
 
 	def set_internal_VCO_gain(self, gain_setting):
 		""" Changes the VCO gain.  Effective VCO gains are:
-			gain_setting = 0: 31.25/2**16 Hz/V
-			gain_setting = 1: 31.25/2**10 Hz/V
-			gain_setting = 2: 31.25*2**16 Hz/V
+			gain_setting = 0: 31.25/2**10 Hz/V
+			gain_setting = 1: 31.25/2**7 Hz/V
+			gain_setting = 2: 31.25*2**2 Hz/V
 			gain_setting = 3: 31.25 Hz/V (default value)
 			(see mux_internal_vco.vhd for the implementation).
 			This is for the equivalent gain that is simulated

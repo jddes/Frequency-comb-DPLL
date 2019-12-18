@@ -115,12 +115,12 @@ begin
     begin
         if rising_edge(clk) then
             case vco_gain_setting_reg is
-                when b"00" =>   -- highest gain / 2^16 (not sure this is super useful, but who knows)
-                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-16) + signed(vco_freq_offset_reg));
-                when b"01" =>   -- highest gain / 2^10
+                when b"00" =>   -- highest gain / 2^10
                     vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-10) + signed(vco_freq_offset_reg));
-                when b"10" =>   -- highest gain / 2^7
+                when b"01" =>   -- highest gain / 2^7
                     vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-7) + signed(vco_freq_offset_reg));
+                when b"10" =>   -- highest gain / 2^2
+                    vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1-2) + signed(vco_freq_offset_reg));
                 when b"11" =>   -- highest gain
                     -- Gain setting is set to be able to address the full 0-Nyquist frequency range with the 16-bits control signal out of the DPLL block.
                     vco_frequency <= std_logic_vector(shift_left(resize(signed(vco_input_voltage), 48), 48-16-1   ) + signed(vco_freq_offset_reg));
