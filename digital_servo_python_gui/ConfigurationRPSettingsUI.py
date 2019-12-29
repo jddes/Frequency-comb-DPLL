@@ -21,7 +21,7 @@ from user_friendly_QLineEdit import user_friendly_QLineEdit
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 import DataLoggingDisplayWidget
-
+from RegistersDisplay import EventTypes, RegisterState, RegistersDisplayWidget
 
 class ConfigRPSettingsUI(Qt.QWidget):
 	"""docstring for ConfigRP"""
@@ -313,6 +313,9 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qbtn_reconnect = QtGui.QPushButton('Open communication menu')
 		self.qbtn_reconnect.clicked.connect(self.communication_menu)
 
+		self.qbtn_reg_display = QtGui.QPushButton('Open Register Map Display')
+		self.qbtn_reg_display.clicked.connect(self.startRegisterMapsDisplay)
+		self.reg_state = None
 
 		###################################################################################
 			
@@ -325,8 +328,9 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		group.addWidget(self.qgroupbox_MUX_vco,   1, 0, 1, 3)
 		group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 3)
 		group.addWidget(self.qgroupbox_read_data, 3, 0, 1, 3)
-		group.addWidget(self.qgroupbox_fanUI,     4, 0, 1, 1)
+		group.addWidget(self.qgroupbox_fanUI,     4, 0, 3, 1)
 		group.addWidget(self.qbtn_reconnect,      4, 1, 1, 1)
+		group.addWidget(self.qbtn_reg_display,    5, 1, 1, 1)
 
 		#vbox = Qt.QVBoxLayout()
 		#vbox.addStretch(1)
@@ -344,6 +348,22 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setWindowTitle(self.custom_shorthand + ': RP Configuration')    
 		#self.show()
 		#self.show()
+
+	def startRegisterMapsDisplay(self):
+		import RegistersDisplayDefinitions
+		reg_definitions = RegistersDisplayDefinitions.reg_definitions
+		if self.reg_state is None:
+			self.reg_state = RegisterState(reg_definitions, RegistersDisplayDefinitions.reg_aliasing)
+			self.sl.dev.reg_state = self.reg_state
+			#self.reg_state.watched_fields['0x40224000'] = True
+
+			self.reg_GUI = RegistersDisplayWidget(None, reg_definitions)
+			# connect callbacks between our register state and GUI
+			self.reg_state.setRegUpdateCallback(self.reg_GUI.reg_update_callback)
+			self.reg_state.setMarkCallback(self.reg_GUI.mark_register)
+
+
+		self.reg_GUI.showMaximized()
 
 	@logCommsErrorsAndBreakoutOfFunction()
 	def timerXADCEvent(self):
