@@ -1949,7 +1949,7 @@ class SuperLaserLand_JD_RP:
 
 	def read_clk_select(self):
 		# in the actual register, 1 means internal clock, 0 means external
-		reg = self.dev.read_Zynq_register_32bits(self.clk_sel_base_addr)		
+		reg = self.dev.read_Zynq_AXI_register_uint32(self.clk_sel_base_addr)		
 		self.clk_select = (not reg)
 		return self.clk_select
 
