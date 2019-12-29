@@ -63,6 +63,17 @@ class RP_PLL_device():
             True: struct.Struct('i'),
         }
 
+        self.reg_state = None
+        import RegistersDisplayDefinitions
+        reg_definitions = RegistersDisplayDefinitions.reg_definitions
+        self.reg_state = RegisterState(reg_definitions)
+
+        self.GUI = RegistersDisplayWidget(None, reg_definitions)
+        # connect callbacks between our registerstate and
+        self.reg_state.setRegUpdateCallback(self.GUI.reg_update_callback)
+        self.reg_state.setMarkCallback(self.GUI.mark_register)
+        self.GUI.showMaximized()
+
     def socketErrorEvent(self, e):
         # disconnect from socket, and start reconnection timer:
         print("RP_PLL::socketErrorEvent()")
@@ -192,6 +203,8 @@ class RP_PLL_device():
         self.validate_address(absolute_addr)
         packet_to_send = self.type_to_packet_struct[bSigned].pack(self.MAGIC_BYTES_WRITE_REG, absolute_addr, int(data_32bits) & 0xFFFFFFFF)
         self.send(packet_to_send)
+        if self.reg_state is not None:
+            self.reg_state.reg_event(addr=absolute_addr, event_type=EventTypes.written, values=int(data_32bits))
 
     def read_Zynq_register_32bits(self, absolute_addr, bSigned=False):
         self.validate_address(absolute_addr)
@@ -200,6 +213,8 @@ class RP_PLL_device():
         data_buffer = self.read(4)
         value, = self.structs_32bits[bSigned].unpack_from(data_buffer)
 
+        if self.reg_state is not None:
+            self.reg_state.reg_event(addr=absolute_addr, event_type=EventTypes.read, values=value)
         return value
 
     def read_Zynq_buffer_int16(self, number_of_points):
