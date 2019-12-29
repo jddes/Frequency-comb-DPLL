@@ -227,26 +227,6 @@ class SuperLaserLand_JD_RP:
 	# DDC 1 settings. This one is more complicated since we have included dfr phase generation and synchronized frequency changes.
 	BUS_ADDR_nominal_ref_freq1_lsbs                     = 0x8010
 	BUS_ADDR_nominal_ref_freq1_msbs                     = 0x8011
-	BUS_ADDR_new_ref_freq1_lsbs                         = 0x8012
-	BUS_ADDR_new_ref_freq1_msbs                         = 0x8013
-	# This is an 80 bits register
-	BUS_ADDR_dfr_phase_modulus1                         = 0x8014
-	BUS_ADDR_dfr_phase_modulus2                         = 0x8015
-	BUS_ADDR_dfr_phase_modulus3                         = 0x8016
-	BUS_ADDR_dfr_phase_modulus4                         = 0x8017
-	# This is an 80 bits register
-	BUS_ADDR_dfr_phase_adjust1                          = 0x8018
-	BUS_ADDR_dfr_phase_adjust2                          = 0x8019
-	BUS_ADDR_dfr_phase_adjust3                          = 0x801A
-	BUS_ADDR_dfr_phase_adjust4                          = 0x801B
-
-	# This is an 80 bits register
-	BUS_ADDR_delta_fr1                                  = 0x8022
-	BUS_ADDR_delta_fr2                                  = 0x8023
-	BUS_ADDR_delta_fr3                                  = 0x8024
-	BUS_ADDR_delta_fr4                                  = 0x8025
-	BUS_ADDR_ref1_state_control                         = 0x8026
-	
 	
 	
 	# DAC0 Dither and Lock-in settings:
