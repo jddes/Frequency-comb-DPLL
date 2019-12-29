@@ -263,11 +263,6 @@ class RegistersDisplayWidget(Qt.QWidget):
 
         self._add_registers_to_view(model, view, reg_definitions_subset)
 
-        #view.setColumnWidth(3, 10)
-        #view.setColumnWidth(4, 5)
-        for k in [0, 1, 2, 3, 4]:
-            view.resizeColumnToContents(k)
-
     def _add_registers_to_view(self, model, view, reg_definitions_subset):
 
         # nested subsystems can be specified by separating names by "/",
@@ -300,6 +295,11 @@ class RegistersDisplayWidget(Qt.QWidget):
 
                 self._populate_views(reg_definitions_subset_new)
                 break
+
+        #view.setColumnWidth(3, 10)
+        #view.setColumnWidth(4, 5)
+        for k in [0, 1, 2, 3, 4]:
+            view.resizeColumnToContents(k)
 
 ################################################################
 ## Main code, for testing the widget with no other container
