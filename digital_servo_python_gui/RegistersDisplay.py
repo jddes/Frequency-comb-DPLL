@@ -3,7 +3,7 @@ import time, sys
 from collections import namedtuple, deque, OrderedDict
 from enum import Enum, auto
 from functools import partial
-
+from RegistersInfo import RegisterInfo
 
 class EventTypes(Enum):
     read = auto()
@@ -142,11 +142,29 @@ class RegistersDisplayWidget(Qt.QWidget):
         # uic.loadUi("RegistersDisplayWidget.ui", self) # no need for this at the moment since the UI is super simple
         self.initUI(reg_definitions)
 
+    def _get_field_row(self, field_name):
+        """ Either returns row information or creates a new entry
+        in case of a previously-unknown register """
+        try:
+            row = self.field_name_to_row[field_name]
+        except KeyError:
+            # unknown register: need to create a new entry for this.
+            print("_get_field_row(): adding new reg: %s" % field_name)
+            # ('subsystem', 'display_name', 'addr', 'show', 'formatting_func')
+            reg_info = RegisterInfo('', '', field_name, True, str)
+            self.reg_definitions[field_name] = reg_info
+            reg_def_new = OrderedDict()
+            reg_def_new[field_name] = reg_info
+            self._add_registers_to_view(self.models[-1], self.views[-1], reg_def_new)
+            row = self.field_name_to_row[field_name]
+
+        return row
+
     def mark_register(self, field_name, event_type, bMark):
         """ Flags this event in the correct row by changing some color appropriately """
         # print("mark_register: %s, event_type=%s, bMark=%d" % (field_name, event_type, bMark))
 
-        item_name, item_addr, item_value, item_r, item_w, item_dummy = self.field_name_to_row[field_name]
+        item_name, item_addr, item_value, item_r, item_w, item_dummy = self._get_field_row(field_name)
         if event_type == EventTypes.changed:
             if bMark:
                 item_value.setBackground(self.brushes['yellow'])
@@ -169,18 +187,17 @@ class RegistersDisplayWidget(Qt.QWidget):
         """ Change the QStandardItem value field.
         This is also where we need to use the proper formatting function from reg_info """
         print("reg_update_callback: %s to %s" % (field_name, value))
-        item_name, item_addr, item_value, item_r, item_w, item_dummy = self.field_name_to_row[field_name]
-        print("value = %s"% value)
+        item_name, item_addr, item_value, item_r, item_w, item_dummy = self._get_field_row(field_name)
         display_text = self.reg_definitions[field_name].formatting_func(value)
-        print("display_text = %s"% display_text)
         item_value.setText(display_text)
 
     def initUI(self, reg_definitions):
         # create brushes for various background colors:
         self.brushes = {}
-        self.brushes['red']    = Qt.QBrush(Qt.QColor(255, 0, 0))
-        self.brushes['yellow'] = Qt.QBrush(Qt.QColor(255, 255, 0))
-        self.brushes['green']  = Qt.QBrush(Qt.QColor(0, 165, 114))
+        self.brushes['red']     = Qt.QBrush(Qt.QColor(255, 0, 0))
+        self.brushes['yellow']  = Qt.QBrush(Qt.QColor(255, 255, 0))
+        self.brushes['green']   = Qt.QBrush(Qt.QColor(0, 165, 114))
+        self.brushes['default'] = Qt.QStandardItem('').background()
 
         self.default_brushes = {}
         self.field_name_to_row = {}
@@ -246,6 +263,15 @@ class RegistersDisplayWidget(Qt.QWidget):
         self.subsystems = dict()
         self.subsystems[''] = model # root item is the model itself
 
+        self._add_registers_to_view(model, view, reg_definitions_subset)
+
+        #view.setColumnWidth(3, 10)
+        #view.setColumnWidth(4, 5)
+        for k in [0, 1, 2, 3, 4]:
+            view.resizeColumnToContents(k)
+
+    def _add_registers_to_view(self, model, view, reg_definitions_subset):
+
         # nested subsystems can be specified by separating names by "/",
         # example: "pll/demodulator/oscillator"
         # ['subsystem', 'display_name', 'addr', 'show', 'formatting_func']
@@ -275,13 +301,6 @@ class RegistersDisplayWidget(Qt.QWidget):
 
                 self._populate_views(reg_definitions_subset_new)
                 break
-
-
-        #view.setColumnWidth(3, 10)
-        #view.setColumnWidth(4, 5)
-        for k in [0, 1, 2, 3, 4]:
-            view.resizeColumnToContents(k)
-
 
 ################################################################
 ## Main code, for testing the widget with no other container
