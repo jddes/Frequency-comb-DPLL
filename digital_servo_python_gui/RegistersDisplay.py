@@ -230,7 +230,7 @@ class RegistersDisplayWidget(Qt.QWidget):
 
         view = Qt.QTreeView(self)
         view.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
-        model = Qt.QStandardItemModel()
+        model = Qt.QStandardItemModel(self)
         model.setHorizontalHeaderLabels(['Register', 'Addr', 'Value', 'R', 'W', ''])
         view.header().setMinimumSectionSize(0)
         view.setModel(model)
