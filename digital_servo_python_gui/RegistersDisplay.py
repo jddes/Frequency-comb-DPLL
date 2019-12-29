@@ -92,14 +92,18 @@ class RegisterState(Qt.QObject):
         if addr is not None:
             # must perform lookups from addresses to names:
             if not isinstance(addr, list):
-                field_names_internal = self.name_from_addr[addr]
+                field_names_internal = self.name_from_addr.get(addr, self.default_name_from_address(addr))
             else:
-                field_names_internal = [self.name_from_addr[x] for x in addr]
+                field_names_internal = [self.name_from_addr.get(x, self.default_name_from_address(x)) for x in addr]
         else:
             field_names_internal = field_names
 
         # now do the actual work:
         map_if_list(partial(self._reg_event_single, event_type), field_names_internal, values)
+
+    def default_name_from_address(self, addr):
+        """ Returns a default name suitable for display for an address with no known register name """
+        return hex(addr)
 
     def _reg_event_single(self, event_type, field_name, value):
         """ Called from reg_event, only handles one register at a time. """
@@ -107,7 +111,7 @@ class RegisterState(Qt.QObject):
         self._reg_event_add_to_queue(event_type, field_name)
 
         # update the GUI only if this value is actually different than it was last time:
-        last_value = self.reg_values[field_name]
+        last_value = self.reg_values.get(field_name, None)
         if value != last_value:
             self.reg_changed_callback(field_name, value)
             self.reg_values[field_name] = value # save new state
@@ -299,6 +303,7 @@ def main():
     # todo next: user needs to call the state.reg_event() function whenever there is an interaction with the registers
     timers = list()
     timers.append(Qt.QTimer.singleShot(1000, partial(state.reg_event, field_names='ddc_filter_select', event_type=EventTypes.read, values=3)))
+    timers.append(Qt.QTimer.singleShot(2000, partial(state.reg_event, addr=0x100, event_type=EventTypes.read, values=999)))
     timers.append(Qt.QTimer.singleShot(3000, partial(state.reg_event, field_names='dac2_setpoint', event_type=EventTypes.written, values=1000)))
 
 

@@ -99,3 +99,23 @@ def test_save_values(state):
     # check that our callback has been called properly
     assert reg_values['reg_name2'] == 8
 
+def test_unknown_reg(state):
+    reg_values = {}
+    def reg_update_callback(field_name, value):
+        reg_values[field_name] = value
+
+    state.setRegUpdateCallback(reg_update_callback)
+    # read/write a few unknown registers using names:
+    state.reg_event(field_names='reg_unk_name1', event_type=EventTypes.read, values=3)
+    state.reg_event(field_names='reg_unk_name2', event_type=EventTypes.written, values=5)
+    state.reg_event(field_names='reg_unk_name3', event_type=EventTypes.written, values=10)
+    assert state.reg_values['reg_unk_name1'] == 3
+    assert state.reg_values['reg_unk_name2'] == 5
+    assert state.reg_values['reg_unk_name3'] == 10
+    # read/write a few unknown registers using addresses:
+    state.reg_event(addr=0x100, event_type=EventTypes.read, values=65)
+    state.reg_event(addr=0x101, event_type=EventTypes.written, values=89)
+    state.reg_event(addr=0x102, event_type=EventTypes.written, values=11)
+    assert state.reg_values['0x100'] == 65
+    assert state.reg_values['0x101'] == 89
+    assert state.reg_values['0x102'] == 11
