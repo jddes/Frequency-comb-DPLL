@@ -186,7 +186,7 @@ class RegistersDisplayWidget(Qt.QWidget):
     def reg_update_callback(self, field_name, value):
         """ Change the QStandardItem value field.
         This is also where we need to use the proper formatting function from reg_info """
-        print("reg_update_callback: %s to %s" % (field_name, value))
+        # print("reg_update_callback: %s to %s" % (field_name, value))
         item_name, item_addr, item_value, item_r, item_w, item_dummy = self._get_field_row(field_name)
         display_text = self.reg_definitions[field_name].formatting_func(value)
         item_value.setText(display_text)
@@ -203,17 +203,14 @@ class RegistersDisplayWidget(Qt.QWidget):
         self.field_name_to_row = {}
 
         self.reg_definitions = reg_definitions
-        self.max_rows = 40
+        self.max_rows = 50
         self.views = [] # the registers get split into multiple views/models
         self.models = [] # the registers get split into multiple views/models
+        self.hbox = Qt.QHBoxLayout(self)
+        self.hbox.setContentsMargins(0, 0, 0, 0)
         self._populate_views(self.reg_definitions)
 
-        hbox = Qt.QHBoxLayout(self)
-        hbox.setContentsMargins(0, 0, 0, 0)
-        for view in self.views:
-            hbox.addWidget(view)
-        self.setLayout(hbox)
-
+        self.setLayout(self.hbox)
         self.setWindowTitle('Registers')
 
     def _get_item_parent_from_subsystem(self, subsystem, view, model):
@@ -258,6 +255,7 @@ class RegistersDisplayWidget(Qt.QWidget):
 
         self.views.append(view)
         self.models.append(model)
+        self.hbox.addWidget(view)
 
         self.rowCount = 0
         self.subsystems = dict()
@@ -278,7 +276,8 @@ class RegistersDisplayWidget(Qt.QWidget):
         for index, field_name in enumerate(reg_definitions_subset):
             reg_info = reg_definitions_subset[field_name]
             child1 = Qt.QStandardItem(field_name)
-            child2 = Qt.QStandardItem(field_name)
+            addr_to_str = lambda x: x if isinstance(x, str) else hex(x)
+            child2 = Qt.QStandardItem(addr_to_str(reg_info.addr))
             child3 = Qt.QStandardItem('0')
             child4 = Qt.QStandardItem('')
             child5 = Qt.QStandardItem('')
