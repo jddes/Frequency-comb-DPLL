@@ -59,6 +59,16 @@ class controller(object):
 		self.logger.addHandler(logging.handlers.SysLogHandler(address = (SYSLOG_IP,SYSLOG_PORT)))
 		self.logger_name = '' #To be replaced with FPGA's shorthand
 
+		# Start Qt:
+		self.app = QtCore.QCoreApplication.instance()
+		if self.app is None:
+			print("QCoreApplication not running yet. creating.")
+			self.bEventLoopWasRunningAlready = False
+			self.app = QtWidgets.QApplication(sys.argv)
+		else:
+			self.bEventLoopWasRunningAlready = True
+			print("QCoreApplication already running.")
+			
 		# Create the object that handles the communication with the FPGA board:
 		self.sl = SuperLaserLand_JD_RP(self)
 		self.updateDeviceData()
@@ -69,15 +79,7 @@ class controller(object):
 		self.reconnection_attempts = 0
 		self.timerReconnect = None
 
-		# Start Qt:
-		self.app = QtCore.QCoreApplication.instance()
-		if self.app is None:
-			print("QCoreApplication not running yet. creating.")
-			self.bEventLoopWasRunningAlready = False
-			self.app = QtWidgets.QApplication(sys.argv)
-		else:
-			self.bEventLoopWasRunningAlready = True
-			print("QCoreApplication already running.")
+
 
 		self.initUI()
 
