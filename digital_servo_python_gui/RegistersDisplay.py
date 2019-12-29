@@ -3,8 +3,6 @@ import time, sys
 from collections import namedtuple, deque, OrderedDict
 from enum import Enum, auto
 from functools import partial
-RegisterInfo = namedtuple('RegisterInfo', ['subsystem', 'display_name', 'addr', 'show', 'formatting_func'])
-import RegistersDisplayDefinitions # this needs to be here to avoid a circular import issue
 
 
 class EventTypes(Enum):
@@ -289,6 +287,7 @@ def main():
     # app = QtGui.QApplication(sys.argv) # Qt4
     app = QtWidgets.QApplication(sys.argv) # Qt5
 
+    import RegistersDisplayDefinitions # this needs to be here to avoid a circular import issue
     reg_definitions = RegistersDisplayDefinitions.reg_definitions
     state = RegisterState(reg_definitions)
 

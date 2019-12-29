@@ -3,7 +3,7 @@ import time
 import pytest
 from functools import partial
 
-from RegistersDisplay import RegisterInfo as r
+from RegistersInfo import RegisterInfo as r
 from RegistersDisplay import RegisterState
 from RegistersDisplay import EventTypes
 import RegistersDisplay
