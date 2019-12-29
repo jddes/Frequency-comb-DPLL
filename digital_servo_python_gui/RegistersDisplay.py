@@ -3,6 +3,8 @@ import time, sys
 from collections import namedtuple, deque, OrderedDict
 from enum import Enum, auto
 from functools import partial
+import traceback
+
 from RegistersInfo import RegisterInfo
 
 class EventTypes(Enum):
@@ -13,7 +15,7 @@ class EventTypes(Enum):
 RegEventInfo = namedtuple('RegEventInfo', ('field_name', 'event_type'))
 
 class RegisterState(Qt.QObject):
-    def __init__(self, reg_definitions):
+    def __init__(self, reg_definitions, reg_aliasing=None):
         super().__init__()
         self.mark_timeouts = {  # how long to keep register marked in a different color after each event has happened
             EventTypes.read: 0.2,
@@ -24,11 +26,17 @@ class RegisterState(Qt.QObject):
         self.unmark_queue = dict() # keys are (field_name, event_type) tuples, and values is the expiration time
 
         self.reg_definitions = reg_definitions
+        if reg_aliasing is not None:
+            self.reg_aliasing = reg_aliasing
+        else:
+            self.reg_aliasing = {}
         # build addr -> field_name lookup table for faster lookup at runtime
         self.name_from_addr = {reg_info.addr: fieldname for (fieldname, reg_info) in self.reg_definitions.items()}
 
         # start with unknown register values
         self.reg_values = {key:None for key in self.reg_definitions.keys()}
+
+        self.watched_fields = {} # user can add field names here to get a traceback on every event with this register
 
         # empty callbacks for now:
         def this_func_does_nothing(*args, **kwargs):
@@ -107,6 +115,7 @@ class RegisterState(Qt.QObject):
 
     def _reg_event_single(self, event_type, field_name, value):
         """ Called from reg_event, only handles one register at a time. """
+        field_name = self.reg_aliasing.get(field_name, field_name)
 
         self._reg_event_add_to_queue(event_type, field_name)
 
@@ -118,6 +127,9 @@ class RegisterState(Qt.QObject):
 
             # add an "updated" event to the queue:
             self._reg_event_add_to_queue(event_type=EventTypes.changed, field_name=field_name)
+
+        if field_name in self.watched_fields:
+            traceback.print_stack()
 
     def _reg_event_add_to_queue(self, event_type, field_name):
         # mark this register as read/written/updated at current time (change color)

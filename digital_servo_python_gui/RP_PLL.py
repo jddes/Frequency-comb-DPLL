@@ -66,7 +66,8 @@ class RP_PLL_device():
         self.reg_state = None
         import RegistersDisplayDefinitions
         reg_definitions = RegistersDisplayDefinitions.reg_definitions
-        self.reg_state = RegisterState(reg_definitions)
+        self.reg_state = RegisterState(reg_definitions, RegistersDisplayDefinitions.reg_aliasing)
+         #self.reg_state.watched_fields['0x40224000'] = True
 
         self.GUI = RegistersDisplayWidget(None, reg_definitions)
         # connect callbacks between our registerstate and

@@ -147,3 +147,16 @@ reg_definitions = OrderedDict([
 # for index, addr  in enumerate(c.BUS_ADDR_XADC_CHAN):
 #     reg_definitions['xadc_chan[%d]' % index] = r('Block Design', '', r2b(addr), True, str)
 
+# map registers names or addresses to another one for event monitoring purposes.
+# this is used for example to handle the case where reads and writes to a given register
+# actually use different addresses.
+#
+# In the case of the Red Pitaya DPLL code, all the reads are done through a separate module than the writes.
+reg_aliasing = {}
+for field_name, reg_info in reg_definitions.items():
+    base_addr_mask = 0xF000_0000
+    if reg_info.addr & base_addr_mask == RP_PLL_device.FPGA_BASE_ADDR:
+        read_addr = reg_info.addr | (2 << 20)
+        reg_aliasing[hex(read_addr)] = field_name
+        print("Aliasing events on %s to %s" % (hex(read_addr), reg_aliasing[hex(read_addr)]))
+
