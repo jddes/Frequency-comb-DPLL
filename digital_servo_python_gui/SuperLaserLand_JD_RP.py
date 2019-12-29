@@ -85,33 +85,22 @@ class SuperLaserLand_JD_RP:
 
 	# addresses from the "IP integrator block design" (see address editor)
 	# there is also an offset of 0x8000_0000 applied in RP_PLL
-	xadc_base_addr    = 0x0001_0000
-	clkw_base_addr    = 0x0002_0000
-	clk_sel_base_addr = 0x0003_0000
-	clk_freq_reg1     = 0x0004_0000
-	clk_freq_reg2     = 0x0004_0008
-	clk_freq_reg3     = 0x0005_0000
+	xadc_base_addr     = 0x0001_0000
+	BUS_ADDR_XADC_CHAN = [0x0001_0000+0x240+4*xadc_channel for xadc_channel in range(16)]
+	BUS_ADDR_Vccint    = xadc_base_addr+0x204
+	BUS_ADDR_Vccaux    = xadc_base_addr+0x208
+	BUS_ADDR_Vbram     = xadc_base_addr+0x218
+	BUS_ADDR_Zynq_Temp = xadc_base_addr+0x200
+	clkw_base_addr     = 0x0002_0000
+	clk_sel_base_addr  = 0x0003_0000
+	clk_freq_reg1      = 0x0004_0000
+	clk_freq_reg2      = 0x0004_0008
+	clk_freq_reg3      = 0x0005_0000
 	
 	############################################################
 	# CONSTANTS for endpoint numbers:
 	# Inputs to the FPGA:
-	ENDPOINT_CMD_ADDR                                   = 0x0
-	ENDPOINT_CMD_DATA1IN                                = 0x1
-	ENDPOINT_CMD_DATA2IN                                = 0x2
 	BUS_ADDR_MUX_SELECTORS                              = 0x3
-	ENDPOINT_MUX_CLOCK_SOURCE                           = 0x4
-	ENDPOINT_EXTERNAL_FIFO_RESET                        = 0x5
-	ENDPOINT_CMD_TRIG                                   = 0x40
-	
-	# # LEGACY, Opal-Kelly-style "endpoints":
-	# ENDPOINT_STATUS_FLAGS_OUT = 0x25
-	# # Outputs from the dither0 lock-in:
-	# ENDPOINT_DITHER0_LOCKIN_REAL = 0x26 # endpoints 0x26 to 0x28 are part of this signal
-	
-	# ENDPOINT_DITHER1_LOCKIN_REAL = 0x29 # endpoints 0x29 to 0x2b are part of this signal
-	
-	# ENDPOINT_DITHER2_LOCKIN_REAL = 0x2c # endpoints 0x2c to 0x2e are part of this signal
-	# ENDPOINT_DEBUGGING           = 0x2f
 	
 	# new-style addresses (Zynq)
 	BUS_ADDR_STATUS_FLAGS                               = 0x00025
@@ -166,11 +155,9 @@ class SuperLaserLand_JD_RP:
 	
 	# Addresses for the internal 'cmd' register bus:
 	###########################################################################
-	
+	# Variable-duty-cycle oscillator, used for a switching regulator on the amplifier daughterboard
 	BUS_ADDR_TEST_OSC                                   = 0x0046
 	BUS_ADDR_TEST_OSC_DUTY                              = 0x0048
-	# clock select register. 0 = internal, 1 = external
-	BUS_ADDR_CLK_SEL                                    = 0x0049
 
 	# Addresses for the system identification VNA:
 	BUS_ADDR_number_of_cycles_integration               = 0x5000
@@ -258,18 +245,7 @@ class SuperLaserLand_JD_RP:
 	############################################################
 	
 	############################################################
-	# Constants for the input multiplex going to the DDR2Logger
-	SELECT_ADC0          = 0
-	SELECT_ADC1          = 1
-	SELECT_DDC0          = 2
-	SELECT_DDC1          = 3
-	SELECT_VNA           = 4
-	SELECT_COUNTER       = 5
-	SELECT_DAC0          = 6
-	SELECT_DAC1          = 7
-	SELECT_DAC2          = 8
-	SELECT_CRASH_MONITOR = 2**4
-	SELECT_IN10          = 2**4 + 2**3
+	# Constants for the input multiplexer going to the DDR2Logger
 	LOGGER_MUX = {
 		'ADC0':          0,
 		'ADC1':          1,
@@ -332,10 +308,8 @@ class SuperLaserLand_JD_RP:
 			print('resetFrontend')
 			
 		print('Resetting FPGA (resetFrontend)...')
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET_FRONTEND)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_RESET_FRONTEND*4, 0)
 		
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET)
 
 
 
@@ -564,7 +538,6 @@ class SuperLaserLand_JD_RP:
 			self.log_file.write('trigger_write()\n')
 		# Start writing data to the BRAM:
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_WRITE, 0)
-		#self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CMD_STROBE)
 		
 	def trigger_system_identification(self):
 		if self.bVerbose == True:
@@ -573,10 +546,8 @@ class SuperLaserLand_JD_RP:
 		if self.bCommunicationLogging == True:
 			self.log_file.write('trigger_system_identification()\n')
 		# Start writing data to the DDR2 RAM:
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CMD_STROBE)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_WRITE, 0)
 		# Start the system identification process:
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_SYSTEM_IDENTIFICATION)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_SYSTEM_IDENTIFICATION*4, 0)
 				
 	def wait_for_write(self):
@@ -1983,7 +1954,7 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
-		return xadc_unipolar_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x240+4*xadc_channel)   )
+		return xadc_unipolar_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.BUS_ADDR_XADC_CHAN[xadc_channel]))
 
 
 	# read various power supply voltages on the Zynq using the XADC:
@@ -1993,9 +1964,9 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
-		Vccint = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x204)   )
-		Vccaux = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x208)   )
-		Vbram  = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x218)   )
+		Vccint = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.BUS_ADDR_Vccint)  )
+		Vccaux = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.BUS_ADDR_Vccaux)  )
+		Vbram  = xadc_powersupply_code_to_voltage(self.dev.read_Zynq_AXI_register_uint32(self.BUS_ADDR_Vbram)   )
 		return (Vccint, Vccaux, Vbram)
 
 	# read the Zynq's current temperature:
@@ -2011,7 +1982,7 @@ class SuperLaserLand_JD_RP:
 		N_average = 10.
 		reg_avg = 0.
 		for k in range(int(N_average)):
-			reg = self.dev.read_Zynq_AXI_register_uint32(self.xadc_base_addr+0x200)
+			reg = self.dev.read_Zynq_AXI_register_uint32(self.BUS_ADDR_Zynq_Temp)
 			reg_avg += float(reg)
 			
 		reg_avg = float(reg_avg)/N_average
