@@ -12,6 +12,8 @@ import numpy as np
 import logging
 #import matplotlib.pyplot as plt
 
+from RegistersDisplay import EventTypes, RegisterState, RegistersDisplayWidget
+
 class CommsError(Exception):
     pass
 
@@ -54,8 +56,12 @@ class RP_PLL_device():
         self.controller = controller
         self.valid_socket = False
 
-        self.type_to_format_string = {False: '=III',
-                                      True: '=IIi'}
+        self.type_to_packet_struct = {False: struct.Struct('=III'),
+                                      True: struct.Struct('=IIi')}
+        self.structs_32bits = {
+            False: struct.Struct('I'),
+            True: struct.Struct('i'),
+        }
 
     def socketErrorEvent(self, e):
         # disconnect from socket, and start reconnection timer:
@@ -184,21 +190,24 @@ class RP_PLL_device():
 
     def write_Zynq_register_32bits(self, absolute_addr, data_32bits, bSigned=False):
         self.validate_address(absolute_addr)
-        packet_to_send = struct.pack(self.type_to_format_string[bSigned], self.MAGIC_BYTES_WRITE_REG, absolute_addr, int(data_32bits) & 0xFFFFFFFF)
+        packet_to_send = self.type_to_packet_struct[bSigned].pack(self.MAGIC_BYTES_WRITE_REG, absolute_addr, int(data_32bits) & 0xFFFFFFFF)
         self.send(packet_to_send)
 
-    def read_Zynq_register_32bits(self, absolute_addr, bIsAXI=False):
+    def read_Zynq_register_32bits(self, absolute_addr, bSigned=False):
         self.validate_address(absolute_addr)
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REG, absolute_addr, 0)  # last value is reserved
         self.send(packet_to_send)
-        return self.read(4)
+        data_buffer = self.read(4)
+        value, = self.structs_32bits[bSigned].unpack_from(data_buffer)
+
+        return value
 
     def read_Zynq_buffer_int16(self, number_of_points):
         if number_of_points > self.MAX_SAMPLES_READ_BUFFER:
             number_of_points = self.MAX_SAMPLES_READ_BUFFER
             print("number of points clamped to %d." % number_of_points)
 
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points)    # last value is reserved
+        packet_to_send = self.type_to_packet_struct[False].pack(self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points)    # last value is reserved
         self.send(packet_to_send)
         return self.read(int(2*number_of_points))
 
@@ -217,19 +226,13 @@ class RP_PLL_device():
         self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32, data_uint32, bSigned=False)
 
     def read_Zynq_register_uint32(self, address_uint32):
-        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32)
-        register_value_as_tuple = struct.unpack('I', data_buffer)
-        return register_value_as_tuple[0]
+        return self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, bSigned=False)
 
     def read_Zynq_register_int32(self, address_uint32):
-        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32)
-        register_value_as_tuple = struct.unpack('i', data_buffer)
-        return register_value_as_tuple[0]
+        return self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, bSigned=True)
 
     def read_Zynq_AXI_register_uint32(self, address_uint32):
-        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32)
-        register_value_as_tuple = struct.unpack('I', data_buffer)
-        return register_value_as_tuple[0]
+        return self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32, bSigned=False)
 
     def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
         print("read_Zynq_register_uint64()")
