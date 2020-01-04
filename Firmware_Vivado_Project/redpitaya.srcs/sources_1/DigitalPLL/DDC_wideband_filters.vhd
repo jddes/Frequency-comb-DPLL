@@ -29,6 +29,9 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+library work;
+use work.maths_helper.all;
+
     entity DDC_wideband_filters is
     Generic(
         INPUT_DATA_WIDTH    : positive := 16;
@@ -45,6 +48,8 @@ use IEEE.NUMERIC_STD.ALL;
         reference_frequency : in  std_logic_vector (47 downto 0);
         boxcar_filter_size  : in  std_logic_vector (11 downto 0);
         ddc_filter_select   : in  std_logic_vector (1 downto 0);    -- 0 means wideband (25 MHz) filter, 1 means narrowband (6 MHz), 2 means 16-taps minimum-phase fir
+        -- optionally add an offset to inst_frequency (currently only for bUseDiff=0)
+        output_offset       : in  std_logic_vector (10-1 downto 0);
 
         -- Reference tone output, goes to the ddr2 logger:
         ref_cosine_out      : out std_logic_vector (16-1 downto 0);
@@ -369,7 +374,11 @@ begin
                 if bUseDiff = '1' then
                     inst_freq_internal <= std_logic_vector(signed(wrapped_phase_internal) - signed(wrapped_phase_internal_last) + inst_freq_adjust);
                 else
-                    inst_freq_internal <= wrapped_phase_internal;
+                    inst_freq_internal <= std_logic_vector(resize(
+                        saturate(resize(signed(wrapped_phase_internal), wrapped_phase_internal'length+1)
+                               + resize(signed(output_offset), output_offset'length+1),
+                            inst_freq_internal'length),   -- saturate()
+                            inst_freq_internal'length));    -- resize()
                 end if;
                 
                 -- this is to ensure lock at 0 phase error, instead of at some arbitrary offset

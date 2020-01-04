@@ -668,6 +668,7 @@ DDC_wideband_filters # (
      .boxcar_filter_size(boxcar_filter_size),
     .reference_frequency(reference_frequency0), 
      .ddc_filter_select(ddc0_filter_select),
+     .output_offset(10'd0),
      
     // Reference tone output:
     .ref_cosine_out(ref_cosine_0),
@@ -790,11 +791,27 @@ wire        [10-1:0]    DDC1_output;            // diff(phi)/(2*pi) * 2**10
          .update_flag()
     );
 
+
+    wire [10-1:0] inst_frequency1_offset;
+    // Registers which controls the multiplexer for the PLL1 input:
+    parallel_bus_register_32bits_or_less # (
+        .REGISTER_SIZE(10),
+        .REGISTER_DEFAULT_VALUE(0),
+        .ADDRESS(16'h8030)
+    )
+    parallel_bus_register_inst_freq1_offset  (
+     .clk                           (clk1                       ), 
+     .bus_strobe                    (cmd_trig                   ), 
+     .bus_address                   (cmd_addr                   ), 
+     .bus_data                      ({cmd_data2in, cmd_data1in} ), 
+     .register_output               (inst_frequency1_offset     ), 
+     .update_flag                   (                           )
+    );
      
 // The actual DDC:
 DDC_wideband_filters # (
         .bUseDiff(1'b0) // set to 0 for a PDH lock!
-    ) DC1_inst (
+    ) DDC1_inst (
     .rst(rst_frontend1), 
     .clk(clk1), 
     .clk_times_N(clk1_timesN),
@@ -805,6 +822,7 @@ DDC_wideband_filters # (
      .boxcar_filter_size(boxcar_filter_size),
     .reference_frequency(reference_frequency1), 
      .ddc_filter_select(ddc1_filter_select),
+     .output_offset(inst_frequency1_offset),
      
     // Reference tone output:
     .ref_cosine_out(ref_cosine_1),

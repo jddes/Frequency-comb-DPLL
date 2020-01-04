@@ -251,6 +251,7 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_delta_fr4                                  = 0x8025
 	BUS_ADDR_ref1_state_control                         = 0x8026
 	
+	BUS_ADDR_INST_FREQ1_OFFSET                          = 0x8030
 	
 	
 	# DAC0 Dither and Lock-in settings:
