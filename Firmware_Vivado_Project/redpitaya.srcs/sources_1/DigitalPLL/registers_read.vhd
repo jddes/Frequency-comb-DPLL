@@ -14,6 +14,8 @@ port (
 
     -- Registers inputs (to be read)
     status_flags                           : in  std_logic_vector(32-1 downto 0);
+    LoggerWriteAddr                        : in  std_logic_vector(16-1 downto 0);
+    LoggerLoopCounter                      : in  std_logic_vector(16-1 downto 0); -- this can be use to verify that no samples are missed when in continuous writing mode
     -- these get sampled internally together even though they go through multiple reads by the CPU
     dither0_lockin_output                  : in  std_logic_vector(64-1 downto 0);
     -- these get sampled internally together even though they go through multiple reads by the CPU
@@ -31,7 +33,7 @@ port (
     -- internal configuration bus
     sys_addr                               : in  std_logic_vector(32-1 downto 0);   -- bus address
     sys_wdata                              : in  std_logic_vector(32-1 downto 0);   -- bus write data
-    sys_sel                                : in  std_logic_vector(4-1 downto 0);   -- bus write byte select
+    sys_sel                                : in  std_logic_vector( 4-1 downto 0);   -- bus write byte select
     sys_wen                                : in  std_logic;   -- bus write enable
     sys_ren                                : in  std_logic;   -- bus read enable
     sys_rdata                              : out std_logic_vector(32-1 downto 0);  -- bus read data
@@ -62,14 +64,14 @@ architecture Behavioral of registers_read is
     -- coregen fifo
     component fifo_generator_0 
     PORT (
-        clk : IN STD_LOGIC;
-        srst : IN STD_LOGIC;
-        din : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        wr_en : IN STD_LOGIC;
-        rd_en : IN STD_LOGIC;
-        dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        full : OUT STD_LOGIC;
-        empty : OUT STD_LOGIC;
+        clk        : IN  STD_LOGIC;
+        srst       : IN  STD_LOGIC;
+        din        : IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
+        wr_en      : IN  STD_LOGIC;
+        rd_en      : IN  STD_LOGIC;
+        dout       : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        full       : OUT STD_LOGIC;
+        empty      : OUT STD_LOGIC;
         data_count : OUT STD_LOGIC_VECTOR(10 DOWNTO 0);
         prog_empty : OUT STD_LOGIC
     );
@@ -168,7 +170,7 @@ begin
         if rising_edge(clk) then
             sys_err <= '0';
             sys_en := sys_wen or sys_ren;
-            
+            sys_rdata <= (others => '0');
 
             -- Write
             if sys_wen = '1' then
@@ -192,6 +194,9 @@ begin
             -- This is to allow re-using the same addresses as the legacy code (avoids changing every address manually)
             if sys_ren = '1' then
                 case sys_addr(20-1 downto 0) is
+
+                    when x"00010" => sys_ack <= sys_en; sys_rdata(LoggerWriteAddr'range) <= LoggerWriteAddr;
+                    when x"00011" => sys_ack <= sys_en; sys_rdata(LoggerLoopCounter'range) <= LoggerLoopCounter;
 
                     when x"00025" =>
                         sys_rdata <= status_flags;

@@ -476,6 +476,8 @@ wire        [15:0] DACout2;
 wire [16-1:0] LoggerData;
 wire LoggerData_clk_enable;
 wire LoggerIsWriting;
+wire [16-1:0] LoggerWriteAddr;
+wire [16-1:0] LoggerLoopCounter;
 
 reg dpll_output_selector;
 
@@ -532,6 +534,9 @@ dpll_wrapper dpll_wrapper_inst (
   .LoggerData              (  LoggerData                 ),
   .LoggerData_clk_enable   (  LoggerData_clk_enable      ),
   .LoggerIsWriting         (  LoggerIsWriting            ),
+
+  .LoggerWriteAddr         (  LoggerWriteAddr            ),
+  .LoggerLoopCounter       (  LoggerLoopCounter          ),
 
   // System bus
   .sys_addr                (  sys_addr                   ),  // address
@@ -641,7 +646,9 @@ ram_data_logger ram_data_logger_i (
   .data_in_clk_enable   (  LoggerData_clk_enable      ),
   // control interface
   .is_writing           (  LoggerIsWriting            ),
-  
+  .write_addr           (  LoggerWriteAddr            ),
+  .loop_counter         (  LoggerLoopCounter          ),
+
   // CPU interface
   .sys_addr             (  sys_addr                   ),  // address
   .sys_wdata            (  sys_wdata                  ),  // write data

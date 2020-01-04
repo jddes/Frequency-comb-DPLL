@@ -16,6 +16,8 @@ port (
     data_in_clk_enable                     : in  std_logic;
     -- control interface
     is_writing                             : out std_logic;
+    write_addr                             : out std_logic_vector(ADDRESS_WIDTH-1 downto 0);
+    loop_counter                           : out std_logic_vector(16-1 downto 0); -- this can be use to verify that no samples are missed when in continuous writing mode
     
     -- CPU interface
     sys_addr                               : in  std_logic_vector(32-1 downto 0);   -- bus address
@@ -45,10 +47,13 @@ architecture Behavioral of ram_data_logger is
     signal read_address   : std_logic_vector (ADDRESS_WIDTH-1 downto 0) := (others => '0');
     signal read_data      : std_logic_vector (DATA_WIDTH-1    downto 0) := (others => '0');
     
-    signal sys_ren_d1     : std_logic  := '0';
-    signal data_valid     : std_logic  := '0';
-    signal start_write_d1 : std_logic  := '0';
-    signal start_write    : std_logic  := '0';
+    signal sys_ren_d1       : std_logic := '0';
+    signal data_valid       : std_logic := '0';
+    signal start_write_d1   : std_logic := '0';
+    signal start_write      : std_logic := '0';
+    signal bContinuousWrite : std_logic := '0';
+
+    signal loop_counter_internal : unsigned(loop_counter'length-1 downto 0) := (others => '0');
 begin
 
 
@@ -92,12 +97,13 @@ begin
                         bWriting <= '1';    -- next data point will be written, unless this is the last
                         write_address <= (others => '0');
                         FSM_state <= STATE_WRITE;
+                        loop_counter_internal <= (others => '0');
                         
                     when STATE_WRITE =>
                         bWriting <= '1';    -- next data point will be written, unless this is the last
                         if data_in_clk_enable = '1' then
                             
-                            if write_address = (write_address'range => '1') then
+                            if write_address = (write_address'range => '1') and bContinuousWrite = '0' then
                                 -- we are done, stop writing
                                 bWriting <= '0';
                                 FSM_state <= STATE_IDLE;
@@ -105,6 +111,12 @@ begin
                             else
                                 -- still filling up the ram
                                 write_address <= std_logic_vector(unsigned(write_address)+1);
+                            end if;
+
+                            -- count the number of times we wrap around the full address space.
+                            -- can be used to detect missing samples when in continuous mode
+                            if write_address = (write_address'range => '1') then
+                                loop_counter_internal <= loop_counter_internal + 1;
                             end if;
                         end if;
                     when others =>
@@ -115,7 +127,9 @@ begin
         end if;
     end process;
 
-    is_writing <= bWriting;
+    is_writing   <= bWriting;
+    loop_counter <= std_logic_vector(loop_counter_internal);
+    write_addr   <= write_address;
 
     -- process which handles reading the ram and sending the results to the cpu
     -- also handles the registers reads and writes
@@ -139,7 +153,8 @@ begin
                 case sys_addr(20-1 downto 0) is
                     -- this acts as a one cycle-long trigger since the default value is 0
                     when x"1004" => start_write <= '1'; 
-                    --when x"000" => amplitude                     <= sys_wdata(amplitude'range);
+                    -- this makes the module write continously to the ram, effectively using the ram as a circular buffer
+                    when x"1008" => bContinuousWrite <= sys_wdata(0);
 
                     when others => 
                 end case;

@@ -31,6 +31,9 @@ module dpll_wrapper(
     output wire               LoggerData_clk_enable,
     input  wire               LoggerIsWriting,
 
+    input  wire [16-1:0]      LoggerWriteAddr,
+    input  wire [16-1:0]      LoggerLoopCounter,
+
     // System bus
     input  wire [ 32-1:0]     sys_addr   ,  // bus address
     input  wire [ 32-1:0]     sys_wdata  ,  // bus write data
@@ -1780,6 +1783,8 @@ registers_read registers_read_inst
 
     // Registers inputs (to be read)
     .status_flags(status_flags),
+    .LoggerWriteAddr(LoggerWriteAddr),
+    .LoggerLoopCounter(LoggerLoopCounter),
     // these get sampled internally together even though they go through multiple reads by the CPU
     .dither0_lockin_output({  {16{dither0_lockin_output_to_wires[47]}} , dither0_lockin_output_to_wires}),  // manual sign extension from 48 to 64 bits
     // these get sampled internally together even though they go through multiple reads by the CPU
