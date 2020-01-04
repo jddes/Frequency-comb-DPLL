@@ -14,13 +14,15 @@ architecture behavior of minmax_decimator_testbench is
     -- Inputs
     signal clk           : std_logic                               := '0';
     signal clk_enable_in : std_logic                               := '1';
-    signal data          : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
+    signal data1, data2  : std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
     signal period        : std_logic_vector(32-1 downto 0)         := std_logic_vector(to_unsigned(10, 32));
     -- Outputs
-    signal clk_enable_out : std_logic;
-    signal counter_out    : std_logic_vector(SYNC_COUNTER_WIDTH-1 downto 0);
-    signal min_out        : std_logic_vector(DATA_WIDTH-1 downto 0);
-    signal max_out        : std_logic_vector(DATA_WIDTH-1 downto 0);
+    signal clk_enable_out       : std_logic;
+    signal clk_enable_out_2ch   : std_logic;
+    signal bFirstChannel        : std_logic;
+    signal counter_out, counter_out_2ch : std_logic_vector(SYNC_COUNTER_WIDTH-1 downto 0);
+    signal min_out, min_out_2ch : std_logic_vector(DATA_WIDTH-1 downto 0);
+    signal max_out, max_out_2ch : std_logic_vector(DATA_WIDTH-1 downto 0);
 
     -- Clock period definition
     constant clk_period : time := 5 ns;
@@ -34,12 +36,29 @@ begin
     ) port map (
         clk            => clk,
         clk_enable_in  => clk_enable_in,
-        data           => data,
+        data           => data1,
         period         => period,
         clk_enable_out => clk_enable_out,
         counter_out    => counter_out,
         min_out        => min_out,
         max_out        => max_out
+    );
+
+    minmax_decimator_inst : entity work.minmax_decimator_2ch
+    generic map (
+        DATA_WIDTH         => DATA_WIDTH,
+        SYNC_COUNTER_WIDTH => SYNC_COUNTER_WIDTH
+    ) port map (
+        clk            => clk,
+        clk_enable_in  => clk_enable_in,
+        data1          => data1,
+        data2          => data2,
+        period         => period,
+        clk_enable_out => clk_enable_out,
+        counter_out    => counter_out_2ch,
+        bFirstChannel  => bFirstChannel,
+        min_out        => min_out_2ch,
+        max_out        => max_out_2ch
     );
 
     -- Clock process definition for "clk"
@@ -54,7 +73,9 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            data <= std_logic_vector(signed(data)-1); -- down-ramp
+            data1 <= std_logic_vector(signed(data2)-1); -- down-ramp
+
+            data2 <= std_logic_vector(signed(data2)+1); -- up-ramp
 
         end if;
     end process;

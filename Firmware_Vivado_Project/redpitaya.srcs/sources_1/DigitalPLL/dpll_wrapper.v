@@ -453,7 +453,7 @@ multiplexer_NbitsxMsignals_to_Nbits
     .in7({1'b1, DACout1}), 
     .in8({1'b1, DACout2}),
     //.in9({crash_monitor_output_to_logger_clk_enable, crash_monitor_output_to_logger}),
-    .in9({minmax_clk_enable_out, max_out}),
+    .in9({minmax_clk_enable_out, 1'b0, minmax_first_channel, max_out}),
     .selector(selector[4:0]), 
     .selected_output({LoggerData_clk_enable, LoggerData})
     );
@@ -476,35 +476,39 @@ multiplexer_NbitsxMsignals_to_Nbits
     // Decimate one data channel (currently ADC1 or DAC1) using a running-max dumped at a lower rate
     // This could benefit from having a mux on its input (maybe all ADCs+DACs would be nice)
     wire minmax_clk_enable_out;
-    wire [16-1:0] min_out;
-    wire [16-1:0] max_out;
+    wire [14-1:0] min_out;
+    wire [14-1:0] max_out;
     wire [32-1:0] decimation_ratio;
     reg  [16-1:0] to_decimator;
     wire [ 8-1:0] decimator_select;
 
+    wire minmax_first_channel;
 
-    minmax_decimator # (
+
+    minmax_decimator_2ch # (
         .DATA_WIDTH        (16),
         .SYNC_COUNTER_WIDTH(4)
     ) minmax_decimator_inst (
         .clk           (clk1),
         .clk_enable_in (1'b1),
-        .data          (to_decimator),
+        .data1         (ADCraw1[16:2]), // ADCraw1 is really 14 bits, but padded with 2 zeros to 16 bits
+        .data2         (DACout1[16:2]), // also really 14 bits
         .period        (decimation_ratio),
         .clk_enable_out(minmax_clk_enable_out),
         .counter_out   (),
+        .bFirstChannel (minmax_first_channel),
         .min_out       (min_out),
         .max_out       (max_out)
     );
 
-    always @(posedge clk1) begin
-        if (decimator_select == 8'd0) begin
-            to_decimator <= ADCraw1;
-        end else begin
-            to_decimator <= DACout1;
-            // could add more stuff here...
-        end
-    end
+    // always @(posedge clk1) begin
+    //     if (decimator_select == 8'd0) begin
+    //         to_decimator <= ADCraw1[];
+    //     end else begin
+    //         to_decimator <= DACout1;
+    //         // could add more stuff here...
+    //     end
+    // end
 
     parallel_bus_register_32bits_or_less # (
         .REGISTER_SIZE(16),
