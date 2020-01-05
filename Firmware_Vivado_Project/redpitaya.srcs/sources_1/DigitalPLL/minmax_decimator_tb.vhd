@@ -44,7 +44,7 @@ begin
         max_out        => max_out
     );
 
-    minmax_decimator_inst : entity work.minmax_decimator_2ch
+    minmax_decimator_inst2 : entity work.minmax_decimator_2ch
     generic map (
         DATA_WIDTH         => DATA_WIDTH,
         SYNC_COUNTER_WIDTH => SYNC_COUNTER_WIDTH
@@ -54,7 +54,7 @@ begin
         data1          => data1,
         data2          => data2,
         period         => period,
-        clk_enable_out => clk_enable_out,
+        clk_enable_out => clk_enable_out_2ch,
         counter_out    => counter_out_2ch,
         bFirstChannel  => bFirstChannel,
         min_out        => min_out_2ch,
@@ -73,7 +73,7 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            data1 <= std_logic_vector(signed(data2)-1); -- down-ramp
+            data1 <= std_logic_vector(signed(data1)-1); -- down-ramp
 
             data2 <= std_logic_vector(signed(data2)+1); -- up-ramp
 
@@ -84,7 +84,9 @@ begin
     process
     begin
         wait for clk_period*10;
+        wait for clk_period*200;
         wait until rising_edge(clk);
+            period <= std_logic_vector(to_unsigned(2, 32));
         wait;
 
     end process;

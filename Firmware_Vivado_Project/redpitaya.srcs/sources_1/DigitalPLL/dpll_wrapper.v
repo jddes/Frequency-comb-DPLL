@@ -491,8 +491,8 @@ multiplexer_NbitsxMsignals_to_Nbits
     ) minmax_decimator_inst (
         .clk           (clk1),
         .clk_enable_in (1'b1),
-        .data1         (ADCraw1[16:2]), // ADCraw1 is really 14 bits, but padded with 2 zeros to 16 bits
-        .data2         (DACout1[16:2]), // also really 14 bits
+        .data1         (ADCraw1[15:2]), // ADCraw1 is really 14 bits, but padded with 2 zeros to 16 bits
+        .data2         (DACout1[15:2]), // also really 14 bits
         .period        (decimation_ratio),
         .clk_enable_out(minmax_clk_enable_out),
         .counter_out   (),

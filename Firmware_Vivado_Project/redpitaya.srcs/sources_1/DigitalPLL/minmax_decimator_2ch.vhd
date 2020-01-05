@@ -83,7 +83,7 @@ begin
         clk          => clk,
         clk_enable   => clk_enable_in,
         data         => data2,
-        dump_results => open, -- strictly synced to the first one, so this is not needed
+        dump_results => dump_results,
         min_value    => min_out2,
         max_value    => max_out2
     );
@@ -118,7 +118,7 @@ begin
     end process;
 
     counter_out    <= std_logic_vector(sync_counter);
-
+    bFirstChannel  <= bFirstChannel_internal;
     clk_enable_out <= clk_enable_out_internal;
     min_out <= min_out_internal;
     max_out <= max_out_internal;
