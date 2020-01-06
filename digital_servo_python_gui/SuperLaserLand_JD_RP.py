@@ -115,6 +115,8 @@ class SuperLaserLand_JD_RP:
 	# ENDPOINT_DEBUGGING           = 0x2f
 	
 	# new-style addresses (Zynq)
+	BUS_ADDR_LOGGER_WRITE_ADDR                          = 0x00010
+	BUS_ADDR_LOGGER_LOOP_COUNTER                        = 0x00011
 	BUS_ADDR_STATUS_FLAGS                               = 0x00025
 	BUS_ADDR_DITHER0_LOCKIN_REAL_LSB                    = 0x00026
 	BUS_ADDR_DITHER0_LOCKIN_REAL_MSB                    = 0x00027
@@ -164,9 +166,11 @@ class SuperLaserLand_JD_RP:
 	# BUS_ADDR_TRIG_CRASH_MEMORY_DUMP = 0x43
 	BUS_ADDR_TRIG_RESET_FRONTEND                        = 0x44
 	
+	# NOTE THAT THIS MODULE (ram_data_logger.vhd) IS IMPLEMENTED OUTSIDE OF DPLL_WRAPPER.V AND THUS IT is part of a different address mapping: this is a direct address offset in the Zynq address space, contrary to most of the other addresses here, which are multiplied by 4 by the conversion layer to avoid breaking 32 bits boundaries
 	DATA_LOGGER_ZYNQ_INDEX                              = 1  # taken from red_pitaya_top.v, from this line: .sys_wen              (  sys_wen[1]                 ),  // write enable
 	BUS_ADDR_TRIG_WRITE                                 = (DATA_LOGGER_ZYNQ_INDEX<<20) + 0x1004    # writing anything to this address triggers the write mode in ram_data_logger.vhd
-	# NOTE THAT THIS MODULE (ram_data_logger.vhd) IS IMPLEMENTED OUTSIDE OF DPLL_WRAPPER.V AND THUS IT is part of a different address mapping: this is a direct address offset in the Zynq address space, contrary to most of the other addresses here, which are multiplied by 4 by the conversion layer to avoid breaking 32 bits boundaries
+	BUS_ADDR_CONTINUOUS_WRITE                           = (DATA_LOGGER_ZYNQ_INDEX<<20) + 0x1008
+	
 	
 	# Addresses for the internal 'cmd' register bus:
 	###########################################################################
@@ -438,7 +442,7 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, data_lsbs)
 		
 		
-	def setup_write(self, input_select, Num_samples, decimation_ratio=1.):
+	def setup_write(self, input_select, Num_samples, decimation_ratio=1., bContinuousWrite=False):
 		if self.bVerbose == True:
 			print('setup_write')
 
@@ -460,6 +464,8 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd_32bits(self.BUS_ADDR_DECIMATION_RATIO, decimation_ratio)
 		# decimated input now also has its own mux
 		self.send_bus_cmd_32bits(self.BUS_ADDR_DECIMATION_SELECT, decimator_select)
+
+		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_CONTINUOUS_WRITE, int(bContinuousWrite))
 		
 		# Set the number of samples, actual number will be 1024*data_in1 value
 		# self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA1IN, int(self.Num_samples_write/1024) + 1)
@@ -474,7 +480,62 @@ class SuperLaserLand_JD_RP:
 		# We don't strobe the trigger line because we want to give the user the
 		# chance to setup more stuff (system identification module for example) before launching the read
 
-		
+
+	def read_logger_state(self):
+		logger_write_addr   = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_LOGGER_WRITE_ADDR*4)
+		logger_loop_counter = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_LOGGER_LOOP_COUNTER*4)
+
+		return (logger_write_addr, logger_loop_counter)
+
+	def sign_extend(self, data, bits_initial, bits_new):
+		bitmask_all  = (2**(bits_initial  ))-1
+		bitmask_sign = (2**(bits_initial-1))
+		replication_factor = (2**(bits_new-bits_initial+1)-1)
+		data_out = (data & bitmask_all) | ((data & bitmask_sign)*replication_factor)
+		return data_out
+
+	def read_continuous_samples(self):
+		(write_addr, loop_counter) = self.read_logger_state()
+		data_buffer = self.read_raw_bytes_from_DDR2()
+		(write_addr_after, loop_counter_after) = self.read_logger_state()
+		print("write_addr=%d, write_addr_after=%d, delta=%d" % (write_addr, write_addr_after, write_addr_after-write_addr))
+		# bits 0-13: samples
+		# bit 14: isFirstChannel flag
+		# bit 15: unused (set to 0 for now)
+		samples_out = np.frombuffer(data_buffer, dtype=np.uint16)
+		print("len(samples_out) 1 = %d" % len(samples_out))
+		is_channel1 = (samples_out >> 14) & 0x1
+		# need to sign-extend the samples from 14 to 16 bits:
+		samples_out = self.sign_extend(samples_out, 14, 16)
+		samples_out = samples_out.astype(dtype=np.int16)
+		print("len(samples_out) 2 = %d" % len(samples_out))
+		# unwrap the circular buffer
+		N = self.dev.MAX_SAMPLES_READ_BUFFER
+		first_valid_pt = (write_addr_after+1) % N
+		# make sure that this is channel 1:
+		if not is_channel1[first_valid_pt]:
+			first_valid_pt = (first_valid_pt+1)%N
+			if not is_channel1[first_valid_pt]:
+				print("Warning: unexpected muxing pattern in continuous samples")
+		last_valid_pt = (write_addr-1) % N
+		# make sure that this is channel 2:
+		if is_channel1[last_valid_pt]:
+			last_valid_pt = (last_valid_pt-1)%N
+			if is_channel1[last_valid_pt]:
+				print("Warning: unexpected muxing pattern in continuous samples")
+
+		print("first_valid_pt=%d, last_valid_pt=%d" % (first_valid_pt, last_valid_pt))
+		unwrap_modulo_addressing = lambda x : np.concatenate((x[first_valid_pt:N],
+										                      x[0:last_valid_pt+1]))
+		samples_linear     = unwrap_modulo_addressing(samples_out)
+		is_channel1_linear = unwrap_modulo_addressing(is_channel1)
+		# slice out the two channels
+		ch1 = samples_linear[0::2]
+		ch2 = samples_linear[1::2]
+		return (ch1, ch2)
+
+		# TODO: handle absolute addresses so we can recover the whole stream without skipping/duplicating samples
+
 	def compute_integration_time_for_syst_ident(self, System_settling_time, first_modulation_frequency_in_hz):
 		# There are four constraints on this value:
 		# First of all, the output rate of the block depends on this value so it has to be kept under some limit (one block of data every ~20 clock cycles)
@@ -1901,7 +1962,7 @@ class SuperLaserLand_JD_RP:
 
 	def read_clk_select(self):
 		# in the actual register, 1 means internal clock, 0 means external
-		reg = self.dev.read_Zynq_register_32bits(self.clk_sel_base_addr)		
+		reg = self.dev.read_Zynq_register_uint32(self.clk_sel_base_addr)		
 		self.clk_select = (not reg)
 		return self.clk_select
 

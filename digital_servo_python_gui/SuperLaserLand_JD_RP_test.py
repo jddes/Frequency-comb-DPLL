@@ -3,7 +3,10 @@ import pytest
 
 from SuperLaserLand_mock import SuperLaserLand_mock
 
-
+def test_sign_extend():
+    sl = SuperLaserLand_mock()
+    assert bin(sl.sign_extend(int('1000', 2), 4, 6)) == '0b111000'
+    assert sl.sign_extend(100, 8, 10) == 100
 
 def test_setup_writes_various():
     sl = SuperLaserLand_mock()
