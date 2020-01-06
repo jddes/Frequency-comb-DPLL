@@ -486,7 +486,7 @@ multiplexer_NbitsxMsignals_to_Nbits
 
 
     minmax_decimator_2ch # (
-        .DATA_WIDTH        (16),
+        .DATA_WIDTH        (14),
         .SYNC_COUNTER_WIDTH(4)
     ) minmax_decimator_inst (
         .clk           (clk1),
