@@ -21,7 +21,7 @@ class SuperLaserLand_mock(SuperLaserLand_JD_RP):
 
 		pass
 
-	def setup_write(self, input_select, Num_samples):
+	def setup_write(self, input_select, Num_samples, decimation_ratio=1., bContinuousWrite=False):
 		# input validation:
 		if input_select not in self.LOGGER_MUX:
 			raise Exception('Invalid selector value')

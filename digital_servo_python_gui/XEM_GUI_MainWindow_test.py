@@ -44,7 +44,7 @@ def test_slowStart100VSwitchingSupply():
     xem_gui_mainwindow = XEM_GUI_MainWindow(sl, 'Testing window', 0, (True, False, False), sp, '', '')
 
     xem_gui_mainwindow.slowStart100VSwitchingSupply()
-    assert(sl.setTestOscillator_calls == 11)
+    assert(sl.setTestOscillator_calls == 1)
     
 # @pytest.mark.skiptest
 def test_slowStart100VSwitchingSupply_with_exception():
