@@ -13,7 +13,7 @@ generic (
     clk_ref           : in  std_logic;
     clk_target        : in  std_logic;
     
-    -- simplue output port, just the results with a clk enable.
+    -- simple output port, just the results with a clk enable.
     output_clk_enable : out std_logic;
     freq_count_out    : out std_logic_vector(64-1 downto 0);
 

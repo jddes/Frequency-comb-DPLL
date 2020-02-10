@@ -65,7 +65,7 @@ begin
             -- unwrap the counter from 4 to N bits:
             -- doing a standard "cumsum(diff(phi) modulo N_INPUT)" unwrapping algorithm
             counter_binary_ref_d1     <= counter_binary_ref;
-            counter_binary_increments <= unsigned(counter_binary_ref) - unsigned(counter_binary_ref_d1); -- diff(phi) modulo 4
+            counter_binary_increments <= unsigned(counter_binary_ref) - unsigned(counter_binary_ref_d1); -- diff(phi) modulo 2^4
             counter_unwrapped_ref     <= counter_unwrapped_ref + counter_binary_increments;
         end if;
     end process;
