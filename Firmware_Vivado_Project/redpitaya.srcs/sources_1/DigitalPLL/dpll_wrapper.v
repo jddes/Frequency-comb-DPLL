@@ -1333,7 +1333,7 @@ output_summing_dac1
 (  
     .clk              (  clk1                       ), 
     .in0              (  modulation_output_to_dac1  ), 
-    .in1              (                             ), 
+    .in1              (  $signed(ref_cosine_0) >>> 1), 
     .in2              (  pll1_output                ), 
     .in3              (  manual_offset_dac1         ), 
     .data_output      (  DACout1                    ), 
