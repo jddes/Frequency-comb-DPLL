@@ -156,6 +156,7 @@ wire ack_combine_t;
 wire [1:0] gpio_io_o;
 wire ps_gpio_rst;
 wire clk_int_or_ext;
+wire [10-1:0] to_uart;
 
 // frequency counter on the external clock input
 wire clk_ext_bufg;
@@ -165,6 +166,7 @@ wire [32-1:0] reg_to_axi3;
 
 assign clk_int_or_ext = gpio_io_o[0];
 assign ps_gpio_rst    = gpio_io_o[1];
+
 
 red_pitaya_ps i_ps (
   .FIXED_IO_mio       (  FIXED_IO_mio                ),
@@ -226,6 +228,7 @@ red_pitaya_ps i_ps (
   .clk_ext_bufg(clk_ext_bufg), // copy of the exp_p_in[5] signal, after a BUFG
   .clk_to_adc(clk_to_adc),
   .gpio_io_o(gpio_io_o),
+  .to_uart(to_uart), // 10 bits to uart uC: 1 bit pwr/enable, 1 bit send strobe signal, 8 bits data
 
   .reg_to_axi1(reg_to_axi1),
   .reg_to_axi2(reg_to_axi2),
@@ -236,10 +239,6 @@ red_pitaya_ps i_ps (
 ////////////////////////////////////////////////////////////////////////////////
 // counts the frequency of the external clock on exp_p_in[5] against fclk[3] (200 MHz)
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 digital_clock_freq_counter # (
     .N_gate_time(32'd200000000) // fixed for clk_ref = 200 MHz, 1 sec gate time
 ) digital_clock_freq_counter_inst (
@@ -288,16 +287,17 @@ assign ps_sys_ack   = |(sys_cs & sys_ack);
 
 // channel 3 is "Housekeeping"
 // channel 4 is AMS
-// channel 5 is output multiplexer
-// channel 6 is VCO for DAC
+// channel 5 is empty
+// channel 6 is empty
+// channel 7 is empty
 
-// assign sys_rdata[5*32+:32] = 32'h0; 
-// assign sys_err  [5       ] =  1'b0;
-// assign sys_ack  [5       ] =  1'b1;
+assign sys_rdata[5*32+:32] = 32'h0; 
+assign sys_err  [5       ] =  1'b0;
+assign sys_ack  [5       ] =  1'b1;
 
-// assign sys_rdata[4*32+:32] = 32'h0; 
-// assign sys_err  [4       ] =  1'b0;
-// assign sys_ack  [4       ] =  1'b1;
+assign sys_rdata[6*32+:32] = 32'h0; 
+assign sys_err  [6       ] =  1'b0;
+assign sys_ack  [6       ] =  1'b1;
 
 assign sys_rdata[7*32+:32] = 32'h0; 
 assign sys_err  [7       ] =  1'b0;
@@ -470,7 +470,6 @@ ODDR oddr_dac_dat [14-1:0] (.Q(dac_dat_o), .D1(dac_dat_b), .D2(dac_dat_a), .C(da
 
 //---------------------------------------------------------------------------------
 //  Digital-PLL module (2 inputs, 2 outputs)
-wire signed [15:0] ADCraw0, ADCraw1;
 wire signed [15:0] DACout0, DACout1;
 wire        [15:0] DACout2;
 wire [16-1:0] LoggerData;
@@ -500,43 +499,26 @@ wire debug_out_4;
 
 reg [26-1:0] led_counter;
 
-assign ADCraw0 = {adc_a, 2'b0};
-assign ADCraw1 = {adc_b, 2'b0};
-// assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
-// assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
+assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
+assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
 
-wire dpll_rst = 1'b0; // I don't know if we can use the RedPitaya's reset because I don't know if it is clock-synchronous or not. In any case, it does not matter because we have the sys_bus driven resets.
-
-dpll_wrapper dpll_wrapper_inst (
-  
-  .clk1                    (  adc_clk                    ), // global clock, designed for 100 MHz clock rate
-  .clk1_timesN             (  adc_clk_2x                 ), // this should be N times the clock, phase-locked to clk1, N matching what was input in the FIR compiler for fir_compiler_minimumphase_N_times_clk
-  .rst                     (  dpll_rst                   ), // currently only use the resets driven by the system bus
-
-  // analog data input/output interface
-  .ADCraw0                 (  ADCraw0                    ),
-  .ADCraw1                 (  ADCraw1                    ),
-  .DACout0                 (  DACout0                    ),
-  .DACout1                 (  DACout1                    ),
-  .DACout2                 (  DACout2                    ),
-
-  .osc_output(osc_output),
-  //.clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
-
-  // Data logger port:
-  .LoggerData              (  LoggerData                 ),
-  .LoggerData_clk_enable   (  LoggerData_clk_enable      ),
-  .LoggerIsWriting         (  LoggerIsWriting            ),
-
-  // System bus
-  .sys_addr                (  sys_addr                   ),  // address
-  .sys_wdata               (  sys_wdata                  ),  // write data
-  .sys_sel                 (  sys_sel                    ),  // write byte select
-  .sys_wen                 (  sys_wen[0]                 ),  // write enable
-  .sys_ren                 (  sys_ren[0]                 ),  // read enable
-  .sys_rdata               (  sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
-  .sys_err                 (  sys_err[0]                 ),  // error indicator
-  .sys_ack                 (  sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
+multichannel_freq_counter_top multichannel_freq_counter_top_inst (
+    .clk                  (adc_clk),
+    .clk_times_N          (adc_clk_2x),
+    .data1_in             (adc_a),
+    .data2_in             (adc_b),
+    .LoggerData_clk_enable(LoggerData_clk_enable),
+    .LoggerData           (LoggerData),
+    .LoggerIsWriting      (LoggerIsWriting),
+    .DACout1              (DACout0),
+    .DACout2              (DACout1),
+    .sys_addr             (sys_addr                   ),  // address
+    .sys_wdata            (sys_wdata                  ),  // write data
+    .sys_wen              (sys_wen[0]                 ),  // write enable
+    .sys_ren              (sys_ren[0]                 ),  // read enable
+    .sys_rdata            (sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
+    .sys_err              (sys_err[0]                 ),  // error indicator
+    .sys_ack              (sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
 );
 
 addr_packed addr_packed_inst (
@@ -803,12 +785,16 @@ assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest
 
 assign exp_n_out[2] = osc_output;
 assign exp_n_out[5] = 1'b0;   // unused GPIO set as output with 0V for the moment
-assign exp_n_out[3] = 1'b0;   // unused GPIO set as output with 0V for the moment
+assign exp_n_out[3] = to_uart[9];   // uart uC pwr/enable
+wire uart_serial_out;
+assign exp_p_out[3] = uart_serial_out & to_uart[9];   // uart serial data 
+
 // assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
 //assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
 
+
 // // 125 MHz generated from 200 MHz, either internal or external clocks
-ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
+// ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
@@ -818,73 +804,17 @@ ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
 
-//---------------------------------------------------------------------------------
-// VCO and output mux
-// Channel 5
 
-wire signed [14-1 : 0] to_DAC0;
-wire signed [14-1 : 0] to_DAC1;
-
-mux_internal_vco mux_vco (
-  .clk            ( adc_clk                   ), // clock
-  .DACin0         ( DACout0                   ), // output of the DPLL channel a
-  .DACin1         ( DACout1                   ), // output of the DPLL channel b
-  // internal configuration bus
-  .sys_addr       ( sys_addr                  ), // address
-  .sys_wdata      ( sys_wdata                 ), // write data
-  .sys_sel        ( sys_sel                   ), // write byte select
-  // communication bus for the vco
-  .sys_wen_vco    (sys_wen[6]                 ), // write enable for the vco
-  .sys_ren_vco    (sys_ren[6]                 ), // read enable for the vco
-  .sys_rdata_vco  (sys_rdata[ 6*32+31: 6*32]  ), // read data for the vco
-  .sys_err_vco    (sys_err[6]                 ), // error indicator for the vco
-  .sys_ack_vco    (sys_ack[6]                 ), // acknowledge signal for the vco
-  // communication bus for the mux
-  .sys_wen_mux    (sys_wen[5]                 ), // write enable for the mux
-  .sys_ren_mux    (sys_ren[5]                 ), // read enable for the mux
-  .sys_rdata_mux  (sys_rdata[ 5*32+31: 5*32]  ), // read data for the mux
-  .sys_err_mux    (sys_err[5]                 ), // error indicator for the mux
-  .sys_ack_mux    (sys_ack[5]                 ), // acknowledge signal for the mux
-  // output
-  .DACa_out       ( to_DAC0                  ), // output to the dac (from vco or directly from dpll)
-  .DACb_out       ( to_DAC1                  )  // output to the dac (from vco or directly from dpll)
-  );
-
-assign dac_a = to_DAC0;
-assign dac_b = to_DAC1;
-
-
-// ---------------------------------------------------------------------------------
-// // output mux (select between different configurations)
-// // Channel 5
-
-// wire signed [14-1:0] signal_mux0;
-// wire signed [14-1:0] signal_mux1;
-
-// output_multiplexer muxDAC (
-//   // system signals
-//   .clk             (  adc_clk                    ),  // clock
-// //  .rstn_i          (  adc_rstn                   ),  // reset - active low
-
-//    // System bus
-//   .sys_addr        (  sys_addr                   ),  // address
-//   .sys_wdata       (  sys_wdata                  ),  // write data
-//   .sys_sel         (  sys_sel                    ),  // write byte select
-//   .sys_wen         (  sys_wen[5]                 ),  // write enable
-//   .sys_ren         (  sys_ren[5]                 ),  // read enable
-//   .sys_rdata       (  sys_rdata[ 5*32+31: 5*32]  ),  // read data
-//   .sys_err         (  sys_err[5]                 ),  // error indicator
-//   .sys_ack         (  sys_ack[5]                 ),  // acknowledge signal
-//   .in0_0_mux       (  DACout0[16-1:2]            ),  // 
-//   .in1_0_mux       (  vco0_cosine_out[16-1:2]     ),  //
-//   .out_0_mux       (  signal_mux0                ),
-//   .in0_1_mux       (  DACout1[16-1:2]            ),  // 
-//   .in1_1_mux       (  vco1_cosine_out[16-1:2]     ),  //
-//   .out_1_mux       (  signal_mux1                )
-// );
-
-// assign dac_a = signal_mux0;
-// assign dac_b = signal_mux1;
+uart_tx # (
+    .CLK_DIVIDER  (1736), // 200 MHz clock/1736 ~ 115200 baud
+    .COUNTER_WIDTH(16),
+    .BITS_PER_WORD(8)
+) uart_tx_inst (
+    .clk            (fclk[3]), // 200 MHz clock
+    .send_clk_enable(to_uart[8]),
+    .data_to_send   (to_uart[7:0]),
+    .serial_out     (uart_serial_out)
+);
 
 
 // ---------------------------------------------------------------------------------
@@ -1044,38 +974,40 @@ assign daisy_p_o = {clk_out_10, 1'bz};  //Important : if you want to use only on
 assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SMA connector at the end (one for the "p" and one for the "n" signal).
 
 
-//---------------------------------------------------------------------------------
-//  SPI communication with a MAX5541 16-bits, SPI DAC.
+// //---------------------------------------------------------------------------------
+// //  SPI communication with a MAX5541 16-bits, SPI DAC.
 
-  reg [16-1:0] dac_ramp_test;
-  wire data_loaded_clk_enable;
-  wire max5541_scl;
-  wire max5541_sda;
-  wire max5541_csb;
-  wire opamp_30V_enable = 1'b1;
+//   reg [16-1:0] dac_ramp_test;
+//   wire data_loaded_clk_enable;
+//   wire max5541_scl;
+//   wire max5541_sda;
+//   wire max5541_csb;
+//   wire opamp_30V_enable = 1'b1;
 
-  // // we simply play a ramp in a loop for now:
-  // always @(posedge adc_clk) begin
-  //   if (data_loaded_clk_enable == 1'b1) begin
-  //     dac_ramp_test <= dac_ramp_test + 16'd1;
-  //   end
-  // end
+//   // // we simply play a ramp in a loop for now:
+//   // always @(posedge adc_clk) begin
+//   //   if (data_loaded_clk_enable == 1'b1) begin
+//   //     dac_ramp_test <= dac_ramp_test + 16'd1;
+//   //   end
+//   // end
 
-  max5541_spi_dac_interface max5541_spi_dac_interface_inst
-  (
-    .clk(adc_clk),
-    .data_in(DACout2),
-    .data_loaded_clk_enable(data_loaded_clk_enable),
-    .scl(max5541_scl),
-    .sda(max5541_sda),
-    .csb(max5541_csb)
-  );
-  // Map the SPI port to specific IO pins:
-  assign exp_p_out[0] = max5541_csb; // before 2018-06-29: max5541_scl
-  assign exp_n_out[0] = max5541_scl; // before 2018-06-29: max5541_sda
-  assign exp_n_out[1] = max5541_sda; 
-  assign exp_p_out[1] = 0; // before 2018-06-29: max5541_csb, now is just an input (unused, but wired in parallel with an output on one of the boards
+//   max5541_spi_dac_interface max5541_spi_dac_interface_inst
+//   (
+//     .clk(adc_clk),
+//     .data_in(DACout2),
+//     .data_loaded_clk_enable(data_loaded_clk_enable),
+//     .scl(max5541_scl),
+//     .sda(max5541_sda),
+//     .csb(max5541_csb)
+//   );
+//   // Map the SPI port to specific IO pins:
+//   assign exp_p_out[0] = max5541_csb; // before 2018-06-29: max5541_scl
+//   assign exp_n_out[0] = max5541_scl; // before 2018-06-29: max5541_sda
+//   assign exp_n_out[1] = max5541_sda; 
+//   assign exp_p_out[1] = 0; // before 2018-06-29: max5541_csb, now is just an input (unused, but wired in parallel with an output on one of the boards
 
-  assign exp_n_out[3] = opamp_30V_enable; // this turns ON Q1 in the schematic, which turns on Q2, which activates 15 mA of bias current into the non-inverting pin in order to put the opamp inside it's common-mode input range
+//   assign exp_n_out[3] = opamp_30V_enable; // this turns ON Q1 in the schematic, which turns on Q2, which activates 15 mA of bias current into the non-inverting pin in order to put the opamp inside it's common-mode input range
+
+
 endmodule
 

@@ -87,7 +87,6 @@ typedef struct binary_packet_read_buffer_t {
 	uint32_t number_of_points;	
 } binary_packet_read_buffer_t;
 
-
 uint32_t magic_bytes_flank_servo = 0xABCD1236;
 typedef struct binary_packet_flank_servo_t {
 	uint32_t magic_bytes;	// 0xABCD1236
@@ -121,6 +120,14 @@ typedef struct binary_packet_reboot_monitor_t {
 	uint32_t reserved1;
 	uint32_t reserved2;	
 } binary_packet_reboot_monitor_t;
+
+// used to repeatedly read from an address, used with ram_data_logger_v2.vhd
+uint32_t magic_bytes_read_repeat = 0xABCD123A;
+typedef struct binary_packet_read_repeat_t {
+	uint32_t magic_bytes;	// 0xABCD123A
+	uint32_t start_address;
+	uint32_t number_of_points;	
+} binary_packet_read_repeat_t;
 
 
 
@@ -163,15 +170,6 @@ void initMemoryMap()
 	// open XADC memory map:
 	map_base_xadc = mmap(0, MAP_SIZE_XADC, PROT_READ | PROT_WRITE, MAP_SHARED, fd_dev_mem, FPGA_MEMORY_START_XADC & ~MAP_MASK_XADC);
 	if(map_base_xadc == (void *) -1) FATAL;
-		
-	// if (addr != 0) {
-	// 	if (val_count == 0) {
-	// 		read_value(addr);
-	// 	}
-	// 	else {
-	// 		write_values(addr, access_type, val, val_count);
-	// 	}
-	// }
 }
 
 void closeMemoryMap()
@@ -233,11 +231,14 @@ void write_value(unsigned long a_addr, int a_type, unsigned long a_value) {
 
 // should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger.vhd
 #define LOGGER_BUFFER_SIZE (1UL<<15)
+// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger_v2.vhd
+#define LOGGER_REPEAT_SIZE (1UL<<13)
 #define LOGGER_BASE_ADDR 0x00100000UL
 #define LOGGER_DATA_OFFSET  (1UL<<19)
 #define LOGGER_START_WRITE_OFFSET  0x1004UL
 
-int16_t data_buffer[LOGGER_BUFFER_SIZE];
+int16_t  data_buffer[LOGGER_BUFFER_SIZE];
+int32_t  data_buffer32[LOGGER_REPEAT_SIZE];
 
 // this can be as long as we want (as long as it fits in the Zynq's RAM)
 // currently sizeof(uint32_t)*(1UL<<20) = 4 MB
@@ -248,22 +249,14 @@ uint32_t data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE];
 #define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
 uint32_t data_buffer_with_fifo[FIFO_LOGGER_BUFFER_SIZE];
 
-void acq_LoggerStartWrite()
-{
-	// writing anything to this register triggers the writing in ram_data_logger.vhd
-	write_value(LOGGER_BASE_ADDR + LOGGER_START_WRITE_OFFSET, 'w', 0);
-}
-
-
-void acq_GetDataFromLogger(uint32_t* size, int16_t* buffer_in)
+void readBuffer(uint32_t* size, int16_t* buffer_in)
 {
     *size = MIN(*size, LOGGER_BUFFER_SIZE);
 
     const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
-    //const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + OSC_CHB_OFFSET);
 
     if (bVerbose)
-    	printf("acq_GetDataFromLogger: reading %u points, starting from address 0x%lX\n", *size, LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
+    	printf("readBuffer: reading %u points, starting from address 0x%lX\n", *size, LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
 
     for (uint32_t i = 0; i < (*size); ++i) {
         buffer_in[i] = (raw_buffer[i % LOGGER_BUFFER_SIZE]);
@@ -272,64 +265,21 @@ void acq_GetDataFromLogger(uint32_t* size, int16_t* buffer_in)
     	printf("buffer_in[0] = %hd\n", buffer_in[0]);
 }
 
-
-// based off acq_GetDataRawV2 in file acq_handler.c
-#define ADC_BUFFER_SIZE             (16*1024)
-
-//int16_t data_buffer2[ADC_BUFFER_SIZE];
-
-void acq_GetDataRawV2_CHA(uint32_t pos, uint32_t* size, int16_t* buffer_in)
+void readRepeat(uint32_t start_address, uint32_t* size, int32_t* buffer_in)
 {
-    *size = MIN(*size, ADC_BUFFER_SIZE);
+    *size = MIN(*size, LOGGER_REPEAT_SIZE);
 
-    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + OSC_CHA_OFFSET);
-    //const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + OSC_CHB_OFFSET);
+    const volatile uint32_t* raw_buffer = (uint32_t*)(map_base + (start_address & MAP_MASK));
+
+    if (bVerbose)
+    	printf("readRepeat: reading %u points, starting from address 0x%X\n", *size, start_address);
 
     for (uint32_t i = 0; i < (*size); ++i) {
-        buffer_in[i] = (raw_buffer[(pos + i) % ADC_BUFFER_SIZE]);
+        buffer_in[i] = *raw_buffer;
     }
 
-}
-
-void acq_GetDataRawV2_CHB(uint32_t pos, uint32_t* size, int16_t* buffer)
-{
-    *size = MIN(*size, ADC_BUFFER_SIZE);
-
-    //const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + OSC_CHA_OFFSET);
-    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + OSC_CHB_OFFSET);
-
-    for (uint32_t i = 0; i < (*size); ++i) {
-        buffer[i] = (raw_buffer[(pos + i) % ADC_BUFFER_SIZE]);
-    }
-    
-}
-
-void acq_MinimumSetup()
-{
-	// start an acquisition with the minimum amount of setup:
-	osc_control_t *osc_control = (osc_control_t*)((char*)map_base + OSC_BASE_ADDR);
-
-	// send a "write pointer reset" command: (it looks like it gets stuck after one acquisition otherwise, but I can't figure out why by reading the fpga code)
-	osc_control->conf = 2;
-	
-	// set trigger source to software:
-	osc_control->trig_source = 1;
-	// send an "arm" command:
-	osc_control->conf = 1;
-	// send a software trigger (I think that this second write is necessary but I am not sure):
-	//usleep(1000);
-	osc_control->trig_source = 1;
-
-	// wait for the ram to fill (this could be done much better by probing a write pointer or some other register...):
-	osc_control->trigger_delay = 16*1024;	// I think that this is essentially the number of samples to write after receiving the trigger.
-	usleep(1000);
-	//usleep(10000);
-
-	// set arm = 0 so that the FPGA stops writing to the RAM while we read it out
-	//osc_control->conf = 0;
-
-	// data should be ready to be read out
-
+    // if (bVerbose)
+    // 	printf("buffer_in[0] = %d\n", buffer_in[0]);
 }
 
 void read_write_loop_minimum()
@@ -884,31 +834,17 @@ static int handleConnection(int connfd) {
 		        		if (bVerbose)
 		        			printf("pPacketReadBuffer->number_of_points = %u (decimal)\n", pPacketReadBuffer->number_of_points);
 
-		        		// do an acquisition
-		        		if (bVerbose)// 
-		        			printf("running acquisition...\n");
 					    struct timespec time_start, time_end;
 					    // clock_gettime(CLOCK_REALTIME, &time_start);
-					    // stuff to be timed would go here
-
-		        		//acq_MinimumSetup();
-		        		//acq_LoggerStartWrite();
-					    // clock_gettime(CLOCK_REALTIME, &time_end);
-					    if (bVerbose)// 
-					    	printf("acq_MinimumSetup(), elapsed = %d seconds + %ld ms\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec)/1000000);
 
 		        		// this should contain the actual data, note that the writing has surely wrapped and the start/end of the data run will be random in the dataset
 		        		// TODO: sync with the end of the acquisition in the buffer.
 		        		clock_gettime(CLOCK_REALTIME, &time_start);
 		        		uint32_t acq_size = MIN(LOGGER_BUFFER_SIZE, pPacketReadBuffer->number_of_points);
-		        		if (bVerbose)// 
-		        			printf("acquisition completed, grabbing %u points....\n", acq_size);
-		        		//acq_GetDataRawV2_CHA(0, &acq_size, data_buffer);
-		        		acq_GetDataFromLogger(&acq_size, data_buffer);
+		        		readBuffer(&acq_size, data_buffer);
 					    clock_gettime(CLOCK_REALTIME, &time_end);
 					    if (bVerbose)
 					    	printf("getdata elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-		        		// for (int k=100; k<140; k++)
 
 		        		// dump this into the TCP socket:
 		        		if (bVerbose)// 
@@ -929,6 +865,53 @@ static int handleConnection(int connfd) {
 	        		} else {
 	        			if (bVerbose)
 	        				printf("Received a buffer read packet, but we have not received the full packet yet.\n");
+
+	        		}
+
+	        	////////////////////////////////////////////////////////////
+	        	// Read a buffer (intended to be used with registers_read.vhd)
+	        	} else if (message_magic_bytes == magic_bytes_read_repeat) {
+
+	        		iRequiredBytes = sizeof(binary_packet_read_repeat_t);
+	        		if (msg_end >= iRequiredBytes) {
+		        		
+		        		struct binary_packet_read_repeat_t * pPacketReadRepeat;
+		        		pPacketReadRepeat = (binary_packet_read_repeat_t*) message_buff;
+
+		        		if (bVerbose)
+		        			printf("Received a read repeat packet.\n");
+		        		if (bVerbose)
+		        			printf("pPacketReadRepeat->start_address = 0x%X (hex)\n", pPacketReadRepeat->start_address);
+		        		if (bVerbose)
+		        			printf("pPacketReadRepeat->number_of_points = %u (decimal)\n", pPacketReadRepeat->number_of_points);
+
+					    struct timespec time_start, time_end;
+					    clock_gettime(CLOCK_REALTIME, &time_start);
+		        		uint32_t acq_size = MIN(LOGGER_REPEAT_SIZE, pPacketReadRepeat->number_of_points);
+		        		readRepeat(pPacketReadRepeat->start_address, &acq_size, data_buffer32);
+					    clock_gettime(CLOCK_REALTIME, &time_end);
+					    if (bVerbose)
+					    	printf("readRepeat elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
+
+		        		// dump this into the TCP socket:
+		        		if (bVerbose)// 
+		        			printf("before socket send()\n");
+		        		clock_gettime(CLOCK_REALTIME, &time_start);
+		        		send(connfd, data_buffer32, (size_t)acq_size*sizeof(int32_t), 0);
+					    clock_gettime(CLOCK_REALTIME, &time_end);
+					    if (bVerbose)
+					    	printf("send() elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
+		        		if (bVerbose)
+		        			printf("socket send() complete\n");
+
+
+		        		// reset our message parsing state variables
+		        		bytes_consumed = sizeof(binary_packet_read_repeat_t);
+		        		bHaveMagicBytes = false;
+		        		iRequiredBytes = sizeof(message_magic_bytes);
+	        		} else {
+	        			if (bVerbose)
+	        				printf("Received a read repeat packet, but we have not received the full packet yet.\n");
 
 	        		}
 

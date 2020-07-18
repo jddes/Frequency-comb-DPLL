@@ -41,9 +41,7 @@ architecture Behavioral of internal_vco is
         s_axis_phase_tvalid : IN STD_LOGIC;
         s_axis_phase_tdata : IN STD_LOGIC_VECTOR(47 DOWNTO 0);  -- phase increments
         m_axis_data_tvalid : OUT STD_LOGIC;
-        m_axis_data_tdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);  -- cos and sine (16 bits signed each)
-        m_axis_phase_tvalid : OUT STD_LOGIC;
-        m_axis_phase_tdata : OUT STD_LOGIC_VECTOR(47 DOWNTO 0)  -- output phase, not used in this module
+        m_axis_data_tdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)  -- cos and sine (16 bits signed each)
         );
     end component;
     signal s_axis_phase_tvalid                    : std_logic                                      := '1';  -- compiler complains otherwise
@@ -78,9 +76,7 @@ begin
         s_axis_phase_tvalid     => s_axis_phase_tvalid,
         s_axis_phase_tdata      => frequency,
         m_axis_data_tvalid      => open,
-        m_axis_data_tdata       => lo_dds_m_axis_data_tdata,
-        m_axis_phase_tvalid     => open,
-        m_axis_phase_tdata      => open
+        m_axis_data_tdata       => lo_dds_m_axis_data_tdata
     );
     DDS_cosine_tmp  <= lo_dds_m_axis_data_tdata(15 downto 0);
     DDS_sine_tmp    <= lo_dds_m_axis_data_tdata(31 downto 16);

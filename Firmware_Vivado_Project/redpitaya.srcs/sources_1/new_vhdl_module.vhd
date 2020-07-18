@@ -26,13 +26,13 @@ begin
     ---- FSM process example
     --process (clk)
     --begin
-    --  if rising_edge(clk) then
-    --      case FSM_state is
-    --          when STATE_IDLE =>
-    --          when others =>
-    --              FSM_state <= STATE_IDLE;
-    --      end case;
-    --  end if;
+    --    if rising_edge(clk) then
+    --        case FSM_state is
+    --            when STATE_IDLE =>
+    --            when others =>
+    --                FSM_state <= STATE_IDLE;
+    --        end case;
+    --    end if;
     --end process;
 
 end;

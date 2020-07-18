@@ -4,9 +4,10 @@ use ieee.numeric_std.all;
 
 
 entity registers_read  is
---Generic (
---	DATA_WIDTH			: integer := 16;
---);
+Generic (
+	LOGGER_WIDTH : integer := 32
+    
+);
 port (
 	
     clk                                    : in  std_logic;
@@ -26,20 +27,21 @@ port (
     DAC0_out                               : in  std_logic_vector(32-1 downto 0);
     DAC1_out                               : in  std_logic_vector(32-1 downto 0);
     DAC2_out                               : in  std_logic_vector(32-1 downto 0);
+    
+    -- these get written to ram_data_logger_v2
+    clk_enable_logger                      : in  std_logic;
+    new_data_chunk                         : in  std_logic;
+    data_logger                            : in  std_logic_vector(LOGGER_WIDTH-1 downto 0);
 
 
     -- internal configuration bus
     sys_addr                               : in  std_logic_vector(32-1 downto 0);   -- bus address
     sys_wdata                              : in  std_logic_vector(32-1 downto 0);   -- bus write data
-    sys_sel                                : in  std_logic_vector(4-1 downto 0);   -- bus write byte select
     sys_wen                                : in  std_logic;   -- bus write enable
     sys_ren                                : in  std_logic;   -- bus read enable
     sys_rdata                              : out std_logic_vector(32-1 downto 0);  -- bus read data
     sys_err                                : out std_logic;  -- bus error indicator
     sys_ack                                : out std_logic   -- bus acknowledge signal
-    
-    
-
 	);
 end entity;
 
@@ -54,110 +56,47 @@ architecture Behavioral of registers_read is
     signal DAC1_out_reg                : std_logic_vector(32-1 downto 0) := (others => '0');
     signal DAC2_out_reg                : std_logic_vector(32-1 downto 0) := (others => '0');
 
-    -- this is for a throughput test, a simple counter at 100 MHz
-    signal counter_for_throughput_test  : std_logic_vector(32-1 downto 0) := (others => '0');
-    signal data_counter_for_throughput_test : std_logic_vector(32-1 downto 0) := (others => '0');
-    signal bWritesEnabled : std_logic := '0';
 
-    -- coregen fifo
-    component fifo_generator_0 
-    PORT (
-        clk : IN STD_LOGIC;
-        srst : IN STD_LOGIC;
-        din : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        wr_en : IN STD_LOGIC;
-        rd_en : IN STD_LOGIC;
-        dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        full : OUT STD_LOGIC;
-        empty : OUT STD_LOGIC;
-        data_count : OUT STD_LOGIC_VECTOR(10 DOWNTO 0);
-        prog_empty : OUT STD_LOGIC
-    );
-    END component;
 
-    -- fifo signals
+    ---- ram_data_logger_v2 signals
 
-    signal fifo_srst       : std_logic := '0';
-    signal fifo_wr_en      : std_logic := '0';
-    signal fifo_rd_en      : std_logic := '0';
-    signal fifo_prog_empty : std_logic := '0';
+    -- Data logger rate:
+    -- 32 bits/input word * 12 words/clk enable, ~100 clk enables/sec = 38.4e3 bits/sec = 1200 words/sec, so 10 address bits is just shy of 1 sec of recording
+    -- in terms of BlockRAM (38K), assuming that we using use 32 bits wide (not sure how efficiently that gets packed in, so I assume the worst case)
+    -- 2^13 adresses / 1000 words per BRAM = 2^3 = 8 BRAMS
+    constant ADDRESS_WIDTH : integer := 13;
+    constant CHUNK_SIZE    : integer := 12; -- 12 words per clk enable at the input of mux_phase_to_logger.vhd
 
-    signal fifo_dout : std_logic_vector(32-1 downto 0) := (others => '0');
-    signal fifo_data_count : std_logic_vector(11-1 downto 0) := (others => '0');
+    -- Inputs
+    signal start_write        : std_logic                                  := '0';
+    signal start_read         : std_logic                                  := '0';
+    signal read_ack           : std_logic                                  := '0';
+    signal read_start_address : std_logic_vector(ADDRESS_WIDTH-1 downto 0) := (others => '0');
+    -- Outputs
+    signal read_data     : std_logic_vector( LOGGER_WIDTH-1 downto 0);
+    signal write_address : std_logic_vector(ADDRESS_WIDTH-1 downto 0);
 
-    signal fifo_data_count_max : std_logic_vector(11-1 downto 0) := (others => '0');
-    signal fifo_rd_en_d1  : std_logic := '0';
+
 begin
 
-    -- fifo for continuous logging
-    -- max performance seems to be around ~5e6 reads/sec, 32 bits for each read
-    -- 2 MS/s at 32 bits/sample, fifo_data_count reaches around 400 worst case.
-    fifo_generator_0_inst : fifo_generator_0 
-    port map (
-        clk        => clk,
-        -- write port
-        srst       => fifo_srst,
-        din        => data_counter_for_throughput_test,
-        wr_en      => fifo_wr_en,
-        
-        -- read port
-        rd_en      => fifo_rd_en,
-        dout       => fifo_dout,
-        
-        -- status signals
-        full       => open,
-        empty      => open,    -- we don't use this, instead we only use the prog_empty signal and read 10 samples at a time to minimize the overhead of checking fifo status
-        data_count => fifo_data_count,
-        prog_empty => fifo_prog_empty
+    ram_data_logger_inst : entity work.ram_data_logger_v2
+    generic map (
+        ADDRESS_WIDTH => ADDRESS_WIDTH,
+        DATA_WIDTH    => LOGGER_WIDTH,
+        CHUNK_SIZE    => CHUNK_SIZE
+    ) port map (
+        clk                => clk,
+        data_in            => data_logger,
+        data_in_clk_enable => clk_enable_logger,
+        new_data_chunk     => new_data_chunk,
+        start_write        => start_write,
+        start_read         => start_read,
+        read_ack           => read_ack,
+        wraparound_mode    => '1',
+        read_data          => read_data,
+        write_address      => write_address,
+        read_start_address => read_start_address
     );
-
-    -- process which controls the fifo (also fills the fifo with test data for the throughput test)
-    process (clk)
-    begin
-        if rising_edge(clk) then
-            -- fills the fifo with test data for the throughput test
-            if fifo_srst = '1' then
-                fifo_wr_en <= '0';
-                data_counter_for_throughput_test <= (others => '0');
-            else
-                -- 100 MHz/50 = 2 MHz data rate
-                -- 100 MHz/25 = 4 MHz data rate
-                if unsigned(counter_for_throughput_test) < 25-1 then
-                    counter_for_throughput_test <= std_logic_vector(unsigned(counter_for_throughput_test) + 1);
-                    fifo_wr_en <= '0';
-                else
-                    counter_for_throughput_test <= (others => '0');
-                    if bWritesEnabled = '1' then
-                        data_counter_for_throughput_test <= std_logic_vector(unsigned(data_counter_for_throughput_test) + 1);
-                    else
-                        data_counter_for_throughput_test <= (others => '0');
-                    end if;
-                    fifo_wr_en <= bWritesEnabled;
-                end if;
-                
-            end if;
-
-
-
-            -- running max of the data count:
-            if fifo_srst = '1' then
-                fifo_data_count_max <= (others => '0');
-            else
-                if unsigned(fifo_data_count) > unsigned(fifo_data_count_max) then
-                    fifo_data_count_max <= fifo_data_count;
-                end if;
-            end if;
-
-            -- delay line from sys_ren (at the right address) to sys_ack which matches the read latency
-            if sys_ren = '1' and sys_addr(20-1 downto 0) = x"00039" then
-                fifo_rd_en <= '1';
-            else
-                fifo_rd_en <= '0';
-            end if;
-            fifo_rd_en_d1 <= fifo_rd_en;
-
-        end if;
-    end process;
 
     -----------------------------------------
     -- registers
@@ -168,22 +107,22 @@ begin
         if rising_edge(clk) then
             sys_err <= '0';
             sys_en := sys_wen or sys_ren;
+
+            -- default
+            read_ack <= '0';
+            sys_rdata <=  (others => '0');
             
 
             -- Write
             if sys_wen = '1' then
-                case sys_addr(20-1 downto 0) is
-                    when x"00041" => bWritesEnabled   <= sys_wdata(0);
-                    when x"00042" => fifo_srst        <= sys_wdata(0);
+                case sys_addr(16-1+2 downto 2) is
+                    when x"00041" => start_write        <= sys_wdata(0);
+                    when x"00042" => start_read         <= sys_wdata(0);
+                    when x"00043" => read_start_address <= sys_wdata(ADDRESS_WIDTH-1 downto 0);
 
                     when others => 
                 end case;
             end if;
-
-            -- this is for a throughput test, a simple counter at 100 MHz
-            --counter_for_throughput_test <= std_logic_vector(unsigned(counter_for_throughput_test) + 1);
-
-
 
             -- Read
             -------------------------------------------------------------
@@ -191,7 +130,7 @@ begin
             -- because it is used inside the DPLL module which has a divide by four compared to the Zynq addresses.
             -- This is to allow re-using the same addresses as the legacy code (avoids changing every address manually)
             if sys_ren = '1' then
-                case sys_addr(20-1 downto 0) is
+                case sys_addr(16-1+2 downto 2) is
 
                     when x"00025" =>
                         sys_rdata <= status_flags;
@@ -234,14 +173,9 @@ begin
                     when x"00037" => sys_ack <= sys_en; sys_rdata <= DAC2_out_reg(32-1 downto 0);             -- DAC 2
 
 
-                    --when x"00037" => sys_ack <= sys_en; sys_rdata <= counter_for_throughput_test;             -- this is for a throughput test, a simple counter at 100 MHz
-
-                    -- FIFO addresses
-                    when x"00038" => sys_ack <= sys_en;     sys_rdata <= std_logic_vector(to_unsigned(0, 31)) &  fifo_prog_empty;             -- fifo has at least 10 samples to be read?
-                    --when x"00039" => sys_ack <= fifo_rd_en_d1; sys_rdata <= fifo_dout;             -- fifo read
-                    when x"00039" => sys_ack <= sys_en; sys_rdata <= fifo_dout;             -- fifo read
-
-                    when x"00040" => sys_ack <= sys_en;     sys_rdata <= std_logic_vector(resize(unsigned(fifo_data_count_max), 32));             -- max of fifo data_count
+                    when x"00044" => sys_ack <= sys_en; sys_rdata <= read_data;     read_ack <= '1';
+                    when x"00045" => sys_ack <= sys_en; sys_rdata(write_address'range) <= write_address;
+                    
 
                     when others   => sys_ack <= sys_en;     sys_rdata <=  (others => '0');
                 end case;
@@ -251,5 +185,6 @@ begin
 
         end if;
     end process;
+
 
 end;

@@ -351,6 +351,14 @@ class SpectrumWidget(QtGui.QWidget):
         if self.bDisplayTiming == True:
             print('Elapsed time (Compute complex baseband) = %f' % (time.perf_counter()-start_time))
 
+        with open("iq_out.bin", "ab") as f:
+            f.write(np.mean(complex_baseband).tobytes())
+
+        if not hasattr(self, 't_start'):
+            self.t_start = time.perf_counter()
+        with open("ts_out.bin", "ab") as f:
+            f.write(np.array(time.perf_counter()-self.t_start).tobytes())
+
         self.handleComplexBaseband(complex_baseband, plot_type)
         
     def handleComplexBaseband(self, complex_baseband, plot_type):

@@ -31,31 +31,29 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity multiplexer_NbitsxMsignals_to_Nbits is
-	Generic (
-		N_bits_per_signal : integer := 17
-		
-		);
-    Port ( 
-           clk : in  STD_LOGIC;
-			  
-			  -- If the input signal contains a clock enable, we just need to concatenate it with the data bits to ensure it gets the same delay as the signal
-           in0 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in1 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in2 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in3 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in4 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in5 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in6 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-           in7 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-			  
-			  in8 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-			  in9 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-			  in10 : in  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0);
-			  
-           selector : in  STD_LOGIC_VECTOR (4 downto 0);
-           selected_output : out  STD_LOGIC_VECTOR (N_bits_per_signal-1 downto 0)
-			  
-			  );
+generic (
+	N_bits_per_signal : integer := 17
+); port ( 
+	clk             : in  std_logic;
+	
+	-- If the input signal contains a clock enable, we just need to concatenate it with the data bits to ensure it gets the same delay as the signal
+	in0             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in1             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in2             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in3             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in4             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in5             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in6             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in7             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	
+	in8             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in9             : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	in10            : in  std_logic_vector (N_bits_per_signal-1 downto 0);
+	
+	selector        : in  std_logic_vector (4 downto 0);
+	selected_output : out std_logic_vector (N_bits_per_signal-1 downto 0)
+
+);
 end multiplexer_NbitsxMsignals_to_Nbits;
 
 architecture Behavioral of multiplexer_NbitsxMsignals_to_Nbits is

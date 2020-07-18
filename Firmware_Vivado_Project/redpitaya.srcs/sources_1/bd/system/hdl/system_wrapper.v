@@ -1,7 +1,7 @@
 //Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-//Date        : Sun Aug 25 04:10:36 2019
+//Date        : Sat Jul 11 20:42:41 2020
 //Host        : jdbureau running 64-bit major release  (build 9200)
 //Command     : generate_target system_wrapper.bd
 //Design      : system_wrapper
@@ -172,7 +172,8 @@ module system_wrapper
     gpio_io_o,
     reg_to_axi1,
     reg_to_axi2,
-    reg_to_axi3);
+    reg_to_axi3,
+    to_uart);
   inout [14:0]DDR_addr;
   inout [2:0]DDR_ba;
   inout DDR_cas_n;
@@ -332,10 +333,11 @@ module system_wrapper
   output [0:0]clk_ext_bufg;
   input clk_ext_in;
   output clk_to_adc;
-  output [1:0]gpio_io_o;
+  output [2:0]gpio_io_o;
   input [31:0]reg_to_axi1;
   input [31:0]reg_to_axi2;
   input [31:0]reg_to_axi3;
+  output [9:0]to_uart;
 
   wire [14:0]DDR_addr;
   wire [2:0]DDR_ba;
@@ -496,10 +498,11 @@ module system_wrapper
   wire [0:0]clk_ext_bufg;
   wire clk_ext_in;
   wire clk_to_adc;
-  wire [1:0]gpio_io_o;
+  wire [2:0]gpio_io_o;
   wire [31:0]reg_to_axi1;
   wire [31:0]reg_to_axi2;
   wire [31:0]reg_to_axi3;
+  wire [9:0]to_uart;
 
   system system_i
        (.DDR_addr(DDR_addr),
@@ -664,5 +667,6 @@ module system_wrapper
         .gpio_io_o(gpio_io_o),
         .reg_to_axi1(reg_to_axi1),
         .reg_to_axi2(reg_to_axi2),
-        .reg_to_axi3(reg_to_axi3));
+        .reg_to_axi3(reg_to_axi3),
+        .to_uart(to_uart));
 endmodule

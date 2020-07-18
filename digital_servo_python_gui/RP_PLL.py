@@ -35,6 +35,7 @@ class RP_PLL_device():
     MAGIC_BYTES_WRITE_REG       = 0xABCD1233
     MAGIC_BYTES_READ_REG        = 0xABCD1234
     MAGIC_BYTES_READ_BUFFER     = 0xABCD1235
+    MAGIC_BYTES_READ_REPEAT     = 0xABCD123A
     
     MAGIC_BYTES_WRITE_FILE      = 0xABCD1237
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
@@ -198,9 +199,15 @@ class RP_PLL_device():
             number_of_points = self.MAX_SAMPLES_READ_BUFFER
             print("number of points clamped to %d." % number_of_points)
 
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points)    # last value is reserved
+        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points) # address is ignored by monitor-tcp.c
         self.send(packet_to_send)
         return self.read(int(2*number_of_points))
+
+    def read_repeat(self, address, n_repeats):
+        """ these are 32-bits reads """
+        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REPEAT, self.FPGA_BASE_ADDR+address, n_repeats)
+        self.send(packet_to_send)
+        return self.read(int(4*n_repeats))
 
     #######################################################
     # Functions used to access Zynq registers, but which do not interact directly with the socket,
