@@ -138,7 +138,7 @@ begin
             if sys_wen = '1' then
                 case sys_addr(20-1 downto 0) is
                     -- this acts as a one cycle-long trigger since the default value is 0
-                    when x"1004" => start_write <= '1'; 
+                    when x"01004" => start_write <= '1'; 
                     --when x"000" => amplitude                     <= sys_wdata(amplitude'range);
 
                     when others => 

@@ -96,6 +96,7 @@ class SuperLaserLand_JD_RP:
 	def __init__(self, controller = None):
 		self.logger = logging.getLogger(__name__)
 		self.logger_name = ':SuperLaserLand_JD_RP'
+		self.bDisplayTiming = False
 
 		strNameTemplate = time.strftime("data_logging\\%m_%d_%Y_%H_%M_%S_")
 		# Create the subdirectory if it doesn't exist:
@@ -134,6 +135,45 @@ class SuperLaserLand_JD_RP:
 		data_buffer = self.dev.read_Zynq_buffer_int16(Num_samples)
 		buffer_numpy = np.fromstring(data_buffer, dtype=np.int16)
 		return buffer_numpy
+
+	def getADCdata(self, adc_number, N_samples):
+		return self.getDataSafe(self.LOGGER_MUX['ADC%d' % adc_number], int(N_samples))
+
+	def getIQdata(self, iq_channel, N_samples):
+		raw_data = self.getDataSafe(self.LOGGER_MUX['IQ%d' % iq_channel], int(N_samples))
+		if raw_data is None:
+			return None
+		with open("out_raw.bin", "wb") as f:
+			f.write(raw_data.tobytes())
+		ts_as_int16 = raw_data[:4]
+		raw_data = raw_data[4:]
+		data_real = raw_data[0::2]
+		data_imag = raw_data[1::2]
+		# make sure real and imag are the same size:
+		N_min = min(len(data_real), len(data_imag))
+		data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
+		return data_complex
+
+	def getDataSafe(self, selector, N_samples):
+		tictoc(self)
+		try:
+			data = self.getDataFromLogger(selector, int(N_samples))
+			return data
+		except RP_PLL.CommsLoggeableError as e:
+			print('RP_PLL.CommsLoggeableError')
+			# log exception (TODO)
+			# logging.error("Exception occurred", exc_info=True)
+			return None
+
+		except RP_PLL.CommsError as e:
+			print('RP_PLL.CommsError')
+			# do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
+			return None
+
+		finally:
+			# Tear-down, whether or not an exception occured: Signal to other functions that they can use the DDR2 logger
+			tictoc(self, '')
+			pass
 	
 	def set_dac_offset(self, dac_number, offset):
 		""" dac_number can be either 0 or 1 """

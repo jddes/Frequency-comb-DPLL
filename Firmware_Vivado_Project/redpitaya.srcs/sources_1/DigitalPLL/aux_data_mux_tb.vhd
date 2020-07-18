@@ -26,15 +26,12 @@ architecture behavior of aux_data_mux_tb is
     constant ADDRESS_WIDTH : integer := 8;
     constant DATA_WIDTH    : integer := 16;
     -- Inputs
-    signal data_in            : std_logic_vector(16-1 downto 0) := (others => '0');
-    signal data_in_clk_enable : std_logic                       := '0';
     signal sys_addr           : std_logic_vector(32-1 downto 0) := (others => '0');
     signal sys_wdata          : std_logic_vector(32-1 downto 0) := (others => '0');
     signal sys_sel            : std_logic_vector(4-1 downto 0)  := (others => '0');
     signal sys_wen            : std_logic                       := '0';
     signal sys_ren            : std_logic                       := '0';
     -- Outputs
-    signal is_writing : std_logic;
     signal sys_rdata  : std_logic_vector(32-1 downto 0);
     signal sys_err    : std_logic;
     signal sys_ack    : std_logic;
@@ -65,7 +62,7 @@ begin
         clk                => clk,
         data_in            => data_out,
         data_in_clk_enable => clk_enable_out,
-        is_writing         => is_writing,
+        is_writing         => write_mode,
         sys_addr           => sys_addr,
         sys_wdata          => sys_wdata,
         sys_sel            => sys_sel,
@@ -124,7 +121,7 @@ begin
         wait until rising_edge(clk);
             sys_addr <= x"0000_0000";
             sys_wen <= '0';
-        wait for clk_period*(6*333-2+1); -- this should make the relative timing being sync_in and writing slide by 1 clk cycle at every attempt
+        wait for clk_period*(6*833-2+1+1); -- this should make the relative timing being sync_in and writing slide by 1 clk cycle at every attempt
 
     end process;
 end;

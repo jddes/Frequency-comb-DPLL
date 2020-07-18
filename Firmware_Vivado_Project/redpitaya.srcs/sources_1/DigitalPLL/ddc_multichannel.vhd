@@ -26,14 +26,16 @@ port (
     freq4_in : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
 
     -- IQ outputs, for diagnositcs purposes
-    -- each of these contain in sequence: SYNC, DATA_I, DATA_Q, DONT_CARE, DONT_CARE, DONT_CARE, where SYNC are sync magic bytes (0xABCD) and DONT_CARE are to be ignored
-    -- clk_enable_IQ_out strobes this pattern periodically: 1, 1, 1, 0, 0, 0, for an average rate of clk/2.
+    -- each of these contain in sequence: DATA_I, DATA_Q, DONT_CARE, DONT_CARE, DONT_CARE, DONT_CARE, where DONT_CARE are to be ignored
+    -- clk_enable_IQ_out strobes this pattern periodically: 1, 1, 0, 0, 0, 0, for an average rate of clk/2.
+    -- sync_IQ_out strobes this pattern periodically: 1, 0, 0, 0, 0, 0, and should be used to sync up the data saving with the I value
     -- the IQ data's rate is clk/6
     clk_enable_IQ_out : out std_logic;
-    IQ1_out : out std_logic_vector(IQ_WIDTH-1 downto 0);
-    IQ2_out : out std_logic_vector(IQ_WIDTH-1 downto 0);
-    IQ3_out : out std_logic_vector(IQ_WIDTH-1 downto 0);
-    IQ4_out : out std_logic_vector(IQ_WIDTH-1 downto 0);
+    sync_IQ_out       : out std_logic;
+    IQ1_out           : out std_logic_vector(IQ_WIDTH-1 downto 0);
+    IQ2_out           : out std_logic_vector(IQ_WIDTH-1 downto 0);
+    IQ3_out           : out std_logic_vector(IQ_WIDTH-1 downto 0);
+    IQ4_out           : out std_logic_vector(IQ_WIDTH-1 downto 0);
 
     -- debugging outputs
     DDS_cosine1    : out std_logic_vector(16-1 downto 0);
@@ -64,9 +66,10 @@ architecture Behavioral of ddc_multichannel is
 
     -- small FSM to mutliplex the IQ data to the diagnostics output:
     constant SYNC_BYTES : std_logic_vector(IQ_WIDTH-1 downto 0) := x"ABCD";
-    type state_DIAG_type is (STATE_DIAG_IDLE, STATE_DIAG_SYNC, STATE_DIAG_I, STATE_DIAG_Q);
-    signal FSM_diag_state      : state_DIAG_type := STATE_DIAG_IDLE;
+    type state_DIAG_type is (STATE_DIAG_I, STATE_DIAG_Q);
+    signal FSM_diag_state      : state_DIAG_type := STATE_DIAG_I;
     signal clk_enable_IQ_int : std_logic := '0';
+    signal sync_IQ_int : std_logic := '0';
     signal IQ1_int : std_logic_vector(IQ_WIDTH-1 downto 0) := (others => '0');
     signal IQ2_int : std_logic_vector(IQ_WIDTH-1 downto 0) := (others => '0');
     signal IQ3_int : std_logic_vector(IQ_WIDTH-1 downto 0) := (others => '0');
@@ -192,39 +195,35 @@ begin
     begin
         if rising_edge(clk) then
             clk_enable_IQ_int <= '0'; -- default outputs
-            IQ1_int <= SYNC_BYTES;
-            IQ2_int <= SYNC_BYTES;
-            IQ3_int <= SYNC_BYTES;
-            IQ4_int <= SYNC_BYTES;
+            sync_IQ_int <= '0';
 
             case FSM_diag_state is
-                when STATE_DIAG_IDLE =>
-                    if lpf_clk_enable = '1' then
-                        clk_enable_IQ_int <= '1';
-                        FSM_diag_state <= STATE_DIAG_I;
-                    end if;
                 when STATE_DIAG_I =>
-                    clk_enable_IQ_int <= '1';
+                    clk_enable_IQ_int <= lpf_clk_enable;
+                    sync_IQ_int <= lpf_clk_enable;
                     IQ1_int <= data_lpf1_real;
                     IQ2_int <= data_lpf2_real;
                     IQ3_int <= data_lpf3_real;
                     IQ4_int <= data_lpf4_real;
-                    FSM_diag_state <= STATE_DIAG_Q;
+                    if lpf_clk_enable = '1' then
+                        FSM_diag_state <= STATE_DIAG_Q;
+                    end if;
                 when STATE_DIAG_Q =>
                     clk_enable_IQ_int <= '1';
                     IQ1_int <= data_lpf1_imag;
                     IQ2_int <= data_lpf2_imag;
                     IQ3_int <= data_lpf3_imag;
                     IQ4_int <= data_lpf4_imag;
-                    FSM_diag_state <= STATE_DIAG_IDLE;
+                    FSM_diag_state <= STATE_DIAG_I;
                 when others =>
-                    FSM_diag_state <= STATE_DIAG_IDLE;
+                    FSM_diag_state <= STATE_DIAG_I;
             end case;
             
         end if;
     end process;
 
     clk_enable_IQ_out <= clk_enable_IQ_int;
+    sync_IQ_out <= sync_IQ_int;
     IQ1_out <= IQ1_int;
     IQ2_out <= IQ2_int;
     IQ3_out <= IQ3_int;

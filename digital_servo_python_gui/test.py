@@ -125,7 +125,7 @@ class Test(QtWidgets.QWidget):
                 continue
             # fs = 125e6
             # adc_data = 0.1*np.cos(2*np.pi*15e6/125e6*np.linspace(0, N-1, N)) + 0.01*np.random.randn(N)
-            adc_data = self.getADCdata(adc_channel_id+1, N_ADC) # adc numbers are 1-based
+            adc_data = self.sl.getADCdata(adc_channel_id+1, N_ADC) # adc numbers are 1-based
             # adc_data = self.getIQdata(1, N)
             if adc_data is not None:
                 if bAutoRefresh1:
@@ -139,59 +139,9 @@ class Test(QtWidgets.QWidget):
             if not self.pts_settings[iq_channel_id]["autorefresh"]:
                 continue
             N = self.pts_settings[iq_channel_id]["pts_IQ"]
-            complex_baseband = self.getIQdata(iq_channel_id+1, N) # ids are 1-based here too
+            complex_baseband = self.sl.getIQdata(iq_channel_id+1, N) # ids are 1-based here too
             # complex_baseband = 0.1*np.exp(1j*np.linspace(0, 2*np.pi, N)) + 0.01*np.random.randn(N) + 0.01*1j*np.random.randn(N)
             self.perChannelEmitters[iq_channel_id].sig_new_iq_data.emit(complex_baseband)
-
-    def getADCdata(self, adc_number, N_samples):
-        return self.getDataSafe(self.sl.LOGGER_MUX['ADC%d' % adc_number], int(N_samples))
-
-    def getIQdata(self, iq_channel, N_samples):
-        raw_data = self.getDataSafe(self.sl.LOGGER_MUX['IQ%d' % iq_channel], int(N_samples))
-        if raw_data is None:
-            return None
-        with open("out_raw.bin", "wb") as f:
-            f.write(raw_data.tobytes())
-        sync_bytes = bin_conv.interpret_as_signed(0xABCD, 16)
-        sync_counts0 = np.sum(raw_data[0::3] == sync_bytes)
-        sync_counts1 = np.sum(raw_data[1::3] == sync_bytes)
-        sync_counts2 = np.sum(raw_data[2::3] == sync_bytes)
-        if sync_counts0 >= sync_counts1 and sync_counts0 >= sync_counts2:
-            data_real = raw_data[1::3]
-            data_imag = raw_data[2::3]
-        elif sync_counts1 >= sync_counts2:
-            data_real = raw_data[2::3]
-            data_imag = raw_data[3::3]
-        else: # sync is in raw_data[2]
-            data_real = raw_data[0::3]
-            data_imag = raw_data[1::3]
-        # make sure real and imag are the same size:
-        N_min = min(len(data_real), len(data_imag))
-        data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
-        # return data_real
-        # return data_imag
-        return data_complex
-
-    def getDataSafe(self, selector, N_samples):
-        tictoc(self)
-        try:
-            data = self.sl.getDataFromLogger(selector, int(N_samples))
-            return data
-        except RP_PLL.CommsLoggeableError as e:
-            print('RP_PLL.CommsLoggeableError')
-            # log exception (TODO)
-            # logging.error("Exception occurred", exc_info=True)
-            return None
-
-        except RP_PLL.CommsError as e:
-            print('RP_PLL.CommsError')
-            # do not log exception (because it's simply an obvious follow-up to a previous one, and we don't want to fill up the log with repeated information)
-            return None
-
-        finally:
-            # Tear-down, whether or not an exception occured: Signal to other functions that they can use the DDR2 logger
-            tictoc(self, '')
-            pass
 
     def setupADCclock(self):
         # Valid VCO range is 600 MHz-1600 MHz according to DS181

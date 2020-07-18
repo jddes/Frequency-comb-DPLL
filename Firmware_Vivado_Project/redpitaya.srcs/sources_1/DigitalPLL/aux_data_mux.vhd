@@ -9,7 +9,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity aux_data_mux is
 	Generic (
 		OUTPUT_WIDTH : integer := 16 -- can't really change this without changing the implementation inside
-	) Port (
+	); Port (
 		clk              : in  std_logic;
 		write_mode       : in  std_logic;
 		clk_enable_in    : in  std_logic;

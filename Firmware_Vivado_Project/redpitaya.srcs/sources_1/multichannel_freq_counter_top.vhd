@@ -46,12 +46,12 @@ architecture Behavioral of multichannel_freq_counter_top is
 
     signal phi_clk_enable : std_logic := '0';
     signal phi1, phi2, phi3, phi4 : std_logic_vector(PHASE_WIDTH-1 downto 0) := (others => '0');
-    signal iq_clk_enable : std_logic := '0';
+    signal iq_clk_enable, iq_sync : std_logic := '0';
     signal IQ1, IQ2, IQ3, IQ4 : std_logic_vector(IQ_WIDTH-1 downto 0) := (others => '0');
 
     signal DACout1_int, DACout2_int : std_logic_vector(DACout1'length-1 downto 0) := (others => '0');
 
-    signal selected_output : std_logic_vector(LoggerData'length+1-1 downto 0) := (others => '0');
+    signal selected_output : std_logic_vector(LoggerData'length+2-1 downto 0) := (others => '0');
 
     -- config registers:
     signal freq1_in : std_logic_vector(FREQ_WIDTH-1 downto 0) := (others => '0');
@@ -93,6 +93,7 @@ begin
         freq3_in          => freq3_in,
         freq4_in          => freq4_in,
         clk_enable_IQ_out => iq_clk_enable,
+        sync_IQ_out       => iq_sync,
         IQ1_out           => IQ1,
         IQ2_out           => IQ2,
         IQ3_out           => IQ3,
@@ -129,26 +130,35 @@ begin
     -- mux the logger outputs
     multiplexer_NbitsxMsignals_to_Nbits_inst_stage1 : entity work.multiplexer_NbitsxMsignals_to_Nbits
     generic map (
-        N_bits_per_signal => LoggerData'length+1 -- 1 more signal for the clk enable
+        N_bits_per_signal => LoggerData'length+2 -- 1 more signal for the clk enable, and 2 more for the sync
     ) port map (
         clk             => clk,
-        in0             => ('1' & std_logic_vector(resize(signed(data1_in), LoggerData'length))),
-        in1             => ('1' & std_logic_vector(resize(signed(data2_in), LoggerData'length))),
-        in2             => (iq_clk_enable & IQ1),
-        in3             => (iq_clk_enable & IQ2),
-        in4             => (iq_clk_enable & IQ3),
-        in5             => (iq_clk_enable & IQ4),
-        in6             => ('1', others => '0'),
-        in7             => ('1', others => '0'),
-        in8             => ('1', others => '0'),
-        in9             => ('1', others => '0'),
-        in10            => ('1', others => '0'),
+        in0             => ('1' & '1' & std_logic_vector(resize(signed(data1_in), LoggerData'length))),
+        in1             => ('1' & '1' & std_logic_vector(resize(signed(data2_in), LoggerData'length))),
+        in2             => (iq_sync & iq_clk_enable & IQ1),
+        in3             => (iq_sync & iq_clk_enable & IQ2),
+        in4             => (iq_sync & iq_clk_enable & IQ3),
+        in5             => (iq_sync & iq_clk_enable & IQ4),
+        in6             => ('1', '1', others => '0'),
+        in7             => ('1', '1', others => '0'),
+        in8             => ('1', '1', others => '0'),
+        in9             => ('1', '1', others => '0'),
+        in10            => ('1', '1', others => '0'),
         selector        => logger_mux_selector,
         selected_output => selected_output
     );
-    LoggerData_clk_enable <= selected_output(LoggerData'length-1+1);
-    LoggerData            <= selected_output(LoggerData'range);
-
+    -- this mux is used both for adding in a timestamp at the start of every data packet going to the logger,
+    -- and also making sure that the first point that we commit to the logger is always I from the IQ stream
+    aux_data_mux_inst : entity work.aux_data_mux
+    port map (
+        clk            => clk,
+        write_mode     => LoggerIsWriting,
+        clk_enable_in  => selected_output(LoggerData'length-1+1),
+        sync_in        => selected_output(LoggerData'length-1+2),
+        data_in        => selected_output(LoggerData'range),
+        clk_enable_out => LoggerData_clk_enable,
+        data_out       => LoggerData
+    );
 
     -------------------------------------------------
     -- config registers

@@ -36,6 +36,7 @@ architecture behavior of ddc_multichannel_tb is
     signal IQ3_out           : std_logic_vector(IQ_WIDTH-1 downto 0);
     signal IQ4_out           : std_logic_vector(IQ_WIDTH-1 downto 0);
     signal clk_enable_out    : std_logic;
+    signal sync_IQ_out       : std_logic;
     signal phi1              : std_logic_vector(PHASE_WIDTH-1 downto 0);
     signal phi2              : std_logic_vector(PHASE_WIDTH-1 downto 0);
     signal phi3              : std_logic_vector(PHASE_WIDTH-1 downto 0);
@@ -45,7 +46,6 @@ architecture behavior of ddc_multichannel_tb is
     signal I2, Q2 : signed(IQ_WIDTH-1 downto 0) := (others => '0');
     signal I3, Q3 : signed(IQ_WIDTH-1 downto 0) := (others => '0');
     signal I4, Q4 : signed(IQ_WIDTH-1 downto 0) := (others => '0');
-    signal expected : integer := 0;
     -- Clock period definition
     constant clk_period : time := 5 ns;
     constant clk_times_two_period : time := 2.5 ns;
@@ -75,6 +75,7 @@ begin
         IQ3_out           => IQ3_out,
         IQ4_out           => IQ4_out,
         clk_enable_out    => clk_enable_out,
+        sync_IQ_out       => sync_IQ_out,
         phi1              => phi1,
         phi2              => phi2,
         phi3              => phi3,
@@ -102,21 +103,16 @@ begin
     begin
         if rising_edge(clk) then
             if clk_enable_IQ_out = '1' then
-                if IQ1_out=x"ABCD" and IQ2_out=x"ABCD" and IQ3_out=x"ABCD" and IQ4_out=x"ABCD" then
-                    -- this is the sync bytes, ignore
-                    expected <= 1;
-                elsif expected=1 then
+                if sync_IQ_out='1' then
                     I1 <= signed(IQ1_out);
                     I2 <= signed(IQ2_out);
                     I3 <= signed(IQ3_out);
                     I4 <= signed(IQ4_out);
-                    expected <= 2;
-                elsif expected=2 then
+                else
                     Q1 <= signed(IQ1_out);
                     Q2 <= signed(IQ2_out);
                     Q3 <= signed(IQ3_out);
                     Q4 <= signed(IQ4_out);
-                    expected <= 0;
                 end if;
             end if;
         end if;
