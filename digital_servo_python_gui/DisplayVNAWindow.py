@@ -131,7 +131,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         if self.qcombo_transfer_input.currentIndex() == 0 or self.qcombo_transfer_input.currentIndex() == 1:
             # Input units to the VNA were ADC counts.
             # Transfer function units should be scaled to Volts/Volts, or no units:
-            volts_per_VNA_input_counts = self.sl.convertADCCountsToVolts(self.qcombo_transfer_input.currentIndex(), 1)
+            volts_per_VNA_input_counts = self.sl.convertADCCountsToVolts(1)
             print('volts_per_VNA_input_counts = %s' % volts_per_VNA_input_counts)
             physical_input_units_per_input_counts = volts_per_VNA_input_counts
             

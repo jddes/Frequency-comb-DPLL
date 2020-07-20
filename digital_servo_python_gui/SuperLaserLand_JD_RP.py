@@ -20,7 +20,7 @@ import bin_conv
 import adf4351_ctrl_through_uart
 import adf4351
 
-from common import make_sure_path_exists, tictoc
+from common import make_sure_path_exists, tictoc, smooth
 
 class SuperLaserLand_JD_RP:
 	# Data members:
@@ -103,6 +103,9 @@ class SuperLaserLand_JD_RP:
 		make_sure_path_exists('data_logging')
 
 		self.adf4351 = dict()
+		self.adc_volts_per_counts = 1./2**14 * 21.9e-3/13.4e-3 # calibrated on one unit on 2020-07-18 using a known-amplitude tone, turned off 7V supply to put RF amps in high-Z
+		self.adc_bits = 14
+		self.load_amplitude_calibration()
 
 		if controller is not None:
 			self.controller = weakref.proxy(controller)
@@ -111,6 +114,31 @@ class SuperLaserLand_JD_RP:
 
 		self.dev = RP_PLL.RP_PLL_device(self.controller)
 		self.phaseReadoutDriver = phaseReadoutDriver(self.dev)
+
+
+	def load_amplitude_calibration(self):
+		with open("amplitude_calibration\\input_freq.bin", "rb") as f:
+			self.amplitude_cal_freq_axis = np.copy(np.frombuffer(f.read(), np.float))
+		with open("amplitude_calibration\\input_amplitude.bin", "rb") as f:
+			self.amplitude_cal_input_amplitude = np.copy(np.frombuffer(f.read(), np.float))
+		with open("amplitude_calibration\\output_amplitude.bin", "rb") as f:
+			self.amplitude_cal_output_amplitude = np.copy(np.frombuffer(f.read(), np.float))
+
+		# fix a few glitchy data points:
+		self.amplitude_cal_output_amplitude[924] = self.amplitude_cal_output_amplitude[924+1]
+		self.amplitude_cal_output_amplitude[366] = self.amplitude_cal_output_amplitude[366+1]
+
+		self.amplitude_ratio_adc_to_input_dB = self.amplitude_cal_output_amplitude - self.amplitude_cal_input_amplitude
+
+	def scale_factor_adc_to_input(self, input_frequency):
+		if input_frequency < np.min(self.amplitude_cal_freq_axis):
+			input_frequency = np.min(self.amplitude_cal_freq_axis)
+		if input_frequency > np.max(self.amplitude_cal_freq_axis):
+			input_frequency = np.max(self.amplitude_cal_freq_axis)
+
+		gain_dB = np.interp(input_frequency, self.amplitude_cal_freq_axis, self.amplitude_ratio_adc_to_input_dB)
+		gain_linear = np.sqrt(10.0**(gain_dB/10.0))
+		return gain_linear
 			
 	def send_bus_cmd(self, bus_address, data1, data2):
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, (int(data2)<<16) + int(data1))
@@ -133,26 +161,40 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_WRITE, 0) # value is ignored here, just the fact that we are writing is sufficient
 		time.sleep(2e-3) # max write duration is 2**15/(125e6/6) = 1.6 ms
 		data_buffer = self.dev.read_Zynq_buffer_int16(Num_samples)
-		buffer_numpy = np.fromstring(data_buffer, dtype=np.int16)
+		buffer_numpy = np.copy(np.frombuffer(data_buffer, dtype=np.int16))
 		return buffer_numpy
 
+	def demux_logger_timestamp(self, raw_data_int16):
+		""" Send raw logger data to this function to split the timestamp and the actual data out.
+		Returns a tuple (timestamp, logger_data) """
+		if raw_data_int16 is None:
+			return (None, None)
+		ts_as_int16 = raw_data_int16[:4]
+		ts_as_int64 = np.copy(np.frombuffer(ts_as_int16, dtype=np.int64))
+		logger_data = raw_data_int16[4:]
+		return (ts_as_int64, logger_data)
+
 	def getADCdata(self, adc_number, N_samples):
-		return self.getDataSafe(self.LOGGER_MUX['ADC%d' % adc_number], int(N_samples))
+		raw_data = self.getDataSafe(self.LOGGER_MUX['ADC%d' % adc_number], int(N_samples))
+		(timestamp, logger_data) = self.demux_logger_timestamp(raw_data)
+		adc_data_in_volts = self.convertADCCountsToVolts(logger_data)
+		return (timestamp, adc_data_in_volts)
 
 	def getIQdata(self, iq_channel, N_samples):
 		raw_data = self.getDataSafe(self.LOGGER_MUX['IQ%d' % iq_channel], int(N_samples))
-		if raw_data is None:
-			return None
+		(timestamp, logger_data) = self.demux_logger_timestamp(raw_data)
+		if logger_data is None:
+			return (None, None)
 		with open("out_raw.bin", "wb") as f:
 			f.write(raw_data.tobytes())
-		ts_as_int16 = raw_data[:4]
-		raw_data = raw_data[4:]
-		data_real = raw_data[0::2]
-		data_imag = raw_data[1::2]
+
+		data_real = logger_data[0::2]
+		data_imag = logger_data[1::2]
 		# make sure real and imag are the same size:
 		N_min = min(len(data_real), len(data_imag))
 		data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
-		return data_complex
+		data_complex = self.convertIQCountsToVolts(data_complex)
+		return (timestamp, data_complex)
 
 	def getDataSafe(self, selector, N_samples):
 		tictoc(self)
@@ -228,7 +270,6 @@ class SuperLaserLand_JD_RP:
 		self.DACs_limit_low[dac_number] = limit_low
 		self.DACs_limit_high[dac_number] = limit_high
 
-
 	def get_dac_limits(self, dac_number):
 		if self.bCommunicationLogging == True:
 			self.log_file.write('get_dac_limits()\n')
@@ -287,16 +328,29 @@ class SuperLaserLand_JD_RP:
 	def getFreqDiscriminatorGain(self):
 		return 2**10/self.fs
 
-	def convertADCCountsToVolts(self, ADC_number, counts):
-		ADC_gain = 1.
-		ADC_bits = 16.
-		Volts_max_for_unit_gain = 1. # Nominal value is 1 Volts peak-to-peak (+/- 1 Volts input range)
-		
-		if type(counts) is np.ndarray: # Numpy array ?
-			counts_float = counts.astype(np.float)
+	def ensure_float(self, x):
+		""" Returns the same values as x, but as floating point. """
+		if type(x) is np.ndarray: # Numpy array ?
+			if np.iscomplexobj(x):
+				x_float = x.astype(np.complex128)
+			else:
+				x_float = x.astype(np.float)
 		else: # Scalar case:
-			counts_float = np.float(counts)
-		return counts_float /  (2. **(ADC_bits-1)) * Volts_max_for_unit_gain / ADC_gain
+			x_float = np.float(x)
+		return x_float
+
+	def getADCmaxVoltage(self):
+		return self.convertADCCountsToVolts((2**(self.adc_bits-1)-1))
+
+	def convertADCCountsToVolts(self, counts):
+		if counts is None:
+			return None # handle trivial case
+		return self.ensure_float(counts) * self.adc_volts_per_counts
+
+	def convertIQCountsToVolts(self, counts):
+		if counts is None:
+			return None # handle trivial case
+		return self.ensure_float(counts) * self.adc_volts_per_counts
 		
 	def convertDDCCountsToHz(self, counts):
 		DDC_bits = 10.
@@ -481,14 +535,20 @@ class SuperLaserLand_JD_RP:
 		uart_vals = adf4351_ctrl_through_uart.spi_values_to_uart_bytes(reg_vals, chip_select)
 		self.set_adf4351(uart_vals)
 
-	def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1):
+	def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1,
+							   LO_pwr='+5dBm', LO_enabled=True):
 		""" Channel can be 1, 2, 3 or 4 """
 		if not channel in self.adf4351:
 			self.adf4351[channel] = adf4351.adf4351()
 
 		chip_select = 2**(channel-1)
 
+		self.adf4351[channel].load_defaults()
 		self.adf4351[channel].setup_integer_n(out_freq, ref_freq, pfd_target_freq)
+		self.adf4351[channel].set_output_power(LO_pwr)
+		if not LO_enabled:
+			self.adf4351[channel].turn_off_vco()
+
 		reg_vals = self.adf4351[channel].internal_state_to_reg_vals()
 		reg_vals.reverse() # need to write r0 last
 		uart_vals = adf4351_ctrl_through_uart.spi_values_to_uart_bytes(reg_vals, chip_select)
@@ -524,6 +584,7 @@ class phaseReadoutDriver():
 		self.LPF_DECIM = 6 # decimation ratio done by fir_lpf_decim_by_6
 		self.fs_nominal = 125e6 # just used once to set output rate, will NOT be updated later
 		self.nominal_output_rate = 100 # this is the target, the actual rate will be a bit off, since that doesn't yield an integer number of cycles
+		self.n_bits_phase = 14 # fractional bits on the arctan extraction inside the fpga
 
 		self.addr = dict()
 		# *4 here is to translate from Zynq addresses to addresses used inside multichannel_freq_counter_top.vhd
@@ -538,15 +599,31 @@ class phaseReadoutDriver():
 		""" This needs to be triggered only once, but there is no arm in doing it multiple times """
 		self.dev.write_Zynq_register_uint32(self.addr["start_write"], 0)
 		self.dev.write_Zynq_register_uint32(self.addr["start_write"], 1) # starts the data recording
-		self.dev.write_Zynq_register_uint32(self.addr["n_cycles"], round(self.fs_nominal/self.LPF_DECIM/self.nominal_output_rate))
+		self.n_cycles = round(self.fs_nominal/self.LPF_DECIM/self.nominal_output_rate)
+		self.dev.write_Zynq_register_uint32(self.addr["n_cycles"], self.n_cycles)
+
+	def _getInProgressChunkIndex(self):
+		""" Returns the index of the chunk currently being written to """
+		write_addr = self.dev.read_Zynq_register_uint32(self.addr["write_addr"])
+		current_chunk_id = int(np.floor(write_addr/self.words_per_chunk))
+		return current_chunk_id
+
+	def _getLatestChunkIndex(self):
+		""" Returns the index of the most recent available chunk """
+		current_chunk_id = self._getInProgressChunkIndex()
+		return (current_chunk_id-1) % self.number_of_chunks
 
 	def _chunksAvailable(self):
 		""" Returns the number of new data chunks available since last read """
-		write_addr = self.dev.read_Zynq_register_uint32(self.addr["write_addr"])
-		current_chunk_id = np.floor(write_addr/self.words_per_chunk)
+		current_chunk_id = self._getInProgressChunkIndex()
 		return (current_chunk_id-1 - self.last_chunk_id) % self.number_of_chunks
 
-	def _readDataChunks(self, first_chunk_id, number_of_chunks):
+	def peakLatestChunk(self):
+		""" Read the most recent available chunk, but don't update the read pointer for subsequent read. """
+		latest_chunk_id = self._getLatestChunkIndex()
+		return self._readDataChunks(latest_chunk_id, number_of_chunks=1, bUpdateReadPointer=False)
+
+	def _readDataChunks(self, first_chunk_id, number_of_chunks, bUpdateReadPointer=True):
 		self.dev.write_Zynq_register_uint32(self.addr["read_start_address"], 0) # sets the read pointer to the first point
 		self.dev.write_Zynq_register_uint32(self.addr["start_read"], 1) # causes the fpga to load the read_start_address value
 		self.dev.write_Zynq_register_uint32(self.addr["start_read"], 0)
@@ -554,7 +631,7 @@ class phaseReadoutDriver():
 		words_to_read = self.number_of_chunks * self.words_per_chunk
 		tictoc(self)
 		data = self.dev.read_repeat(self.addr["read_data"], words_to_read)
-		data = np.fromstring(data, dtype=np.uint32)
+		data = np.copy(np.frombuffer(data, dtype=np.uint32))
 		tictoc(self, "read %d words" % (len(data)))
 
 		self.read_counter += 1
@@ -564,7 +641,8 @@ class phaseReadoutDriver():
 		used_chunks = first_chunk_id + np.arange(number_of_chunks, dtype=np.uint32)
 		used_chunks = used_chunks % self.number_of_chunks # modulo addressing
 		# print("used chunks = %s" % used_chunks)
-		self.last_chunk_id = used_chunks[-1]
+		if bUpdateReadPointer:
+			self.last_chunk_id = used_chunks[-1]
 		data_all = np.copy(data) # for debugging
 		data = data[used_chunks]
 

@@ -415,7 +415,7 @@ class SpectrumWidget(QtGui.QWidget):
         start_time = time.perf_counter()
                     
         spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
-        spc_single_sided_psd = spc*2/self.computeNEB(window_function, self.sl.fs) * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
+        spc_single_sided_psd = spc*2/self.computeNEB(window_function, self.sl.fs) * (2**15*self.sl.convertADCCountsToVolts(1))**2
         # Measure average PSD level by looking at out-of-band noise and rejecting outliers:
         index_from_freq = lambda freq: round(freq*N_fft/self.sl.fs)# f_axis = index/N_fft*fs
         ind_min_psd = index_from_freq(10e6)
@@ -521,7 +521,7 @@ class SpectrumWidget(QtGui.QWidget):
     def scaleDataToVolts(self, samples_out, input_select):
         if input_select.startswith('ADC'):
             # Convert ADC counts to voltage
-            return self.sl.convertADCCountsToVolts(input_select, samples_out)
+            return self.sl.convertADCCountsToVolts(samples_out)
         else:
             # Convert DAC counts to voltage
             DAC_number = int(input_select[3])

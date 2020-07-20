@@ -4,3 +4,4 @@ venv/
 .idea/
 .vscode/
 *.bin
+!amplitude_calibration/*.bin

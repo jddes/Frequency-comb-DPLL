@@ -245,7 +245,7 @@ class RP_PLL_device():
 
         # convert to 64 bits using numpy's casts
         results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
-        results = np.frombuffer(results, np.dtype(np.uint64) )
+        results = np.copy(np.frombuffer(results, np.dtype(np.uint64) ))
 
         return results
 
@@ -256,7 +256,7 @@ class RP_PLL_device():
 
         # convert to 64 bits using numpy's casts
         results = np.array((results_lsb, results_msb), np.dtype(np.uint32))
-        results = np.frombuffer(results, np.dtype(np.int64) )
+        results = np.copy(np.frombuffer(results, np.dtype(np.int64) ))
 
         return results
 
@@ -337,7 +337,7 @@ def main():
         if max_iterations != 0:
             data_buffer = rp.recvall((number_of_ramps*number_of_steps+max_iterations)*2*2)
             print("after recvall")
-            data_np = np.fromstring(data_buffer, dtype=np.int16)
+            data_np = np.copy(np.frombuffer(data_buffer, dtype=np.int16))
     print('before sleep')
     if max_iterations == 0:
         time.sleep(5)
@@ -421,7 +421,7 @@ def main2():
     number_of_points = rp.MAX_SAMPLES_READ_BUFFER   
     data_buffer = rp.read_Zynq_buffer_int16(number_of_points)
 #   print("after recvall")
-    data_np = np.fromstring(data_buffer, dtype=np.int16)
+    data_np = np.copy(np.frombuffer(data_buffer, dtype=np.int16))
     print(data_np)
     for k in range(10):
         print('%d:\t%s' % (k, hex((data_np[k])&0xFFFF)))

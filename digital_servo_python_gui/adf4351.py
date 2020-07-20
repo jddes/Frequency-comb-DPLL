@@ -58,12 +58,11 @@ reg_map = {
     "LD_PIN_MODE":             r(5, 22, 23)
 }
 
-
+pwr_map = {'-4dBm': 0, '-1dBm': 1, '+2dBm': 2, '+5dBm': 3}
 
 class adf4351():
     def __init__(self):
         self.reg = {reg_name: 0 for reg_name in reg_map}
-        self.pwr_map = {'-4dBm': 0, '-1dBm': 1, '+2dBm': 2, '+5dBm': 3}
         self.prescaler_cutoff = 3.6e9 # above 3.6 GHz, we must use the 8/9 prescaler according to the datasheet
         self.prescaler_map = {'4/5': 0, '8/9': 1}
         self.int_min = {'4/5': 23, '8/9': 75}
@@ -133,7 +132,7 @@ class adf4351():
     def set_output_power(self, pwr="+5dBm"):
         """ Valid values for pwr are:
         '-4dBm', '-1dBm', '+2dBm', '+5dBm' """
-        self.reg["OUTPUT_PWR"] = self.pwr_map.get(pwr, 3)
+        self.reg["OUTPUT_PWR"] = pwr_map.get(pwr, 3)
         self.reg["RF_OUTPUT_ENABLE"] = 1
         self.reg["VCO_PD"] = 0
 
@@ -141,7 +140,24 @@ class adf4351():
         self.reg["VCO_PD"] = 1
 
     def get_output_power(self):
-        return dict_rev_lookup(self.pwr_map, self.reg["OUTPUT_PWR"], '-4dBm')
+        return dict_rev_lookup(pwr_map, self.reg["OUTPUT_PWR"], '-4dBm')
+
+    def get_solution(self, D, out_freq, ref_freq, pfd_target_freq=10e6):
+        """ Returns the closest solution for a chosen D value """
+        vco_target = out_freq*D
+        R = round(ref_freq/pfd_target_freq)
+        if R < 1:
+            R = 1
+        pfd_actual_freq = ref_freq/R
+        INT = round(vco_target/pfd_actual_freq)
+        vco_actual = pfd_actual_freq*INT
+        out_freq_actual = vco_actual/D
+
+        # flag invalid solutions:
+        if vco_actual < self.vco_min or vco_actual > self.vco_max:
+            R = None
+
+        return (R, INT, pfd_actual_freq, vco_actual, out_freq_actual)
 
     def setup_integer_n(self, out_freq, ref_freq, pfd_target_freq=10e6):
         """ Setup all the registers for synthesizing out_freq.
@@ -154,18 +170,20 @@ class adf4351():
         nearest_power_of_two = lambda x: 2**round(math.log2(x))
         print("-----------------------------------------------------------------------")
 
-        vco_target = (self.vco_min + self.vco_max)/2
-        D = nearest_power_of_two(vco_target/out_freq)
-        vco_target = out_freq*D
-        print("Chosen vco target freq = %.2f MHz, D=%d, output target freq = %.2f MHz" % (vco_target/1e6, D, out_freq/1e6))
-        R = round(ref_freq/pfd_target_freq)
-        if R < 1:
-            R = 1
-        pfd_actual_freq = ref_freq/R
-        INT = round(vco_target/pfd_actual_freq)
-        vco_actual = pfd_actual_freq*INT
-        out_freq_actual = vco_actual/D
-        print("Chosen INT=%d, R=%d, pfd freq = %f MHz, vco freq = %f MHz, output freq = %.2f MHz " % (INT, R, pfd_actual_freq/1e6, vco_actual/1e6, out_freq_actual/1e6))
+        self.D_values = [1, 2, 4, 8, 16, 32, 64]
+        min_error = None
+        D_chosen = None
+        for D in self.D_values:
+            (R, INT, pfd_actual_freq, vco_actual, out_freq_actual) = self.get_solution(D, out_freq, ref_freq, pfd_target_freq)
+            if R is None:
+                continue # invalid solution (vco out of range)
+            if min_error is None or abs(out_freq_actual-out_freq) < min_error:
+                min_error = abs(out_freq_actual-out_freq)
+                D_chosen = D
+
+        D = D_chosen
+        (R, INT, pfd_actual_freq, vco_actual, out_freq_actual) = self.get_solution(D, out_freq, ref_freq, pfd_target_freq)
+        print("Chosen D=%d, INT=%d, R=%d, pfd freq = %f MHz, vco freq = %f MHz, output target freq = %.2f MHz, output actual freq = %.2f MHz " % (D, INT, R, pfd_actual_freq/1e6, vco_actual/1e6, out_freq/1e6, out_freq_actual/1e6))
 
         self.prescaler_cutoff = 3.6e9 # above 3.6 GHz, we must use the 8/9 prescaler according to the datasheet
         self.prescaler_map = {'4/5': 0, '8/9': 1}
@@ -183,6 +201,7 @@ class adf4351():
 
         self.reg["FB_SEL"] = self.fb_sel_map["VCO_OUTPUT"]
         self.reg["RF_DIVIDER_SEL"] = int(math.log2(D))
+        print("D=%s, RF_DIVIDER_SEL=%s" % (D, self.reg["RF_DIVIDER_SEL"]))
         self.reg["INT"] = int(INT)
         self.reg["R"] = int(R)
 
@@ -221,12 +240,12 @@ def dict_rev_lookup(dictionary, key, default=None):
         return default
 
 def test_freq_steps():
-    """ Test the biggest error in synthesized frequency from 1 MHz to 1000 MHz,
+    """ Test the biggest error in synthesized frequency from 40 MHz to 1000 MHz,
     with 10 MHz ref freq. Expect a worst-case error of 1 MHz """
     a = adf4351()
     worse_error = 0
     for k in range(int(1e9/1e6)):
-        out_freq = (1+k)*1e6
+        out_freq = 40e6 + (1+k)*1e6
         out_actual_freq = a.setup_integer_n(out_freq=out_freq, ref_freq=10e6, pfd_target_freq=10e6)
         print("error = %.2f MHz" % ((out_actual_freq-out_freq)/1e6))
         if abs(out_actual_freq-out_freq)>worse_error:
