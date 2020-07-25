@@ -54,7 +54,8 @@ class Test(QtWidgets.QWidget):
         self.sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
         self.sl.dev.OpenTCPConnection("192.168.2.34")
         self.sl.phaseReadoutDriver.startLogging()
-        self.setupADCclock()
+        self.setupADCclock(bExternal=True, f_ref=25e6)
+        # self.setupADCclock(bExternal=False, f_ref=200e6)
 
         self.fastTimer = QtCore.QTimer(self)
         self.fastTimer.timeout.connect(self.fastTimerEvent)
@@ -203,34 +204,39 @@ class Test(QtWidgets.QWidget):
         data = self.sl.phaseReadoutDriver.peakLatestChunk()
         self.sig_phase_point.emit(data)
 
-    def setupADCclock(self):
+    def setupADCclock(self, bExternal, f_ref):
         # Valid VCO range is 600 MHz-1600 MHz according to DS181
-        
-        # # For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-        # f_ref          = 200e6
-        # CLKFBOUT_MULT  = 5
-        # CLKOUT0_DIVIDE = 8
-        # ext_clk = False
+        if not bExternal:
+            if f_ref == 200e6:
+                # For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+                f_ref          = 200e6
+                CLKFBOUT_MULT  = 5
+                CLKOUT0_DIVIDE = 8
+            else:
+                raise Exception('unsupported fref')
+        else: # external clock
+            if f_ref == 200e6:
+                # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+                f_ext          = 200e6
+                CLKFBOUT_MULT  = 5
+                CLKOUT0_DIVIDE = 8
 
-        # # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-        # f_ext          = 200e6
-        # CLKFBOUT_MULT  = 5
-        # CLKOUT0_DIVIDE = 8
-        # ext_clk = True
+            elif f_ref == 10e6:
+                # For 10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
+                f_ext          = 10e6
+                CLKFBOUT_MULT  = 62
+                CLKOUT0_DIVIDE = 5
 
-        # # For 10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
-        # f_ext          = 10e6
-        # CLKFBOUT_MULT  = 62
-        # CLKOUT0_DIVIDE = 5
-        # ext_clk = True
+            elif f_ref == 25e6:
+                # For 25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1250 MHz VCO
+                f_ref          = 25e6
+                CLKFBOUT_MULT  = 50
+                CLKOUT0_DIVIDE = 10
+            else:
+                raise Exception('unsupported fref')
 
-        # For 25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1250 MHz VCO
-        f_ref          = 25e6
-        CLKFBOUT_MULT  = 50
-        CLKOUT0_DIVIDE = 10
-        ext_clk = True
 
-        self.sl.setADCclockPLL(f_ref, ext_clk, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+        self.sl.setADCclockPLL(f_ref, bExternal, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
     def updateTabVisibility(self, tab_index):
         self.current_tab = tab_index
