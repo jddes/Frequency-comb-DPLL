@@ -38,6 +38,7 @@ class SuperLaserLand_JD_RP:
 
 	############################################################
 	# Functions to map addresses below to the correct absolute addresses
+	# There are three separate address spaces
 	datalogger2absolute = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR + (1<<20) # the value 1 is taken from red_pitaya_top.v, from this line: .sys_wen(sys_wen[1]),  used by trigger_write below
 	counter2absolute    = lambda x: x*4 + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR # Addresses that are multiplied by four are part of the multichannel_freq_counter_top address space. this is done to avoid any chance of doing a read at a non-four-bytes-aligned address, which crashes the Zynq CPU
 	bd2absolute         = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR_XADC
@@ -119,6 +120,8 @@ class SuperLaserLand_JD_RP:
 		strNameTemplate = time.strftime("data_logging\\%m_%d_%Y_%H_%M_%S_")
 		# Create the subdirectory if it doesn't exist:
 		make_sure_path_exists('data_logging')
+
+		self.user_inputs = dict()
 
 		self.adf4351 = dict()
 		self.adc_volts_per_counts = 1./2**14 * 21.9e-3/13.4e-3 # calibrated on one unit on 2020-07-18 using a known-amplitude tone, turned off 7V supply to put RF amps in high-Z
@@ -254,9 +257,9 @@ class SuperLaserLand_JD_RP:
 	def set_ddc_ref_freq(self, frequency_in_hz, channel_id):
 		""" channel_id can be either 1, 2, 3 or 4 """
 		assert channel_id in self.channels_list
+		self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
 		dds_freq_word = int(round(2**48 * frequency_in_hz/self.fs))
 		dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
-		print("dds_freq_word=", dds_freq_word)
 		self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
 
 	def set_dac_limits(self, dac_number, limit_low, limit_high, bSendToFPGA = True):
@@ -304,11 +307,57 @@ class SuperLaserLand_JD_RP:
 			return None # handle trivial case
 		return self.ensure_float(counts) * self.adc_volts_per_counts
 
-	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
-		""" f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode) """
+	def setADCclockPLL(self, f_ref, bExternalClock):
+		""" Computes closest integer-N solution for the ADC clock.
+		In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
+		if bExternalClock == False:
+			f_ref = 200e6 # this is hardcoded in the firmware
+
+		# objective is to find closest solution with ADC clock below or equal to the nominal 125 MS/s
+		# f_adc = f_ref * M/N
+		# subject to the constraints for the divider values and the VCO limits
+		# there are not that many possible solutions, so we just bruteforce it
+		# we force D=1, since that should be good enough anyway (no reason to hit super close to 125 MS/s)
+		f_target_adc = 125e6 
+
+		# partly following equations 3-6 to 3-9 from UG472
+		vco_min = 600e6  # these two values are from DS182
+		vco_max = 1200e6 # these two values are from DS182
+		M_min = np.ceil(vco_min/f_ref)
+		M_max = np.floor(vco_max/f_ref)
+		M_ar = np.arange(M_min, M_max+1)
+		nb_M = len(M_ar)
+		N_ar = np.arange(1, 128+1)
+		M_ar = np.repeat(M_ar, len(N_ar))
+		N_ar = np.tile(N_ar, nb_M)
+		f_out = f_ref*np.divide(M_ar, N_ar)
+		# print(list(f_out))
+
+		ind_invalid = np.nonzero(f_out > f_target_adc)
+		M_ar = np.delete(M_ar, ind_invalid)
+		N_ar = np.delete(N_ar, ind_invalid)
+		f_out = np.delete(f_out, ind_invalid)
+		best_index = np.argmin(np.abs(f_out-f_target_adc))
+
+		M = int(M_ar[best_index])
+		N = int(N_ar[best_index])
+		f_adc = f_ref * float(M)/N
+		f_vco = f_ref * float(M)
+
+		print("setADCclockPLL(): f_ref=%f MHz, M=%d, N=%d, f_vco=%f MHz, f_adc=%f MHz" % (f_ref/1e6, M, N, f_vco/1e6, f_adc/1e6))
+
+		self._setADCclockPLL(f_ref, bExternalClock, CLKFBOUT_MULT=M, CLKOUT0_DIVIDE=N)
+
+	def _setADCclockPLL(self, f_ref, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
+		""" f_ref is the frequency of the selected clock source (200 MHz in internal clock mode,
+		can be whatever is connected to GPIO_P[5] in external clock mode) """
+		self.user_inputs["f_ref_hz"] = f_ref
+		self.user_inputs["bExternalClock"] = bExternalClock
+		self.user_inputs["CLKFBOUT_MULT"] = CLKFBOUT_MULT
+		self.user_inputs["CLKOUT0_DIVIDE"] = CLKOUT0_DIVIDE
 		DIVCLK_DIVIDE = 1
-		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
-		print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
+		VCO_freq = f_ref * CLKFBOUT_MULT/DIVCLK_DIVIDE
+		print('VCO_freq = %f MHz, valid range is 600-1200 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
 
 		# From PG065:
 		# "You should first write all the required clock configuration registers and then check for the
@@ -335,15 +384,15 @@ class SuperLaserLand_JD_RP:
 			print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
 			return
 
-		self.setClkSelectAndReset(bExternalClock, bReset=True) # assert reset on the incoming ADC clock
+		self._setClkSelectAndReset(bExternalClock, bReset=True) # assert reset on the incoming ADC clock
 		self.write("clkw_reg23", 0x7)
 		self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
-		self.fs = f_source * CLKFBOUT_MULT/CLKOUT0_DIVIDE
+		self.fs = f_ref * CLKFBOUT_MULT/CLKOUT0_DIVIDE
 		time.sleep(0.1)
-		self.setClkSelectAndReset(bExternalClock, bReset=False) # de-assert reset on the incoming ADC clock
+		self._setClkSelectAndReset(bExternalClock, bReset=False) # de-assert reset on the incoming ADC clock
 
-	def setClkSelectAndReset(self, bExternalClock, bReset):
+	def _setClkSelectAndReset(self, bExternalClock, bReset):
 		""" Select external or internal clock source, and also sets the reset """
 		reg_clk_sel_and_reset = int(not bExternalClock) | (int(bReset)<<1)
 		self.write("clk_sel_and_reset", reg_clk_sel_and_reset)
@@ -450,6 +499,12 @@ class SuperLaserLand_JD_RP:
 	def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1,
 							   LO_pwr='+5dBm', LO_enabled=True):
 		""" Channel can be 1, 2, 3 or 4 """
+		self.user_inputs["out_freq_ch%d"        % channel] = out_freq
+		self.user_inputs["ref_freq_ch%d"        % channel] = ref_freq
+		self.user_inputs["pfd_target_freq_ch%d" % channel] = pfd_target_freq
+		self.user_inputs["LO_pwr_ch%d"          % channel] = LO_pwr
+		self.user_inputs["LO_enabled_ch%d"      % channel] = LO_enabled
+
 		if not channel in self.adf4351:
 			self.adf4351[channel] = adf4351.adf4351()
 
