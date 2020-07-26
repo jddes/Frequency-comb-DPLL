@@ -1238,6 +1238,14 @@ int main(int argc, char *argv[])
 
 	printf("monitor-tcp server started, V1.0, built at " __TIME__ " on " __DATE__ "\n");
 
+	if (argc>=2)
+	{
+		if (strcmp(argv[1], "-v") == 0)
+		{
+			bVerbose = true;
+		}
+	}
+
 	// first some simple tests to figure out size of certain types:
 	printf("sizeof(char) = %d, sizeof(short) = %d, sizeof(int) = %d, sizeof(long int) = %d, sizeof(long long int) = %d\n", (int)sizeof(char), (int)sizeof(short), (int)sizeof(int), (int)sizeof(long int), (int)sizeof(long long int));
 	printf("sizeof(char*) = %d, sizeof(void*) = %d\n", (int)sizeof(char*), (int)sizeof(void*));

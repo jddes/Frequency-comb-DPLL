@@ -205,7 +205,7 @@ class RP_PLL_device():
 
     def read_repeat(self, address, n_repeats):
         """ these are 32-bits reads """
-        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REPEAT, self.FPGA_BASE_ADDR+address, n_repeats)
+        packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_REPEAT, address, n_repeats)
         self.send(packet_to_send)
         return self.read(int(4*n_repeats))
 
@@ -213,6 +213,16 @@ class RP_PLL_device():
     # Functions used to access Zynq registers, but which do not interact directly with the socket,
     # and instead use the lower-level functions above
     #######################################################
+
+    def write_uint32(self, address_uint32, data_uint32):
+        """ write to absolute address """
+        self.write_Zynq_register_32bits(address_uint32, data_uint32, bSigned=False)
+
+    def read_uint32(self, address_uint32):
+        """ read at absolute address """
+        data_buffer = self.read_Zynq_register_32bits(address_uint32)
+        register_value_as_tuple = struct.unpack('I', data_buffer)
+        return register_value_as_tuple[0]
 
     def write_Zynq_register_uint32(self, address_uint32, data_uint32):
         self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_uint32, bSigned=False)
@@ -234,9 +244,7 @@ class RP_PLL_device():
         return register_value_as_tuple[0]
 
     def read_Zynq_AXI_register_uint32(self, address_uint32):
-        data_buffer = self.read_Zynq_register_32bits(self.FPGA_BASE_ADDR_XADC+address_uint32)
-        register_value_as_tuple = struct.unpack('I', data_buffer)
-        return register_value_as_tuple[0]
+        return self.read_uint32(self.FPGA_BASE_ADDR_XADC+address_uint32)
 
     def read_Zynq_register_uint64(self, address_uint32_lsb, address_uint32_msb):
         print("read_Zynq_register_uint64()")
