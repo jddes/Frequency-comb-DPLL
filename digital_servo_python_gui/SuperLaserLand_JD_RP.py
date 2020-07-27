@@ -280,6 +280,7 @@ class SuperLaserLand_JD_RP:
 		self.write_2x_16bits("DAC_limits%d"%dac_number, limit_low, limit_high)
 
 	def get_ddc_filter(self):
+		""" Returns the filter implemented in fir_lpf_decim_by_6 """
 		return np.array([-909, 1718, 4689, 10090, 18371, 29803, 44256, 61034, 78773, 95424, 108353, 114569, 111075, 95319, 65698, 22057, -33908, -98401, -165516, -227493, -275271, -299287, -290477, -241376, -147158, -6537, 177657, 398280, 644147, 900763, 1151462, 1378852, 1566415, 1700080, 1769608, 1769608, 1700080, 1566415, 1378852, 1151462, 900763, 644147, 398280, 177657, -6537, -147158, -241376, -290477, -299287, -275271, -227493, -165516, -98401, -33908, 22057, 65698, 95319, 111075, 114569, 108353, 95424, 78773, 61034, 44256, 29803, 18371, 10090, 4689, 1718, -909])
 
 	def ensure_float(self, x):
@@ -334,8 +335,8 @@ class SuperLaserLand_JD_RP:
 		# print(list(f_out))
 
 		ind_invalid = np.nonzero(f_out > f_target_adc)
-		M_ar = np.delete(M_ar, ind_invalid)
-		N_ar = np.delete(N_ar, ind_invalid)
+		M_ar  = np.delete(M_ar, ind_invalid)
+		N_ar  = np.delete(N_ar, ind_invalid)
 		f_out = np.delete(f_out, ind_invalid)
 		best_index = np.argmin(np.abs(f_out-f_target_adc))
 
