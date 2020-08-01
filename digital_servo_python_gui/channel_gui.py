@@ -24,6 +24,9 @@ def round_to_N_sig_figs(x, Nsigfigs):
 class ChannelGUI(QtWidgets.QWidget):
     sig_set_num_points = QtCore.pyqtSignal(int, dict)
     sig_setup_LO       = QtCore.pyqtSignal(dict)
+    # these signals will be connected to the summary tab:
+    sig_new_Amplitude = QtCore.pyqtSignal(int, float, float)
+    sig_new_SNR       = QtCore.pyqtSignal(int, float)
 
     def __init__(self, channel_id=1, parent=None):
         super().__init__(parent)
@@ -221,22 +224,32 @@ class ChannelGUI(QtWidgets.QWidget):
         self.updateADCFill(np.max(np.abs(data)), data_max)
 
     def newIQdata(self, complex_baseband, scale_factor_adc_to_input):
-        self.updateSNRdisplay(complex_baseband)
-        mean_amplitude = self.updateIQdisplay(complex_baseband/scale_factor_adc_to_input)
+        complex_baseband /= scale_factor_adc_to_input # scale to input-referred amplitude
+        amplitude = np.abs(complex_baseband)
+        mean_amplitude = np.mean(amplitude)
+        std_dev_amplitude = np.std(amplitude)
+
         self.updateAmplitudeDisplay(mean_amplitude)
+        self.updateSNRdisplay(mean_amplitude, std_dev_amplitude)
+        if not self.tab_visible:
+            return # skip costly updates if we are not visible
+        self.updateIQdisplay(complex_baseband, mean_amplitude)
 
         plot_type = self.comboPlotType.currentText()
         if plot_type == "IQ timeseries":
-            self.plotIQTimeseries(complex_baseband, self.fs, plot_type)
+            self.plotIQTimeseries(complex_baseband*scale_factor_adc_to_input, self.fs, plot_type) # this is adc-referred
 
     def newPhasePoint(self, phase_data):
         if phase_data is None:
             print("newPhasePoint(): no phase data or no system_settings")
             return
-        # phi is in cycles
+        if not self.tab_visible:
+            return
         self.phaseWidget.newPhasePoint(phase_data[self.channel_id])
 
     def newFreqData(self, freq_Hz):
+        if not self.tab_visible:
+            return
         self.lblCurrentFreq.setText('%.6f Hz' % freq_Hz)
 
     def updateWindowFunction(self, data_len, fs):
@@ -341,14 +354,13 @@ class ChannelGUI(QtWidgets.QWidget):
             text = self.comboRBW.itemText(k)
             assert self.RBW_text_from_value(self.RBW_value_from_text(text)) == text
 
-    def updateIQdisplay(self, complex_baseband, N_max_IQ = 10e3):
+    def updateIQdisplay(self, complex_baseband, mean_amplitude, N_max_IQ = 10e3):
         """ N_max_IQ is the max number of points to display in the IQ graph.
         Returns the mean amplitude in Volts """
         t = tictoc(self)
 
         N_show = int(np.min((len(complex_baseband), N_max_IQ)))
         complex_baseband = complex_baseband[:N_show]
-        mean_amplitude = np.mean(np.abs(complex_baseband))
         if mean_amplitude == 0:
             mean_amplitude = 1e-6 # just to avoid a divide by zero warning
 
@@ -365,7 +377,6 @@ class ChannelGUI(QtWidgets.QWidget):
         self.plot_IQ.setYRange(-1.5, 1.5)
 
         tictoc(self, 'Display IQ')
-        return mean_amplitude
 
     def updateAmplitudeDisplay(self, mean_amplitude):
         # input signal is A*cos(), baseband signal is A*exp(),
@@ -377,6 +388,7 @@ class ChannelGUI(QtWidgets.QWidget):
         if time.perf_counter() - self.last_amplitude_update >= 0.3: # limit updates so that the text is actually readable
             self.last_amplitude_update = time.perf_counter()
             self.lblAmplitude_value.setText('% 05.1f dBm, %.0f mV'% (mean_power_dBm, 1e3*mean_amplitude))
+            self.sig_new_Amplitude.emit(self.channel_id, mean_power_dBm, mean_amplitude)
 
             if mean_power_dBm <= -40:
                 self.colorCoding(self.lblAmplitude_value, 'bad')
@@ -388,11 +400,8 @@ class ChannelGUI(QtWidgets.QWidget):
                 self.colorCoding(self.lblAmplitude_value, 'ok')
                 self.colorCoding(self.lblAmplitude, 'ok',)
 
-    def updateSNRdisplay(self, complex_baseband):
+    def updateSNRdisplay(self, mean_amplitude, std_dev_amplitude):
         """ Compute and display the SNR on the amplitude of the baseband IQ signal """
-        amplitude = np.abs(complex_baseband)
-        mean_amplitude = np.mean(amplitude)
-        std_dev_amplitude = np.std(amplitude)
         if mean_amplitude == 0:
             mean_amplitude = 1. # to avoid a NaN in the log operation
             std_dev_amplitude = 1e3
@@ -412,6 +421,7 @@ class ChannelGUI(QtWidgets.QWidget):
             print("Error 'nan' in filtered_baseband_snr")
 
         self.lblSNR_value.setText('%.2f dB in %.0f MHz' % (self.filtered_baseband_snr, self.getFrontendFilterBW()/1e6))
+        self.sig_new_SNR.emit(self.channel_id, self.filtered_baseband_snr)
 
         if self.filtered_baseband_snr <= 20:
             self.colorCoding(self.lblSNR_value, 'bad')
