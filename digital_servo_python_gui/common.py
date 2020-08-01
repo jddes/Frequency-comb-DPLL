@@ -3,6 +3,34 @@ import time
 import inspect
 import numpy as np
 
+style_sheets = {
+    'Normal': '',
+    'bad': 'color: rgb(255, 255, 255); background-color: rgb(231, 0, 50)',
+    'warning': 'background-color: rgb(250, 151, 0)',
+    'ok': 'color: rgb(255, 255, 255); background-color: rgb(0, 165, 114)',
+}
+
+def getSNRcolorName(SNR):
+    if SNR <= 20:
+        return 'bad'
+    elif SNR <= 25:
+        return 'warning'
+    else:
+        return 'ok'
+
+def getPowerColorName(mean_power_dBm):
+    if mean_power_dBm <= -40:
+        return 'bad'
+    elif mean_power_dBm <= -20:
+        return 'warning'
+    else:
+        return 'ok'
+
+def round_to_N_sig_figs(x, Nsigfigs):
+    leading_pos = np.floor(np.log10(np.abs(x)))
+    factor = 10**((Nsigfigs-1)-leading_pos)
+    return np.round(x * factor)/factor
+
 # From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
 def make_sure_path_exists(path):
     try:

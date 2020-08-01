@@ -8,18 +8,13 @@ import inspect
 import numpy as np
 import pyqtgraph as pg
 
-from common import tictoc
+from common import tictoc, round_to_N_sig_figs, style_sheets, getSNRcolorName, getPowerColorName
 
 # Set a few global PyQtGraph settings before creating plots:
 pg.setConfigOption('leftButtonPan', False)
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 pg.setConfigOption('antialias', True)
-
-def round_to_N_sig_figs(x, Nsigfigs):
-    leading_pos = np.floor(np.log10(np.abs(x)))
-    factor = 10**((Nsigfigs-1)-leading_pos)
-    return np.round(x * factor)/factor
 
 class ChannelGUI(QtWidgets.QWidget):
     sig_set_num_points = QtCore.pyqtSignal(int, dict)
@@ -37,12 +32,7 @@ class ChannelGUI(QtWidgets.QWidget):
         self.fs = 125e6 # default, will get updated via signals
         self.settings = None
 
-        self.style_sheets = {
-            'Normal': '',
-            'bad': 'color: rgb(255, 255, 255); background-color: rgb(231, 0, 50)',
-            'warning': 'background-color: rgb(250, 151, 0)',
-            'ok': 'color: rgb(255, 255, 255); background-color: rgb(0, 165, 114)',
-        }
+        self.style_sheets = style_sheets
 
         self.setupUI()
         self.tests()
@@ -241,14 +231,15 @@ class ChannelGUI(QtWidgets.QWidget):
 
     def newPhasePoint(self, phase_data):
         if phase_data is None:
-            print("newPhasePoint(): no phase data or no system_settings")
             return
         if not self.tab_visible:
             return
         self.phaseWidget.newPhasePoint(phase_data[self.channel_id])
 
-    def newFreqData(self, freq_Hz):
+    def newFreqData(self, channel_id, freq_Hz):
         if not self.tab_visible:
+            return
+        if channel_id != self.channel_id:
             return
         self.lblCurrentFreq.setText('%.6f Hz' % freq_Hz)
 
@@ -390,15 +381,9 @@ class ChannelGUI(QtWidgets.QWidget):
             self.lblAmplitude_value.setText('% 05.1f dBm, %.0f mV'% (mean_power_dBm, 1e3*mean_amplitude))
             self.sig_new_Amplitude.emit(self.channel_id, mean_power_dBm, mean_amplitude)
 
-            if mean_power_dBm <= -40:
-                self.colorCoding(self.lblAmplitude_value, 'bad')
-                self.colorCoding(self.lblAmplitude, 'bad',)
-            elif mean_power_dBm <= -20:
-                self.colorCoding(self.lblAmplitude_value, 'warning')
-                self.colorCoding(self.lblAmplitude, 'warning',)
-            else:
-                self.colorCoding(self.lblAmplitude_value, 'ok')
-                self.colorCoding(self.lblAmplitude, 'ok',)
+            color_name = getPowerColorName(mean_power_dBm)
+            self.colorCoding(self.lblAmplitude_value, color_name)
+            self.colorCoding(self.lblAmplitude, color_name)
 
     def updateSNRdisplay(self, mean_amplitude, std_dev_amplitude):
         """ Compute and display the SNR on the amplitude of the baseband IQ signal """
@@ -423,15 +408,9 @@ class ChannelGUI(QtWidgets.QWidget):
         self.lblSNR_value.setText('%.2f dB in %.0f MHz' % (self.filtered_baseband_snr, self.getFrontendFilterBW()/1e6))
         self.sig_new_SNR.emit(self.channel_id, self.filtered_baseband_snr)
 
-        if self.filtered_baseband_snr <= 20:
-            self.colorCoding(self.lblSNR_value, 'bad')
-            self.colorCoding(self.lblSNR, 'bad')
-        elif self.filtered_baseband_snr <= 25:
-            self.colorCoding(self.lblSNR_value, 'warning')
-            self.colorCoding(self.lblSNR, 'warning')
-        else:
-            self.colorCoding(self.lblSNR_value, 'ok')
-            self.colorCoding(self.lblSNR, 'ok')
+        color_name = getSNRcolorName(self.filtered_baseband_snr)
+        self.colorCoding(self.lblSNR_value, color_name)
+        self.colorCoding(self.lblSNR, color_name)
 
     def updateADCFill(self, max_abs, adc_max):
         percentage = round_to_N_sig_figs(100*max_abs/adc_max, 2)

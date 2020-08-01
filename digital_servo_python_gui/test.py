@@ -13,6 +13,7 @@ import pyqtgraph as pg
 import SuperLaserLand_JD_RP
 import RP_PLL # for CommsError
 import channel_gui
+import summary_tab
 from common import tictoc
 import bin_conv
 
@@ -25,7 +26,7 @@ pg.setConfigOption('antialias', True)
 class perChannelSignalEmitter(QtCore.QObject):
     sig_new_adc_data = QtCore.pyqtSignal(np.ndarray, float, float)
     sig_new_iq_data  = QtCore.pyqtSignal(np.ndarray, float)
-    sig_new_freq     = QtCore.pyqtSignal(float)
+    sig_new_freq     = QtCore.pyqtSignal(int, float)
     sig_set_visible  = QtCore.pyqtSignal(bool)
 
 class Test(QtWidgets.QWidget):
@@ -40,16 +41,17 @@ class Test(QtWidgets.QWidget):
         self.tictoc_last = time.perf_counter()
         self.pfd_target_freq = 10e6
         self.ref_freq = 25e6 # this should be changeable via a signal
-        self.num_iq_channels = 4 # set by the hardware...
-        self.num_adc_channels = 2 # set by the hardware...
         self.config = dict()
         self.current_tab = 0
 
-        self.perChannelEmitters = list()
-        self.pts_settings = list()
-        for channel_index in range(self.num_iq_channels):
-            self.perChannelEmitters.append(perChannelSignalEmitter())
-            self.pts_settings.append({"autorefresh": True, "pts_IQ": 100, "pts_ADC": 100})
+        self.iq_channels_list = list(range(1, 1+4)) # number of channels is set by the hardware, we label everything starting from 1 to avoid confusion wrt to the GUI
+        self.adc_channels_list = list(range(1, 1+2)) # number of channels is set by the hardware, we label everything starting from 1 to avoid confusion wrt to the GUI
+
+        self.perChannelEmitters = dict()
+        self.pts_settings = dict()
+        for channel_index in self.iq_channels_list:
+            self.perChannelEmitters[channel_index] = perChannelSignalEmitter()
+            self.pts_settings[channel_index] = {"autorefresh": True, "pts_IQ": 100, "pts_ADC": 100}
 
         self.sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
         self.sl.dev.OpenTCPConnection("192.168.2.34")
@@ -78,7 +80,7 @@ class Test(QtWidgets.QWidget):
 
     def set_num_points(self, channel_id, d):
         """ Called when the GUI wants to change the number of points being read from the ADC and IQ sources """
-        self.pts_settings[channel_id-1] = dict(d) # just make a local copy
+        self.pts_settings[channel_id] = dict(d) # just make a local copy
 
     def reset_channel_phase(self, channel_id):
         """ Qt slot, called when the user presses a channel's "reset phase" button.
@@ -156,11 +158,11 @@ class Test(QtWidgets.QWidget):
         tictoc(self, "write to disk")
 
         ts = data['timestamp']
-        for channel in range(1, self.num_iq_channels+1):
+        for channel in self.iq_channels_list:
             phi = data['phi%d' % channel]
             freq = self.frequencyCounterFromPhaseData(ts, phi)
             tictoc(self, "freq counter")
-            self.perChannelEmitters[channel-1].sig_new_freq.emit(freq)
+            self.perChannelEmitters[channel].sig_new_freq.emit(channel, freq)
             tictoc(self, "emit")
         self.bDisplayTiming = False
 
@@ -190,46 +192,54 @@ class Test(QtWidgets.QWidget):
         adc_channel_to_linked_iq_channels = {
             1: (1, 2),
             2: (3, 4)}
-        for adc_channel_id in range(self.num_adc_channels):
-            iq_channel1, iq_channel2 = adc_channel_to_linked_iq_channels[adc_channel_id+1]
-            N1 = self.pts_settings[iq_channel1-1]["pts_ADC"]
-            N2 = self.pts_settings[iq_channel2-1]["pts_ADC"]
+        for adc_channel_id in self.adc_channels_list:
+            iq_channel1, iq_channel2 = adc_channel_to_linked_iq_channels[adc_channel_id]
+            N1 = self.pts_settings[iq_channel1]["pts_ADC"]
+            N2 = self.pts_settings[iq_channel2]["pts_ADC"]
             N_ADC = max(N1, N2) # we grab the longest trace requested, then emit just what was requested by each
-            bAutoRefresh1 = self.pts_settings[iq_channel1-1]["autorefresh"] and (iq_channel1-1 == self.current_tab)
-            bAutoRefresh2 = self.pts_settings[iq_channel2-1]["autorefresh"] and (iq_channel2-1 == self.current_tab)
+            bAutoRefresh1 = self.pts_settings[iq_channel1]["autorefresh"] and (iq_channel1 == self.current_tab)
+            bAutoRefresh2 = self.pts_settings[iq_channel2]["autorefresh"] and (iq_channel2 == self.current_tab)
             if not bAutoRefresh1 and not bAutoRefresh2:
                 continue
             # fs = 125e6
             # adc_data = 0.1*np.cos(2*np.pi*15e6/125e6*np.linspace(0, N-1, N)) + 0.01*np.random.randn(N)
-            (timestamp, adc_data) = self.sl.getADCdata(adc_channel_id+1, N_ADC) # adc numbers are 1-based
-            scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(adc_channel_id+1))
+            (timestamp, adc_data) = self.sl.getADCdata(adc_channel_id, N_ADC) # adc numbers are 1-based
+            scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(adc_channel_id))
 
             # adc_data = self.getIQdata(1, N)
             if adc_data is not None:
                 if bAutoRefresh1:
-                    self.perChannelEmitters[iq_channel1-1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
+                    self.perChannelEmitters[iq_channel1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
                 if bAutoRefresh2:
-                    self.perChannelEmitters[iq_channel2-1].sig_new_adc_data.emit(adc_data[:N2], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
+                    self.perChannelEmitters[iq_channel2].sig_new_adc_data.emit(adc_data[:N2], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
 
 
         # IQ channels are independent otherwise
-        for iq_channel_id in range(self.num_iq_channels):
-            if not self.pts_settings[iq_channel_id]["autorefresh"] or (iq_channel_id != self.current_tab):
+        for iq_channel_id in self.iq_channels_list:
+            if not self.shouldIQchannelRefresh(iq_channel_id):
                 continue
             N = self.pts_settings[iq_channel_id]["pts_IQ"]
-            (timestamp, complex_baseband) = self.sl.getIQdata(iq_channel_id+1, N) # ids are 1-based here too
+            (timestamp, complex_baseband) = self.sl.getIQdata(iq_channel_id, N) # ids are 1-based here too
             # complex_baseband = 0.1*np.exp(1j*np.linspace(0, 2*np.pi, N)) + 0.01*np.random.randn(N) + 0.01*1j*np.random.randn(N)
-            scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(iq_channel_id+1))
+            scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(iq_channel_id))
             self.perChannelEmitters[iq_channel_id].sig_new_iq_data.emit(complex_baseband, scale_factor_adc_to_input)
 
     def fasterTimerEvent(self):
         phases = self.sl.phaseReadoutDriver.peakLatestPhases()
         self.sig_phase_point.emit(phases)
 
+    def shouldIQchannelRefresh(self, iq_channel_id):
+        """ Returns True if this IQ channel must refresh its data """
+        if self.current_tab == 0: # Summary tab visible?
+            return True
+        if self.pts_settings[iq_channel_id]["autorefresh"] and iq_channel_id == self.current_tab:
+            return True
+        return False
+
     def updateTabVisibility(self, tab_index):
         self.current_tab = tab_index
-        for k in range(self.num_iq_channels):
-            self.perChannelEmitters[k].sig_set_visible.emit(k == tab_index)
+        for iq_channel_id in self.iq_channels_list:
+            self.perChannelEmitters[iq_channel_id].sig_set_visible.emit(iq_channel_id == tab_index)
 
 class MyScrollArea(QtWidgets.QScrollArea):
     """ Just a normal scrollarea,
@@ -289,28 +299,42 @@ def main():
     test_widget = Test()
     tab_widget = QtGui.QTabWidget()
     tab_widget.resize(1200, 300)
-    vbox = QtWidgets.QVBoxLayout()
+    # vbox = QtWidgets.QVBoxLayout()
+
+    summary_tab_gui = summary_tab.SummaryTab()
+    summary_tab_gui.sig_reset_phase.connect(test_widget.reset_channel_phase)
+    summary_tab_gui.show()
+    tab_widget.addTab(summary_tab_gui, "Summary")
+    # tab_widget.addTab(QtWidgets.QLabel('placeholder'), "Summary placeholder")
 
     GUIs = list()
-    for channel_id in range(4):
-        GUI = channel_gui.ChannelGUI(channel_id+1) # 1-based IDs used here
+    for channel_id in test_widget.iq_channels_list:
+        GUI = channel_gui.ChannelGUI(channel_id) # 1-based IDs used here
 
         # Connect signals to slots
+        # channel GUIs to main:
         GUI.sig_set_num_points.connect(test_widget.set_num_points)
         GUI.sig_setup_LO.connect(test_widget.setup_LO)
         GUI.phaseWidget.sig_reset_phase.connect(test_widget.reset_channel_phase)
+        # main to channel GUIs:
         test_widget.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
         test_widget.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
         test_widget.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
         test_widget.perChannelEmitters[channel_id].sig_set_visible.connect(GUI.setVisibility)
+        test_widget.perChannelEmitters[channel_id].sig_new_freq.connect(summary_tab_gui.newFreqData) # oddball
+        # main to summary tab:
         test_widget.sig_new_settings.connect(GUI.newSettings)
         test_widget.sig_phase_point.connect(GUI.newPhasePoint)
+        test_widget.sig_phase_point.connect(summary_tab_gui.newPhasePoint)
 
+        # channel GUIs to summary:
+        GUI.sig_new_Amplitude.connect(summary_tab_gui.newAmplitude)
+        GUI.sig_new_SNR.connect(summary_tab_gui.newSNR)
         # Trigger a few updates now that the signals have been connected
         GUI.probingSettingsChanged()
 
         # vbox.addWidget(GUI)
-        tab_widget.addTab(GUI, "Channel %d" % (channel_id+1))
+        tab_widget.addTab(GUI, "Channel %d" % (channel_id))
         GUIs.append(GUI)
 
     if len(sys.argv) > 1 and sys.argv[1] == '-amplitude_calibration':
