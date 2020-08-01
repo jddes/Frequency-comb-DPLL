@@ -222,7 +222,8 @@ class ChannelGUI(QtWidgets.QWidget):
 
     def newIQdata(self, complex_baseband, scale_factor_adc_to_input):
         self.updateSNRdisplay(complex_baseband)
-        self.updateIQdisplay(complex_baseband/scale_factor_adc_to_input)
+        mean_amplitude = self.updateIQdisplay(complex_baseband/scale_factor_adc_to_input)
+        self.updateAmplitudeDisplay(mean_amplitude)
 
         plot_type = self.comboPlotType.currentText()
         if plot_type == "IQ timeseries":
@@ -341,7 +342,8 @@ class ChannelGUI(QtWidgets.QWidget):
             assert self.RBW_text_from_value(self.RBW_value_from_text(text)) == text
 
     def updateIQdisplay(self, complex_baseband, N_max_IQ = 10e3):
-        """ N_max_IQ is the max number of points to display in the IQ graph """
+        """ N_max_IQ is the max number of points to display in the IQ graph.
+        Returns the mean amplitude in Volts """
         t = tictoc(self)
 
         N_show = int(np.min((len(complex_baseband), N_max_IQ)))
@@ -362,7 +364,12 @@ class ChannelGUI(QtWidgets.QWidget):
         self.plot_IQ.setXRange(-1.5, 1.5)
         self.plot_IQ.setYRange(-1.5, 1.5)
 
+        tictoc(self, 'Display IQ')
+        return mean_amplitude
+
+    def updateAmplitudeDisplay(self, mean_amplitude):
         # input signal is A*cos(), baseband signal is A*exp(),
+        # mean_amplitude = A
         # average power in input signal is thus A**2/2/Z
         impedance = 50
         mean_power_W = mean_amplitude**2/2/impedance
@@ -380,8 +387,6 @@ class ChannelGUI(QtWidgets.QWidget):
             else:
                 self.colorCoding(self.lblAmplitude_value, 'ok')
                 self.colorCoding(self.lblAmplitude, 'ok',)
-        
-        tictoc(self, 'Display IQ')
 
     def updateSNRdisplay(self, complex_baseband):
         """ Compute and display the SNR on the amplitude of the baseband IQ signal """
