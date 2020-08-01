@@ -50,7 +50,7 @@ class ChannelGUI(QtWidgets.QWidget):
         self.populateLOcombo()
         self.tab_visible = True
 
-        self.widgetSettings.editExpectedFreq.setText('55')
+        self.widgetSettings.editExpectedFreq.setText('40')
 
         # default values for target IF:
         if self.channel_id % 2 == 1: # odd channels are low-passed
@@ -151,7 +151,8 @@ class ChannelGUI(QtWidgets.QWidget):
         d["LO_enable"] = self.widgetSettings.chkEnableLO.isChecked()
         
         try:
-            d["expected_freq"] = 1e6*float(self.widgetSettings.editExpectedFreq.text())
+            d["expected_freq_str"] = self.widgetSettings.editExpectedFreq.text()
+            d["expected_freq"] = 1e6*float(d["expected_freq_str"])
             d["target_if"] = 1e6*float(self.widgetSettings.editTargetIF.text())
         except:
             self.widgetSettings.lblStatus.setText('Invalid value')

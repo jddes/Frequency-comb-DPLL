@@ -1,12 +1,51 @@
 import math
 import functools
+import numpy as np
+from time import perf_counter as c
 
 class RationalNumber():
     """ represents a rational number as a ratio of integers """
-    def __init__(self, numerator, denominator):
-        self.num   = FactoredInteger(numerator)
-        self.denom = FactoredInteger(denominator)
+    def __init__(self, numerator=None, denominator=None, from_string=None, scale_factor=None):
+        if from_string is not None:
+            self.fromString(from_string, scale_factor)
+        else:
+            t1 = c()
+            self.num   = FactoredInteger(numerator)
+            self.denom = FactoredInteger(denominator)
+            t2 = c()
+            if t2-t1 >= 5e-3:
+                print("%s: %f sec" % (str(self), t2-t1))
+        t1 = c()
         self.simplify()
+        t2 = c()
+        if t2-t1 >= 5e-3:
+            print("simplify %s: %f sec" % (str(self), t2-t1))
+
+    def fromString(self, s, scale_factor):
+        """ Interprets string s as a rational fraction float(s)*scale_factor,
+        but without actually using the float() built-in, which produces a floating-point number """
+        decimal_index = s.find('.')
+        if decimal_index == -1:
+            # Easy case: value is an integer * scale_factor
+            self.num = FactoredInteger(int(s))
+            self.denom = FactoredInteger(1)
+        else:
+            # Slightly harder case: convert integer and fractional parts separately as integers
+            int_part = int(s[:decimal_index])
+            if decimal_index == len(s)-1:
+                # pathological case: number ends with a decimal point with no digits afterwards
+                fract_part = 0
+                fract_digits = 0
+            else:
+                fract_part_str = s[decimal_index+1:]
+                fract_digits = len(fract_part_str)
+                fract_part = int(fract_part_str)
+            # combine integer and fractional parts into a single rational number:
+            self.num = FactoredInteger(int_part * 10**(fract_digits) + fract_part)
+            self.denom = FactoredInteger(10**fract_digits)
+        # add scale factor:
+        if scale_factor is not None:
+            self.num = self.num * scale_factor
 
     def __mul__(self, other):
         if isinstance(other, int):
@@ -26,14 +65,48 @@ class RationalNumber():
         if not isinstance(other, RationalNumber):
             raise Exception("Operator not implemented. %s * %s" % (type(self), type(other)))
 
-        lcm = lowest_common_multiple(self.factors, other.factors)
-        self_factors,  _ = eliminate_common_factors(self.factors, lcm)
-        other_factors, _ = eliminate_common_factors(other.factors, lcm)
-        num1 = product_of_factors(self_factors) * self.num
-        num2 = product_of_factors(other_factors) * other.num
+        lcm = lowest_common_multiple(self.denom.factors, other.denom.factors)
+        _, lcm_factors1 = eliminate_common_factors(self.denom.factors, lcm.factors)
+        _, lcm_factors2 = eliminate_common_factors(other.denom.factors, lcm.factors)
+        num1 =  self.num * product_of_factors(lcm_factors1)
+        num2 = other.num * product_of_factors(lcm_factors2)
         num = FactoredInteger(num1+num2)
         result = RationalNumber(num, lcm)
         return result
+
+    def __sub__(self, other):
+        minus_other = RationalNumber(other.num * -1, other.denom)
+        return self + minus_other
+
+    def isNegative(self):
+        """ Returns True if the number is negative, False otherwise """
+        bSignIsNegative =  self._isNegative(self.num.factors)
+        bSignIsNegative |= self._isNegative(self.denom.factors)
+        return bSignIsNegative
+
+    def _isNegative(self, factors):
+        """ Returns true if the list of factors describes a negative number """
+        bSignIsNegative = False
+        for factor in factors:
+            if factor < 0:
+                bSignIsNegative = not bSignIsNegative
+        return bSignIsNegative
+
+    def makePositive(self, factors):
+        """ Modifies a list of factors in-place to make them all positive """
+        for index, factor in enumerate(factors):
+            if factor < 0:
+                factors[index] = -factor
+
+    def __abs__(self):
+        num = FactoredInteger(self.num)
+        denom = FactoredInteger(self.denom)
+        self.makePositive(num.factors)
+        self.makePositive(denom.factors)
+        # need to make the internal state of num and denom consistent
+        num.x = product_of_factors(num.factors)
+        denom.x = product_of_factors(denom.factors)
+        return RationalNumber(num, denom)
 
     def __eq__(self, other):
         if self.num.x*other.denom.x == other.num.x*self.denom.x:
@@ -42,7 +115,7 @@ class RationalNumber():
             return False
 
     def __str__(self):
-        return "num=%s, denom=%s" % (self.num, self.denom)
+        return "RationalNumber(%s/%s)" % (self.num, self.denom)
 
     def __repr__(self):
         return self.__str__()
@@ -70,6 +143,7 @@ class FactoredInteger():
     """ Represents an integer, but maintains the list of its prime factors """
     def __init__(self, x, factors=None):
         """ factors should be a list of prime factors if it is known, otherwise it will be computed """
+        t1 = c()
         if isinstance(x, FactoredInteger):
             self.x = x.x
             self.factors = x.factors
@@ -77,6 +151,9 @@ class FactoredInteger():
             self.x = x
             if factors is None:
                 self.factors = factor(x)
+                t2 = c()
+                if t2-t1 >= 5e-3:
+                    print("%s: %f sec" % (str(self), t2-t1))
             else:
                 self.factors = factors
         else:
@@ -167,18 +244,22 @@ def lowest_common_multiple(list1, list2):
             reduced_list2.remove(factor)
 
     factors = reduced_list1 + reduced_list2
-
-    # (reduced_list1, reduced_list2) = eliminate_common_factors(list1, list2)
-    # print(locals())
-    # factors = reduced_list1 + reduced_list2
     factors.sort()
     value = product_of_factors(factors)
     return_value = FactoredInteger(value, factors)
     return return_value
 
+    # 3**1 and 3**2: take 3**2: combine lists, removed 1 only
+    # 3**2 and 3**8: take 3**8: combine lists, removed 2 only
+    # 3**8 and 3**8: take 3**8: combine lists, removed 8 only
+    # so a rule of "remove each factor by the amount that it lives in the lowest power" seems to work
+    # 3**1 and 3**1: take 3**1: combine lists, removed 1 only
+
+
 def factor(x):
     """ Factorize the integer x into its prime factors (and 1, to avoid the pathological case).
-    Negative integers are handled by adding an extra factor equal to -1 to the list """
+    Negative integers are handled by adding an extra factor equal to -1 to the list.
+    Speedup based on https://stackoverflow.com/a/830001 """
     if x == 0:
         factors = [0] # not technically a prime number, but this will avoid having to handle this as a special case later on
         return factors
@@ -191,19 +272,114 @@ def factor(x):
     else:
         factors = []
 
-    # max_factor = math.ceil(math.sqrt(x))
+    max_possible_factor = math.ceil(math.sqrt(x))
     # print("factorizing %d up to %d" % (x, max_factor))
     y = x
     # brute-force algorithm, since that's fast enough for our purposes
     candidate = 2
+    iterations = 0
+    next_iterations_print = 1
+
+    # start with 2 and 3 as special cases, then loop test 6*n-1 and 6*n+1 in the inner loop only:
+    while y%2 == 0:
+        y = y // 2
+        factors.append(2)
+    while y%3 == 0:
+        y = y // 3
+        factors.append(3)
+
+    multOfSix = 6
+    candidate1 = 6-1
+    candidate2 = 6+1
     while True:
-        ratio = y//candidate
-        if ratio*candidate == y:
-            factors.append(candidate)
-            y = ratio
-        else:
-            candidate += 1
+
+        while y%candidate1==0:
+            factors.append(candidate1)
+            y = y//candidate1
+        while y%candidate2==0:
+            factors.append(candidate2)
+            y = y//candidate2
+        candidate1 += 6
+        candidate2 += 6
+
         if y == 1:
             break
+        if candidate1 >= max_possible_factor:
+            # this means that the remaining number is prime
+            factors.append(y)
+            break
 
+        # if iterations >= next_iterations_print:
+        #     print("factor(): iteration 10**%f" % math.log10(iterations))
+        #     next_iterations_print = 10*next_iterations_print
+    # print("factor(): 10**%f iterations taken to factor %d" % (math.log10(iterations), x)) 
+    factors.sort()
     return factors
+
+def primes(n):
+    """ Generate all primes up to n, using the sieve of Eratosthenes.
+    Following pseudo-code on https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes.
+    requires O(n) of memory, so avoid using too large values of n """
+    sqrt_n = math.ceil(math.sqrt(n))
+    is_prime = np.ones(n+1, dtype=np.bool) # actually store from 0 to n instead of 2 to n per the pseudo-code
+    is_prime[0:2] = False
+    for i in range(2, sqrt_n+1):
+        if not is_prime[i]:
+            continue
+        is_prime[i*i:n+1:i] = False
+    return np.nonzero(is_prime)[0]
+
+def factor2(x, list_of_primes):
+    # this time, we use a list of primes and only test those
+    # ends up more than twice as fast as the first version
+    if x == 0:
+        factors = [0] # not technically a prime number, but this will avoid having to handle this as a special case later on
+        return factors
+    if x == 1:
+        factors = [1] # not technically a prime number, but this will avoid having to handle this as a special case later on
+        return factors
+    if x < 0:
+        factors = [-1]
+        x = -x
+    else:
+        factors = []
+
+    y = x
+    k = 0
+    max_possible_factor = math.ceil(math.sqrt(x))
+    while True:
+        candidate = int(list_of_primes[k])
+        if y%candidate == 0:
+            factors.append(candidate)
+            y = y//candidate
+        else:
+            k+=1
+
+        # exit conditions:
+        if y == 1:
+            break
+        if candidate >= max_possible_factor:
+            # this means that the remaining number is prime
+            factors.append(y)
+            break
+    factors.sort()
+    return factors
+
+list_of_primes = primes(2**25)
+# list_of_primes = primes(100)
+factor = lambda x : factor2(x, list_of_primes) # monkey-patching
+
+if __name__ == '__main__':
+    from time import perf_counter as c
+    t1 = c()
+    factor(44948035343483)
+    print("factor(44948035343483): %.3f sec" % (c()-t1))
+    t1 = c()
+    res = factor(2**47+5) # 2**47+5 is prime, so should be worst-case for the trial-division algorithm above
+    print("factor(2**47+5=%d): %.3f sec" % (2**47+5, c()-t1))
+    print(res)
+    assert res == [2**47+5]
+
+    t1 = c()
+    print(primes(int(2**24)))
+    print("primes(2**24): %f sec" % (c()-t1))

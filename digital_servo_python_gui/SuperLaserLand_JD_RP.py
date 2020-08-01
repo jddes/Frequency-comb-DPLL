@@ -19,6 +19,7 @@ import RP_PLL
 import bin_conv
 import uart_to_spi_bridge
 import adf4351
+import rationals
 
 from common import make_sure_path_exists, tictoc, smooth
 
@@ -126,6 +127,9 @@ class SuperLaserLand_JD_RP:
 		self.adf4351 = dict()
 		self.adc_volts_per_counts = 1./2**14 * 21.9e-3/13.4e-3 # calibrated on one unit on 2020-07-18 using a known-amplitude tone, turned off 7V supply to put RF amps in high-Z
 		self.adc_bits = 14
+		self.R_LO3 = dict()
+		for channel_id in self.channels_list:
+			self.R_LO3[channel_id] = rationals.RationalNumber(0, 1) # this will get fill in once we know all the required values
 		self.load_amplitude_calibration()
 
 		if controller is not None:
@@ -203,6 +207,7 @@ class SuperLaserLand_JD_RP:
 			return (None, None)
 		ts_as_int16 = raw_data_int16[:4]
 		ts_as_int64 = np.copy(np.frombuffer(ts_as_int16, dtype=np.int64))
+		ts_as_int64 = ts_as_int64[0]
 		logger_data = raw_data_int16[4:]
 		return (ts_as_int64, logger_data)
 
@@ -226,6 +231,10 @@ class SuperLaserLand_JD_RP:
 		N_min = min(len(data_real), len(data_imag))
 		data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
 		data_complex = self.convertIQCountsToVolts(data_complex)
+
+		LO3_phase_radians = self.phaseReadoutDriver.get3rdLOPhaseRadians(timestamp, self.R_LO3[iq_channel])
+		data_complex = data_complex * np.exp(-1j*LO3_phase_radians)
+
 		return (timestamp, data_complex)
 
 	def getDataSafe(self, selector, N_samples):
@@ -258,9 +267,13 @@ class SuperLaserLand_JD_RP:
 		""" channel_id can be either 1, 2, 3 or 4 """
 		assert channel_id in self.channels_list
 		self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
-		dds_freq_word = int(round(2**48 * frequency_in_hz/self.fs))
+		print("FIXME: made 2nd LO freq resolution lower for testing. change this back")
+		dds_freq_word = int(round(2**(48-18) * frequency_in_hz/self.fs)) * 2**18
+		# dds_freq_word = int(round(2**48 * frequency_in_hz/self.fs))
 		dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
 		self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
+
+		self.R_LO3[channel_id] = self.phaseReadoutDriver.compute3rdLOFreq(channel_id) # just for debugging
 
 	def set_dac_limits(self, dac_number, limit_low, limit_high, bSendToFPGA = True):
 		""" Valid DAC numbers are 1 and 2 """
@@ -497,6 +510,12 @@ class SuperLaserLand_JD_RP:
 		# time.sleep(100e-3) # leave some time for the uC to finish programming the adf4351
 		# self.uart_uc_set_enable(0)
 
+	def set_expected_freq(self, channel_id, expected_freq_str, ref_freq_str):
+		""" Must be called before set_adf4351_freq(), provides required information for
+		the 3rd LO applied when reading out the phase """
+		self.user_inputs["expected_freq_str_ch%d" % channel_id] = expected_freq_str
+		self.user_inputs["ref_freq_str"] = ref_freq_str
+
 	def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1,
 							   LO_pwr='+5dBm', LO_enabled=True):
 		""" Channel can be 1, 2, 3 or 4 """
@@ -523,6 +542,21 @@ class SuperLaserLand_JD_RP:
 		self.set_adf4351(uart_vals)
 		print(self.reg_values)
 		return self.adf4351[channel]
+
+	def get_adf4351_settings(self, channel):
+		""" Returns a tuple containing the numerator and denominator of the synthesized frequency ratio:
+		f_LO = f_ref * num/denom.
+		Output is valid only if we have pushed to the adf4351 while connected """
+		self.bDisplayTiming = True
+		tictoc(self)
+		D = 2**self.adf4351[channel].reg["RF_DIVIDER_SEL"]
+		INT = self.adf4351[channel].reg["INT"]
+		R = self.adf4351[channel].reg["R"]
+		num = INT
+		denom = D*R
+		tictoc(self, "")
+		self.bDisplayTiming = False
+		return (num, denom)
 		
 
 class phaseReadoutDriver():
@@ -587,7 +621,22 @@ class phaseReadoutDriver():
 	def peakLatestChunk(self):
 		""" Read the most recent available chunk, but don't update the read pointer for subsequent read. """
 		latest_chunk_id = self._getLatestChunkIndex()
-		return self._readDataChunks(latest_chunk_id, number_of_chunks=1, bUpdateReadPointer=False)
+		latest_chunk_data = self._readDataChunks(latest_chunk_id, number_of_chunks=1, bUpdateReadPointer=False)
+		self.apply3rdLO(latest_chunk_data)
+		# timestamp = latest_chunk_data['timestamp'][0]
+		# print("peakLatestChunk(): ts=", timestamp)
+		# for channel_id in self.sl.channels_list:
+		# 	LO3_phase_int = self.get3rdLOPhaseInt(timestamp, self.sl.R_LO3[channel_id])
+		# 	latest_chunk_data['phi%d' % channel_id] -= LO3_phase_int
+		
+		return latest_chunk_data
+
+	def apply3rdLO(self, data):
+		for pt_index in range(len(data)):
+			timestamp = data['timestamp'][pt_index]
+			for channel_id in self.sl.channels_list:
+				LO3_phase_int = self.get3rdLOPhaseInt(timestamp, self.sl.R_LO3[channel_id])
+				data['phi%d' % channel_id][pt_index] -= LO3_phase_int
 
 	def _readDataChunks(self, first_chunk_id, number_of_chunks, bUpdateReadPointer=True):
 		self.write("phase_logger_read_start_address", 0) # sets the read pointer to the first point
@@ -642,8 +691,65 @@ class phaseReadoutDriver():
 		if chunksAvailable == 0:
 			return None
 		# print("readData(): reading the %d chunks available" % chunksAvailable)
-		return self._readDataChunks(first_chunk_id=self.last_chunk_id+1,
+		data = self._readDataChunks(first_chunk_id=self.last_chunk_id+1,
 									number_of_chunks = chunksAvailable)
+		self.apply3rdLO(data)
+		return data
+
+	def compute3rdLOFreq(self, channel_id):
+		""" Applies a 3rd frequency shifting operation, which will bring the net
+		frequency shift from input to saved data equal to the exact desired shift.
+		This is necessary because of the finite possibilities for LO choices upstream """
+		R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
+		one_over_R_ADC = rationals.RationalNumber(R_ADC.denom, R_ADC.num)
+		(LO1_num, LO1_denom) = self.sl.get_adf4351_settings(channel_id)
+		R_LO1 = rationals.RationalNumber(LO1_num, LO1_denom)
+		k_DDS = self.sl.reg_values["ref_freq%d" % channel_id]
+		denom_DDS = rationals.FactoredInteger(2**48, 48*[2]) # provide the factorized number directly to avoid computing it each time (not sure if that matters overall, but it's easy to do
+		R_DDS = rationals.RationalNumber(k_DDS, denom_DDS)
+		R_LO2 = R_ADC * R_DDS
+
+		F_in = rationals.RationalNumber(from_string = self.sl.user_inputs["expected_freq_str_ch%d" % channel_id], scale_factor=int(1e6))
+		F_ref = rationals.RationalNumber(from_string = self.sl.user_inputs["ref_freq_str"], scale_factor=int(1e6))
+		one_over_F_ref = rationals.RationalNumber(F_ref.denom, F_ref.num)
+		R_in = F_in * one_over_F_ref
+
+		R_LO3 = (abs(R_in - R_LO1) - R_LO2) * one_over_R_ADC
+		print("R_in=", R_in)
+		print("R_ADC=", R_ADC)
+		print("R_LO1=", R_LO1)
+		print("k_DDS=", k_DDS)
+		print("R_DDS=", R_DDS)
+		print("R_LO2=", R_LO2)
+		print("R_LO3=", R_LO3)
+		return R_LO3
+
+	def get3rdLOPhaseRadians(self, timestamp, R_LO3):
+		""" Returns the value of the 3rd LO phase at a given ADC timestamp.
+		Phase is returned in radians, modulo 2*pi """
+		gain = int(2**int(self.n_bits_phase) * int(self.sl.reg_values["phase_logger_n_cycles"]))
+
+		ts_times_num = int(timestamp) * R_LO3.num.x
+		ts_times_num = ts_times_num % R_LO3.denom.x # this will maintain numerical accuracy despite the float() conversion
+		phase_radians = 2*np.pi * float(ts_times_num) / R_LO3.denom.x
+
+		return phase_radians
+
+	def get3rdLOPhaseInt(self, timestamp, R_LO3):
+		""" Returns the value of the 3rd LO phase at a given ADC timestamp.
+		Phase is returned in integer units of unwrapped phase produced by the phase readout.
+		timestamp can either be a numpy array of int64 values, or a scalar int """
+		gain = int(2**int(self.n_bits_phase) * int(self.sl.reg_values["phase_logger_n_cycles"]))
+		inner_func = lambda ts : (gain * int(ts) * R_LO3.num.x) // R_LO3.denom.x
+		if isinstance(timestamp, np.ndarray):
+			phase_int = np.zeros(timestamp.shape, dtype=np.int64)
+			for ts in timestamp:
+				phase_int[k] = inner_func(timestamp)
+		else:
+			# scalar case
+			phase_int = inner_func(timestamp)
+
+		return phase_int
 
 # end class definition
 

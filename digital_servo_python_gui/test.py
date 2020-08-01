@@ -55,7 +55,7 @@ class Test(QtWidgets.QWidget):
         self.sl.dev.OpenTCPConnection("192.168.2.34")
         self.sl.phaseReadoutDriver.startLogging()
         self.sl.setADCclockPLL( f_ref=25e6, bExternalClock=True)
-        self.sl.setADCclockPLL( f_ref=200e6, bExternalClock=False)
+        # self.sl.setADCclockPLL( f_ref=200e6, bExternalClock=False)
 
         self.fastTimer = QtCore.QTimer(self)
         self.fastTimer.timeout.connect(self.fastTimerEvent)
@@ -84,7 +84,9 @@ class Test(QtWidgets.QWidget):
         """ Called when the GUI wants to change the LO settings
         d must contain the following fields:
         d["channel_id"]
+        d["expected_freq_str"]
         d["expected_freq"]
+        d["ref_freq_str"]
         d["target_if"]
         d["upper_sideband"]
         d["LO_pwr"]
@@ -100,6 +102,9 @@ class Test(QtWidgets.QWidget):
 
         # TODO: input validation vs actual range accessible?
         print("setup_LO(): channel_id: ", d["channel_id"])
+        d["ref_freq_str"] = "25.00" # 25 MHz hardcoded! FIXME!
+        self.sl.set_expected_freq(d["channel_id"], d["expected_freq_str"], d["ref_freq_str"])
+        print("FIXME: make ref freq configurable, maybe refactor where we handle setup_LO")
         a = self.sl.set_adf4351_freq(out_freq_target, self.ref_freq, self.pfd_target_freq, d["channel_id"], d["LO_pwr"], d["LO_enable"])
         D = 2**a.reg["RF_DIVIDER_SEL"]
         INT = a.reg["INT"]
@@ -134,23 +139,32 @@ class Test(QtWidgets.QWidget):
         return IF_actual
 
     def slowTimerEvent(self):
+        self.bDisplayTiming = True
+        tictoc(self)
         data = self.sl.phaseReadoutDriver.readData()
         if data is None:
             return
+        tictoc(self, "read")
         for field in data.dtype.fields:
             with open('out_%s.bin' % field, 'ab') as f:
                 f.write(data[field].tobytes())
+        tictoc(self, "write to disk")
 
         ts = data['timestamp']
         for channel in range(1, self.num_iq_channels+1):
             phi = data['phi%d' % channel]
             freq = self.frequencyCounterFromPhaseData(ts, phi)
+            tictoc(self, "freq counter")
             self.perChannelEmitters[channel-1].sig_new_freq.emit(freq)
+            tictoc(self, "emit")
+        self.bDisplayTiming = False
 
     def frequencyCounterFromPhaseData(self, ts, phi):
         """ TODO: This needs to be improved,
         right now the 'gate time' will vary with the timers' period variation,
         which is not great """
+        self.bDisplayTiming = True
+        tictoc(self)
         phi = phi - phi[0]
         phi = phi.astype(np.float) # this limits accuracy to at best ~1e-15 due to computations in double-precision floats
         phi = phi/2**self.sl.phaseReadoutDriver.n_bits_phase
@@ -158,9 +172,12 @@ class Test(QtWidgets.QWidget):
         # phi is now in cycles
         ts = ts - ts[0]
         ts = ts.astype(np.float)
+        freq = 0
         fit = np.polynomial.Polynomial.fit(ts, phi, 1)
         freq = fit.convert().coef[1] # freq is in units of cycles of the IQ waveform/cycles of the ADC clock
         freq_Hz = freq * self.sl.fs
+        tictoc(self, "fit")
+        self.bDisplayTiming = False
         return freq_Hz
 
     def fastTimerEvent(self):
@@ -206,7 +223,6 @@ class Test(QtWidgets.QWidget):
 
     def updateTabVisibility(self, tab_index):
         self.current_tab = tab_index
-        print("tab_index=", tab_index)
         for k in range(self.num_iq_channels):
             self.perChannelEmitters[k].sig_set_visible.emit(k == tab_index)
 
@@ -299,6 +315,7 @@ def main():
     # tab_widget.setLayout(vbox)
     # main_widget.show()
     tab_widget.currentChanged.connect(test_widget.updateTabVisibility)
+    tab_widget.setWindowTitle('Frequency counter/phase meter')
     tab_widget.show()
 
     # scrollarea = MyScrollArea() # need a scrollarea since 4 channel is too big...
