@@ -32,7 +32,10 @@ class SummaryTab(QtWidgets.QWidget):
             d = dict()
             self.channel_widgets[widget_name] = d
             for channel_id in self.channels_list:
-                self.channel_widgets[widget_name][channel_id] = getattr(self, '%s%d' % (widget_name, channel_id))
+                widget = getattr(self, '%s%d' % (widget_name, channel_id))
+                if widget_name.startswith('lbl'):
+                    widget.setText('')
+                self.channel_widgets[widget_name][channel_id] = widget
 
         # connect signals to slots:
         for channel_id in self.channel_widgets["btnResetPhase"]:
@@ -67,7 +70,7 @@ class SummaryTab(QtWidgets.QWidget):
 
     def newFreqData(self, channel_id, freq_Hz):
         w = self.channel_widgets["lblFreq"][channel_id]
-        w.setText('%.6f Hz' % freq_Hz)
+        w.setText('% .6f Hz' % freq_Hz)
 
     def newPhasePoint(self, phase_data):
         if phase_data is None:
