@@ -355,7 +355,15 @@ class ChannelGUI(QtWidgets.QWidget):
         if mean_amplitude == 0:
             mean_amplitude = 1e-6 # just to avoid a divide by zero warning
 
-        self.curve_IQ.setData(np.real(complex_baseband)/mean_amplitude, np.imag(complex_baseband)/mean_amplitude)
+        minimum_amplitude_for_agc = 1e-3 # Volts
+        if mean_amplitude >= minimum_amplitude_for_agc:
+            # normal case: IQ display has unity amplitude
+            display_scale_factor = 1/mean_amplitude
+        else:
+            # at very low input levels, we clamp the max gain
+            display_scale_factor = 1/minimum_amplitude_for_agc
+
+        self.curve_IQ.setData(np.real(complex_baseband)*display_scale_factor, np.imag(complex_baseband)*display_scale_factor)
         self.plot_IQ.setXRange(-1.5, 1.5)
         self.plot_IQ.setYRange(-1.5, 1.5)
 

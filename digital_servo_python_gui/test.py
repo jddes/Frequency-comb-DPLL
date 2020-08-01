@@ -139,7 +139,7 @@ class Test(QtWidgets.QWidget):
         return IF_actual
 
     def slowTimerEvent(self):
-        self.bDisplayTiming = True
+        # self.bDisplayTiming = True
         tictoc(self)
         data = self.sl.phaseReadoutDriver.readData()
         if data is None:
@@ -163,7 +163,7 @@ class Test(QtWidgets.QWidget):
         """ TODO: This needs to be improved,
         right now the 'gate time' will vary with the timers' period variation,
         which is not great """
-        self.bDisplayTiming = True
+        # self.bDisplayTiming = True
         tictoc(self)
         phi = phi - phi[0]
         phi = phi.astype(np.float) # this limits accuracy to at best ~1e-15 due to computations in double-precision floats
