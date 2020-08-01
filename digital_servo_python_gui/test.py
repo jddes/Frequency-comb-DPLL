@@ -218,8 +218,8 @@ class Test(QtWidgets.QWidget):
             self.perChannelEmitters[iq_channel_id].sig_new_iq_data.emit(complex_baseband, scale_factor_adc_to_input)
 
     def fasterTimerEvent(self):
-        data = self.sl.phaseReadoutDriver.peakLatestChunk()
-        self.sig_phase_point.emit(data)
+        phases = self.sl.phaseReadoutDriver.peakLatestPhases()
+        self.sig_phase_point.emit(phases)
 
     def updateTabVisibility(self, tab_index):
         self.current_tab = tab_index

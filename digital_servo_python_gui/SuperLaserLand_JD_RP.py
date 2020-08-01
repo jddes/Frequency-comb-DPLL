@@ -618,20 +618,32 @@ class phaseReadoutDriver():
 		current_chunk_id = self._getInProgressChunkIndex()
 		return (current_chunk_id-1 - self.last_chunk_id) % self.number_of_chunks
 
-	def peakLatestChunk(self):
+	def _peakLatestChunk(self):
 		""" Read the most recent available chunk, but don't update the read pointer for subsequent read. """
 		latest_chunk_id = self._getLatestChunkIndex()
 		latest_chunk_data = self._readDataChunks(latest_chunk_id, number_of_chunks=1, bUpdateReadPointer=False)
 		self.apply3rdLO(latest_chunk_data)
-		# timestamp = latest_chunk_data['timestamp'][0]
-		# print("peakLatestChunk(): ts=", timestamp)
-		# for channel_id in self.sl.channels_list:
-		# 	LO3_phase_int = self.get3rdLOPhaseInt(timestamp, self.sl.R_LO3[channel_id])
-		# 	latest_chunk_data['phi%d' % channel_id] -= LO3_phase_int
-		
 		return latest_chunk_data
 
+	def peakLatestPhases(self):
+		""" Returns a dict with the latest phase offset value for each channel.
+		Units are radians, dict keys are the channel IDs 1 through 4 """
+		result = dict()
+		data = self._peakLatestChunk()
+		for channel_id in self.sl.channels_list:
+			phi = data['phi%d' % channel_id]
+			phi = phi.astype(np.float)
+			phi = phi[0]/2**self.n_bits_phase
+			phi = phi/self.sl.reg_values["phase_logger_n_cycles"]
+			# phi is now in cycles
+			result[channel_id] = phi
+		return result
+
 	def apply3rdLO(self, data):
+		""" Removes an additional phase ramp from the data measured by the fpga.
+		This takes into account the finite resolution that we have in setting the various
+		LO frequencies in the chain compared to what is requested by the user.
+		Also handles the manual phase reset that can be requested by the user """
 		for pt_index in range(len(data)):
 			timestamp = data['timestamp'][pt_index]
 			for channel_id in self.sl.channels_list:

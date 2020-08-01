@@ -229,16 +229,11 @@ class ChannelGUI(QtWidgets.QWidget):
             self.plotIQTimeseries(complex_baseband, self.fs, plot_type)
 
     def newPhasePoint(self, phase_data):
-        if phase_data is None or not hasattr(self, 'system_settings'):
-            if self.channel_id == 1:
-                print("newPhasePoint(): no phase data or no system_settings")
+        if phase_data is None:
+            print("newPhasePoint(): no phase data or no system_settings")
             return
-        phi = phase_data['phi%d' % self.channel_id]
-        phi = phi.astype(np.float)
-        phi = phi[0]/2**self.system_settings["n_bits_phase"]
-        phi = phi/self.system_settings["n_cycles"]
-        # phi is now in cycles
-        self.phaseWidget.newPhasePoint(phi)
+        # phi is in cycles
+        self.phaseWidget.newPhasePoint(phase_data[self.channel_id])
 
     def newFreqData(self, freq_Hz):
         self.lblCurrentFreq.setText('%.6f Hz' % freq_Hz)
