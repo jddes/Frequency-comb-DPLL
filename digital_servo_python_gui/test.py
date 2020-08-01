@@ -80,6 +80,11 @@ class Test(QtWidgets.QWidget):
         """ Called when the GUI wants to change the number of points being read from the ADC and IQ sources """
         self.pts_settings[channel_id-1] = dict(d) # just make a local copy
 
+    def reset_channel_phase(self, channel_id):
+        """ Qt slot, called when the user presses a channel's "reset phase" button.
+        Merely passes the command to the phase readout code """
+        self.sl.phaseReadoutDriver.resetChannelPhase(channel_id)
+
     def setup_LO(self, d):
         """ Called when the GUI wants to change the LO settings
         d must contain the following fields:
@@ -293,6 +298,7 @@ def main():
         # Connect signals to slots
         GUI.sig_set_num_points.connect(test_widget.set_num_points)
         GUI.sig_setup_LO.connect(test_widget.setup_LO)
+        GUI.phaseWidget.sig_reset_phase.connect(test_widget.reset_channel_phase)
         test_widget.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
         test_widget.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
         test_widget.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)

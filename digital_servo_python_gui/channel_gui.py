@@ -23,7 +23,7 @@ def round_to_N_sig_figs(x, Nsigfigs):
 
 class ChannelGUI(QtWidgets.QWidget):
     sig_set_num_points = QtCore.pyqtSignal(int, dict)
-    sig_setup_LO = QtCore.pyqtSignal(dict)
+    sig_setup_LO       = QtCore.pyqtSignal(dict)
 
     def __init__(self, channel_id=1, parent=None):
         super().__init__(parent)
@@ -58,7 +58,7 @@ class ChannelGUI(QtWidgets.QWidget):
         else: # even channels are highpassed
             self.widgetSettings.editTargetIF.setText('40')
 
-        self.phaseWidget = PhaseDisplayWidget(self)
+        self.phaseWidget = PhaseDisplayWidget(self, self.channel_id)
         self.gridLayout.addWidget(self.phaseWidget, 2, 1)
 
         # Setup IQ plot
@@ -493,11 +493,14 @@ class TestWidget(QtWidgets.QWidget):
         self.gui_test.newADCdata(adc_data, 1.0)
 
 class PhaseDisplayWidget(QtWidgets.QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    sig_reset_phase = QtCore.pyqtSignal(int)
+
+    def __init__(self, parent=None, channel_id=1, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
 
         self.phi_last = 0
         self.phi_offset = 0
+        self.channel_id = channel_id
 
         self.setupUI()
 
@@ -548,13 +551,13 @@ class PhaseDisplayWidget(QtWidgets.QWidget):
         self.phi_last = phi
 
         for line_index, bar in enumerate(self.bars):
-            phi_scaled = ((self.scale_factors[line_index] * (phi-self.phi_offset) + 0.5) % 1.0) - 0.5
+            phi_scaled = ((self.scale_factors[line_index] * phi + 0.5) % 1.0) - 0.5
             bar.setValue(50+int(round(phi_scaled*100)))
 
-        self.lblPhase.setText('%.6f cycles' % (phi-self.phi_offset))
+        self.lblPhase.setText('%.6f cycles' % phi)
 
     def resetPhase(self):
-        self.phi_offset = self.phi_last
+        self.sig_reset_phase.emit(self.channel_id)
 
 def main():
     # for testing when ran without a parent GUI

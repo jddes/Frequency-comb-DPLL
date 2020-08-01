@@ -232,7 +232,7 @@ class SuperLaserLand_JD_RP:
 		data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
 		data_complex = self.convertIQCountsToVolts(data_complex)
 
-		LO3_phase_radians = self.phaseReadoutDriver.get3rdLOPhaseRadians(timestamp, self.R_LO3[iq_channel])
+		LO3_phase_radians = self.phaseReadoutDriver.get3rdLOPhaseRadians(timestamp, self.R_LO3[iq_channel], iq_channel)
 		data_complex = data_complex * np.exp(-1j*LO3_phase_radians)
 
 		return (timestamp, data_complex)
@@ -267,8 +267,7 @@ class SuperLaserLand_JD_RP:
 		""" channel_id can be either 1, 2, 3 or 4 """
 		assert channel_id in self.channels_list
 		self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
-		print("FIXME: made 2nd LO freq resolution lower for testing. change this back")
-		dds_freq_word = int(round(2**(48-18) * frequency_in_hz/self.fs)) * 2**18
+		dds_freq_word = int(round(2**(48) * frequency_in_hz/self.fs))
 		# dds_freq_word = int(round(2**48 * frequency_in_hz/self.fs))
 		dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
 		self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
@@ -588,6 +587,8 @@ class phaseReadoutDriver():
 		self.fs_nominal = 125e6 # just used once to set output rate, will NOT be updated later
 		self.nominal_output_rate = 100 # this is the target, the actual rate will be a bit off, since that doesn't yield an integer number of cycles
 		self.n_bits_phase = 14 # fractional bits on the arctan extraction inside the fpga
+		self.last_phi_int64 = {k: np.int64(0) for k in self.sl.channels_list} # holds the value of the most recent raw phase (without offset)
+		self.phi_offset_int64 = {k: np.int64(0) for k in self.sl.channels_list} # holds the value of the phase when the user presses "reset phase"
 
 	def write(self, reg_name, value):
 		self.sl.write(reg_name, value)
@@ -632,12 +633,19 @@ class phaseReadoutDriver():
 		data = self._peakLatestChunk()
 		for channel_id in self.sl.channels_list:
 			phi = data['phi%d' % channel_id]
+			self.last_phi_int64[channel_id] = phi # for phase reset feature
 			phi = phi.astype(np.float)
 			phi = phi[0]/2**self.n_bits_phase
 			phi = phi/self.sl.reg_values["phase_logger_n_cycles"]
 			# phi is now in cycles
 			result[channel_id] = phi
 		return result
+
+	def resetChannelPhase(self, channel_id):
+		""" Called when the user wants to reset a channels' phase.
+		Implemented by saving the last observed phase value via the peakLatestPhases feature,
+		and merely subtracting off this offset """
+		self.phi_offset_int64[channel_id] += self.last_phi_int64[channel_id]
 
 	def apply3rdLO(self, data):
 		""" Removes an additional phase ramp from the data measured by the fpga.
@@ -647,7 +655,7 @@ class phaseReadoutDriver():
 		for pt_index in range(len(data)):
 			timestamp = data['timestamp'][pt_index]
 			for channel_id in self.sl.channels_list:
-				LO3_phase_int = self.get3rdLOPhaseInt(timestamp, self.sl.R_LO3[channel_id])
+				LO3_phase_int = self.get3rdLOPhaseInt(timestamp, self.sl.R_LO3[channel_id], channel_id)
 				data['phi%d' % channel_id][pt_index] -= LO3_phase_int
 
 	def _readDataChunks(self, first_chunk_id, number_of_chunks, bUpdateReadPointer=True):
@@ -736,9 +744,10 @@ class phaseReadoutDriver():
 		print("R_LO3=", R_LO3)
 		return R_LO3
 
-	def get3rdLOPhaseRadians(self, timestamp, R_LO3):
+	def get3rdLOPhaseRadians(self, timestamp, R_LO3, channel_id):
 		""" Returns the value of the 3rd LO phase at a given ADC timestamp.
-		Phase is returned in radians, modulo 2*pi """
+		Phase is returned in radians, modulo 2*pi.
+		This phase does NOT contain the phase offset for manual phase reset """
 		gain = int(2**int(self.n_bits_phase) * int(self.sl.reg_values["phase_logger_n_cycles"]))
 
 		ts_times_num = int(timestamp) * R_LO3.num.x
@@ -747,10 +756,11 @@ class phaseReadoutDriver():
 
 		return phase_radians
 
-	def get3rdLOPhaseInt(self, timestamp, R_LO3):
+	def get3rdLOPhaseInt(self, timestamp, R_LO3, channel_id):
 		""" Returns the value of the 3rd LO phase at a given ADC timestamp.
 		Phase is returned in integer units of unwrapped phase produced by the phase readout.
-		timestamp can either be a numpy array of int64 values, or a scalar int """
+		timestamp can either be a numpy array of int64 values, or a scalar int.
+		This phase DOES contain the phase offset for manual phase reset """
 		gain = int(2**int(self.n_bits_phase) * int(self.sl.reg_values["phase_logger_n_cycles"]))
 		inner_func = lambda ts : (gain * int(ts) * R_LO3.num.x) // R_LO3.denom.x
 		if isinstance(timestamp, np.ndarray):
@@ -760,7 +770,8 @@ class phaseReadoutDriver():
 		else:
 			# scalar case
 			phase_int = inner_func(timestamp)
-
+		# phase reset feature:
+		phase_int += self.phi_offset_int64[channel_id]
 		return phase_int
 
 # end class definition
