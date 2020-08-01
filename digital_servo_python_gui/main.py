@@ -29,7 +29,7 @@ class perChannelSignalEmitter(QtCore.QObject):
     sig_new_freq     = QtCore.pyqtSignal(int, float)
     sig_set_visible  = QtCore.pyqtSignal(bool)
 
-class Test(QtWidgets.QWidget):
+class MainWidget(QtWidgets.QWidget):
     """ Used as a top-level widget when testing """
     sig_new_settings = QtCore.pyqtSignal(dict)
     sig_phase_point  = QtCore.pyqtSignal(object)
@@ -296,36 +296,36 @@ def amplitude_calibration(test_widget):
 def main():
     # for testing when ran without a parent GUI
     app = QtWidgets.QApplication(sys.argv)
-    test_widget = Test()
+    main_widget = MainWidget()
     tab_widget = QtGui.QTabWidget()
     tab_widget.resize(1200, 300)
     # vbox = QtWidgets.QVBoxLayout()
 
     summary_tab_gui = summary_tab.SummaryTab()
-    summary_tab_gui.sig_reset_phase.connect(test_widget.reset_channel_phase)
+    summary_tab_gui.sig_reset_phase.connect(main_widget.reset_channel_phase)
     summary_tab_gui.show()
     tab_widget.addTab(summary_tab_gui, "Summary")
     # tab_widget.addTab(QtWidgets.QLabel('placeholder'), "Summary placeholder")
 
     GUIs = list()
-    for channel_id in test_widget.iq_channels_list:
+    for channel_id in main_widget.iq_channels_list:
         GUI = channel_gui.ChannelGUI(channel_id) # 1-based IDs used here
 
         # Connect signals to slots
         # channel GUIs to main:
-        GUI.sig_set_num_points.connect(test_widget.set_num_points)
-        GUI.sig_setup_LO.connect(test_widget.setup_LO)
-        GUI.phaseWidget.sig_reset_phase.connect(test_widget.reset_channel_phase)
+        GUI.sig_set_num_points.connect(main_widget.set_num_points)
+        GUI.sig_setup_LO.connect(main_widget.setup_LO)
+        GUI.phaseWidget.sig_reset_phase.connect(main_widget.reset_channel_phase)
         # main to channel GUIs:
-        test_widget.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
-        test_widget.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
-        test_widget.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
-        test_widget.perChannelEmitters[channel_id].sig_set_visible.connect(GUI.setVisibility)
-        test_widget.perChannelEmitters[channel_id].sig_new_freq.connect(summary_tab_gui.newFreqData) # oddball
+        main_widget.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
+        main_widget.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
+        main_widget.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
+        main_widget.perChannelEmitters[channel_id].sig_set_visible.connect(GUI.setVisibility)
+        main_widget.perChannelEmitters[channel_id].sig_new_freq.connect(summary_tab_gui.newFreqData) # oddball
         # main to summary tab:
-        test_widget.sig_new_settings.connect(GUI.newSettings)
-        test_widget.sig_phase_point.connect(GUI.newPhasePoint)
-        test_widget.sig_phase_point.connect(summary_tab_gui.newPhasePoint)
+        main_widget.sig_new_settings.connect(GUI.newSettings)
+        main_widget.sig_phase_point.connect(GUI.newPhasePoint)
+        main_widget.sig_phase_point.connect(summary_tab_gui.newPhasePoint)
 
         # channel GUIs to summary:
         GUI.sig_new_Amplitude.connect(summary_tab_gui.newAmplitude)
@@ -339,12 +339,12 @@ def main():
 
     if len(sys.argv) > 1 and sys.argv[1] == '-amplitude_calibration':
         print("Running amplitude calibration...")
-        amplitude_calibration(test_widget)
+        amplitude_calibration(main_widget)
         print("Amplitude calibration complete! Data saved to disk.")
     
     # tab_widget.setLayout(vbox)
     # main_widget.show()
-    tab_widget.currentChanged.connect(test_widget.updateTabVisibility)
+    tab_widget.currentChanged.connect(main_widget.updateTabVisibility)
     tab_widget.setWindowTitle('Frequency counter/phase meter')
     tab_widget.show()
 
@@ -353,11 +353,11 @@ def main():
     # scrollarea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
     # scrollarea.show()
 
-    test_widget.updateTabVisibility(0)
-    test_widget.emit_system_settings()
-    test_widget.fasterTimer.start(5)
-    test_widget.fastTimer.start(20)
-    test_widget.slowTimer.start(1000)
+    main_widget.updateTabVisibility(0)
+    main_widget.emit_system_settings()
+    main_widget.fasterTimer.start(5)
+    main_widget.fastTimer.start(20)
+    main_widget.slowTimer.start(1000)
     
     app.exec_()
 
