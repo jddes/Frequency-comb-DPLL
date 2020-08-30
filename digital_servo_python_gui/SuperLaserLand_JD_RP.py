@@ -20,6 +20,7 @@ import bin_conv
 import uart_to_spi_bridge
 import adf4351
 import rationals
+import zynq_mmcm
 
 from common import make_sure_path_exists, tictoc, smooth
 
@@ -327,56 +328,21 @@ class SuperLaserLand_JD_RP:
         return self.ensure_float(counts) * self.adc_volts_per_counts
 
     def setADCclockPLL(self, f_ref, bExternalClock):
-        """ Computes closest integer-N solution for the ADC clock.
+        """ Computes and commits closest integer-N solution for the ADC clock.
         In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
         if bExternalClock == False:
             f_ref = 200e6 # this is hardcoded in the firmware
 
-        # objective is to find closest solution with ADC clock below or equal to the nominal 125 MS/s
-        # f_adc = f_ref * M/N
-        # subject to the constraints for the divider values and the VCO limits
-        # there are not that many possible solutions, so we just bruteforce it
-        # we force D=1, since that should be good enough anyway (no reason to hit super close to 125 MS/s)
-        f_target_adc = 125e6 
-
-        # partly following equations 3-6 to 3-9 from UG472
-        vco_min = 600e6  # these two values are from DS182
-        vco_max = 1200e6 # these two values are from DS182
-        M_min = np.ceil(vco_min/f_ref)
-        M_max = np.floor(vco_max/f_ref)
-        M_ar = np.arange(M_min, M_max+1)
-        nb_M = len(M_ar)
-        N_ar = np.arange(1, 128+1)
-        M_ar = np.repeat(M_ar, len(N_ar))
-        N_ar = np.tile(N_ar, nb_M)
-        f_out = f_ref*np.divide(M_ar, N_ar)
-        # print(list(f_out))
-
-        ind_invalid = np.nonzero(f_out > f_target_adc)
-        M_ar  = np.delete(M_ar, ind_invalid)
-        N_ar  = np.delete(N_ar, ind_invalid)
-        f_out = np.delete(f_out, ind_invalid)
-        best_index = np.argmin(np.abs(f_out-f_target_adc))
-
-        M = int(M_ar[best_index])
-        N = int(N_ar[best_index])
-        f_adc = f_ref * float(M)/N
-        f_vco = f_ref * float(M)
-
-        print("setADCclockPLL(): f_ref=%f MHz, M=%d, N=%d, f_vco=%f MHz, f_adc=%f MHz" % (f_ref/1e6, M, N, f_vco/1e6, f_adc/1e6))
-
-        self._setADCclockPLL(f_ref, bExternalClock, CLKFBOUT_MULT=M, CLKOUT0_DIVIDE=N)
-
-    def _setADCclockPLL(self, f_ref, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
-        """ f_ref is the frequency of the selected clock source (200 MHz in internal clock mode,
-        can be whatever is connected to GPIO_P[5] in external clock mode) """
+        (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
         self.user_inputs["adc_f_ref_hz"]   = f_ref
         self.user_inputs["bExternalClock"] = bExternalClock
-        self.user_inputs["CLKFBOUT_MULT"]  = CLKFBOUT_MULT
-        self.user_inputs["CLKOUT0_DIVIDE"] = CLKOUT0_DIVIDE
-        DIVCLK_DIVIDE = 1
-        VCO_freq = f_ref * CLKFBOUT_MULT/DIVCLK_DIVIDE
-        print('VCO_freq = %f MHz, valid range is 600-1200 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
+        self.user_inputs["CLKFBOUT_MULT"]  = M
+        self.user_inputs["CLKOUT0_DIVIDE"] = N
+        self._setADCclockPLL()
+
+    def _setADCclockPLL(self):
+        """ f_ref is the frequency of the selected clock source (200 MHz in internal clock mode,
+        can be whatever is connected to GPIO_P[5] in external clock mode) """
 
         # From PG065:
         # "You should first write all the required clock configuration registers and then check for the
@@ -386,33 +352,40 @@ class SuperLaserLand_JD_RP:
         # 0x4 and then 0x0 restores the original settings."
 
         # Clock configuration register 0 (table 4-2 in PG065)
+        DIVCLK_DIVIDE = 1
         reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
-        reg |= (CLKFBOUT_MULT & ((1<<8)-1)) << 8
+        reg |= (self.user_inputs["CLKFBOUT_MULT"] & ((1<<8)-1)) << 8
         self.write("clkw_reg0", reg)
         # Clock configuration register 2 (table 4-2 in PG065)
-        reg = (CLKOUT0_DIVIDE & ((1<<8)-1)) << 0
+        reg = (self.user_inputs["CLKOUT0_DIVIDE"] & ((1<<8)-1)) << 0
         self.write("clkw_reg2", reg)
 
         # check status register:
-        time_start = time.clock()
-        status_reg = 0x0
-        while status_reg != 0x1 and time.clock()-time_start < 1.: # 1 sec timeout
-            status_reg = self.read("clkw_status")
-
-        if status_reg != 0x1:
+        if not self._waitForReg("clkw_status", 0x1, timeout=1.0):
             print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
             return
 
-        self._setClkSelectAndReset(bExternalClock, bReset=True) # assert reset on the incoming ADC clock
+        self._setClkSelectAndReset(True) # assert reset on the incoming ADC clock
         self.write("clkw_reg23", 0x7)
         self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
-        self.fs = f_ref * CLKFBOUT_MULT/CLKOUT0_DIVIDE
+        self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
         time.sleep(0.1)
-        self._setClkSelectAndReset(bExternalClock, bReset=False) # de-assert reset on the incoming ADC clock
+        self._setClkSelectAndReset(False) # de-assert reset on the incoming ADC clock
 
-    def _setClkSelectAndReset(self, bExternalClock, bReset):
+    def _waitForReg(self, reg_name, desired_value, timeout=1.):
+        """ Read a register in a loop, until it either becomes a desired value or we hit a timeout.
+        Returns True if the register reached the desired value, False if we timed out """
+        time_start = time.perf_counter()
+        reg_value = self.read(reg_name)
+        while reg_value != desired_value and time.perf_counter()-time_start < timeout: # read in a loop until we timeout
+            reg_value = self.read(reg_name)
+            time.sleep(1e-3)
+        return reg_value == desired_value
+
+    def _setClkSelectAndReset(self, bReset):
         """ Select external or internal clock source, and also sets the reset """
+        bExternalClock = self.user_inputs["bExternalClock"]
         reg_clk_sel_and_reset = int(not bExternalClock) | (int(bReset)<<1)
         self.write("clk_sel_and_reset", reg_clk_sel_and_reset)
 
