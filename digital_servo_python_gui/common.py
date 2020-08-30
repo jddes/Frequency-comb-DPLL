@@ -1,3 +1,4 @@
+""" Functions used by multiple classes in this program """
 import os, errno
 import time
 import inspect
@@ -9,6 +10,18 @@ style_sheets = {
     'warning': 'background-color: rgb(250, 151, 0)',
     'ok': 'color: rgb(255, 255, 255); background-color: rgb(0, 165, 114)',
 }
+
+def readFloatFromTextbox(textbox):
+    """ Attempt to read in a value from a textbox using eval() to allow inputs such as "10e6" to work.
+    If this fails, set the textbox's background to red, and re-raise the exception
+    If the read is succeeds, clear any stylesheet on that widget to return it to default color """
+    try:
+        value = float(eval(textbox.text()))
+        textbox.setStyleSheet('') # set back to default style
+    except ValueError:
+        colorCoding(textbox, "bad")
+        raise
+    return value
 
 def getSNRcolorName(SNR):
     if SNR <= 20:
@@ -25,6 +38,13 @@ def getPowerColorName(mean_power_dBm):
         return 'warning'
     else:
         return 'ok'
+
+def colorCoding(widget, color_name, font_size=None):
+    if font_size is not None:
+        font_size_text = 'font-size: %dpt;' % font_size
+    else:
+        font_size_text = ''
+    widget.setStyleSheet(font_size_text + style_sheets[color_name])
 
 def round_to_N_sig_figs(x, Nsigfigs):
     leading_pos = np.floor(np.log10(np.abs(x)))

@@ -265,14 +265,16 @@ class SuperLaserLand_JD_RP:
 
     def set_ddc_ref_freq(self, frequency_in_hz, channel_id):
         """ channel_id can be either 1, 2, 3 or 4 """
+        print(locals())
+        print(self.fs)
         assert channel_id in self.channels_list
         self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
         dds_freq_word = int(round(2**(48) * frequency_in_hz/self.fs))
-        # dds_freq_word = int(round(2**48 * frequency_in_hz/self.fs))
         dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
+        print("dds_freq_word=",dds_freq_word)
         self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
 
-        self.R_LO3[channel_id] = self.phaseReadoutDriver.compute3rdLOFreq(channel_id) # just for debugging
+        self.R_LO3[channel_id] = self.phaseReadoutDriver.compute3rdLOFreq(channel_id)
 
     def set_dac_limits(self, dac_number, limit_low, limit_high, bSendToFPGA = True):
         """ Valid DAC numbers are 1 and 2 """
@@ -364,9 +366,9 @@ class SuperLaserLand_JD_RP:
     def _setADCclockPLL(self, f_ref, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
         """ f_ref is the frequency of the selected clock source (200 MHz in internal clock mode,
         can be whatever is connected to GPIO_P[5] in external clock mode) """
-        self.user_inputs["f_ref_hz"] = f_ref
+        self.user_inputs["adc_f_ref_hz"]   = f_ref
         self.user_inputs["bExternalClock"] = bExternalClock
-        self.user_inputs["CLKFBOUT_MULT"] = CLKFBOUT_MULT
+        self.user_inputs["CLKFBOUT_MULT"]  = CLKFBOUT_MULT
         self.user_inputs["CLKOUT0_DIVIDE"] = CLKOUT0_DIVIDE
         DIVCLK_DIVIDE = 1
         VCO_freq = f_ref * CLKFBOUT_MULT/DIVCLK_DIVIDE
@@ -501,6 +503,8 @@ class SuperLaserLand_JD_RP:
         self.write("uart_to_spi_bridge", reg_func(1, 0, data_uint8))
 
     def set_adf4351(self, val):
+        self.bDisplayTiming = True
+        tictoc(self)
         self.uart_uc_set_enable(1)
         time.sleep(10e-3) # leave some time for the uC to boot
         for value in val:
@@ -508,16 +512,20 @@ class SuperLaserLand_JD_RP:
             time.sleep(1e-3)
         # time.sleep(100e-3) # leave some time for the uC to finish programming the adf4351
         # self.uart_uc_set_enable(0)
+        tictoc(self, 'writing %d values' % len(val))
+        self.bDisplayTiming = False
 
     def set_expected_freq(self, channel_id, expected_freq_str, ref_freq_str):
         """ Must be called before set_adf4351_freq(), provides required information for
         the 3rd LO applied when reading out the phase """
         self.user_inputs["expected_freq_str_ch%d" % channel_id] = expected_freq_str
-        self.user_inputs["ref_freq_str"] = ref_freq_str
+        self.user_inputs["ref_freq_MHz_str"] = ref_freq_str
 
     def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1,
                                LO_pwr='+5dBm', LO_enabled=True):
         """ Channel can be 1, 2, 3 or 4 """
+        self.bDisplayTiming = True
+        tictoc(self)
         self.user_inputs["out_freq_ch%d"        % channel] = out_freq
         self.user_inputs["ref_freq_ch%d"        % channel] = ref_freq
         self.user_inputs["pfd_target_freq_ch%d" % channel] = pfd_target_freq
@@ -540,23 +548,20 @@ class SuperLaserLand_JD_RP:
         uart_vals = uart_to_spi_bridge.spi_values_to_uart_bytes(reg_vals, chip_select)
         self.set_adf4351(uart_vals)
         print(self.reg_values)
+        tictoc(self, '')
+        self.bDisplayTiming = False
         return self.adf4351[channel]
 
     def get_adf4351_settings(self, channel):
         """ Returns a tuple containing the numerator and denominator of the synthesized frequency ratio:
         f_LO = f_ref * num/denom.
         Output is valid only if we have pushed to the adf4351 while connected """
-        self.bDisplayTiming = True
-        tictoc(self)
         D = 2**self.adf4351[channel].reg["RF_DIVIDER_SEL"]
         INT = self.adf4351[channel].reg["INT"]
         R = self.adf4351[channel].reg["R"]
         num = INT
         denom = D*R
-        tictoc(self, "")
-        self.bDisplayTiming = False
         return (num, denom)
-        
 
 class phaseReadoutDriver():
     def __init__(self, sl):
@@ -600,6 +605,14 @@ class phaseReadoutDriver():
         """ This needs to be triggered only once, but there is no arm in doing it multiple times """
         self.write("phase_logger_start_write", 0)
         self.write("phase_logger_start_write", 1) # starts the data recording
+        self.setOutputRate(self.nominal_output_rate)
+
+    def setOutputRate(self, desired_rate):
+        """ Sets the integration time for each phase point, based on the desired rate in Hz.
+        Actual rate will be very slightly different due to the period being quantized to an integer.
+        Subject to limitations from polling rates and max readout rates which have not been fully explored
+        outside of the design 100 Hz rate. Explore at your own risk! """
+        self.nominal_output_rate = desired_rate
         self.n_cycles = round(self.fs_nominal/self.LPF_DECIM/self.nominal_output_rate)
         self.write("phase_logger_n_cycles", self.n_cycles)
 
@@ -703,24 +716,46 @@ class phaseReadoutDriver():
             with open("out_desynced.bin", "wb") as f:
                 f.write(data_all.tobytes())
 
-    def readData(self):
+    def readData(self, N_blocksize=None):
         """ This should be called periodically in normal operation.
-        Reads any available data and returns it.
-        Returns None if there is no data otherwise """
+        If N_blocksize=None, it reads all available data and returns it.
+        Returns None if there is no data
+        If N_blocksize != None, it returns None
+        unless there are at least N_blocksize data chunks,
+        in which case it reads exactly N_blocksize chunks """
         chunksAvailable = self._chunksAvailable()
-        if chunksAvailable == 0:
-            return None
+        if N_blocksize is None:
+            if chunksAvailable == 0:
+                return None
+            else:
+                number_of_chunks = chunksAvailable
+        else:
+            if chunksAvailable >= N_blocksize:
+                number_of_chunks = N_blocksize
+            else:
+                return None
         # print("readData(): reading the %d chunks available" % chunksAvailable)
         data = self._readDataChunks(first_chunk_id=self.last_chunk_id+1,
-                                    number_of_chunks = chunksAvailable)
+                                    number_of_chunks = number_of_chunks)
         self.apply3rdLO(data)
         return data
 
     def compute3rdLOFreq(self, channel_id):
-        """ Applies a 3rd frequency shifting operation, which will bring the net
+        """ Computes the exact LO frequency as a rational fraction of the ADC clock rate
+        for a 3rd frequency shifting operation, which will bring the net
         frequency shift from input to saved data equal to the exact desired shift.
         This is necessary because of the finite possibilities for LO choices upstream """
-        R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
+        self.bDisplayTiming = True
+        tictoc(self)
+        print(self.sl.user_inputs)
+        if self.sl.user_inputs["bExternalClock"]: # normal mode: ADC is phase-locked to external ref
+            # this is exact
+            R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
+        else: # test mode: ADC is phase-locked to internal ref
+            # this is not exact, since the physical frequencies aren't exactly known anyway
+            R_adc_ref_vs_ext_ref = rationals.RationalNumber(self.sl.user_inputs["adc_f_ref_hz"], self.sl.user_inputs["ref_freq_ch%d" % channel_id])
+            R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
+            R_ADC = R_ADC * R_adc_ref_vs_ext_ref
         one_over_R_ADC = rationals.RationalNumber(R_ADC.denom, R_ADC.num)
         (LO1_num, LO1_denom) = self.sl.get_adf4351_settings(channel_id)
         R_LO1 = rationals.RationalNumber(LO1_num, LO1_denom)
@@ -730,7 +765,7 @@ class phaseReadoutDriver():
         R_LO2 = R_ADC * R_DDS
 
         F_in = rationals.RationalNumber(from_string = self.sl.user_inputs["expected_freq_str_ch%d" % channel_id], scale_factor=int(1e6))
-        F_ref = rationals.RationalNumber(from_string = self.sl.user_inputs["ref_freq_str"], scale_factor=int(1e6))
+        F_ref = rationals.RationalNumber(from_string = self.sl.user_inputs["ref_freq_MHz_str"], scale_factor=int(1e6))
         one_over_F_ref = rationals.RationalNumber(F_ref.denom, F_ref.num)
         R_in = F_in * one_over_F_ref
 
@@ -742,6 +777,8 @@ class phaseReadoutDriver():
         print("R_DDS=", R_DDS)
         print("R_LO2=", R_LO2)
         print("R_LO3=", R_LO3)
+        tictoc(self, '')
+        self.bDisplayTiming = False
         return R_LO3
 
     def get3rdLOPhaseRadians(self, timestamp, R_LO3, channel_id):

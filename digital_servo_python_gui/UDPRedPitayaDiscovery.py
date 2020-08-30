@@ -35,12 +35,10 @@ class UDPRedPitayaDiscovery():
         
     def startListening(self):
         # Initialization:
-        print('Creating client socket...')
         self.sock_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock_client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.connectClientSocket()
         
-        print('Creating server socket...')
         HOST_LOCALHOST = ''       # means local host
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

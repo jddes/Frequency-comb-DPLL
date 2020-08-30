@@ -88,7 +88,7 @@ class controller(object):
 		# xml file containing the known Red Pitaya's and their MAC addresses, UI color and shorthand name
 		self.devices_data = {}
 		devices_xml = devicesData("devices_data.xml")
-		self.devices_data = devices_xml.updateDictionnary(self.devices_data)
+		self.devices_data = devices_xml.updateDictionary(self.devices_data)
 
 
 	def findMostLikelyLANBroadcastIPAddress(self):

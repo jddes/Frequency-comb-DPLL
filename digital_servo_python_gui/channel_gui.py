@@ -8,7 +8,7 @@ import inspect
 import numpy as np
 import pyqtgraph as pg
 
-from common import tictoc, round_to_N_sig_figs, style_sheets, getSNRcolorName, getPowerColorName
+from common import tictoc, round_to_N_sig_figs, getSNRcolorName, getPowerColorName, colorCoding
 
 # Set a few global PyQtGraph settings before creating plots:
 pg.setConfigOption('leftButtonPan', False)
@@ -18,7 +18,6 @@ pg.setConfigOption('antialias', True)
 
 class ChannelGUI(QtWidgets.QWidget):
     sig_set_num_points = QtCore.pyqtSignal(int, dict)
-    sig_setup_LO       = QtCore.pyqtSignal(dict)
     # these signals will be connected to the summary tab:
     sig_new_Amplitude = QtCore.pyqtSignal(int, float, float)
     sig_new_SNR       = QtCore.pyqtSignal(int, float)
@@ -32,24 +31,15 @@ class ChannelGUI(QtWidgets.QWidget):
         self.fs = 125e6 # default, will get updated via signals
         self.settings = None
 
-        self.style_sheets = style_sheets
-
         self.setupUI()
         self.tests()
+
+        print("channel_gui.py: TODO: set self.lblExpectedFreq!")
 
     def setupUI(self):
         uic.loadUi("channel.ui", self)
         self.populateRBWcombo()
-        self.populateLOcombo()
         self.tab_visible = True
-
-        self.widgetSettings.editExpectedFreq.setText('40')
-
-        # default values for target IF:
-        if self.channel_id % 2 == 1: # odd channels are low-passed
-            self.widgetSettings.editTargetIF.setText('20')
-        else: # even channels are highpassed
-            self.widgetSettings.editTargetIF.setText('40')
 
         self.phaseWidget = PhaseDisplayWidget(self, self.channel_id)
         self.gridLayout.addWidget(self.phaseWidget, 2, 1)
@@ -74,36 +64,17 @@ class ChannelGUI(QtWidgets.QWidget):
 
         self.lblCurrentFreq.setAlignment(QtCore.Qt.AlignRight)
 
-        self.groupBoxSettings.clicked.connect(self.groupBoxSettings_clicked)
         self.chkAutorefresh.clicked.connect(self.probingSettingsChanged)
         self.comboRBW.currentTextChanged.connect(self.probingSettingsChanged)
         self.comboPlotType.currentTextChanged.connect(self.probingSettingsChanged)
 
-        self.widgetSettings.btnCommit.clicked.connect(self.btnCommit_clicked)
-        self.widgetSettings.editExpectedFreq.returnPressed.connect(self.btnCommit_clicked)
-        self.widgetSettings.editTargetIF.returnPressed.connect(self.btnCommit_clicked)
-        self.widgetSettings.editExpectedFreq.textChanged.connect(self.user_settings_changed)
-        self.widgetSettings.editTargetIF.textChanged.connect(self.user_settings_changed)
-        self.widgetSettings.comboLOpower.currentTextChanged.connect(self.user_settings_changed)
-        self.widgetSettings.chkEnableLO.clicked.connect(self.user_settings_changed)
-
-        self.user_settings_changed()
-        self.groupBoxSettings_clicked(self.groupBoxSettings.isChecked())
-
     def setVisibility(self, bVisible):
         self.tab_visible = bVisible
-
-    def populateLOcombo(self):
-        from adf4351 import pwr_map
-        for text in pwr_map:
-            self.widgetSettings.comboLOpower.addItem(text)
 
     def newSettings(self, d):
         if d["type"] == "LO" and d["channel_id"] == self.channel_id:
             self.settings = dict(d)
-            self.widgetSettings.lblChosenIF.setText(d["chosen_IF_text"])
-            self.widgetSettings.lblChosenLO.setText(d["chosen_LO_text"])
-
+            
         if d["type"] == "system":
             self.system_settings = dict(d)
 
@@ -131,30 +102,6 @@ class ChannelGUI(QtWidgets.QWidget):
             self.plot_spc.setYRange(-1, 1)
         elif plot_type == "IQ timeseries":
             self.plot_spc.setYRange(-1, 1)
-
-    def user_settings_changed(self):
-        self.widgetSettings.lblStatus.setText('Uncommitted')
-
-    def btnCommit_clicked(self):
-        """ Read expected freq and desired IF, and send out as a signal """
-        d = dict()
-        d["channel_id"] = self.channel_id
-        d["upper_sideband"] = self.widgetSettings.radioUpper.isChecked()
-        d["LO_pwr"] = self.widgetSettings.comboLOpower.currentText()
-        d["LO_enable"] = self.widgetSettings.chkEnableLO.isChecked()
-        
-        try:
-            d["expected_freq_str"] = self.widgetSettings.editExpectedFreq.text()
-            d["expected_freq"] = 1e6*float(d["expected_freq_str"])
-            d["target_if"] = 1e6*float(self.widgetSettings.editTargetIF.text())
-        except:
-            self.widgetSettings.lblStatus.setText('Invalid value')
-            return
-
-        self.lblExpectedFreq.setText(self.widgetSettings.editExpectedFreq.text() + ' MHz')
-
-        self.sig_setup_LO.emit(d)
-        self.widgetSettings.lblStatus.setText('Committed')
 
     def groupBoxSettings_clicked(self, checked=False):
         self.widgetSettings.setVisible(checked)
@@ -382,8 +329,8 @@ class ChannelGUI(QtWidgets.QWidget):
             self.sig_new_Amplitude.emit(self.channel_id, mean_power_dBm, mean_amplitude)
 
             color_name = getPowerColorName(mean_power_dBm)
-            self.colorCoding(self.lblAmplitude_value, color_name)
-            self.colorCoding(self.lblAmplitude, color_name)
+            colorCoding(self.lblAmplitude_value, color_name)
+            colorCoding(self.lblAmplitude, color_name)
 
     def updateSNRdisplay(self, mean_amplitude, std_dev_amplitude):
         """ Compute and display the SNR on the amplitude of the baseband IQ signal """
@@ -409,18 +356,18 @@ class ChannelGUI(QtWidgets.QWidget):
         self.sig_new_SNR.emit(self.channel_id, self.filtered_baseband_snr)
 
         color_name = getSNRcolorName(self.filtered_baseband_snr)
-        self.colorCoding(self.lblSNR_value, color_name)
-        self.colorCoding(self.lblSNR, color_name)
+        colorCoding(self.lblSNR_value, color_name)
+        colorCoding(self.lblSNR, color_name)
 
     def updateADCFill(self, max_abs, adc_max):
         percentage = round_to_N_sig_figs(100*max_abs/adc_max, 2)
         self.lblADCFill_value.setText('%.1f%%' % percentage)
         if percentage < 75:
-            self.colorCoding(self.lblADCFill, 'ok')
-            self.colorCoding(self.lblADCFill_value, 'ok')
+            colorCoding(self.lblADCFill, 'ok')
+            colorCoding(self.lblADCFill_value, 'ok')
         else:
-            self.colorCoding(self.lblADCFill, 'bad')
-            self.colorCoding(self.lblADCFill_value, 'bad')
+            colorCoding(self.lblADCFill, 'bad')
+            colorCoding(self.lblADCFill_value, 'bad')
 
     def getFrontendFilterBW(self):
         """ Returns the noise-equivalent bandwidth of the front-end filter, in Hz """
@@ -429,13 +376,6 @@ class ChannelGUI(QtWidgets.QWidget):
         lpf = self.settings["lpf"]
         lpf = lpf/np.sum(lpf)
         return 2*np.sum(lpf**2)*self.fs # factor of two is because the filter is effectively a bandpass
-
-    def colorCoding(self, widget, color_name, font_size=None):
-        if font_size is not None:
-            font_size_text = 'font-size: %dpt;' % font_size
-        else:
-            font_size_text = ''
-        widget.setStyleSheet(font_size_text + self.style_sheets[color_name])
 
 class SquarePlot(pg.PlotWidget):
     """ Plot widget with fixed square aspect ratio """

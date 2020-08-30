@@ -12,9 +12,13 @@ import pyqtgraph as pg
 
 import SuperLaserLand_JD_RP
 import RP_PLL # for CommsError
+
 import channel_gui
 import summary_tab
-from common import tictoc
+import connection_widget
+import config_widget
+
+from common import tictoc, colorCoding, readFloatFromTextbox
 import bin_conv
 
 # Set a few global PyQtGraph settings before creating plots:
@@ -29,7 +33,7 @@ class perChannelSignalEmitter(QtCore.QObject):
     sig_new_freq     = QtCore.pyqtSignal(int, float)
     sig_set_visible  = QtCore.pyqtSignal(bool)
 
-class MainWidget(QtWidgets.QWidget):
+class MainWidget(QtWidgets.QMainWindow):
     """ Used as a top-level widget when testing """
     sig_new_settings = QtCore.pyqtSignal(dict)
     sig_phase_point  = QtCore.pyqtSignal(object)
@@ -39,8 +43,6 @@ class MainWidget(QtWidgets.QWidget):
         
         self.bDisplayTiming = False
         self.tictoc_last = time.perf_counter()
-        self.pfd_target_freq = 10e6
-        self.ref_freq = 25e6 # this should be changeable via a signal
         self.config = dict()
         self.current_tab = 0
 
@@ -48,16 +50,17 @@ class MainWidget(QtWidgets.QWidget):
         self.adc_channels_list = list(range(1, 1+2)) # number of channels is set by the hardware, we label everything starting from 1 to avoid confusion wrt to the GUI
 
         self.perChannelEmitters = dict()
-        self.pts_settings = dict()
+        self.pts_settings       = dict()
         for channel_index in self.iq_channels_list:
             self.perChannelEmitters[channel_index] = perChannelSignalEmitter()
             self.pts_settings[channel_index] = {"autorefresh": True, "pts_IQ": 100, "pts_ADC": 100}
 
         self.sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
-        self.sl.dev.OpenTCPConnection("192.168.2.34")
-        self.sl.phaseReadoutDriver.startLogging()
-        self.sl.setADCclockPLL( f_ref=25e6, bExternalClock=True)
-        # self.sl.setADCclockPLL( f_ref=200e6, bExternalClock=False)
+        self.config_done = False # we don't read out values from the device until the config is done, because we need to know all the relevant configuration values to do the post-processing needed
+        # self.sl.dev.OpenTCPConnection("192.168.2.34")
+        # self.sl.phaseReadoutDriver.startLogging()
+        # self.sl.setADCclockPLL( f_ref=25e6, bExternalClock=True)
+        # # self.sl.setADCclockPLL( f_ref=200e6, bExternalClock=False)
 
         self.fastTimer = QtCore.QTimer(self)
         self.fastTimer.timeout.connect(self.fastTimerEvent)
@@ -67,6 +70,139 @@ class MainWidget(QtWidgets.QWidget):
 
         self.slowTimer = QtCore.QTimer(self)
         self.slowTimer.timeout.connect(self.slowTimerEvent)
+
+        self.setupUI()
+
+    def setupUI(self):
+        self.resize(1200, 300)
+
+        # Create the "Setup" widget as a composite of the connection and configuration widgets:
+        self.setup_widget = QtWidgets.QWidget(self)
+        self.connection_widget = connection_widget.ConnectionWidget()
+        self.config_widget = config_widget.ConfigWidget(self.iq_channels_list)
+        
+        vbox = QtWidgets.QVBoxLayout()
+        vbox.addWidget(self.connection_widget)
+        vbox.addWidget(self.config_widget)
+        self.setup_widget.setLayout(vbox)
+
+        self.tab_widget = QtGui.QTabWidget(self)
+        self.setCentralWidget(self.tab_widget)
+
+        self.summary_tab_gui = summary_tab.SummaryTab()
+        self.summary_tab_gui.sig_reset_phase.connect(self.reset_channel_phase)
+        self.summary_tab_gui.show()
+        self.tab_widget.addTab(self.setup_widget, "Setup")
+        self.tab_widget.addTab(self.summary_tab_gui, "Summary")
+
+        # Connect signals to slots:
+        self.connection_widget.btnConnect.clicked.connect(self.connect_clicked)
+        self.config_widget.btnCommit.clicked.connect(self.commit)
+        self.config_widget.sig_set_status.connect(self.setStatus)
+
+
+
+        self.channel_GUIs = dict()
+        for channel_id in self.iq_channels_list:
+            GUI = channel_gui.ChannelGUI(channel_id)
+
+            # Connect signals to slots
+            # channel GUIs to main:
+            GUI.sig_set_num_points.connect(self.set_num_points)
+            GUI.phaseWidget.sig_reset_phase.connect(self.reset_channel_phase)
+            # main to channel GUIs:
+            self.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
+            self.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
+            self.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
+            self.perChannelEmitters[channel_id].sig_set_visible.connect(GUI.setVisibility)
+            self.perChannelEmitters[channel_id].sig_new_freq.connect(self.summary_tab_gui.newFreqData) # oddball
+            # main to summary tab:
+            self.sig_new_settings.connect(GUI.newSettings)
+            self.sig_phase_point.connect(GUI.newPhasePoint)
+            self.sig_phase_point.connect(self.summary_tab_gui.newPhasePoint)
+
+            # channel GUIs to summary:
+            GUI.sig_new_Amplitude.connect(self.summary_tab_gui.newAmplitude)
+            GUI.sig_new_SNR.connect(self.summary_tab_gui.newSNR)
+            # Trigger a few updates now that the signals have been connected
+            GUI.probingSettingsChanged()
+
+            # vbox.addWidget(GUI)
+            self.tab_widget.addTab(GUI, "Channel %d" % (channel_id))
+            self.channel_GUIs[channel_id] = GUI
+
+        self.tab_widget.currentChanged.connect(self.updateTabVisibility)
+        self.setWindowTitle('Frequency counter/phase meter')
+
+        self.enableOrDisableWidgetsRequiringConnection(False)
+
+        self.updateTabVisibility(0)
+        self.fasterTimer.start(5)
+        self.fastTimer.start(20)
+        self.slowTimer.start(100)
+
+        self.show()
+
+    def setStatus(self, field, text, color_name):
+        """ Set one of the status-bar entry to "text", and to given color coding """
+        print("TODO: status-bar! (field, text, color_name) = ", (field, text, color_name))
+        # self.status_bar_fields[field].setText(text)
+        # colorCoding(self.status_bar_fields[field], color_name)
+
+    def connect_clicked(self, bConnect):
+        self.config_done = False
+        if bConnect == False:
+            # button was unchecked, disconnect
+            if self.sl.dev.valid_socket:
+                self.sl.dev.CloseTCPConnection()
+            self.config_widget.lblStatus.setText("Uncommitted")
+            colorCoding(self.config_widget.lblStatus, "bad")
+        else:
+            # attempt to establish connection to selected device
+            (strMAC, strIP, port) = self.connection_widget.getSelectedHost()
+            if strIP is None:
+                print("Could not get valid IP address")
+                return
+
+            self.sl.dev.OpenTCPConnection(strIP, port)
+            self.sl.phaseReadoutDriver.startLogging()
+            print("connect_clicked(): TODO: set config file name, enable rest of GUI controls if connection was valid")
+
+        self.enableOrDisableWidgetsRequiringConnection(bConnect)
+
+
+
+    def enableOrDisableWidgetsRequiringConnection(self, bEnable):
+        self.config_widget.setEnabled(bEnable)
+        self.summary_tab_gui.setEnabled(bEnable and self.validDeviceAndConfigKnown())
+        for index in range(1, self.tab_widget.count()): # skip first tab which is "Setup"
+            self.tab_widget.setTabEnabled(index, bEnable and self.validDeviceAndConfigKnown())
+
+    def commit(self):
+        """ Read all the settings from the GUI to our config dict, then push to device """
+        try:
+            (system_settings, channels_settings) = self.config_widget.readConfigFromGUI()
+        except ValueError:
+            return # don't commit anything since there is an invalid value somewhere
+
+        self.pushSettingsToDevice(system_settings, channels_settings)
+        self.config_widget.lblStatus.setText("Committed")
+        colorCoding(self.config_widget.lblStatus, "ok")
+        
+        self.emit_system_settings()
+
+        self.config_done = True
+        print(self.validDeviceAndConfigKnown())
+        self.enableOrDisableWidgetsRequiringConnection(self.validDeviceAndConfigKnown())
+
+    def pushSettingsToDevice(self, system_settings, channels_settings):
+        """ Push settings to an already-connected device """
+        self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
+                               bExternalClock=system_settings["adc_use_external_clock"])
+        self.sl.phaseReadoutDriver.setOutputRate(system_settings["output_data_rate"])
+        system_settings["output_data_rate"]
+        for channel_id, channel_settings in channels_settings.items():
+            self.setup_LO(system_settings, channel_settings)
 
     def emit_system_settings(self):
         # TODO: make this cleaner... update at the right times, etc
@@ -87,56 +223,61 @@ class MainWidget(QtWidgets.QWidget):
         Merely passes the command to the phase readout code """
         self.sl.phaseReadoutDriver.resetChannelPhase(channel_id)
 
-    def setup_LO(self, d):
+    def setup_LO(self, system_settings, channel_settings):
         """ Called when the GUI wants to change the LO settings
-        d must contain the following fields:
-        d["channel_id"]
-        d["expected_freq_str"]
-        d["expected_freq"]
-        d["ref_freq_str"]
-        d["target_if"]
-        d["upper_sideband"]
-        d["LO_pwr"]
-        d["LO_enable"]
+        system_settings must contain at least the following fields:
+        system_settings["ref_freq"]
+        system_settings["ref_freq_MHz_str"]
+        channel_settings must contain at least the following fields:
+        channel_settings["channel_id"]
+        channel_settings["expected_freq_MHz_str"]
+        channel_settings["expected_freq"]
+        channel_settings["target_if"]
+        channel_settings["upper_sideband"]
+        channel_settings["LO_pwr"]
+        channel_settings["LO_enable"]
         """
-        print("setup_LO: %s " % str(d))
-        if d["upper_sideband"]:
-            out_freq_target = d["expected_freq"] - d["target_if"]
+        s = system_settings  # shorthand
+        c = channel_settings # shorthand
+        print("setup_LO: system_settings=%s, channel_settings=%s" % (str(s), str(c)))
+        if c["upper_sideband"]:
+            out_freq_target = c["expected_freq"] - c["target_if"]
             sign_str = '+'
         else:
-            out_freq_target = d["expected_freq"] + d["target_if"]
+            out_freq_target = c["expected_freq"] + c["target_if"]
             sign_str = '-'
 
         # TODO: input validation vs actual range accessible?
-        print("setup_LO(): channel_id: ", d["channel_id"])
-        d["ref_freq_str"] = "25.00" # 25 MHz hardcoded! FIXME!
-        self.sl.set_expected_freq(d["channel_id"], d["expected_freq_str"], d["ref_freq_str"])
-        print("FIXME: make ref freq configurable, maybe refactor where we handle setup_LO")
-        a = self.sl.set_adf4351_freq(out_freq_target, self.ref_freq, self.pfd_target_freq, d["channel_id"], d["LO_pwr"], d["LO_enable"])
+        print("setup_LO(): channel_id: ", c["channel_id"])
+        self.sl.set_expected_freq(c["channel_id"], c["expected_freq_MHz_str"], s["ref_freq_MHz_str"])
+        print("setup_LO: FIXME: Refactor where we handle setup_LO")
+        a = self.sl.set_adf4351_freq(out_freq_target, s["ref_freq"], s["pfd_target_freq"], c["channel_id"], c["LO_pwr"], c["LO_enable"])
         D = 2**a.reg["RF_DIVIDER_SEL"]
         INT = a.reg["INT"]
         R = a.reg["R"]
-        LO_actual = self.ref_freq * float(INT / (D*R))
-        IF_actual = abs(d["expected_freq"] - LO_actual)
+        LO_actual = s["ref_freq"] * float(INT / (D*R))
+        IF_actual = abs(c["expected_freq"] - LO_actual)
 
-        result = dict(d) # also copies all the fields from d
+        # Gather all the required information for the channel GUI to operate properly
+        result = dict(c) # also copies all the fields from c
         result["chosen_LO"] = LO_actual
         result["chosen_IF"] = IF_actual
         result["chosen_LO_text"] = "%.8f MHz = ref freq * %d/%d" % (LO_actual/1e6, INT, D*R)
-        if d["upper_sideband"]:
-            result["chosen_IF_text"] = "%.8f MHz = input - LO freq" % (IF_actual/1e6)
+        result["chosen_IF_text"] = "%.8f MHz" % (IF_actual/1e6)
+        if c["upper_sideband"]:
+            result["chosen_IF_text"] += "= input - LO freq"
         else:
-            result["chosen_IF_text"] = "%.8f MHz = LO freq - input" % (IF_actual/1e6)
+            result["chosen_IF_text"] += "= LO freq - input"
 
-        self.sl.set_ddc_ref_freq(IF_actual, d["channel_id"])
+        self.sl.set_ddc_ref_freq(IF_actual, c["channel_id"])
 
         for field in result:
-            prefix = "ch%d_" % d["channel_id"]
+            prefix = "ch%d_" % c["channel_id"]
             self.config[prefix + field] = result[field]
 
         result["lpf"] = self.sl.get_ddc_filter()
         result["type"] = "LO"
-        self.sig_new_settings.emit(result)
+        self.sig_new_settings.emit(result) # needed by the channel_gui's
 
     def get_approximate_input_freq(self, adc_channel_id):
         field_name = "ch%d_" % adc_channel_id + "expected_freq"
@@ -145,10 +286,23 @@ class MainWidget(QtWidgets.QWidget):
             IF_actual = 40e6 # not critical, just used to lookup the amplitude calibration curve
         return IF_actual
 
+    def validDeviceAndConfigKnown(self):
+        """ Returns True if there is a valid device connected,
+        and all the configuration values are known so that we can read-out data
+        from the device, and apply the necessary post-processing. """
+        return self.sl.dev.valid_socket and self.config_done
+
     def slowTimerEvent(self):
+        """ Reads the slow phase streaming data (100 phase samples/seconds nominal, read every counter gate period).
+        Current limitation of the way we do things is that the max counter period is related with
+        the filling of the circular buffer inside the FPGA.  Exact value is TBD, but probably good up to 10 secs.
+        This function also computes the frequency offset from said phase data, and emits the result as a signal """
+        if not self.validDeviceAndConfigKnown():
+            return
         # self.bDisplayTiming = True
         tictoc(self)
-        data = self.sl.phaseReadoutDriver.readData()
+        self.gate_time_in_samples = 100 # 1 sec gate time, hard-coded for now
+        data = self.sl.phaseReadoutDriver.readData(self.gate_time_in_samples)
         if data is None:
             return
         tictoc(self, "read")
@@ -167,13 +321,14 @@ class MainWidget(QtWidgets.QWidget):
         self.bDisplayTiming = False
 
     def frequencyCounterFromPhaseData(self, ts, phi):
-        """ TODO: This needs to be improved,
-        right now the 'gate time' will vary with the timers' period variation,
-        which is not great """
+        """ Compute frequency from least-squares fit to phase data.
+        Accuracy is limited to ~1e-15 in frequency offset
+        due to doing computations in double-precision floats.
+        Gate time is currently fixed at 100 phase samples, thus 1 sec for 100 Hz phase output rate """
         # self.bDisplayTiming = True
         tictoc(self)
         phi = phi - phi[0]
-        phi = phi.astype(np.float) # this limits accuracy to at best ~1e-15 due to computations in double-precision floats
+        phi = phi.astype(np.float) # limits accuracy to ~1e-15
         phi = phi/2**self.sl.phaseReadoutDriver.n_bits_phase
         phi = phi/self.sl.phaseReadoutDriver.n_cycles
         # phi is now in cycles
@@ -184,10 +339,12 @@ class MainWidget(QtWidgets.QWidget):
         freq = fit.convert().coef[1] # freq is in units of cycles of the IQ waveform/cycles of the ADC clock
         freq_Hz = freq * self.sl.fs
         tictoc(self, "fit")
-        self.bDisplayTiming = False
+        # self.bDisplayTiming = False
         return freq_Hz
 
     def fastTimerEvent(self):
+        if not self.validDeviceAndConfigKnown():
+            return
         # each ADC channel is shared by two IQ channels
         adc_channel_to_linked_iq_channels = {
             1: (1, 2),
@@ -197,9 +354,7 @@ class MainWidget(QtWidgets.QWidget):
             N1 = self.pts_settings[iq_channel1]["pts_ADC"]
             N2 = self.pts_settings[iq_channel2]["pts_ADC"]
             N_ADC = max(N1, N2) # we grab the longest trace requested, then emit just what was requested by each
-            bAutoRefresh1 = self.pts_settings[iq_channel1]["autorefresh"] and (iq_channel1 == self.current_tab)
-            bAutoRefresh2 = self.pts_settings[iq_channel2]["autorefresh"] and (iq_channel2 == self.current_tab)
-            if not bAutoRefresh1 and not bAutoRefresh2:
+            if not self.shouldIQchannelRefresh(iq_channel1) and not self.shouldIQchannelRefresh(iq_channel2):
                 continue
             # fs = 125e6
             # adc_data = 0.1*np.cos(2*np.pi*15e6/125e6*np.linspace(0, N-1, N)) + 0.01*np.random.randn(N)
@@ -208,11 +363,10 @@ class MainWidget(QtWidgets.QWidget):
 
             # adc_data = self.getIQdata(1, N)
             if adc_data is not None:
-                if bAutoRefresh1:
+                if self.shouldIQchannelRefresh(iq_channel1):
                     self.perChannelEmitters[iq_channel1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
-                if bAutoRefresh2:
+                if self.shouldIQchannelRefresh(iq_channel2):
                     self.perChannelEmitters[iq_channel2].sig_new_adc_data.emit(adc_data[:N2], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
-
 
         # IQ channels are independent otherwise
         for iq_channel_id in self.iq_channels_list:
@@ -225,21 +379,26 @@ class MainWidget(QtWidgets.QWidget):
             self.perChannelEmitters[iq_channel_id].sig_new_iq_data.emit(complex_baseband, scale_factor_adc_to_input)
 
     def fasterTimerEvent(self):
+        if not self.validDeviceAndConfigKnown():
+            return
         phases = self.sl.phaseReadoutDriver.peakLatestPhases()
         self.sig_phase_point.emit(phases)
 
     def shouldIQchannelRefresh(self, iq_channel_id):
         """ Returns True if this IQ channel must refresh its data """
-        if self.current_tab == 0: # Summary tab visible?
+        if self.current_tab == 1: # Summary tab visible?
             return True
-        if self.pts_settings[iq_channel_id]["autorefresh"] and iq_channel_id == self.current_tab:
+        if self.pts_settings[iq_channel_id]["autorefresh"] and self.isChannelVisible(iq_channel_id):
             return True
         return False
+
+    def isChannelVisible(self, channel_id):
+        return self.current_tab-1 == channel_id
 
     def updateTabVisibility(self, tab_index):
         self.current_tab = tab_index
         for iq_channel_id in self.iq_channels_list:
-            self.perChannelEmitters[iq_channel_id].sig_set_visible.emit(iq_channel_id == tab_index)
+            self.perChannelEmitters[iq_channel_id].sig_set_visible.emit(self.isChannelVisible(iq_channel_id))
 
 class MyScrollArea(QtWidgets.QScrollArea):
     """ Just a normal scrollarea,
@@ -251,7 +410,7 @@ class MyScrollArea(QtWidgets.QScrollArea):
     def viewportSizeHint(self):
         return QtCore.QSize(1500, 600)
 
-def amplitude_calibration(test_widget):
+def amplitude_calibration(main_widget):
     """ Measures received amplitude at various frequencies.
     Requires a Siglent SSA-3021X with tracking generator option,
     and prior calibration of said generator using amplitude_calibration.py """
@@ -273,10 +432,10 @@ def amplitude_calibration(test_widget):
         d["expected_freq"] = freq
         d["target_if"] = 20e6
         d["upper_sideband"] = False
-        test_widget.setup_LO(d)
+        main_widget.setup_LO(d)
 
         time.sleep(200e-3)
-        (timestamp, complex_baseband) = test_widget.sl.getIQdata(d["channel_id"], int(1e3))
+        (timestamp, complex_baseband) = main_widget.sl.getIQdata(d["channel_id"], int(1e3))
         mean_amplitude = np.mean(np.abs(complex_baseband))
         # input signal is A*cos(), baseband signal is A*exp(),
         # average power in input signal is thus A**2/2/Z
@@ -297,67 +456,11 @@ def main():
     # for testing when ran without a parent GUI
     app = QtWidgets.QApplication(sys.argv)
     main_widget = MainWidget()
-    tab_widget = QtGui.QTabWidget()
-    tab_widget.resize(1200, 300)
-    # vbox = QtWidgets.QVBoxLayout()
-
-    summary_tab_gui = summary_tab.SummaryTab()
-    summary_tab_gui.sig_reset_phase.connect(main_widget.reset_channel_phase)
-    summary_tab_gui.show()
-    tab_widget.addTab(summary_tab_gui, "Summary")
-    # tab_widget.addTab(QtWidgets.QLabel('placeholder'), "Summary placeholder")
-
-    GUIs = list()
-    for channel_id in main_widget.iq_channels_list:
-        GUI = channel_gui.ChannelGUI(channel_id) # 1-based IDs used here
-
-        # Connect signals to slots
-        # channel GUIs to main:
-        GUI.sig_set_num_points.connect(main_widget.set_num_points)
-        GUI.sig_setup_LO.connect(main_widget.setup_LO)
-        GUI.phaseWidget.sig_reset_phase.connect(main_widget.reset_channel_phase)
-        # main to channel GUIs:
-        main_widget.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
-        main_widget.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
-        main_widget.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
-        main_widget.perChannelEmitters[channel_id].sig_set_visible.connect(GUI.setVisibility)
-        main_widget.perChannelEmitters[channel_id].sig_new_freq.connect(summary_tab_gui.newFreqData) # oddball
-        # main to summary tab:
-        main_widget.sig_new_settings.connect(GUI.newSettings)
-        main_widget.sig_phase_point.connect(GUI.newPhasePoint)
-        main_widget.sig_phase_point.connect(summary_tab_gui.newPhasePoint)
-
-        # channel GUIs to summary:
-        GUI.sig_new_Amplitude.connect(summary_tab_gui.newAmplitude)
-        GUI.sig_new_SNR.connect(summary_tab_gui.newSNR)
-        # Trigger a few updates now that the signals have been connected
-        GUI.probingSettingsChanged()
-
-        # vbox.addWidget(GUI)
-        tab_widget.addTab(GUI, "Channel %d" % (channel_id))
-        GUIs.append(GUI)
 
     if len(sys.argv) > 1 and sys.argv[1] == '-amplitude_calibration':
         print("Running amplitude calibration...")
         amplitude_calibration(main_widget)
         print("Amplitude calibration complete! Data saved to disk.")
-    
-    # tab_widget.setLayout(vbox)
-    # main_widget.show()
-    tab_widget.currentChanged.connect(main_widget.updateTabVisibility)
-    tab_widget.setWindowTitle('Frequency counter/phase meter')
-    tab_widget.show()
-
-    # scrollarea = MyScrollArea() # need a scrollarea since 4 channel is too big...
-    # scrollarea.setWidget(main_widget)
-    # scrollarea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-    # scrollarea.show()
-
-    main_widget.updateTabVisibility(0)
-    main_widget.emit_system_settings()
-    main_widget.fasterTimer.start(5)
-    main_widget.fastTimer.start(20)
-    main_widget.slowTimer.start(1000)
     
     app.exec_()
 
