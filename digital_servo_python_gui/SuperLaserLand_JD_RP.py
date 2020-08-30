@@ -211,6 +211,15 @@ class SuperLaserLand_JD_RP:
         logger_data = raw_data_int16[4:]
         return (ts_as_int64, logger_data)
 
+    def demux_IQ_data(self, logger_data):
+        data_real = logger_data[0::2]
+        data_imag = logger_data[1::2]
+        # make sure real and imag are the same size:
+        N_min = min(len(data_real), len(data_imag))
+        data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
+        data_complex = self.convertIQCountsToVolts(data_complex)
+        return data_complex
+
     def getADCdata(self, adc_number, N_samples):
         raw_data = self.getDataSafe(self.LOGGER_MUX['ADC%d' % adc_number], int(N_samples))
         (timestamp, logger_data) = self.demux_logger_timestamp(raw_data)
@@ -225,12 +234,7 @@ class SuperLaserLand_JD_RP:
         with open("out_raw.bin", "wb") as f:
             f.write(raw_data.tobytes())
 
-        data_real = logger_data[0::2]
-        data_imag = logger_data[1::2]
-        # make sure real and imag are the same size:
-        N_min = min(len(data_real), len(data_imag))
-        data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
-        data_complex = self.convertIQCountsToVolts(data_complex)
+        data_complex = self.demux_IQ_data(logger_data)
 
         LO3_phase_radians = self.phaseReadoutDriver.get3rdLOPhaseRadians(timestamp, self.R_LO3[iq_channel], iq_channel)
         data_complex = data_complex * np.exp(-1j*LO3_phase_radians)
@@ -456,31 +460,24 @@ class SuperLaserLand_JD_RP:
         
     def getExtClockFreq(self):
         # see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
-        read_all_regs = lambda : (self.read("clk_freq_reg1"),
-                                  self.read("clk_freq_reg2"),
-                                  self.read("clk_freq_reg3"))
         data_index = lambda x: (x >> 24)
-        iAttempts = 0;
         bSuccess = False
-        while iAttempts < 2:
-            (reg1, reg2, reg3) = read_all_regs()
+        for iAttempts in range(2):
+            reg1 = self.read("clk_freq_reg1")
+            reg2 = self.read("clk_freq_reg2")
+            reg3 = self.read("clk_freq_reg3")
             # these three need to match.  If they don't, this means that the data changed in between our three reads.
             # try another time to read all three registers.  It should succeed, since the counter updates only at 1 Hz
             if data_index(reg1) == data_index(reg2) == data_index(reg3):
                 bSuccess = True
                 break
-            
-            iAttempts += 1
         if not bSuccess:
             return np.nan
         freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
                        ((reg2 & 0x00FFFFFF) << 24) + 
                        ((reg3 & 0x0000FFFF) << 48))
-        # print("getExtClockFreq(): reg1=0x%08x, reg2=0x%08x, reg3=0x%08x" % (reg1, reg2, reg3))
-        # print("getExtClockFreq(): freq_64bits=0x%08x" % (freq_64bits))
         freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, N_cycles_gate_time=200e6, f_ref=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
         freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
-        # print("getExtClockFreq(): freq_Hz=%e Hz" % freq_Hz)
         return freq_Hz
 
     def scaleCounterReadingsIntoHz(self, freq_counter_samples, N_cycles_gate_time, f_ref=None):

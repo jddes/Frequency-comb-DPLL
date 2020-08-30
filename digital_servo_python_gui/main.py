@@ -168,8 +168,6 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.enableOrDisableWidgetsRequiringConnection(bConnect)
 
-
-
     def enableOrDisableWidgetsRequiringConnection(self, bEnable):
         self.config_widget.setEnabled(bEnable)
         self.summary_tab_gui.setEnabled(bEnable and self.validDeviceAndConfigKnown())
@@ -369,7 +367,7 @@ class MainWidget(QtWidgets.QMainWindow):
                 continue
             scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(adc_channel_id))
             # adc_data = self.getIQdata(1, N)
-                
+
             if self.shouldIQchannelRefresh(iq_channel1):
                 self.perChannelEmitters[iq_channel1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
             if self.shouldIQchannelRefresh(iq_channel2):
