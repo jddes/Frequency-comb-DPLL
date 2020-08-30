@@ -316,7 +316,7 @@ def factor(x):
     factors.sort()
     return factors
 
-def primes(n):
+def primes(n, N_prime_count_sparseness=100):
     """ Generate all primes up to n, using the sieve of Eratosthenes.
     Following pseudo-code on https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes.
     requires O(n) of memory, so avoid using too large values of n """
@@ -327,9 +327,10 @@ def primes(n):
         if not is_prime[i]:
             continue
         is_prime[i*i:n+1:i] = False
-    return np.nonzero(is_prime)[0]
+    prime_numbers = np.nonzero(is_prime)[0].astype(np.uint64) # type is int64 by default, which I don't understand
+    return prime_numbers
 
-def factor2(x, list_of_primes):
+def factor2(x, list_of_primes, threshold_skip_numpy=100000000069):
     # this time, we use a list of primes and only test those
     # ends up more than twice as fast as the first version
     if x == 0:
@@ -344,33 +345,96 @@ def factor2(x, list_of_primes):
     else:
         factors = []
 
-    y = x
+    # first stage: use numpy to perform division with the whole list of primes at once,
+    # computing all factors up to a multiplicity of 1.
+    if x < threshold_skip_numpy:
+        y = x
+    else:
+        factors_np = list_of_primes[np.mod(x, list_of_primes)==0]
+        # special case if the number was prime: factors_np is empty
+        if len(factors_np) == 0:
+            factors += [x]
+            return factors
+        factors += [val.item() for val in factors_np] # convert each element from np.uint64 to built-in int(), and collect into a list
+        y = x // int(np.prod(factors_np))
+
+    # final steps: iterated division, although the number has been reduced in the first stage
     k = 0
-    max_possible_factor = math.ceil(math.sqrt(x))
-    while True:
-        candidate = int(list_of_primes[k])
-        if y%candidate == 0:
-            factors.append(candidate)
-            y = y//candidate
-        else:
-            k+=1
+    max_possible_factor = int(math.ceil(math.sqrt(y)))
+    try:
+        while True:
+            candidate = int(list_of_primes[k])
+            if y%candidate == 0:
+                factors.append(candidate)
+                y = y//candidate
+            else:
+                k+=1
 
-        # exit conditions:
-        if y == 1:
-            break
-        if candidate >= max_possible_factor:
-            # this means that the remaining number is prime
-            factors.append(y)
-            break
-    factors.sort()
-    return factors
+            # exit conditions:
+            if y == 1:
+                break
+            if candidate >= max_possible_factor:
+                # this means that the remaining number is prime
+                factors.append(y)
+                break
+        factors.sort()
+        return factors
+    except IndexError:
+        print("Error: could not factor integer %d, with primes list up to %d" % (x, list_of_primes[-1]))
+        print("Work done up to this point: %d = %d*product(%s)" % (x, y, factors))
+        raise
 
-list_of_primes = primes(2**25)
+def test_numpy_speed(x, list_of_primes):
+    # test a possibly much quicker implementation of the factorization algorithm above (repeated trial division with a pre-calculated list of primes):
+    # use numpy to perform the integer operations on the whole list at once to avoid looping in pure Python
+    
+    x_np = np.uint64(x)
+    t1 = c()
+    y = x * list_of_primes
+    print("x*list of primes(%d numbers): %f sec" % (len(list_of_primes), c()-t1))
+    t1 = c()
+    y = x / list_of_primes
+    print("x/list of primes(%d numbers): %f sec" % (len(list_of_primes), c()-t1))
+    t1 = c()
+    y = np.mod(x, list_of_primes)==0
+    print("x modulo list of primes(%d numbers): %f sec" % (len(list_of_primes), c()-t1))
+    t1 = c()
+    factors_np = list_of_primes[np.mod(x, list_of_primes)==0]
+    print("factors_np = list_of_primes[np.mod(x, list_of_primes)==0] (%d factors): %f sec" % (len(factors_np), c()-t1))
+    t1 = c()
+    y = np.prod(factors_np)
+    print("prod(factors_np): %f sec" % (c()-t1))
+
+    prime_count = np.arange(len(list_of_primes))
+    t1 = c()
+    prime_count_eval = np.interp(list_of_primes[-1]-1, list_of_primes, prime_count)
+    print("finding number of primes to n-1: %f sec" % (c()-t1))
+
+
+def test_threshold(list_of_primes):
+    """ a few quick tests to find a sensible threshold for activating the numpy exhaustive search """
+    for k in range(20):
+        t1 = c()
+        factor2(2**k, list_of_primes)
+        print("%d, %f" % (k, c()-t1))
+
+    # test the worst case of the pure-Python loop algorithm: primes
+    for value in [997, 1000003, 100002613, 10000002589, 10000000019, 100000000069, 9999995297, 91479367430963, 2**48]:
+        t1 = c()
+        print(factor2(value, list_of_primes))
+        print("test_threshold, %d = %f" % (value, c()-t1))
+
+    t1 = c()
+    print(factor2(list_of_primes[-1], list_of_primes))
+    print("test_threshold, %d = %f" % (list_of_primes[-1], c()-t1))
+
+
+list_of_primes = primes(2**24)
+print(len(list_of_primes))
 # list_of_primes = primes(100)
 factor = lambda x : factor2(x, list_of_primes) # monkey-patching
 
 if __name__ == '__main__':
-    from time import perf_counter as c
     t1 = c()
     factor(44948035343483)
     print("factor(44948035343483): %.3f sec" % (c()-t1))
@@ -383,3 +447,6 @@ if __name__ == '__main__':
     t1 = c()
     print(primes(int(2**24)))
     print("primes(2**24): %f sec" % (c()-t1))
+
+    test_numpy_speed(2**47+5, list_of_primes)
+    test_threshold(list_of_primes)
