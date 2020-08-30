@@ -100,8 +100,6 @@ class MainWidget(QtWidgets.QMainWindow):
         self.config_widget.btnCommit.clicked.connect(self.commit)
         self.config_widget.sig_set_status.connect(self.setStatus)
 
-
-
         self.channel_GUIs = dict()
         for channel_id in self.iq_channels_list:
             GUI = channel_gui.ChannelGUI(channel_id)
@@ -306,6 +304,10 @@ class MainWidget(QtWidgets.QMainWindow):
         if data is None:
             return
         tictoc(self, "read")
+        self.handleNewPhaseReadout(data)
+
+    def handleNewPhaseReadout(self, data):
+        tictoc(self)
         for field in data.dtype.fields:
             with open('out_%s.bin' % field, 'ab') as f:
                 f.write(data[field].tobytes())
@@ -345,6 +347,10 @@ class MainWidget(QtWidgets.QMainWindow):
     def fastTimerEvent(self):
         if not self.validDeviceAndConfigKnown():
             return
+        self.updateADCdisplays()
+        self.updateIQdisplays()
+
+    def updateADCdisplays(self):
         # each ADC channel is shared by two IQ channels
         adc_channel_to_linked_iq_channels = {
             1: (1, 2),
@@ -359,15 +365,17 @@ class MainWidget(QtWidgets.QMainWindow):
             # fs = 125e6
             # adc_data = 0.1*np.cos(2*np.pi*15e6/125e6*np.linspace(0, N-1, N)) + 0.01*np.random.randn(N)
             (timestamp, adc_data) = self.sl.getADCdata(adc_channel_id, N_ADC) # adc numbers are 1-based
+            if adc_data is None:
+                continue
             scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(adc_channel_id))
-
             # adc_data = self.getIQdata(1, N)
-            if adc_data is not None:
-                if self.shouldIQchannelRefresh(iq_channel1):
-                    self.perChannelEmitters[iq_channel1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
-                if self.shouldIQchannelRefresh(iq_channel2):
-                    self.perChannelEmitters[iq_channel2].sig_new_adc_data.emit(adc_data[:N2], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
+                
+            if self.shouldIQchannelRefresh(iq_channel1):
+                self.perChannelEmitters[iq_channel1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
+            if self.shouldIQchannelRefresh(iq_channel2):
+                self.perChannelEmitters[iq_channel2].sig_new_adc_data.emit(adc_data[:N2], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
 
+    def updateIQdisplays(self):
         # IQ channels are independent otherwise
         for iq_channel_id in self.iq_channels_list:
             if not self.shouldIQchannelRefresh(iq_channel_id):
