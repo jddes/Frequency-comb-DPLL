@@ -196,12 +196,12 @@ class MainWidget(QtWidgets.QMainWindow):
         self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
                                bExternalClock=system_settings["adc_use_external_clock"])
         self.sl.phaseReadoutDriver.setOutputRate(system_settings["output_data_rate"])
-        system_settings["output_data_rate"]
         for channel_id, channel_settings in channels_settings.items():
             self.setup_LO(system_settings, channel_settings)
 
     def emit_system_settings(self):
-        # TODO: make this cleaner... update at the right times, etc
+        """ This is used to notify the channel GUIs of the system settings,
+        so that the GUIs can do proper scaling calculations, etc """
         d = dict()
         d["type"] = "system"
         d["fs"] = self.sl.fs
@@ -235,19 +235,18 @@ class MainWidget(QtWidgets.QMainWindow):
         """
         s = system_settings  # shorthand
         c = channel_settings # shorthand
+        k = channel_settings["channel_id"] # shorthand
         print("setup_LO: system_settings=%s, channel_settings=%s" % (str(s), str(c)))
         if c["upper_sideband"]:
             out_freq_target = c["expected_freq"] - c["target_if"]
-            sign_str = '+'
         else:
             out_freq_target = c["expected_freq"] + c["target_if"]
-            sign_str = '-'
 
         # TODO: input validation vs actual range accessible?
-        print("setup_LO(): channel_id: ", c["channel_id"])
-        self.sl.set_expected_freq(c["channel_id"], c["expected_freq_MHz_str"], s["ref_freq_MHz_str"])
+        print("setup_LO(): channel_id: ", k)
+        self.sl.set_expected_freq(k, c["expected_freq_MHz_str"], s["ref_freq_MHz_str"])
         print("setup_LO: FIXME: Refactor where we handle setup_LO")
-        a = self.sl.set_adf4351_freq(out_freq_target, s["ref_freq"], s["pfd_target_freq"], c["channel_id"], c["LO_pwr"], c["LO_enable"])
+        a = self.sl.set_adf4351_freq(out_freq_target, s["ref_freq"], s["pfd_target_freq"], k, c["LO_pwr"], c["LO_enable"])
         D = 2**a.reg["RF_DIVIDER_SEL"]
         INT = a.reg["INT"]
         R = a.reg["R"]
@@ -265,10 +264,10 @@ class MainWidget(QtWidgets.QMainWindow):
         else:
             result["chosen_IF_text"] += "= LO freq - input"
 
-        self.sl.set_ddc_ref_freq(IF_actual, c["channel_id"])
+        self.sl.set_ddc_ref_freq(IF_actual, k)
 
         for field in result:
-            prefix = "ch%d_" % c["channel_id"]
+            prefix = "ch%d_" % k
             self.config[prefix + field] = result[field]
 
         result["lpf"] = self.sl.get_ddc_filter()
@@ -285,7 +284,7 @@ class MainWidget(QtWidgets.QMainWindow):
     def validDeviceAndConfigKnown(self):
         """ Returns True if there is a valid device connected,
         and all the configuration values are known so that we can read-out data
-        from the device, and apply the necessary post-processing. """
+        from the device, and apply the necessary post-processing if any. """
         return self.sl.dev.valid_socket and self.config_done
 
     def slowTimerEvent(self):
