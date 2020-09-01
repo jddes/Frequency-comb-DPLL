@@ -29,6 +29,11 @@
       </item>
       <item row="4" column="3">
        <widget class="QPushButton" name="btnConnect">
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Connect</string>
         </property>
