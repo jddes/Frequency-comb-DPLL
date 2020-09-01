@@ -6,6 +6,7 @@ import os
 import inspect
 import time
 import socket
+from collections import OrderedDict
 
 import numpy as np
 import pyqtgraph as pg
@@ -133,6 +134,7 @@ class MainWidget(QtWidgets.QMainWindow):
         self.setWindowTitle('Frequency counter/phase meter')
 
         self.enableOrDisableWidgetsRequiringConnection(False)
+        self.createStatusBar()
 
         self.updateTabVisibility(0)
         self.fasterTimer.start(5)
@@ -141,20 +143,39 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.show()
 
+    def createStatusBar(self):
+        self.status_bar_fields = OrderedDict()
+        self.status_bar_fields["connection"] = QtWidgets.QLabel('Disconnected.')
+        self.status_bar_fields["commit"] = QtWidgets.QLabel('No config committed')
+        self.status_bar_fields["spacer"] = QtWidgets.QLabel('')
+        self.status_bar_fields["config"] = QtWidgets.QLabel('No config file selected')
+
+
+        self.setStatus("connection", "Disconnected.", "bad")
+        self.setStatus("config", "No config file selected", "bad")
+        self.setStatus("commit", "Uncommitted", "bad")
+        # self.statusBar = QtWidgets.QStatusBar()
+        for k, w in self.status_bar_fields.items():
+            if k == "spacer":
+                stretch = 1
+            else:
+                stretch = 0
+            print(stretch)
+            self.statusBar().addPermanentWidget(w, stretch)
+
     def setStatus(self, field, text, color_name):
         """ Set one of the status-bar entry to "text", and to given color coding """
-        print("TODO: status-bar! (field, text, color_name) = ", (field, text, color_name))
-        # self.status_bar_fields[field].setText(text)
-        # colorCoding(self.status_bar_fields[field], color_name)
+        self.status_bar_fields[field].setText(text)
+        colorCoding(self.status_bar_fields[field], color_name)
 
     def connect_clicked(self, bConnect):
         self.config_done = False
+        self.setStatus('commit', 'Uncommitted', 'bad')
         if bConnect == False:
             # button was unchecked, disconnect
             if self.sl.dev.valid_socket:
                 self.sl.dev.CloseTCPConnection()
-            self.config_widget.lblStatus.setText("Uncommitted")
-            colorCoding(self.config_widget.lblStatus, "bad")
+            self.setStatus('connection', 'Disconnected.', 'bad')
         else:
             # attempt to establish connection to selected device
             (strMAC, strIP, port) = self.connection_widget.getSelectedHost()
@@ -164,7 +185,8 @@ class MainWidget(QtWidgets.QMainWindow):
 
             self.sl.dev.OpenTCPConnection(strIP, port)
             self.sl.phaseReadoutDriver.startLogging()
-            print("connect_clicked(): TODO: set config file name, enable rest of GUI controls if connection was valid")
+            self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
+            print("connect_clicked(): TODO: set config file name")
 
         self.enableOrDisableWidgetsRequiringConnection(bConnect)
 
@@ -182,8 +204,7 @@ class MainWidget(QtWidgets.QMainWindow):
             return # don't commit anything since there is an invalid value somewhere
 
         self.pushSettingsToDevice(system_settings, channels_settings)
-        self.config_widget.lblStatus.setText("Committed")
-        colorCoding(self.config_widget.lblStatus, "ok")
+        self.setStatus('commit', 'Committed', 'ok')
         
         self.emit_system_settings()
 

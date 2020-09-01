@@ -61,8 +61,11 @@ class ConfigWidget(QtWidgets.QWidget):
                 self.adv_per_channel[channel_id].comboLOpower.addItem(text)
 
     def user_settings_changed(self, *args, **kwargs):
-        self.lblStatus.setText('Uncommitted')
-        colorCoding(self.lblStatus, "bad")
+        self.sig_set_status.emit("commit", "Uncommitted", "bad")
+        if self.editConfigFile.text() == '':
+            self.sig_set_status.emit("config", "No config file selected", "bad")
+        else:
+            self.sig_set_status.emit("config", "Config file neither loaded nor saved", "bad")
 
     def readConfigFromGUI(self):
         """ Read all the settings from the GUI to our config dicts,
@@ -92,18 +95,16 @@ class ConfigWidget(QtWidgets.QWidget):
                 channels_settings[channel_id] = c
 
         except ValueError:
-            self.sig_set_status.emit("config", "Invalid", "bad")
+            self.sig_set_status.emit("config", "Invalid setting in config", "bad")
 
         return (system_settings, channels_settings)
 
     def loadFromFileClicked(self):
-        print("loadFromFileClicked(): TODO!")
-
         try:
             with open(self.editConfigFile.text(), 'r') as f:
                 config_dict = json.load(f)
         except FileNotFoundError:
-            self.sig_set_status.emit("config", "File %s not found" % self.editConfigFile.text(), "bad")
+            self.sig_set_status.emit("config", 'File "%s" not found' % self.editConfigFile.text(), "bad")
             return
 
         system_settings = config_dict["system_settings"]
@@ -126,12 +127,11 @@ class ConfigWidget(QtWidgets.QWidget):
             adv_settings.comboLOpower.setCurrentText(c["LO_pwr"])
             adv_settings.chkEnableLO.setChecked(c["LO_enable"])
 
-        self.sig_set_status.emit("config", "Loaded from %s" % self.editConfigFile.text(), "good")
         self.user_settings_changed()
+        self.sig_set_status.emit("config", "Config loaded from %s" % self.editConfigFile.text(), "ok")
 
     def saveToFileClicked(self):
         fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Select File', filter = self.config_files_filter)
-        print(fileName)
         if not fileName[0]:
             return
 
@@ -146,8 +146,11 @@ class ConfigWidget(QtWidgets.QWidget):
         with open(self.editConfigFile.text(), 'w') as f:
             json.dump(config_dict, f, sort_keys=True, indent=4)
 
+        self.sig_set_status.emit("config", "Config saved to %s" % self.editConfigFile.text(), "ok")
+
     def browseClicked(self):
         fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Select File', filter=self.config_files_filter)
         
         if fileName[0]:
             self.editConfigFile.setText(fileName[0])
+        self.user_settings_changed()
