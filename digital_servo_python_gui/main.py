@@ -77,29 +77,21 @@ class MainWidget(QtWidgets.QMainWindow):
     def setupUI(self):
         self.resize(1200, 300)
 
-        # Create the "Setup" widget as a composite of the connection and configuration widgets:
-        self.setup_widget = QtWidgets.QWidget(self)
         self.connection_widget = connection_widget.ConnectionWidget()
         self.config_widget = config_widget.ConfigWidget(self.iq_channels_list)
-        
-        vbox = QtWidgets.QVBoxLayout()
-        vbox.addWidget(self.connection_widget)
-        vbox.addWidget(self.config_widget)
-        self.setup_widget.setLayout(vbox)
+        self.summary_tab_gui = summary_tab.SummaryTab()
 
         self.tab_widget = QtGui.QTabWidget(self)
         self.setCentralWidget(self.tab_widget)
-
-        self.summary_tab_gui = summary_tab.SummaryTab()
-        self.summary_tab_gui.sig_reset_phase.connect(self.reset_channel_phase)
-        self.summary_tab_gui.show()
-        self.tab_widget.addTab(self.setup_widget, "Setup")
+        self.tab_widget.addTab(self.connection_widget, "Connection")
+        self.tab_widget.addTab(self.config_widget, "Config")
         self.tab_widget.addTab(self.summary_tab_gui, "Summary")
 
         # Connect signals to slots:
         self.connection_widget.btnConnect.clicked.connect(self.connect_clicked)
         self.config_widget.btnCommit.clicked.connect(self.commit)
         self.config_widget.sig_set_status.connect(self.setStatus)
+        self.summary_tab_gui.sig_reset_phase.connect(self.reset_channel_phase)
 
         self.channel_GUIs = dict()
         for channel_id in self.iq_channels_list:
@@ -193,7 +185,8 @@ class MainWidget(QtWidgets.QMainWindow):
     def enableOrDisableWidgetsRequiringConnection(self, bEnable):
         self.config_widget.setEnabled(bEnable)
         self.summary_tab_gui.setEnabled(bEnable and self.validDeviceAndConfigKnown())
-        for index in range(1, self.tab_widget.count()): # skip first tab which is "Setup"
+        self.tab_widget.setTabEnabled(1, bEnable) # 2nd tab is "config"
+        for index in range(2, self.tab_widget.count()): # skip first tab which is "Setup", and 2nd tab which is "config"
             self.tab_widget.setTabEnabled(index, bEnable and self.validDeviceAndConfigKnown())
 
     def commit(self):
