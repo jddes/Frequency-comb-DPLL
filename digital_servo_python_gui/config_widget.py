@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import time
 import socket
+import json
 
 import UDPRedPitayaDiscovery
 from RP_PLL import RP_PLL_device # needed to update FPGA firmware and CPU (Zynq) software
@@ -98,14 +99,55 @@ class ConfigWidget(QtWidgets.QWidget):
     def loadFromFileClicked(self):
         print("loadFromFileClicked(): TODO!")
 
+        try:
+            with open(self.editConfigFile.text(), 'r') as f:
+                config_dict = json.load(f)
+        except FileNotFoundError:
+            self.sig_set_status.emit("config", "File %s not found" % self.editConfigFile.text(), "bad")
+            return
+
+        system_settings = config_dict["system_settings"]
+
+        self.editRefFreq.setText(system_settings["ref_freq_MHz_str"])
+        self.editPFDtargetFreq.setText("%f" % (system_settings["pfd_target_freq"]/1e6))
+        self.editOutputDataRate.setText("%f" % (system_settings["output_data_rate"]))
+        if system_settings["adc_use_external_clock"]:
+            self.comboADCclockSource.setCurrentText("Phase-locked to external ref")
+        else:
+            self.comboADCclockSource.setCurrentText("Phase-locked to internal ref (limited accuracy)")
+
+        # per-channel settings:
+        for channel_id in self.channels_list:
+            c = config_dict["ch%d_settings" % channel_id]
+            self.editExpectedFreq_dict[channel_id].setText(c["expected_freq_MHz_str"])
+            adv_settings = self.adv_per_channel[channel_id] # shorthand
+            adv_settings.editTargetIF.setText("%f" % (c["target_if"]/1e6))
+            adv_settings.radioUpper.setChecked(c["upper_sideband"])
+            adv_settings.comboLOpower.setCurrentText(c["LO_pwr"])
+            adv_settings.chkEnableLO.setChecked(c["LO_enable"])
+
+        self.sig_set_status.emit("config", "Loaded from %s" % self.editConfigFile.text(), "good")
+        self.user_settings_changed()
+
     def saveToFileClicked(self):
         fileName = QtWidgets.QFileDialog.getSaveFileName(self, 'Select File', filter = self.config_files_filter)
-        if fileName:
-            self.editConfigFile.setText(fileName[0])
-            print("saveToFileClicked(): TODO!")
+        print(fileName)
+        if not fileName[0]:
+            return
+
+        self.editConfigFile.setText(fileName[0])
+
+        (system_settings, channels_settings) = self.readConfigFromGUI()
+        # put everything into one big dict, so we can let the json module do the work
+        config_dict = dict()
+        config_dict["system_settings"] = system_settings
+        for channel_id in self.channels_list:
+            config_dict["ch%d_settings" % (channel_id)] = channels_settings[channel_id]
+        with open(self.editConfigFile.text(), 'w') as f:
+            json.dump(config_dict, f, sort_keys=True, indent=4)
 
     def browseClicked(self):
         fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Select File', filter=self.config_files_filter)
         
-        if fileName:
+        if fileName[0]:
             self.editConfigFile.setText(fileName[0])
