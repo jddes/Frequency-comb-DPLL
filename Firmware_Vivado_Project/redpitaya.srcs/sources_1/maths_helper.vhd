@@ -27,7 +27,7 @@ package maths_helper is
     -- note that this can wrap in extreme cases when the input is already super close to the positive rail
     function divide_and_round( x : in signed; N_SIZE_SHIFT : in integer) return signed;
 
-    function clog2(   x: in integer) return integer; -- ceil(log2(x))
+    function clog2(x: in integer) return integer; -- ceil(log2(x))
     function clog2(x: in unsigned) return integer;  -- ceil(log2(x))
     function find_msb(x: in unsigned) return unsigned; -- floor(log2(abs(x)))
     function find_msb(x: in   signed) return unsigned; -- floor(log2(abs(x)))

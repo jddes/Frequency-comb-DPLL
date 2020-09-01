@@ -32,16 +32,17 @@ use IEEE.NUMERIC_STD.ALL;
 entity quadrature_dither_generator is
 	Generic (
 		N_BITS_OUTPUT : integer := 16;
-		COUNTER_BITS : integer := 27	-- 27 bits gives ~ 134 Millions clock cycles, or 1.34 seconds at 100 MHz clock rate
-	
+		COUNTER_BITS  : integer := 27	-- 27 bits gives ~ 134 Millions clock cycles, or 1.34 seconds at 100 MHz clock rate
 	);
-    Port ( clk : in  STD_LOGIC;
-           modulation_period_divided_by_4_minus_one : in  STD_LOGIC_VECTOR (COUNTER_BITS-1 downto 0);
-           modulation_amplitude : in  STD_LOGIC_VECTOR (N_BITS_OUTPUT-1 downto 0);
-           bOutputEnable : in  STD_LOGIC;
-           output_to_dac : out  STD_LOGIC_VECTOR (N_BITS_OUTPUT-1 downto 0);
-           sync_I : out  STD_LOGIC;
-           sync_Q : out  STD_LOGIC);
+    Port ( 
+		clk                                      : in  std_logic;
+		modulation_period_divided_by_4_minus_one : in  std_logic_vector (COUNTER_BITS-1 downto 0);
+		modulation_amplitude                     : in  std_logic_vector (N_BITS_OUTPUT-1 downto 0);
+		bOutputEnable                            : in  std_logic;
+		output_to_dac                            : out std_logic_vector (N_BITS_OUTPUT-1 downto 0);
+		sync_I                                   : out std_logic;
+		sync_Q                                   : out std_logic
+    );
 end quadrature_dither_generator;
 
 architecture Behavioral of quadrature_dither_generator is
@@ -50,7 +51,7 @@ architecture Behavioral of quadrature_dither_generator is
 	signal current_state : unsigned(1 downto 0) := (others => '0');
 	
 	-- outputs
-	signal output_to_dac_internal : STD_LOGIC_VECTOR (N_BITS_OUTPUT-1 downto 0) := (others => '0');
+	signal output_to_dac_internal : std_logic_vector (N_BITS_OUTPUT-1 downto 0) := (others => '0');
 	signal sync_I_internal, sync_Q_internal, sync_I_internal2, sync_Q_internal2 : std_logic := '0';
 begin
 	-- Simple counter from 0 to modulation_period_divided_by_4_minus_one
