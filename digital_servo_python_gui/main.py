@@ -186,6 +186,8 @@ class MainWidget(QtWidgets.QMainWindow):
                 return
 
             self.sl.dev.OpenTCPConnection(strIP, port)
+            self.sl.set_dds_offset_freq(1, 25e6)
+            self.sl.set_dds_limits(1, 5e6, 20e6)
             self.sl.phaseReadoutDriver.startLogging()
             self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
             print("connect_clicked(): TODO: set config file name")
@@ -290,7 +292,7 @@ class MainWidget(QtWidgets.QMainWindow):
         else:
             result["chosen_IF_text"] += "= LO freq - input"
 
-        self.sl.set_ddc_ref_freq(IF_actual, k)
+        self.sl.set_ddc_ref_freq(k, IF_actual)
 
         for field in result:
             prefix = "ch%d_" % k

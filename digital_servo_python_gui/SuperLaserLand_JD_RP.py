@@ -28,7 +28,8 @@ class SuperLaserLand_JD_RP:
     # Data members:
     ############################################################
     # System parameters:
-    fs = 125e6  # adc sampling rate
+    fs = 125e6  # default adc sampling rate
+    dds_fs = 125e6 # default dds sampling rate (1 GHz nominal)
 
     # input channels ids start from 1
     num_channels = 4
@@ -61,13 +62,31 @@ class SuperLaserLand_JD_RP:
         "ref_freq3": counter2absolute(0x000B),
         "ref_freq4": counter2absolute(0x000D),
 
+        # DDS settings
+        "manual_offset_dds1": counter2absolute(0x0010),
+        "manual_offset_dds2": counter2absolute(0x0012),
+        "manual_offset_dds3": counter2absolute(0x0014),
+        "manual_offset_dds4": counter2absolute(0x0016),
+
+        "dds1_limits": counter2absolute(0x0018),
+        "dds2_limits": counter2absolute(0x0019),
+        "dds3_limits": counter2absolute(0x001A),
+        "dds4_limits": counter2absolute(0x001B),
+
+        # PI settings
+        "PI_n_cycles":       counter2absolute(0x0003),
+        "PI_enables":        counter2absolute(0x001C),
+        "PI_fine_gains":     counter2absolute(0x001D),
+        "PI_coarse_P_gains": counter2absolute(0x001E),
+        "PI_coarse_I_gains": counter2absolute(0x001F),
+
         # Phase logger registers, implemented in registers_read.vhd
         "phase_logger_start_write":        counter2absolute(0x0041),
         "phase_logger_start_read":         counter2absolute(0x0042),
         "phase_logger_read_start_address": counter2absolute(0x0043),
         "phase_logger_read_data":          counter2absolute(0x0044),
         "phase_logger_write_addr":         counter2absolute(0x0045),
-        "phase_logger_n_cycles":           counter2absolute(0x000F), # phase cycles per integration time
+        "phase_logger_n_cycles":           counter2absolute(0x0002), # phase cycles per integration time
 
         # addresses implemented in the "Board design" 
         # XADC-related
@@ -268,33 +287,37 @@ class SuperLaserLand_JD_RP:
         assert dac_number in self.dacs_list
         self.write("DAC_offset" % dac_number, offset)
 
-    def set_ddc_ref_freq(self, frequency_in_hz, channel_id):
+    def set_ddc_ref_freq(self, channel_id, frequency_in_hz):
         """ channel_id can be either 1, 2, 3 or 4 """
         assert channel_id in self.channels_list
         self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
-        dds_freq_word = int(round(2**(48) * frequency_in_hz/self.fs))
-        dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
+        dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs)
         # print("dds_freq_word=",dds_freq_word)
         self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
 
         self.R_LO3[channel_id] = self.phaseReadoutDriver.compute3rdLOFreq(channel_id)
 
-    def set_dac_limits(self, dac_number, limit_low, limit_high, bSendToFPGA = True):
-        """ Valid DAC numbers are 1 and 2 """
-        limit_low = int(limit_low)
-        limit_high = int(limit_high)
+    def set_dds_offset_freq(self, channel_id, frequency_in_hz):
+        """ channel_id can be either 1, 2, 3 or 4 """
+        assert channel_id in self.channels_list
+        self.user_inputs["dds_ref_freq%d_hz" % channel_id] = frequency_in_hz
+        dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.dds_fs)
+        self.write_64bits("manual_offset_dds%d"%channel_id, dds_freq_word)
 
-        limits_signed = lambda n_bits: (-2**(n_bits-1), 2**(n_bits-1)-1)
-        limits_unsigned = lambda n_bits: (0, 2**(n_bits)-1)
-        limits_from_dac =  {1: limits_signed(16),
-                            2: limits_signed(16)}
-        # clamp to extremum values:
-        if limit_low < limits_from_dac[dac_number][0]:
-            limit_low = limits_from_dac[dac_number][0]
-        if limit_high > limits_from_dac[dac_number][1]:
-            limit_high = limits_from_dac[dac_number][1]
+    def dds_freq_to_word(self, frequency_in_hz, ref_freq):
+        dds_freq_word = int(round(2**(48) * frequency_in_hz/ref_freq))
+        dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
+        return dds_freq_word
 
-        self.write_2x_16bits("DAC_limits%d"%dac_number, limit_low, limit_high)
+    def set_dds_limits(self, channel_id, limit_low_hz, limit_high_hz):
+        """ Valid channel_id's are 1, 2, 3, 4 """
+        assert channel_id in self.channels_list
+
+        # Limit registers are only 2x16 bits, and are each multiplied by 2**32 in the fpga
+        limit_low = self.dds_freq_to_word(limit_low_hz, self.dds_fs)//2**32
+        limit_high = self.dds_freq_to_word(limit_high_hz, self.dds_fs)//2**32
+
+        self.write_2x_16bits("dds%d_limits"%channel_id, limit_low, limit_high)
 
     def get_ddc_filter(self):
         """ Returns the filter implemented in fir_lpf_decim_by_6 """
