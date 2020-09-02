@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import time
 import socket
+import logging
 
 import UDPRedPitayaDiscovery
 from RP_PLL import RP_PLL_device # needed to update FPGA firmware and CPU (Zynq) software
@@ -10,6 +11,9 @@ class ConnectionWidget(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.logger = logging.getLogger(__name__)
+        self.logger_name = ':ConnectionWidget'
 
         self.devices_data = devicesData.getDevicesData()
 
@@ -24,6 +28,9 @@ class ConnectionWidget(QtWidgets.QWidget):
     def setupUI(self):
         uic.loadUi("connection_widget.ui", self)
         self.editBroadcastAddress.setText(findMostLikelyLANBroadcastIPAddress())
+
+        self.btnUpdateFPGA.clicked.connect(self.programFPGAClicked)
+        self.btnUpdateCPU.clicked.connect(self.programCPUClicked)
 
     def reset_list_and_send_broadcast(self):
         self.strSerialList = list()
@@ -114,21 +121,22 @@ class ConnectionWidget(QtWidgets.QWidget):
 
         return (strMAC, strIP, port)
 
-    def okClicked(self):
-        # TODO!
-        pass
-
     def programFPGAClicked(self):
-        self.readSelectedFPGA()
-        if not self.strSelectedIP:
-            print("Error: no selected RedPitaya.")
+        fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Select bitfile', filter="*.bit")
+        if not fileName[0]:
             return
 
-        self.logger.info('Red_Pitaya_GUI{}: Programming FPGA ({}) with new bitfile'.format(self.logger_name, self.strSelectedPort))
+        (strMAC, strIP, port) = self.getSelectedHost()
+        if strIP is None:
+            print("Could not get valid IP address")
+            return
+
+        self.logger.info('Red_Pitaya_GUI{}: Programming FPGA ({}) with new bitfile'.format(self.logger_name, strIP))
 
         # connect to the selected RedPitaya, send new bitfile, then send programming command to the shell:
-        self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
-        self.dev.write_file_on_remote(strFilenameLocal=str(self.qedit_firmware.text()), strFilenameRemote='/opt/red_pitaya_top.bit')
+        self.dev = RP_PLL_device()
+        self.dev.OpenTCPConnection(strIP, port)
+        self.dev.write_file_on_remote(strFilenameLocal=fileName[0], strFilenameRemote='/opt/red_pitaya_top.bit')
         time.sleep(2) # to handle slow SD cards
         print("File written to remote host at /opt/red_pitaya_top.bit.")
 
@@ -142,17 +150,22 @@ class ConnectionWidget(QtWidgets.QWidget):
         
         
     def programCPUClicked(self):
-        self.readSelectedFPGA()
-        if not self.strSelectedIP:
-            print("Error: no selected RedPitaya.")
+        fileName = QtWidgets.QFileDialog.getOpenFileName(self, 'Select monitor-tcp program', filter="*")
+        if not fileName[0]:
             return
 
-        self.logger.info('Red_Pitaya_GUI{}: Programming CPU ({}) with new file'.format(self.logger_name, self.strSelectedPort))
+        (strMAC, strIP, port) = self.getSelectedHost()
+        if strIP is None:
+            print("Could not get valid IP address")
+            return
+
+        self.logger.info('Red_Pitaya_GUI{}: Programming CPU ({}) with new file'.format(self.logger_name, strIP))
 
         # connect to the selected RedPitaya
-        self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
+        self.dev = RP_PLL_device()
+        self.dev.OpenTCPConnection(strIP, port)
         # send new monitor-tcp version
-        self.dev.write_file_on_remote(strFilenameLocal=self.qedit_software.text(), strFilenameRemote='/opt/monitor-tcp-new')
+        self.dev.write_file_on_remote(strFilenameLocal=fileName[0], strFilenameRemote='/opt/monitor-tcp-new')
         print("CPU software update sent. Rebooting server using new version")
         
         # set executable permissions
