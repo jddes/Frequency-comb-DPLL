@@ -384,6 +384,7 @@ class SquarePlot(pg.PlotWidget):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
+        self.plotItem.vb.setAspectLocked(1.0)
 
     def sizeHint(self):
         return QtCore.QSize(300, 300)
@@ -393,6 +394,9 @@ class SquarePlot(pg.PlotWidget):
 
     def heightForWidth(self, width):
         return width
+
+    def hasHeightForWidth(self):
+        return True
 
 class TestWidget(QtWidgets.QWidget):
     """ Used as a top-level widget when testing """

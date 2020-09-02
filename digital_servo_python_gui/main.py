@@ -152,13 +152,23 @@ class MainWidget(QtWidgets.QMainWindow):
                 stretch = 1
             else:
                 stretch = 0
-            print(stretch)
             self.statusBar().addPermanentWidget(w, stretch)
 
     def setStatus(self, field, text, color_name):
         """ Set one of the status-bar entry to "text", and to given color coding """
-        self.status_bar_fields[field].setText(text)
-        colorCoding(self.status_bar_fields[field], color_name)
+        target_widgets = [self.status_bar_fields[field]]
+
+        # also show relevant status directly next to the pushbutton that controls it:
+        if field == "connection":
+            target_widgets.append(self.connection_widget.lblStatus)
+
+        if field == "commit":
+            target_widgets.append(self.config_widget.lblStatus)
+
+        for w in target_widgets:
+            w.setText(text)
+            colorCoding(w, color_name)
+
 
     def connect_clicked(self, bConnect):
         self.config_done = False
@@ -189,6 +199,9 @@ class MainWidget(QtWidgets.QMainWindow):
         for index in range(2, self.tab_widget.count()): # skip first tab which is "Setup", and 2nd tab which is "config"
             self.tab_widget.setTabEnabled(index, bEnable and self.validDeviceAndConfigKnown())
 
+        for w in [self.connection_widget.btnUpdateFPGA, self.connection_widget.btnUpdateCPU]:
+            w.setEnabled(not bEnable)
+
     def commit(self):
         """ Read all the settings from the GUI to our config dict, then push to device """
         try:
@@ -202,7 +215,6 @@ class MainWidget(QtWidgets.QMainWindow):
         self.emit_system_settings()
 
         self.config_done = True
-        print(self.validDeviceAndConfigKnown())
         self.enableOrDisableWidgetsRequiringConnection(self.validDeviceAndConfigKnown())
 
     def pushSettingsToDevice(self, system_settings, channels_settings):
@@ -250,7 +262,7 @@ class MainWidget(QtWidgets.QMainWindow):
         s = system_settings  # shorthand
         c = channel_settings # shorthand
         k = channel_settings["channel_id"] # shorthand
-        print("setup_LO: system_settings=%s, channel_settings=%s" % (str(s), str(c)))
+        # print("setup_LO: system_settings=%s, channel_settings=%s" % (str(s), str(c)))
         if c["upper_sideband"]:
             out_freq_target = c["expected_freq"] - c["target_if"]
         else:
@@ -379,7 +391,6 @@ class MainWidget(QtWidgets.QMainWindow):
             if adc_data is None:
                 continue
             scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(adc_channel_id))
-            # adc_data = self.getIQdata(1, N)
 
             if self.shouldIQchannelRefresh(iq_channel1):
                 self.perChannelEmitters[iq_channel1].sig_new_adc_data.emit(adc_data[:N1], self.sl.getADCmaxVoltage(), scale_factor_adc_to_input)
@@ -405,14 +416,14 @@ class MainWidget(QtWidgets.QMainWindow):
 
     def shouldIQchannelRefresh(self, iq_channel_id):
         """ Returns True if this IQ channel must refresh its data """
-        if self.current_tab == 1: # Summary tab visible?
+        if self.tab_widget.tabText(self.current_tab) == "Summary":
             return True
         if self.pts_settings[iq_channel_id]["autorefresh"] and self.isChannelVisible(iq_channel_id):
             return True
         return False
 
     def isChannelVisible(self, channel_id):
-        return self.current_tab-1 == channel_id
+        return self.tab_widget.tabText(self.current_tab) == "Channel %d" % (channel_id)
 
     def updateTabVisibility(self, tab_index):
         self.current_tab = tab_index

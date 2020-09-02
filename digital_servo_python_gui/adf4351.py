@@ -168,7 +168,7 @@ class adf4351():
         # pfd_freq = ref_freq/R
         # D can only take 1, 2, 4, 8, 16, 32 or 64 as values
         nearest_power_of_two = lambda x: 2**round(math.log2(x))
-        print("-----------------------------------------------------------------------")
+        # print("-----------------------------------------------------------------------")
 
         self.D_values = [1, 2, 4, 8, 16, 32, 64]
         min_error = None
@@ -183,7 +183,7 @@ class adf4351():
 
         D = D_chosen
         (R, INT, pfd_actual_freq, vco_actual, out_freq_actual) = self.get_solution(D, out_freq, ref_freq, pfd_target_freq)
-        print("Chosen D=%d, INT=%d, R=%d, pfd freq = %f MHz, vco freq = %f MHz, output target freq = %.2f MHz, output actual freq = %.2f MHz " % (D, INT, R, pfd_actual_freq/1e6, vco_actual/1e6, out_freq/1e6, out_freq_actual/1e6))
+        # print("Chosen D=%d, INT=%d, R=%d, pfd freq = %f MHz, vco freq = %f MHz, output target freq = %.2f MHz, output actual freq = %.2f MHz " % (D, INT, R, pfd_actual_freq/1e6, vco_actual/1e6, out_freq/1e6, out_freq_actual/1e6))
 
         self.prescaler_cutoff = 3.6e9 # above 3.6 GHz, we must use the 8/9 prescaler according to the datasheet
         self.prescaler_map = {'4/5': 0, '8/9': 1}
@@ -201,7 +201,7 @@ class adf4351():
 
         self.reg["FB_SEL"] = self.fb_sel_map["VCO_OUTPUT"]
         self.reg["RF_DIVIDER_SEL"] = int(math.log2(D))
-        print("D=%s, RF_DIVIDER_SEL=%s" % (D, self.reg["RF_DIVIDER_SEL"]))
+        # print("D=%s, RF_DIVIDER_SEL=%s" % (D, self.reg["RF_DIVIDER_SEL"]))
         self.reg["INT"] = int(INT)
         self.reg["R"] = int(R)
 
