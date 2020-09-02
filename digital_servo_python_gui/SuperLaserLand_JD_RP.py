@@ -270,13 +270,11 @@ class SuperLaserLand_JD_RP:
 
     def set_ddc_ref_freq(self, frequency_in_hz, channel_id):
         """ channel_id can be either 1, 2, 3 or 4 """
-        print(locals())
-        print(self.fs)
         assert channel_id in self.channels_list
         self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
         dds_freq_word = int(round(2**(48) * frequency_in_hz/self.fs))
         dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
-        print("dds_freq_word=",dds_freq_word)
+        # print("dds_freq_word=",dds_freq_word)
         self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
 
         self.R_LO3[channel_id] = self.phaseReadoutDriver.compute3rdLOFreq(channel_id)
@@ -473,7 +471,7 @@ class SuperLaserLand_JD_RP:
         self.write("uart_to_spi_bridge", reg_func(1, 0, data_uint8))
 
     def set_adf4351(self, val):
-        self.bDisplayTiming = True
+        # self.bDisplayTiming = True
         tictoc(self)
         self.uart_uc_set_enable(1)
         time.sleep(10e-3) # leave some time for the uC to boot
@@ -517,7 +515,7 @@ class SuperLaserLand_JD_RP:
         reg_vals.reverse() # need to write r0 last
         uart_vals = uart_to_spi_bridge.spi_values_to_uart_bytes(reg_vals, chip_select)
         self.set_adf4351(uart_vals)
-        print(self.reg_values)
+        # print(self.reg_values)
         tictoc(self, '')
         self.bDisplayTiming = False
         return self.adf4351[channel]
@@ -715,9 +713,9 @@ class phaseReadoutDriver():
         for a 3rd frequency shifting operation, which will bring the net
         frequency shift from input to saved data equal to the exact desired shift.
         This is necessary because of the finite possibilities for LO choices upstream """
-        self.bDisplayTiming = True
+        # self.bDisplayTiming = True
         tictoc(self)
-        print(self.sl.user_inputs)
+        # print(self.sl.user_inputs)
         if self.sl.user_inputs["bExternalClock"]: # normal mode: ADC is phase-locked to external ref
             # this is exact
             R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
@@ -740,13 +738,13 @@ class phaseReadoutDriver():
         R_in = F_in * one_over_F_ref
 
         R_LO3 = (abs(R_in - R_LO1) - R_LO2) * one_over_R_ADC
-        print("R_in=", R_in)
-        print("R_ADC=", R_ADC)
-        print("R_LO1=", R_LO1)
-        print("k_DDS=", k_DDS)
-        print("R_DDS=", R_DDS)
-        print("R_LO2=", R_LO2)
-        print("R_LO3=", R_LO3)
+        # print("R_in=", R_in)
+        # print("R_ADC=", R_ADC)
+        # print("R_LO1=", R_LO1)
+        # print("k_DDS=", k_DDS)
+        # print("R_DDS=", R_DDS)
+        # print("R_LO2=", R_LO2)
+        # print("R_LO3=", R_LO3)
         tictoc(self, '')
         self.bDisplayTiming = False
         return R_LO3

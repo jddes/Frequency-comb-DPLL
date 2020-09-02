@@ -430,7 +430,7 @@ def test_threshold(list_of_primes):
 
 
 list_of_primes = primes(2**24)
-print(len(list_of_primes))
+# print(len(list_of_primes))
 # list_of_primes = primes(100)
 factor = lambda x : factor2(x, list_of_primes) # monkey-patching
 

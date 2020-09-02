@@ -44,7 +44,7 @@ class SummaryTab(QtWidgets.QWidget):
             self.btnResetAllPhases.clicked.connect(reset_this_channel_func) # resetAllPhases will call these four slots
 
     def resetChannelPhase(self, channel_id):
-        print("resetChannelPhase(%d)" % (channel_id))
+        # print("resetChannelPhase(%d)" % (channel_id))
         self.sig_reset_phase.emit(channel_id)
 
     def setVisibility(self, bVisible):

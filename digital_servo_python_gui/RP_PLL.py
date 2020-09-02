@@ -74,7 +74,7 @@ class RP_PLL_device():
         self.valid_socket = False
 
     def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True):
-        print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
+        # print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
         self.HOST = HOST
         self.PORT = PORT
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
