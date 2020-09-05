@@ -46,7 +46,7 @@
      <item>
       <widget class="QRadioButton" name="radioUpper">
        <property name="text">
-        <string>Higher freq</string>
+        <string>RF &gt; LO</string>
        </property>
        <property name="checked">
         <bool>false</bool>
@@ -56,7 +56,7 @@
      <item>
       <widget class="QRadioButton" name="radioLower">
        <property name="text">
-        <string>Lower freq</string>
+        <string>LO &gt; RF</string>
        </property>
        <property name="checked">
         <bool>true</bool>

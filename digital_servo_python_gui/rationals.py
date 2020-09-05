@@ -13,13 +13,13 @@ class RationalNumber():
             self.num   = FactoredInteger(numerator)
             self.denom = FactoredInteger(denominator)
             t2 = c()
-            if t2-t1 >= 5e-3:
-                print("%s: %f sec" % (str(self), t2-t1))
+            # if t2-t1 >= 5e-3:
+            #     print("%s: %f sec" % (str(self), t2-t1))
         t1 = c()
         self.simplify()
         t2 = c()
-        if t2-t1 >= 5e-3:
-            print("simplify %s: %f sec" % (str(self), t2-t1))
+        # if t2-t1 >= 5e-3:
+        #     print("simplify %s: %f sec" % (str(self), t2-t1))
 
     def fromString(self, s, scale_factor):
         """ Interprets string s as a rational fraction float(s)*scale_factor,
@@ -175,8 +175,8 @@ class FactoredInteger():
             if factors is None:
                 self.factors = factor(x)
                 t2 = c()
-                if t2-t1 >= 5e-3:
-                    print("%s: %f sec" % (str(self), t2-t1))
+                # if t2-t1 >= 5e-3:
+                #     print("%s: %f sec" % (str(self), t2-t1))
             else:
                 self.factors = factors
         else:

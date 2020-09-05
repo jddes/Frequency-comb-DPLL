@@ -87,6 +87,7 @@ class ConfigWidget(QtWidgets.QWidget):
 
     def updateExpectedFreq(self, channel_id):
         """ Set the expected input frequency based on the nominal modulator frequency """
+        print("updateExpectedFreq")
         w = self.controller_widgets[channel_id]
         w.editExpectedFreq.setText(w.editModulatorNominalFreq.text() + "*" + w.editModulatorGain.text())
 
@@ -109,6 +110,11 @@ class ConfigWidget(QtWidgets.QWidget):
             self.sig_set_status.emit("config", "No config file selected", "bad")
         else:
             self.sig_set_status.emit("config", "Config file neither loaded nor saved", "bad")
+
+    def newSettings(self, d):
+        if d["type"] == "LO":
+            self.adv_per_channel[d["channel_id"]].lblChosenLO.setText(d["chosen_LO_text"])
+            self.adv_per_channel[d["channel_id"]].lblChosenIF.setText(d["chosen_IF_text"])
 
     def readConfigFromGUI(self):
         """ Read all the settings from the GUI to our config dicts,
@@ -138,10 +144,14 @@ class ConfigWidget(QtWidgets.QWidget):
                     w = self.controller_widgets[channel_id] # shorthand
                     c["expected_freq_MHz_str"] = w.editExpectedFreq.text()
                     c["expected_freq"]         = readFloatFromTextbox(w.editExpectedFreq)*1e6
+                    if w.comboMode.currentText() == 'Closed-loop fiber noise canceler':
+                        c["mode"] = "FNC"
+                    else:
+                        c["mode"] = "counter"
                 else:
                     c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
                     c["expected_freq"]         = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6
-                print(c)
+                    c["mode"]                  = "counter"
                 channels_settings[channel_id] = c
 
         except (ValueError, SyntaxError):

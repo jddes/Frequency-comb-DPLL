@@ -31,6 +31,7 @@ class ConnectionWidget(QtWidgets.QWidget):
 
         self.btnUpdateFPGA.clicked.connect(self.programFPGAClicked)
         self.btnUpdateCPU.clicked.connect(self.programCPUClicked)
+        self.btnSendBroadcast.clicked.connect(self.reset_list_and_send_broadcast)
 
     def reset_list_and_send_broadcast(self):
         self.strSerialList = list()

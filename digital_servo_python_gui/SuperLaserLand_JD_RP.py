@@ -508,10 +508,11 @@ class SuperLaserLand_JD_RP:
         tictoc(self, 'writing %d values' % len(val))
         self.bDisplayTiming = False
 
-    def set_expected_freq(self, channel_id, expected_freq_str, ref_freq_str):
+    def set_expected_freq(self, channel_id, expected_freq_str, ref_freq_str, mode="counter"):
         """ Must be called before set_adf4351_freq(), provides required information for
         the 3rd LO applied when reading out the phase """
         self.user_inputs["expected_freq_str_ch%d" % channel_id] = expected_freq_str
+        self.user_inputs["mode_ch%d" % channel_id] = mode
         self.user_inputs["ref_freq_MHz_str"] = ref_freq_str
 
     def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1,
@@ -524,7 +525,6 @@ class SuperLaserLand_JD_RP:
         self.user_inputs["pfd_target_freq_ch%d" % channel] = pfd_target_freq
         self.user_inputs["LO_pwr_ch%d"          % channel] = LO_pwr
         self.user_inputs["LO_enabled_ch%d"      % channel] = LO_enabled
-        print(self.user_inputs)
 
         if not channel in self.adf4351:
             self.adf4351[channel] = adf4351.adf4351()
@@ -797,6 +797,9 @@ class phaseReadoutDriver():
         frequency shift from input to saved data equal to the exact desired shift.
         This is necessary because of the finite possibilities for LO choices upstream """
         # self.bDisplayTiming = True
+        if self.sl.user_inputs["mode_ch%d" % channel_id] != "counter":
+            R_LO3 = rationals.RationalNumber(0, 1) # disable 3rd LO, in order for the streamed phase to be exactly equal to the phase inside the FPGA
+            return R_LO3
         tictoc(self)
         # print(self.sl.user_inputs)
         if self.sl.user_inputs["bExternalClock"]: # normal mode: ADC is phase-locked to external ref

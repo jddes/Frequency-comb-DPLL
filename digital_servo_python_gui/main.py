@@ -95,17 +95,15 @@ class MainWidget(QtWidgets.QMainWindow):
             GUI = channel_gui.ChannelGUI(channel_id)
 
             # Connect signals to slots
-            # channel GUIs to main:
             GUI.sig_set_num_points.connect(self.set_num_points)
             GUI.phaseWidget.sig_reset_phase.connect(self.reset_channel_phase)
-            # main to channel GUIs:
             self.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
             self.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
             self.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
             self.perChannelEmitters[channel_id].sig_set_visible.connect(GUI.setVisibility)
             self.perChannelEmitters[channel_id].sig_new_freq.connect(self.summary_tab_gui.newFreqData) # oddball
-            # main to summary tab:
             self.sig_new_settings.connect(GUI.newSettings)
+            self.sig_new_settings.connect(self.config_widget.newSettings)
             self.sig_phase_point.connect(GUI.newPhasePoint)
             self.sig_phase_point.connect(self.summary_tab_gui.newPhasePoint)
 
@@ -193,7 +191,10 @@ class MainWidget(QtWidgets.QMainWindow):
 
             self.sl.dev.OpenTCPConnection(strIP, port)
             self.hw_description = self.sl.getHardwareDescription()
-
+            # Handle various versions of the hardware changing the exact GUI that we should present to the user:
+            bHasDDS = self.hw_description.get("has_dds", False)
+            # bHasDDS = False # force to false for testing
+            self.config_widget.setHardwareType(bHasDDS)
 
             self.sl.set_dds_offset_freq(1, 10e6)
             self.sl.set_dds_limits(1, 5e6, 20e6)
@@ -216,12 +217,6 @@ class MainWidget(QtWidgets.QMainWindow):
 
         for w in [self.connection_widget.btnUpdateFPGA, self.connection_widget.btnUpdateCPU]:
             w.setEnabled(not bEnable)
-
-        if bEnable:
-            # Handle various versions of the hardware changing the exact GUI that we should present to the user:
-            bHasDDS = self.hw_description.get("has_dds", False)
-            # bHasDDS = False # force to false for testing
-            self.config_widget.setHardwareType(bHasDDS)
 
     def commit(self):
         """ Read all the settings from the GUI to our config dict, then push to device """
@@ -279,6 +274,7 @@ class MainWidget(QtWidgets.QMainWindow):
         channel_settings["upper_sideband"]
         channel_settings["LO_pwr"]
         channel_settings["LO_enable"]
+        channel_settings["mode"]
         """
         s = system_settings  # shorthand
         c = channel_settings # shorthand
@@ -290,8 +286,7 @@ class MainWidget(QtWidgets.QMainWindow):
             out_freq_target = c["expected_freq"] + c["target_if"]
 
         # TODO: input validation vs actual range accessible?
-        print("setup_LO(): channel_id: ", k)
-        self.sl.set_expected_freq(k, c["expected_freq_MHz_str"], s["ref_freq_MHz_str"])
+        self.sl.set_expected_freq(k, c["expected_freq_MHz_str"], s["ref_freq_MHz_str"], c["mode"])
         print("setup_LO: FIXME: Refactor where we handle setup_LO")
         a = self.sl.set_adf4351_freq(out_freq_target, s["ref_freq"], s["pfd_target_freq"], k, c["LO_pwr"], c["LO_enable"])
         D = 2**a.reg["RF_DIVIDER_SEL"]
