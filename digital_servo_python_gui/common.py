@@ -11,6 +11,44 @@ style_sheets = {
     'ok': 'color: rgb(255, 255, 255); background-color: rgb(0, 165, 114)',
 }
 
+def round_to_N_sig_figs(x, Nsigfigs):
+    """ Returns x rounded to Nsigfigs significant figures """
+    leading_pos = np.floor(np.log10(np.abs(x)))
+    factor = 10**((Nsigfigs-1)-leading_pos)
+    return np.round(x * factor)/factor
+
+def show_N_sig_figs(x, Nsigfigs):
+    """ Returns a string representing the value x with Nsigfigs significant figures """
+    leading_pos = np.floor(np.log10(np.abs(x)))
+    decimals = max(0, Nsigfigs - (leading_pos+1))
+    format_str = "{:.%df}" % decimals
+    return format_str.format(round_to_N_sig_figs(x, Nsigfigs))
+
+# def RBW_text_from_value(rbw):
+def freq_text_eng_format(freq, Nsigfigs=2):
+    """ Returns the text in engineering format (ie using Hz, kHz or MHz units)
+    for a given frequency in Hz """
+    if freq >= 1e6:
+        text = show_N_sig_figs(freq/1e6, Nsigfigs) + " MHz"
+    elif freq >= 1e3:
+        text = show_N_sig_figs(freq/1e3, Nsigfigs) + " kHz"
+    else:
+        text = show_N_sig_figs(freq/1e0, Nsigfigs) + " Hz"
+    return text
+
+# def RBW_value_from_text(text):
+def freq_value_from_text(text):
+    """ Returns the frequency value in Hz from the display text
+    in engineering format (ie using Hz, kHz or MHz units)
+    Inverse of freq_text_eng_format() function above """
+    if text[-3:] == 'MHz':
+        scale = 1e6
+    elif text[-3:] == 'kHz':
+        scale = 1e3
+    else:
+        scale = 1
+    return float(text.split(' ')[0]) * scale
+
 def readFloatFromTextbox(textbox):
     """ Attempt to read in a value from a textbox using eval() to allow inputs such as "10e6" to work.
     If this fails, set the textbox's background to red, and re-raise the exception
@@ -18,7 +56,7 @@ def readFloatFromTextbox(textbox):
     try:
         value = float(eval(textbox.text()))
         textbox.setStyleSheet('') # set back to default style
-    except ValueError:
+    except (ValueError, SyntaxError):
         colorCoding(textbox, "bad")
         raise
     return value
@@ -45,11 +83,6 @@ def colorCoding(widget, color_name, font_size=None):
     else:
         font_size_text = ''
     widget.setStyleSheet(font_size_text + style_sheets[color_name])
-
-def round_to_N_sig_figs(x, Nsigfigs):
-    leading_pos = np.floor(np.log10(np.abs(x)))
-    factor = 10**((Nsigfigs-1)-leading_pos)
-    return np.round(x * factor)/factor
 
 # From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
 def make_sure_path_exists(path):

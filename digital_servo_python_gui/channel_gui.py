@@ -9,6 +9,7 @@ import numpy as np
 import pyqtgraph as pg
 
 from common import tictoc, round_to_N_sig_figs, getSNRcolorName, getPowerColorName, colorCoding
+from common import freq_text_eng_format, freq_value_from_text
 
 # Set a few global PyQtGraph settings before creating plots:
 pg.setConfigOption('leftButtonPan', False)
@@ -84,7 +85,7 @@ class ChannelGUI(QtWidgets.QWidget):
     def probingSettingsChanged(self):
         d = dict()
         d["channel_id"] = self.channel_id
-        d["pts_ADC"] = self.RBW_to_pts(self.RBW_value_from_text(self.comboRBW.currentText()))
+        d["pts_ADC"] = self.RBW_to_pts(freq_value_from_text(self.comboRBW.currentText()))
         if self.comboPlotType.currentText() == 'IQ timeseries':
             d["pts_IQ"] = d["pts_ADC"]
         else:
@@ -109,30 +110,9 @@ class ChannelGUI(QtWidgets.QWidget):
     def populateRBWcombo(self):
         self.comboRBW.clear()
         for value in [10e3, 30e3, 100e3, 300e3, 1e6]:
-            self.comboRBW.addItem(self.RBW_text_from_value(value))
+            self.comboRBW.addItem(freq_text_eng_format(value))
              #print("For RBW=%f Hz, pts required = %d" % (value, self.RBW_to_pts(value)))
-        self.comboRBW.setCurrentText(self.RBW_text_from_value(100e3))
-
-    def RBW_text_from_value(self, rbw):
-        """ Returns the text to display in the combobox for a given RBW value in Hz """
-        if rbw >= 1e6:
-            text = "%.1f MHz" % (rbw/1e6)
-        elif rbw >= 1e3:
-            text = "%.1f kHz" % (rbw/1e3)
-        else:
-            text = "%.1f Hz" % (rbw/1e0)
-        return text
-
-    def RBW_value_from_text(self, text):
-        """ Returns the RBW value in Hz from the display text
-        Inverse of RBW_text_from_value() function above """
-        if text[-3:] == 'MHz':
-            scale = 1e6
-        elif text[-3:] == 'kHz':
-            scale = 1e3
-        else:
-            scale = 1
-        return float(text.split(' ')[0]) * scale
+        self.comboRBW.setCurrentText(freq_text_eng_format(100e3))
 
     def RBW_to_pts(self, rbw):
         """ Returns the number of points required in the FFT to reach a given RBW for the default window.
@@ -287,10 +267,10 @@ class ChannelGUI(QtWidgets.QWidget):
 
     def tests(self):
         """ Runs a few simple unit tests """
-        # test that RBW_text_from_value()/RBW_value_from_text() pair are truly inverses of each other
+        # test that freq_text_eng_format()/freq_value_from_text() pair are truly inverses of each other
         for k in range(self.comboRBW.count()):
             text = self.comboRBW.itemText(k)
-            assert self.RBW_text_from_value(self.RBW_value_from_text(text)) == text
+            assert freq_text_eng_format(freq_value_from_text(text)) == text
 
     def updateIQdisplay(self, complex_baseband, mean_amplitude, N_max_IQ = 10e3):
         """ N_max_IQ is the max number of points to display in the IQ graph.

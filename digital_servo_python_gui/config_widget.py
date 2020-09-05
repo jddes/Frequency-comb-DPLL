@@ -2,12 +2,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import time
 import socket
 import json
+from functools import partial
 
 import UDPRedPitayaDiscovery
 from RP_PLL import RP_PLL_device # needed to update FPGA firmware and CPU (Zynq) software
 import devicesData
 
-from common import colorCoding, readFloatFromTextbox
+from common import colorCoding, readFloatFromTextbox, freq_text_eng_format
 
 class ConfigWidget(QtWidgets.QWidget):
     sig_user_settings_changed = QtCore.pyqtSignal()
@@ -25,8 +26,14 @@ class ConfigWidget(QtWidgets.QWidget):
 
         self.editExpectedFreq_dict = {k: getattr(self, "editExpectedFreq%d" % k) for k in self.channels_list}
         
+        self.controller_widgets = dict()
         self.adv_per_channel = dict()
         for channel_id in self.channels_list:
+            self.controller_widgets[channel_id] = getattr(self, "tabBasic%d" % channel_id)
+
+            self.controller_widgets[channel_id].editModulatorNominalFreq.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
+            self.controller_widgets[channel_id].editModulatorGain.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
+
             adv_per_channel = getattr(self, "tab%d" % channel_id) # shorthand
             self.adv_per_channel[channel_id] = adv_per_channel
 
@@ -60,6 +67,42 @@ class ConfigWidget(QtWidgets.QWidget):
             for channel_id in self.channels_list:
                 self.adv_per_channel[channel_id].comboLOpower.addItem(text)
 
+    def populateClosedLoopBW(self, BW_all):
+        """ Add to our combobox all possible bandwidths that fall between 1 Hz and 1 MHz """
+        BW_default = 12e3
+        BW_distance = abs(BW_default-BW_all[0])
+        ind_closest = 0
+        ind_current = 0
+        for BW in BW_all:
+            if BW >= 1 and BW <= 1e6:
+                if abs(BW - BW_default) <= BW_distance:
+                    BW_distance = abs(BW - BW_default)
+                    ind_closest = ind_current
+                for k, w in self.controller_widgets.items():
+                    w.comboTargetBW.addItem(freq_text_eng_format(BW))
+                ind_current += 1
+
+        for k, w in self.controller_widgets.items():
+            w.comboTargetBW.setCurrentIndex(ind_closest)
+
+    def updateExpectedFreq(self, channel_id):
+        """ Set the expected input frequency based on the nominal modulator frequency """
+        w = self.controller_widgets[channel_id]
+        w.editExpectedFreq.setText(w.editModulatorNominalFreq.text() + "*" + w.editModulatorGain.text())
+
+    def setHardwareType(self, bHasDDS=False):
+        """ Handle various versions of the hardware changing the exact GUI that we should present to the user """
+        self.bHasDDS = bHasDDS
+        widgets_for_counter_only = [self.label_2, self.label_3, self.label_4, self.label_5, self.label_12, self.label_11,
+                                    self.editExpectedFreq1, self.editExpectedFreq2, self.editExpectedFreq3, self.editExpectedFreq4]
+        for w in widgets_for_counter_only:
+            w.setVisible(not bHasDDS)
+
+        self.tabWidgetBasic.setVisible(bHasDDS)
+        if bHasDDS:
+            for channel_id in self.channels_list:
+                self.updateExpectedFreq(channel_id)
+
     def user_settings_changed(self, *args, **kwargs):
         self.sig_set_status.emit("commit", "Uncommitted", "bad")
         if self.editConfigFile.text() == '':
@@ -86,16 +129,24 @@ class ConfigWidget(QtWidgets.QWidget):
                 c = dict()
                 adv_settings = self.adv_per_channel[channel_id] # shorthand
                 c["channel_id"]        = channel_id
-                c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
-                c["expected_freq"]     = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6
                 c["target_if"]         = readFloatFromTextbox(adv_settings.editTargetIF)*1e6
                 c["upper_sideband"]    = adv_settings.radioUpper.isChecked()
                 c["LO_pwr"]            = adv_settings.comboLOpower.currentText()
                 c["LO_enable"]         = adv_settings.chkEnableLO.isChecked()
+
+                if self.bHasDDS:
+                    w = self.controller_widgets[channel_id] # shorthand
+                    c["expected_freq_MHz_str"] = w.editExpectedFreq.text()
+                    c["expected_freq"]         = readFloatFromTextbox(w.editExpectedFreq)*1e6
+                else:
+                    c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
+                    c["expected_freq"]         = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6
+                print(c)
                 channels_settings[channel_id] = c
 
-        except ValueError:
+        except (ValueError, SyntaxError):
             self.sig_set_status.emit("config", "Invalid setting in config", "bad")
+            raise
 
         return (system_settings, channels_settings)
 

@@ -29,7 +29,7 @@ class SuperLaserLand_JD_RP:
     ############################################################
     # System parameters:
     fs = 125e6  # default adc sampling rate
-    dds_fs = 125e6 # default dds sampling rate (1 GHz nominal)
+    fs_dds = 125e6 # default dds sampling rate (1 GHz nominal)
 
     # input channels ids start from 1
     num_channels = 4
@@ -147,9 +147,11 @@ class SuperLaserLand_JD_RP:
         self.adf4351 = dict()
         self.adc_volts_per_counts = 1./2**14 * 21.9e-3/13.4e-3 # calibrated on one unit on 2020-07-18 using a known-amplitude tone, turned off 7V supply to put RF amps in high-Z
         self.adc_bits = 14
+        self.phase_bits = 14
+        self.dds_bits = 48
         self.R_LO3 = dict()
         for channel_id in self.channels_list:
-            self.R_LO3[channel_id] = rationals.RationalNumber(0, 1) # this will get fill in once we know all the required values
+            self.R_LO3[channel_id] = rationals.RationalNumber(0, 1) # this will get filled in once we know all the required values
         self.load_amplitude_calibration()
 
         if controller is not None:
@@ -301,7 +303,7 @@ class SuperLaserLand_JD_RP:
         """ channel_id can be either 1, 2, 3 or 4 """
         assert channel_id in self.channels_list
         self.user_inputs["dds_ref_freq%d_hz" % channel_id] = frequency_in_hz
-        dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.dds_fs)
+        dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs_dds)
         self.write_64bits("manual_offset_dds%d"%channel_id, dds_freq_word)
 
     def dds_freq_to_word(self, frequency_in_hz, ref_freq):
@@ -314,8 +316,8 @@ class SuperLaserLand_JD_RP:
         assert channel_id in self.channels_list
 
         # Limit registers are only 2x16 bits, and are each multiplied by 2**32 in the fpga
-        limit_low = self.dds_freq_to_word(limit_low_hz, self.dds_fs)//2**32
-        limit_high = self.dds_freq_to_word(limit_high_hz, self.dds_fs)//2**32
+        limit_low = self.dds_freq_to_word(limit_low_hz, self.fs_dds)//2**32
+        limit_high = self.dds_freq_to_word(limit_high_hz, self.fs_dds)//2**32
 
         self.write_2x_16bits("dds%d_limits"%channel_id, limit_low, limit_high)
 
@@ -515,13 +517,14 @@ class SuperLaserLand_JD_RP:
     def set_adf4351_freq(self, out_freq=135e6, ref_freq=10e6, pfd_target_freq=10e6, channel=1,
                                LO_pwr='+5dBm', LO_enabled=True):
         """ Channel can be 1, 2, 3 or 4 """
-        self.bDisplayTiming = True
+        # self.bDisplayTiming = True
         tictoc(self)
         self.user_inputs["out_freq_ch%d"        % channel] = out_freq
         self.user_inputs["ref_freq_ch%d"        % channel] = ref_freq
         self.user_inputs["pfd_target_freq_ch%d" % channel] = pfd_target_freq
         self.user_inputs["LO_pwr_ch%d"          % channel] = LO_pwr
         self.user_inputs["LO_enabled_ch%d"      % channel] = LO_enabled
+        print(self.user_inputs)
 
         if not channel in self.adf4351:
             self.adf4351[channel] = adf4351.adf4351()
@@ -553,6 +556,63 @@ class SuperLaserLand_JD_RP:
         num = INT
         denom = D*R
         return (num, denom)
+
+    def getAllPossiblePgains(self):
+        """ Returns a numpy array with all available values of the proportional gain,
+        in units of Hz/rad.
+        Returns only positive values, but the gain can have the same magnitude, but negative """
+        gain_fine, gain_coarse = np.meshgrid(np.arange(1, 8, dtype=np.int64), 2**np.arange(0, 48, dtype=np.int64))
+        gain_fine     = gain_fine.flatten()
+        gain_coarse   = gain_coarse.flatten()
+        gain_combined = gain_fine * gain_coarse
+        _, indices = np.unique(gain_combined, return_index=True)
+        gain_fine     = gain_fine[indices]
+        gain_coarse   = gain_coarse[indices]
+        gain_combined = gain_combined[indices]
+
+        return (gain_combined, gain_fine, gain_coarse)
+
+    def getClosedLoopBW(self, Kp):
+        """ Returns the predicted closed-loop BW for a given gain. 
+        Kp can be a numpy array, in which case the return value will also
+        be a numpy array. """
+        return 2**(self.phase_bits - self.dds_bits)/(2*np.pi) * Kp * self.fs_dds
+
+    def getKpForBW(self, target_BW):
+        """ Returns the value of Kp that will give the closest to the requested BW.
+        The value of Kp is returned as a tuple: (gain_combined, gain_fine, gain_coarse) """
+        (gain_combined, gain_fine, gain_coarse) = self.getAllPossiblePgains()
+        BW_all = self.getClosedLoopBW(gain_combined)
+        best_index = np.argmin(np.abs(BW_all-target_BW))
+        gain_fine     = gain_fine[best_index]
+        gain_coarse   = gain_coarse[best_index]
+        gain_combined = gain_combined[best_index]
+        return (gain_combined, gain_fine, gain_coarse)
+
+    def getHardwareDescription(self):
+        """ Returns a dictionary with various flags describing the hardware on the connected device """
+        d = dict()
+        f = self.dev.read_file_from_remote("/opt/hardware.txt")
+        f = f.decode('ascii')
+        for line in f.split('\n'):
+            if line == '':
+                continue
+            key, value = line.split('=')
+            d[key] = bool(int(value))
+
+        f = self.dev.read_file_from_remote("/opt/macaddress.txt")
+        f = f.decode('ascii')
+        if f == '':
+            self.dev.send_shell_command('ifconfig | grep eth0 > /opt/macaddress.txt')
+            time.sleep(0.1)
+            f = self.dev.read_file_from_remote("/opt/macaddress.txt")
+            f = f.decode('ascii')
+
+        mac_token = 'HWaddr '
+        ind = f.find(mac_token)
+        if ind != -1:
+            d["mac"] = f[ind+len(mac_token):].strip()
+        return d
 
 class phaseReadoutDriver():
     def __init__(self, sl):

@@ -129,6 +129,7 @@ typedef struct binary_packet_read_repeat_t {
 	uint32_t number_of_points;	
 } binary_packet_read_repeat_t;
 
+uint32_t magic_bytes_read_file = 0xABCD123B; // this packet uses the same header as binary_packet_write_file_t
 
 
 #pragma pack(pop)
@@ -946,19 +947,18 @@ static int handleConnection(int connfd) {
 		        	}
 
 	        	////////////////////////////////////////////////////////////
-	        	// Write a file to the filesystem
-	        	} else if (message_magic_bytes == magic_bytes_write_file)
+	        	// Read/Write a file to the filesystem
+	        	} else if (message_magic_bytes == magic_bytes_write_file || message_magic_bytes == magic_bytes_read_file)
 	        	{
+	        		printf("magic bytes are read/write file\n");
 	        		// we need at least the first two 32 bits value before we can figure out the size of this message.
-	        		
-
 	        		if (!bHaveFileWriteHeader)
 	        		{
 	        			iRequiredBytes = sizeof(binary_packet_write_file_t);
 	        			if (msg_end >= iRequiredBytes) {
 	        				bHaveFileWriteHeader = true;
 	        				if (bVerbose)
-	        					printf("Received complete file write header.\n");
+	        					printf("Received complete file read/write header.\n");
 			        		
 			        		pPacketWriteFile = (binary_packet_write_file_t*) message_buff;
 			        		if (bVerbose)
@@ -979,7 +979,7 @@ static int handleConnection(int connfd) {
 	        			// we know how long the total message needs to be, so we just wait to have received everything.
 	        			if (msg_end >= iRequiredBytes) {
 	        				if (bVerbose)
-	        					printf("Complete file write message received.\n");
+	        					printf("Complete file read/write message received.\n");
 	        				if (bVerbose)
 	        					printf("msg_end = %u, iRequiredBytes = %u\n", msg_end, iRequiredBytes);
 
@@ -1012,20 +1012,68 @@ static int handleConnection(int connfd) {
 								if (bVerbose)
 									printf("filename: %s\n", strNewFileName);
 
-
-								// then we should call fopen with the filename, then fwrite with the right pointer.
-								file_pointer = fopen(strNewFileName, "wb");
-								if (!file_pointer)
+								if (message_magic_bytes == magic_bytes_write_file)
 								{
-									if (bVerbose)
-										printf("Error opening file %s. No contents written.", strNewFileName);
+									// then we should call fopen with the filename, then fwrite with the right pointer.
+									file_pointer = fopen(strNewFileName, "wb");
+									if (!file_pointer)
+									{
+										if (bVerbose)
+											printf("Error opening file %s. No contents written.", strNewFileName);
+									} else {
+										// write file contents
+										fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
+										fclose(file_pointer);
+										file_pointer = NULL;
+									}
 								} else {
-									// write file contents
-									fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
-									fclose(file_pointer);
-									file_pointer = NULL;
-								}
+									// file read: send file size first
+									// Format is: file_valid, file_size, <file bytes>
+					        		uint32_t file_valid;
+					        		uint32_t file_size;
 
+					        		// send it back:
+					        		
+
+									file_pointer = fopen(strNewFileName, "rb");
+									if (!file_pointer)
+									{
+										file_valid = 0; // -1 means that the file does not exist
+										send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
+										file_size = 0;
+										send(connfd, &file_size, sizeof(file_size), 0); // file size
+										if (bVerbose)
+											printf("Error opening file %s. No contents read.", strNewFileName);
+									} else {
+										file_valid = 1;
+										send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
+										fseek(file_pointer, 0, SEEK_END);
+										file_size = ftell(file_pointer);
+										rewind(file_pointer);
+
+										uint8_t *file_contents = malloc(file_size);
+										if (!file_contents)
+										{
+											// allocation error, send back an empty file:
+											if (bVerbose)
+												printf("Error allocating memory for file %s. Will send back an empty file instead.", strNewFileName);
+											file_size = 0;
+											send(connfd, &file_size, sizeof(file_size), 0); // file size, clamped to 0
+										} else {
+											size_t retval = fread(file_contents, 1, file_size, file_pointer);
+											if (retval != file_size && bVerbose)
+												printf("fread returned %u instead of %u\n", retval, file_size);
+											if (bVerbose)
+												printf("Sending file %s, %u bytes.", strNewFileName, file_size);
+											send(connfd, &file_size, sizeof(file_size), 0); // file size
+											send(connfd, file_contents, file_size, 0);
+										}
+										// read and send file contents
+										// fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
+										fclose(file_pointer);
+										file_pointer = NULL;
+									}
+								}
 
 		        				free(strNewFileName);
 
@@ -1058,7 +1106,7 @@ static int handleConnection(int connfd) {
 	        			if (msg_end >= iRequiredBytes) {
 	        				bHaveShellCommandHeader = true;
 	        				if (bVerbose)
-	        					printf("Received complete file write header.\n");
+	        					printf("Received complete shell command header.\n");
 			        		
 			        		pPacketShellCommand = (binary_packet_shell_command_t*) message_buff;
 
@@ -1151,7 +1199,7 @@ static int handleConnection(int connfd) {
 	        	else {	// magic bytes didn't match any known packet type
 
 	        		if (bVerbose)
-	        			printf("magic bytes do not match. got: 0x%0x, msg_end = %u\n", message_magic_bytes, msg_end);
+	        			printf("magic bytes do not match any known packet type. got: 0x%0x, msg_end = %u\n", message_magic_bytes, msg_end);
 	        		if (bVerbose)
 	        			printf("This will probably mean that the whole protocol is de-synced and erronous values will be read/written\n");
 	        		bytes_consumed = sizeof(message_magic_bytes);

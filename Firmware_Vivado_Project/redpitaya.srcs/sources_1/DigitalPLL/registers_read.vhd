@@ -12,22 +12,12 @@ port (
 	
     clk                                    : in  std_logic;
     
+    -- status registers inputs:
+    dither_results1   : in  std_logic_vector(64-1 downto 0);
+    dither_results2   : in  std_logic_vector(64-1 downto 0);
+    dither_results3   : in  std_logic_vector(64-1 downto 0);
+    dither_results4   : in  std_logic_vector(64-1 downto 0);
 
-    -- Registers inputs (to be read)
-    status_flags                           : in  std_logic_vector(32-1 downto 0);
-    -- these get sampled internally together even though they go through multiple reads by the CPU
-    dither0_lockin_output                  : in  std_logic_vector(64-1 downto 0);
-    -- these get sampled internally together even though they go through multiple reads by the CPU
-    dither1_lockin_output                  : in  std_logic_vector(64-1 downto 0);
-
-    -- these get sampled internally together even though they go through multiple reads by the CPU
-    zdtc_samples_number_counter            : in  std_logic_vector(32-1 downto 0);
-    counter0_out                           : in  std_logic_vector(64-1 downto 0);
-    counter1_out                           : in  std_logic_vector(64-1 downto 0);
-    DAC0_out                               : in  std_logic_vector(32-1 downto 0);
-    DAC1_out                               : in  std_logic_vector(32-1 downto 0);
-    DAC2_out                               : in  std_logic_vector(32-1 downto 0);
-    
     -- these get written to ram_data_logger_v2
     clk_enable_logger                      : in  std_logic;
     new_data_chunk                         : in  std_logic;
@@ -47,15 +37,8 @@ end entity;
 
 architecture Behavioral of registers_read is
 
-    signal dither0_lockin_output_reg   : std_logic_vector(64-1 downto 0) := (others => '0');
-    signal dither1_lockin_output_reg   : std_logic_vector(64-1 downto 0) := (others => '0');
+    signal dither_results_reg   : std_logic_vector(64-1 downto 0) := (others => '0');
     
-    signal counter0_out_reg            : std_logic_vector(64-1 downto 0) := (others => '0');
-    signal counter1_out_reg            : std_logic_vector(64-1 downto 0) := (others => '0');
-    signal DAC0_out_reg                : std_logic_vector(32-1 downto 0) := (others => '0');
-    signal DAC1_out_reg                : std_logic_vector(32-1 downto 0) := (others => '0');
-    signal DAC2_out_reg                : std_logic_vector(32-1 downto 0) := (others => '0');
-
 
 
     ---- ram_data_logger_v2 signals
@@ -126,52 +109,26 @@ begin
 
             -- Read
             -------------------------------------------------------------
-            -- Note that the addresses do not follow the Zynq-imposed requirement of falling on 32-bits boundaries,
-            -- because it is used inside the DPLL module which has a divide by four compared to the Zynq addresses.
-            -- This is to allow re-using the same addresses as the legacy code (avoids changing every address manually)
+            -- Note that sys_addr is divided by 4 in the case statement,
+            -- in order to make it easy to enfore the Zynq-imposed requirement of falling on 32-bits boundaries
             if sys_ren = '1' then
                 case sys_addr(16-1+2 downto 2) is
 
-                    when x"00025" =>
-                        sys_rdata <= status_flags;
-                        sys_ack   <= sys_en;
+                    -- these pairs should always be read sequentially, in this order, so that we sample all bits at exactly the same time
+                    when x"00030" => sys_ack <= sys_en; sys_rdata <= dither_results1(32-1 downto 0); dither_results_reg <= dither_results1;
+                    when x"00031" => sys_ack <= sys_en; sys_rdata <= dither_results_reg(32+32-1 downto 32);
+                        
+                    -- these pairs should always be read sequentially, in this order, so that we sample all bits at exactly the same time
+                    when x"00032" => sys_ack <= sys_en; sys_rdata <= dither_results2(32-1 downto 0); dither_results_reg <= dither_results2;
+                    when x"00033" => sys_ack <= sys_en; sys_rdata <= dither_results_reg(32+32-1 downto 32);
 
-                    -- these two should always be read sequentially, in this order, so that we sample all bits at exactly the same time
-                    when x"00026" =>
-                        sys_rdata <= dither0_lockin_output(32-1 downto 0);
-                        dither0_lockin_output_reg <= dither0_lockin_output;
-                        sys_ack                   <= sys_en;
-                    when x"00027" =>
-                        sys_rdata <= dither0_lockin_output_reg(32+32-1 downto 32);               -- dither0_lockin_output MSB
-                        sys_ack   <= sys_en;
+                    -- these pairs should always be read sequentially, in this order, so that we sample all bits at exactly the same time
+                    when x"00034" => sys_ack <= sys_en; sys_rdata <= dither_results3(32-1 downto 0); dither_results_reg <= dither_results3;
+                    when x"00035" => sys_ack <= sys_en; sys_rdata <= dither_results_reg(32+32-1 downto 32);
 
-                    -- these two should always be read sequentially, in this order, so that we sample all bits at exactly the same time
-                    when x"00029" =>
-                        sys_rdata                 <= dither1_lockin_output(32-1 downto 0);
-                        dither1_lockin_output_reg <= dither1_lockin_output;
-                        sys_ack                   <= sys_en;
-                    when x"0002A" =>
-                        sys_rdata <= dither1_lockin_output_reg(32+32-1 downto 32);                -- dither1_lockin_output MSB
-                        sys_ack   <= sys_en;
-
-                    -- we sample all five next signals when we read at this address:
-                    when x"00030" =>                                                       -- zdtc_samples_number_counter
-                        sys_rdata           <= zdtc_samples_number_counter;
-                        counter0_out_reg    <= counter0_out;
-                        counter1_out_reg    <= counter1_out;
-                        DAC0_out_reg        <= DAC0_out;
-                        DAC1_out_reg        <= DAC1_out;
-                        DAC2_out_reg        <= DAC2_out;
-                        sys_ack             <= sys_en;
-
-                    when x"00031" => sys_ack <= sys_en; sys_rdata <= counter0_out_reg(32-1    downto  0);     -- counter 0 LSBs
-                    when x"00032" => sys_ack <= sys_en; sys_rdata <= counter0_out_reg(32+32-1 downto 32);     -- counter 0 MSBs
-                    when x"00033" => sys_ack <= sys_en; sys_rdata <= counter1_out_reg(32-1    downto  0);     -- counter 1 LSBs
-                    when x"00034" => sys_ack <= sys_en; sys_rdata <= counter1_out_reg(32+32-1 downto 32);     -- counter 1 MSBs
-                    when x"00035" => sys_ack <= sys_en; sys_rdata <= DAC0_out_reg(32-1 downto 0);             -- DAC 0
-                    when x"00036" => sys_ack <= sys_en; sys_rdata <= DAC1_out_reg(32-1 downto 0);             -- DAC 1
-                    when x"00037" => sys_ack <= sys_en; sys_rdata <= DAC2_out_reg(32-1 downto 0);             -- DAC 2
-
+                    -- these pairs should always be read sequentially, in this order, so that we sample all bits at exactly the same time
+                    when x"00036" => sys_ack <= sys_en; sys_rdata <= dither_results4(32-1 downto 0); dither_results_reg <= dither_results4;
+                    when x"00037" => sys_ack <= sys_en; sys_rdata <= dither_results_reg(32+32-1 downto 32);
 
                     when x"00044" => sys_ack <= sys_en; sys_rdata <= read_data;     read_ack <= '1';
                     when x"00045" => sys_ack <= sys_en; sys_rdata(write_address'range) <= write_address;

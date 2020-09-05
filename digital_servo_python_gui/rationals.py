@@ -23,7 +23,30 @@ class RationalNumber():
 
     def fromString(self, s, scale_factor):
         """ Interprets string s as a rational fraction float(s)*scale_factor,
-        but without actually using the float() built-in, which produces a floating-point number """
+        but without actually using the float() built-in, which produces a floating-point number.
+        Also handles inputs in format: 'num*denom' or 'num/denom' (untested!) """
+        product_symbol = s.find('*')
+        division_symbol = s.find('/')
+        if product_symbol != -1:
+            num1_str, num2_str = s.split('*')
+            # print("fromString(): num1_str=", num1_str, ", num2_str=", num2_str)
+            num1 = RationalNumber(from_string=num1_str, scale_factor=scale_factor)
+            num2 = RationalNumber(from_string=num2_str)
+            product = num1 * num2
+            self.num   = product.num
+            self.denom = product.denom
+            # print(self)
+            return
+        elif division_symbol != -1:
+            num_str, denom_str = s.split('/')
+            # print("fromString(): num_str=", num_str, ", denom_str=", denom_str)
+            num   = RationalNumber(from_string=num_str, scale_factor=scale_factor)
+            denom = RationalNumber(from_string=denom_str)
+            self.num   = num.num * denom.denom
+            self.denom = denom.num * num.denom
+            # print(self)
+            return
+
         decimal_index = s.find('.')
         if decimal_index == -1:
             # Easy case: value is an integer * scale_factor

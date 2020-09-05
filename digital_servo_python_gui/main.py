@@ -18,6 +18,7 @@ import channel_gui
 import summary_tab
 import connection_widget
 import config_widget
+import controller_settings_widget
 
 from common import tictoc, colorCoding, readFloatFromTextbox
 import bin_conv
@@ -58,10 +59,6 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
         self.config_done = False # we don't read out values from the device until the config is done, because we need to know all the relevant configuration values to do the post-processing needed
-        # self.sl.dev.OpenTCPConnection("192.168.2.34")
-        # self.sl.phaseReadoutDriver.startLogging()
-        # self.sl.setADCclockPLL( f_ref=25e6, bExternalClock=True)
-        # # self.sl.setADCclockPLL( f_ref=200e6, bExternalClock=False)
 
         self.fastTimer = QtCore.QTimer(self)
         self.fastTimer.timeout.connect(self.fastTimerEvent)
@@ -122,6 +119,11 @@ class MainWidget(QtWidgets.QMainWindow):
             self.tab_widget.addTab(GUI, "Channel %d" % (channel_id))
             self.channel_GUIs[channel_id] = GUI
 
+        # TODO: handle the case of either FNC or counter-only hardware, create or hide child widgets accordingly
+
+
+        self.populateClosedLoopBW()
+
         self.tab_widget.currentChanged.connect(self.updateTabVisibility)
         self.setWindowTitle('Frequency counter/phase meter')
 
@@ -135,13 +137,17 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.show()
 
+    def populateClosedLoopBW(self):
+        (gain_combined, gain_fine, gain_coarse) = self.sl.getAllPossiblePgains()
+        BW_all = self.sl.getClosedLoopBW(gain_combined)
+        self.config_widget.populateClosedLoopBW(BW_all)
+
     def createStatusBar(self):
         self.status_bar_fields = OrderedDict()
         self.status_bar_fields["connection"] = QtWidgets.QLabel('Disconnected.')
         self.status_bar_fields["commit"] = QtWidgets.QLabel('No config committed')
         self.status_bar_fields["spacer"] = QtWidgets.QLabel('')
         self.status_bar_fields["config"] = QtWidgets.QLabel('No config file selected')
-
 
         self.setStatus("connection", "Disconnected.", "bad")
         self.setStatus("config", "No config file selected", "bad")
@@ -186,8 +192,15 @@ class MainWidget(QtWidgets.QMainWindow):
                 return
 
             self.sl.dev.OpenTCPConnection(strIP, port)
-            self.sl.set_dds_offset_freq(1, 25e6)
+            self.hw_description = self.sl.getHardwareDescription()
+
+
+            self.sl.set_dds_offset_freq(1, 10e6)
             self.sl.set_dds_limits(1, 5e6, 20e6)
+            self.sl.write("PI_enables", 0*2**4 + 1*2**0)
+            self.sl.write("PI_fine_gains", 1)
+            self.sl.write("PI_coarse_P_gains", 20)
+            self.sl.write("PI_coarse_I_gains", 0)
             self.sl.phaseReadoutDriver.startLogging()
             self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
             print("connect_clicked(): TODO: set config file name")
@@ -204,11 +217,17 @@ class MainWidget(QtWidgets.QMainWindow):
         for w in [self.connection_widget.btnUpdateFPGA, self.connection_widget.btnUpdateCPU]:
             w.setEnabled(not bEnable)
 
+        if bEnable:
+            # Handle various versions of the hardware changing the exact GUI that we should present to the user:
+            bHasDDS = self.hw_description.get("has_dds", False)
+            # bHasDDS = False # force to false for testing
+            self.config_widget.setHardwareType(bHasDDS)
+
     def commit(self):
         """ Read all the settings from the GUI to our config dict, then push to device """
         try:
             (system_settings, channels_settings) = self.config_widget.readConfigFromGUI()
-        except ValueError:
+        except (ValueError, SyntaxError):
             return # don't commit anything since there is an invalid value somewhere
 
         self.pushSettingsToDevice(system_settings, channels_settings)
@@ -320,8 +339,12 @@ class MainWidget(QtWidgets.QMainWindow):
         Current limitation of the way we do things is that the max counter period is related with
         the filling of the circular buffer inside the FPGA.  Exact value is TBD, but probably good up to 10 secs.
         This function also computes the frequency offset from said phase data, and emits the result as a signal """
+        if not self.sl.dev.valid_socket:
+            return
+        self.config_widget.lblRefFreq.setText('%.8f' % (self.sl.getExtClockFreq()/1e6))
         if not self.validDeviceAndConfigKnown():
             return
+
         # self.bDisplayTiming = True
         tictoc(self)
         self.gate_time_in_samples = 100 # 1 sec gate time, hard-coded for now

@@ -35,11 +35,12 @@ class RP_PLL_device():
     MAGIC_BYTES_WRITE_REG       = 0xABCD1233
     MAGIC_BYTES_READ_REG        = 0xABCD1234
     MAGIC_BYTES_READ_BUFFER     = 0xABCD1235
-    MAGIC_BYTES_READ_REPEAT     = 0xABCD123A
     
     MAGIC_BYTES_WRITE_FILE      = 0xABCD1237
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
     MAGIC_BYTES_REBOOT_MONITOR  = 0xABCD1239
+    MAGIC_BYTES_READ_REPEAT     = 0xABCD123A
+    MAGIC_BYTES_READ_FILE       = 0xABCD123B
     
     FPGA_BASE_ADDR              = 0x40000000    # address of the main PS <-> PL memory map (GP 0 AXI master on PS)
     FPGA_BASE_ADDR_XADC         = 0x80000000    # address of the XADC PS <-> PL memory map (GP 1 AXI master on PS)
@@ -100,8 +101,8 @@ class RP_PLL_device():
             
         return buf
 
-    # Function used to send a file write command:
     def write_file_on_remote(self, strFilenameLocal, strFilenameRemote):
+        """ Write a local file to the RP file system """
         # open local file and load into memory:
         file_data = np.fromfile(strFilenameLocal, dtype=np.uint8)
         try:
@@ -117,8 +118,39 @@ class RP_PLL_device():
             self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
             self.socketErrorEvent(e)
 
-    # Function used to send a shell command to the Red Pitaya:
+    def read_file_from_remote(self, strFilenameRemote):
+        """ Returns the contents of a file located on the RP """
+        try:
+            # send header
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_FILE, len(strFilenameRemote), 0)
+            self.sock.sendall(packet_to_send)
+            # send filename
+            self.sock.sendall(strFilenameRemote.encode('ascii'))
+            # read results: format is file_valid, file_size, <file bytes>,
+            # where both file_valid and file_size are uint32:
+            file_valid, file_size = struct.unpack('II', self.read(8))
+            if not file_valid:
+                print("Could not read file from remote (file_valid=0).")
+                return b''
+            if file_size == 0:
+                print("Received empty file from remote (file_size=0)")
+                return b''
+            else:
+                # print("About to read file of size %d from remote" % file_size)
+                file_data = self.read(file_size)
+                if len(file_data) != file_size:
+                    print("Error: expected %d bytes, but received %d instead" % file_size, len(file_data))
+                # else:
+                #     print("Successfully received file of size %d from remote" % len(file_data))
+                return file_data
+        except OSError as e:
+            print("RP_PLL.py: read_file_from_remote(): exception while reading file!")
+            self.logger.warning('Red_Pitaya_GUI{}: read_file_from_remote(): exception while reading file!'.format(self.logger_name))
+            self.socketErrorEvent(e)
+            return b''
+
     def send_shell_command(self, strCommand):
+        """ Sends a shell command to the Red Pitaya """
         try:
             # send header
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_SHELL_COMMAND, len(strCommand), 0)
