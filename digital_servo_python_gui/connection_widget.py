@@ -142,6 +142,7 @@ class ConnectionWidget(QtWidgets.QWidget):
         print("File written to remote host at /opt/red_pitaya_top.bit.")
 
         self.dev.send_shell_command('cat /opt/red_pitaya_top.bit > /dev/xdevcfg')
+        time.sleep(0.5) # delay for writing the bitfile to the fpga
         print("Program FPGA firmware command sent.")
         
         # disconnect:
