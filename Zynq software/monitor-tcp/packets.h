@@ -73,5 +73,14 @@ typedef struct binary_packet_read_repeat_t {
 
 
 bool getMagicBytes(char* const message_buff, size_t msg_end, uint32_t* const magic_bytes);
-bool packet_handler_write_reg(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
-bool packet_handler_read_repeat(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+char * extractStringFromBuffer(char* message_buff, int str_len, size_t offset);
+void read_file_from_socket_to_disk(const char * const strFilename, char * message_buff, size_t offset, unsigned int file_size, int connfd);
+void send_file_to_socket(const char * const strFilename, int connfd);
+
+bool packet_handler_write_reg      (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+bool packet_handler_read_repeat    (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+bool packet_handler_reboot         (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+bool packet_handler_read_reg       (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+bool packet_handler_read_buffer    (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+bool packet_handler_shell_command  (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
+bool packet_handler_file_rw_command(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);

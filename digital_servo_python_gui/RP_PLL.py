@@ -154,8 +154,10 @@ class RP_PLL_device():
         try:
             # send header
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_SHELL_COMMAND, len(strCommand), 0)
+            print("send: ", packet_to_send.hex())
             self.sock.sendall(packet_to_send)
             # send command
+            print("send: ", strCommand.encode('ascii').hex())
             self.sock.sendall(strCommand.encode('ascii'))
         except OSError as e:
             print("RP_PLL.py: send_shell_command(): exception while sending command!")

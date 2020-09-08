@@ -50,6 +50,7 @@
 static bool app_exit = false;
 pid_t parent_pid;
 bool bVerbose = false; // this allows enabling lots of debugging messages.
+bool bReboot = false; // Variables for the "reboot" message
 
 #include "packets.h"
 #include "monitor-tcp.h"
@@ -142,18 +143,6 @@ static int handleConnection(int connfd) {
 
     size_t bytes_needed = sizeof(message_magic_bytes);	// to start, we only need 4 bytes before starting to parse out the message.
 
-    // Variables used for handling "write file" messages
-    bool bHaveFileWriteHeader = false;
-    struct binary_packet_write_file_t * pPacketWriteFile;
-    FILE * file_pointer = NULL;
-    // Variables for the "shell command" message
-    bool bHaveShellCommandHeader = false;
-    struct binary_packet_shell_command_t * pPacketShellCommand;
-    // Variables for the "reboot" message
-    bool bReboot = false;
-
-    
-
     //Receive a message from client
     while( (read_size = recv(connfd , buffer , MAX_BUFF_SIZE , 0)) > 0 )
     {
@@ -182,332 +171,47 @@ static int handleConnection(int connfd) {
         	//printfv("msg_end=%u, bytes_needed=%u, bHaveMagicBytes=%u", msg_end, bytes_needed, bHaveMagicBytes);
         	if (!bHaveMagicBytes)
         	{
-        		if (getMagicBytes(message_buff, msg_end, &message_magic_bytes))
-        		{
-			        bHaveMagicBytes = true;
+        		bHaveMagicBytes = getMagicBytes(message_buff, msg_end, &message_magic_bytes);
+
+        		if (bHaveMagicBytes)
 			        printfv("message_magic_bytes = 0x%X\n", message_magic_bytes);
-			    }
 			}
-	        if (bHaveMagicBytes)
+			if (!bHaveMagicBytes)
+				continue;
+
+        	// we have received enough data to know which packet type it is at least
+        	bool bPacketHandled = false;
+			bPacketHandled = bPacketHandled || packet_handler_write_reg      (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_read_reg       (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_read_buffer    (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_read_repeat    (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_file_rw_command(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_shell_command  (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_reboot         (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+
+	        if (!bPacketHandled)
 	        {
-	        	// we know which type of packet is coming in:
-	        	// parse out the correct type of packet
-	        	if (packet_handler_write_reg(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd)) {
-	        		bHaveMagicBytes = false;
-	        			
-	        	////////////////////////////////////////////////////////////
-	        	// Read 32 bits value to specified FPGA register
-	        	} else if (message_magic_bytes == magic_bytes_read_reg)
+	        	// this can mean either:
+	        	// magic bytes didn't match any known packet type, OR
+	        	// one of the packet parser needs more bytes before it can parse the message
+	        	if (bytes_needed == sizeof(message_magic_bytes))
 	        	{
-	        		bytes_needed = sizeof(binary_packet_read_reg_t);
-	        		if (msg_end >= bytes_needed)
-	        		{
-		        		struct binary_packet_read_reg_t * pPacketReadReg;
-		        		pPacketReadReg = (binary_packet_read_reg_t*) message_buff;
-
-
-
-		        		printfv("Received a register read packet.\n");
-		        		printfv("pPacketReadReg->start_address = 0x%X (hex)\n", pPacketReadReg->start_address);
-		        		printfv("pPacketReadReg->reserved = %u (decimal) (currently unused)\n", pPacketReadReg->reserved);
-
-		        		// perform actual memory read, dump 32 bits value into TCP socket.
-		        		uint32_t register_value;
-		        		register_value = read_value(pPacketReadReg->start_address);
-
-		        		// send it back:
-		        		send(connfd, &register_value, sizeof(register_value), 0);
-		        		printfv("register sent. addr = 0x%X, value = %u\n", pPacketReadReg->start_address, register_value);
-
-		        		// reset our message parsing state variables
-		        		bytes_consumed = sizeof(binary_packet_read_reg_t);
-		        		bHaveMagicBytes = false;
-		        		bytes_needed = sizeof(message_magic_bytes);
-
-		        	} else {
-		        		printfv("Received a register read packet, but we have not received the full packet yet.\n");
-
-		        	}
-	        	////////////////////////////////////////////////////////////
-	        	// Read a buffer of continuous value from an ADC input
-	        	} else if (message_magic_bytes == magic_bytes_read_buffer) {
-
-	        		bytes_needed = sizeof(binary_packet_read_buffer_t);
-	        		if (msg_end >= bytes_needed) {
-		        		
-		        		struct binary_packet_read_buffer_t * pPacketReadBuffer;
-		        		pPacketReadBuffer = (binary_packet_read_buffer_t*) message_buff;
-
-
-
-		        		printfv("Received a buffer read packet.\n");
-		        		printfv("pPacketReadBuffer->start_address = 0x%X (hex) (currently unused)\n", pPacketReadBuffer->start_address);
-		        		printfv("pPacketReadBuffer->number_of_points = %u (decimal)\n", pPacketReadBuffer->number_of_points);
-
-					    struct timespec time_start, time_end;
-					    // clock_gettime(CLOCK_REALTIME, &time_start);
-
-		        		// this should contain the actual data, note that the writing has surely wrapped and the start/end of the data run will be random in the dataset
-		        		// TODO: sync with the end of the acquisition in the buffer.
-		        		clock_gettime(CLOCK_REALTIME, &time_start);
-		        		uint32_t acq_size = MIN(LOGGER_BUFFER_SIZE, pPacketReadBuffer->number_of_points);
-		        		readBuffer(&acq_size, data_buffer);
-					    clock_gettime(CLOCK_REALTIME, &time_end);
-					    printfv("getdata elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-
-		        		// dump this into the TCP socket:
-		        		printfv("before socket send()\n");
-		        		clock_gettime(CLOCK_REALTIME, &time_start);
-		        		send(connfd, data_buffer, (size_t)acq_size*sizeof(int16_t), 0);
-					    clock_gettime(CLOCK_REALTIME, &time_end);
-					    printfv("send() elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-		        		printfv("socket send() complete\n");
-
-
-		        		// reset our message parsing state variables
-		        		bytes_consumed = sizeof(binary_packet_read_buffer_t);
-		        		bHaveMagicBytes = false;
-		        		bytes_needed = sizeof(message_magic_bytes);
-	        		} else {
-	        			printfv("Received a buffer read packet, but we have not received the full packet yet.\n");
-
-	        		}
-
-	        	////////////////////////////////////////////////////////////
-	        	// Read a buffer (intended to be used with registers_read.vhd)
-	        	} else if (packet_handler_read_repeat(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd))
-	        	{
-	        		bHaveMagicBytes = false;
-
-	        	////////////////////////////////////////////////////////////
-	        	// Read/Write a file to the filesystem
-	        	} else if (message_magic_bytes == magic_bytes_write_file || message_magic_bytes == magic_bytes_read_file)
-	        	{
-	        		printfv("magic bytes are read/write file\n");
-	        		// we need at least the first two 32 bits value before we can figure out the size of this message.
-	        		if (!bHaveFileWriteHeader)
-	        		{
-	        			bytes_needed = sizeof(binary_packet_write_file_t);
-	        			if (msg_end >= bytes_needed) {
-	        				bHaveFileWriteHeader = true;
-	        				printfv("Received complete file read/write header.\n");
-			        		
-			        		pPacketWriteFile = (binary_packet_write_file_t*) message_buff;
-			        		printfv("address of message_buff = 0x%x, address of pPacketWriteFile = 0x%x\n", (uint) message_buff, (uint) pPacketWriteFile);
-			        		printfv("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
-			        		printfv("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
-			        		bytes_needed = sizeof(binary_packet_write_file_t) + pPacketWriteFile->filename_length + pPacketWriteFile->file_size;
-			        		printfv("bytes_needed                    = %u\n", bytes_needed);
-
-
-	        			}
-	        		}
-	        		if (bHaveFileWriteHeader) {
-	        			// we know how long the total message needs to be, so we just wait to have received everything.
-	        			if (msg_end >= bytes_needed)
-	        			{
-	        				printfv("Complete file read/write message received.\n");
-	        				printfv("msg_end = %u, bytes_needed = %u\n", msg_end, bytes_needed);
-
-							// first copy the filename to a string
-							pPacketWriteFile = (binary_packet_write_file_t*) message_buff;	// we need to update our packet pointer because message_buf might have changed its location if it has been reallocated since last time pPacketWriteFile was set
-							char * strNewFileName = (char*) malloc((pPacketWriteFile->filename_length+1)*sizeof(char));	// the +1 is for the \0 character
-							if (!strNewFileName)
-							{
-								printfv("malloc failed to allocate a string of size: %u\n", pPacketWriteFile->filename_length+1);
-							} else
-							{
-								printfv("address of strNewFileName = 0x%x, address of pPacketWriteFile = 0x%x\n", (uint) strNewFileName, (uint) pPacketWriteFile);
-								printfv("malloc succeeded to allocate a string of size: %u\n", pPacketWriteFile->filename_length+1);
-								printfv("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
-								printfv("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
-								memcpy((void*) strNewFileName, (void*)(message_buff+sizeof(binary_packet_write_file_t)), pPacketWriteFile->filename_length);
-								printfv("memcpy succeeded\n");
-								// add \0 termination
-								strNewFileName[pPacketWriteFile->filename_length] = '\0';
-
-								printfv("filename: %s\n", strNewFileName);
-
-								if (message_magic_bytes == magic_bytes_write_file)
-								{
-									// then we should call fopen with the filename, then fwrite with the right pointer.
-									file_pointer = fopen(strNewFileName, "wb");
-									if (!file_pointer)
-									{
-										printfv("Error opening file %s. No contents written.\n", strNewFileName);
-									} else {
-										// write file contents
-										fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
-										fclose(file_pointer);
-										file_pointer = NULL;
-									}
-								} else {
-									// file read: send file size first
-									// Format is: file_valid, file_size, <file bytes>
-					        		uint32_t file_valid;
-					        		uint32_t file_size;
-
-					        		// send it back:
-					        		
-
-									file_pointer = fopen(strNewFileName, "rb");
-									if (!file_pointer)
-									{
-										file_valid = 0; // -1 means that the file does not exist
-										send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
-										file_size = 0;
-										send(connfd, &file_size, sizeof(file_size), 0); // file size
-										printfv("Error opening file %s. No contents read.\n", strNewFileName);
-									} else {
-										file_valid = 1;
-										send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
-										fseek(file_pointer, 0, SEEK_END);
-										file_size = ftell(file_pointer);
-										rewind(file_pointer);
-
-										uint8_t *file_contents = malloc(file_size);
-										if (!file_contents)
-										{
-											// allocation error, send back an empty file:
-											printfv("Error allocating memory for file %s. Will send back an empty file instead.\n", strNewFileName);
-											file_size = 0;
-											send(connfd, &file_size, sizeof(file_size), 0); // file size, clamped to 0
-										} else {
-											size_t retval = fread(file_contents, 1, file_size, file_pointer);
-											if (retval != file_size)
-												printfv("fread returned %u instead of %u\n", retval, file_size);
-											printfv("Sending file %s, %u bytes.\n", strNewFileName, file_size);
-											send(connfd, &file_size, sizeof(file_size), 0); // file size
-											send(connfd, file_contents, file_size, 0);
-										}
-										// read and send file contents
-										// fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
-										fclose(file_pointer);
-										file_pointer = NULL;
-									}
-								}
-
-		        				free(strNewFileName);
-
-		        				//kill(parent_pid, SIGTERM);
-		        				//kill(parent_pid, SIGTERM);
-
-	        				}
-
-			        		// reset our message parsing state variables
-			        		bHaveFileWriteHeader = false;
-			        		bytes_consumed = bytes_needed;
-			        		bHaveMagicBytes = false;
-			        		bytes_needed = sizeof(message_magic_bytes);
-	        			}
-	        		}
-
-
-
-	        	}	// else if (message_magic_bytes == magic_bytes_write_file) 
-
-
-	        	////////////////////////////////////////////////////////////
-	        	// Send a command string to the shell
-	        	else if (message_magic_bytes == magic_bytes_shell_command)
-	        	{
-	        		// we need at least the first two 32 bits values before we can figure out the size of this message.
-	        		if (!bHaveShellCommandHeader)
-	        		{
-	        			bytes_needed = sizeof(binary_packet_shell_command_t);
-	        			if (msg_end >= bytes_needed) {
-	        				bHaveShellCommandHeader = true;
-	        				printfv("Received complete shell command header.\n");
-			        		
-			        		pPacketShellCommand = (binary_packet_shell_command_t*) message_buff;
-
-			        		printfv("pPacketShellCommand->command_length = %u\n", pPacketShellCommand->command_length);
-			        		bytes_needed = sizeof(binary_packet_write_file_t) + pPacketShellCommand->command_length;
-			        		printfv("bytes_needed                    = %u\n", bytes_needed);
-
-
-	        			}
-	        		}
-	        		if (bHaveShellCommandHeader) {
-	        			// we know how long the total message needs to be, so we just wait to have received everything.
-	        			if (msg_end >= bytes_needed) {
-	        				printfv("Complete shell command message received.\n");
-	        				printfv("msg_end = %u, bytes_needed = %u\n", msg_end, bytes_needed);
-
-							// first copy the filename to a string
-							pPacketShellCommand = (binary_packet_shell_command_t*) message_buff;	// we need to update our packet pointer because message_buf might have changed its location if it has been reallocated since last time pPacketWriteFile was set
-							char * strCommand = (char*) malloc((pPacketShellCommand->command_length+1)*sizeof(char));	// the +1 is for the \0 character
-							if (!strCommand)
-							{
-								printfv("malloc failed to allocate a string of size: %u\n", pPacketShellCommand->command_length+1);
-							}
-							else 
-							{
-								memcpy((void*) strCommand, (void*)(message_buff+sizeof(binary_packet_write_file_t)), pPacketShellCommand->command_length);
-								// add \0 termination
-								strCommand[pPacketShellCommand->command_length] = '\0';
-								printfv("shell command: '%s'\n", strCommand);
-								// send command to shell using system()
-								system(strCommand);
-
-								free(strCommand);
-
-		        				
-		        				//kill(parent_pid, SIGTERM);
-
-	        				}
-
-			        		// reset our message parsing state variables
-			        		bHaveShellCommandHeader = false;
-			        		bytes_consumed = bytes_needed;
-			        		bHaveMagicBytes = false;
-			        		bytes_needed = sizeof(message_magic_bytes);
-	        			}
-	        		}
-
-
-
-	        	} // else if (message_magic_bytes == magic_bytes_shell_command)
-
-	        	////////////////////////////////////////////////////////////
-	        	// Reboot this program (monitor-tcp).
-	        	// To do this, we first need to kill our parent process, then we exit the loop and run a system() call which launches ourselves again.
-	        	else if (message_magic_bytes == magic_bytes_reboot_monitor)
-	        	{
-	        		bytes_needed = sizeof(binary_packet_reboot_monitor_t);
-		        	if (msg_end >= bytes_needed) {
-		        		// there is no other information in this type of packet.
-
-		        		// kill returns 0 if no error, so we wait until the process is gone
-		        		while (kill(parent_pid, SIGTERM) == 0)
-		        		{
-		        			usleep(10000);	// 10 ms
-		        		}
-
-		        		printfv("exiting message parsing loop.\n");
-		        		bReboot = true;
-		        		//goto loop_exit;	// we need to exit two nested while loops
-
-		        		// reset our message parsing state variables
-		        		bytes_consumed = sizeof(binary_packet_reboot_monitor_t);
-		        		bHaveMagicBytes = false;
-		        		bytes_needed = sizeof(message_magic_bytes);
-		        	}
-
-
-		        } // else if (message_magic_bytes == magic_bytes_reboot_monitor)
-
-	        	else {	// magic bytes didn't match any known packet type
-
+	        		// magic bytes didn't match any known packet type
 	        		printfv("magic bytes do not match any known packet type. got: 0x%0x, msg_end = %u\n", message_magic_bytes, msg_end);
 	        		printfv("This will probably mean that the whole protocol is de-synced and erronous values will be read/written\n");
 	        		bytes_consumed = sizeof(message_magic_bytes);
 	        		bHaveMagicBytes = false;
 	        		return 0;
-	        	}
+        		}
+        	}
 
-	        } // if (bHaveMagicBytes)
-
+        	// trap a potential error condition:
+        	if (bytes_needed < sizeof(message_magic_bytes))
+        	{
+        		printf("Assert error: bytes_needed < sizeof(message_magic_bytes): %u < %zu.  This probably means that there is a bug in one of the packet handlers in packets.c\n", bytes_needed, sizeof(message_magic_bytes));
+        		printf("Will attempt to work around it\n");
+        		bytes_needed = sizeof(message_magic_bytes);
+        	}
 
 
 
@@ -689,30 +393,22 @@ int main(int argc, char *argv[])
         }
 
         // Fork a child process, which will talk to the client
-        if (!fork()) {
-
-            printf("Connection with client ip %s established.\n", inet_ntoa(cliaddr.sin_addr));
-
+        int fork_retval = fork();
+        if (fork_retval == 0) {
             // this is the child process
+            printf("Connection with client ip %s established.\n", inet_ntoa(cliaddr.sin_addr));
             close(listenfd); // child doesn't need the listener
-
-            //scpi_context.user_context = &connfd;
-
-
-
             result = handleConnection(connfd);
-
             printf("calling close(connfd)...\n");
             close(connfd);
-
             printf("Closing connection with client ip %s.\n", inet_ntoa(cliaddr.sin_addr));
 
             if (result == -1)	// -1 means to reboot the program
             {
-		    	printf("rebooting monitor-tcp... sleep 1 sec\n");
+		    	printf("rebooting monitor-tcp... sleep 0.1 sec. pid=%u\n", getpid());
 		    	usleep(100000);
-		    	printf("rebooting monitor-tcp... done sleeping, calling monitor-tcp again\n");
-		    	system("/opt/monitor-tcp");
+		    	printf("rebooting monitor-tcp... done sleeping, calling monitor-tcp again. pid=%u\n", getpid());
+		    	system("/opt/monitor-tcp"); // this is a blocking call, but that's not a real issue, since this calling process won't be doing anything
 		    	return (EXIT_SUCCESS);
 	    	}
 
