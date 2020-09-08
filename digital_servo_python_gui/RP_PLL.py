@@ -187,7 +187,7 @@ class RP_PLL_device():
         if self.valid_socket == False:
             raise CommsError
 
-        # print("send: ", packet_to_send.hex())
+        print("send: ", packet_to_send.hex())
 
         try:
             self.sock.sendall(packet_to_send)

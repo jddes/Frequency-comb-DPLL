@@ -43,18 +43,6 @@
 // for waitpid()
 #include <sys/wait.h>
 
-
-//#include "scpi-commands.h"
-//#include "common.h"
-
-//#include "scpi/parser.h"
-//#include "redpitaya/rp.h"
-
-#define printfv(args...) if (bVerbose) printf(args)
-
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-#define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
-
 #define LISTEN_BACKLOG 50
 #define LISTEN_PORT 5000
 #define MAX_BUFF_SIZE 1024
@@ -63,538 +51,16 @@ static bool app_exit = false;
 pid_t parent_pid;
 bool bVerbose = false; // this allows enabling lots of debugging messages.
 
-// Packet formats definitions
-#pragma pack(push)
-#pragma pack(1)
-
-uint32_t magic_bytes_write_reg = 0xABCD1233;
-typedef struct binary_packet_write_reg_t {
-	uint32_t magic_bytes;	// 0xABCD1233
-	uint32_t write_address;
-	uint32_t write_value;
-
-} binary_packet_write_reg_t;
-
-uint32_t magic_bytes_read_reg = 0xABCD1234;
-typedef struct binary_packet_read_reg_t {
-	uint32_t magic_bytes;	// 0xABCD1234
-	uint32_t start_address;
-	uint32_t reserved;		// unused
-} binary_packet_read_reg_t;
-
-uint32_t magic_bytes_read_buffer = 0xABCD1235;
-typedef struct binary_packet_read_buffer_t {
-	uint32_t magic_bytes;	// 0xABCD1235
-	uint32_t start_address;
-	uint32_t number_of_points;	
-} binary_packet_read_buffer_t;
-
-uint32_t magic_bytes_flank_servo = 0xABCD1236;
-typedef struct binary_packet_flank_servo_t {
-	uint32_t magic_bytes;	// 0xABCD1236
-	uint16_t iStopAfterZC;
-	int16_t ramp_minimum;
-	uint32_t number_of_ramps;
-	uint32_t number_of_steps;
-	uint32_t max_iterations;
-	int16_t threshold_int16;
-	double ki;
-
-} binary_packet_flank_servo_t;
-
-uint32_t magic_bytes_write_file = 0xABCD1237;
-typedef struct binary_packet_write_file_t {
-	uint32_t magic_bytes;	// 0xABCD1237
-	uint32_t filename_length;
-	uint32_t file_size;	
-} binary_packet_write_file_t;
-
-uint32_t magic_bytes_shell_command = 0xABCD1238;
-typedef struct binary_packet_shell_command_t {
-	uint32_t magic_bytes;	// 0xABCD1238
-	uint32_t command_length;
-	uint32_t reserved;	
-} binary_packet_shell_command_t;
-
-uint32_t magic_bytes_reboot_monitor = 0xABCD1239;
-typedef struct binary_packet_reboot_monitor_t {
-	uint32_t magic_bytes;	// 0xABCD1239
-	uint32_t reserved1;
-	uint32_t reserved2;	
-} binary_packet_reboot_monitor_t;
-
-// used to repeatedly read from an address, used with ram_data_logger_v2.vhd
-uint32_t magic_bytes_read_repeat = 0xABCD123A;
-typedef struct binary_packet_read_repeat_t {
-	uint32_t magic_bytes;	// 0xABCD123A
-	uint32_t start_address;
-	uint32_t number_of_points;	
-} binary_packet_read_repeat_t;
-
-uint32_t magic_bytes_read_file = 0xABCD123B; // this packet uses the same header as binary_packet_write_file_t
-
-
-#pragma pack(pop)
-
-
-// Stuff for the data acquisition:
+#include "packets.h"
 #include "monitor-tcp.h"
-
-// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger.vhd
-#define LOGGER_BUFFER_SIZE (1UL<<15)
-// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger_v2.vhd
-#define LOGGER_REPEAT_SIZE (1UL<<13)
-#define LOGGER_BASE_ADDR 0x00100000UL
-#define LOGGER_DATA_OFFSET  (1UL<<19)
-#define LOGGER_START_WRITE_OFFSET  0x1004UL
+#include "memory_interface.h"
+#include "common.h"
 
 int16_t  data_buffer[LOGGER_BUFFER_SIZE];
 int32_t  data_buffer32[LOGGER_REPEAT_SIZE];
 
-// this can be as long as we want (as long as it fits in the Zynq's RAM)
-// currently sizeof(uint32_t)*(1UL<<20) = 4 MB
-#define NO_FIFO_LOGGER_BUFFER_SIZE (1U<<20)
-uint32_t data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE];
 
-// 16e6 samples (64 MB)
-#define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
-uint32_t data_buffer_with_fifo[FIFO_LOGGER_BUFFER_SIZE];
-
-/////////////////////////////////////////////////////
-// stuff for writing to the fpga memory
-/////////////////////////////////////////////////////
-
-#define FATAL do { fprintf(stderr, "Error at line %d, file %s (%d) [%s]\n", \
-  __LINE__, __FILE__, errno, strerror(errno)); exit(1); } while(0)
- 
-//#define MAP_SIZE 4096UL	// TODO: change to the full fpga memory size (1 GB = 2^30 = 1<<30 or 1<<29, not sure)
-#define MAP_SIZE (1UL<<29)	// (1 GB = 2^30 = 1<<30, but I couldn't get it to work with 1 GB so I changed to 512 MB instead)
-#define MAP_MASK (MAP_SIZE - 1)
-
-void initMemoryMap();
-void closeMemoryMap();
-void readBuffer(uint32_t* size, int16_t* buffer_in);
-void readRepeat(uint32_t start_address, uint32_t* size, int32_t* buffer_in);
-void read_write_loop_minimum();
-uint32_t read_value(uint32_t a_addr);
-void write_value(unsigned long a_addr, int a_type, unsigned long a_value);
-void absorption_flank_servo(int connfd, uint16_t iStopAfterZC, int16_t ramp_minimum, uint32_t number_of_ramps, uint32_t number_of_steps,
-							uint32_t max_iterations, int16_t threshold_int16, double ki);
-
-uint32_t FPGA_MEMORY_START = 0x40000000UL;
-void* map_base = (void*)(-1);
-
-int fd_dev_mem = -1;
-
-// Stuff for memory-mapping the XADC, on the GP 0 AXI master bus of the PS:
-#define MAP_SIZE_XADC (1UL<<20)	// there are really only a handful of registers in this map (1k addresses I think) (see XADC Wizard v3.2 product guide PG091, table 2-3 for a list, C_BASEADDR = 0x0)
-#define MAP_MASK_XADC (MAP_SIZE_XADC - 1)
-uint32_t FPGA_MEMORY_START_XADC = 0x80000000UL;
-void* map_base_xadc = (void*)(-1);
-
-// Returns true if we had enough data to parse out the magic bytes
-bool getMagicBytes(char* const message_buff, size_t msg_end, uint32_t* const magic_bytes)
-{
-	if (msg_end < sizeof(*magic_bytes)) // early exit if we haven't received enough bytes yet
-		return false;
-
-	*magic_bytes = *((uint32_t*)&message_buff[0]);
-	return true;
-}
-
-// Returns true if magic bytes match start of message
-bool magicBytesMatch(char* message_buff, size_t msg_end, uint32_t magic_bytes)
-{
-	uint32_t message_magic_bytes;
-	if (!getMagicBytes(message_buff, msg_end, &message_magic_bytes))
-		return false; // early exit if we haven't received enough bytes yet
-
-	return (message_magic_bytes == magic_bytes);
-}
-
-// Returns true if mapping a struct of size struct_size to the given buffer is possible, false otherwise.
-// Also sets the values of *bytes_needed and *bytes_consumed accordingly
-bool canConsumeStructFromBuffer(size_t struct_size,
-							    char* message_buff, size_t msg_end,
-							    size_t* bytes_needed, size_t* bytes_consumed)
-{
-	if (msg_end >= struct_size)
-	{
-		// pStruct = (void*) message_buff;
-		*bytes_needed = 0;
-		*bytes_consumed = struct_size;
-		return true;
-	} else {
-		*bytes_needed = struct_size;
-		*bytes_consumed = 0;
-		return false;
-	}
-}
-
-/////////////////////////////////// Packet handler functions: ///////////////////////////////////
-// All of these functions return true if packet was handled by this function
-
-
-// Write 32 bits value to specified FPGA register
-bool packet_handler_write_reg(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
-{
-	if (!magicBytesMatch(message_buff, msg_end, magic_bytes_write_reg))
-		return false;
-
-	struct binary_packet_write_reg_t* pPacket = (binary_packet_write_reg_t*) message_buff;
-	if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
-		return false;
-
-	printfv("Received a register write packet.\n");
-	printfv("message_write_address = 0x%X (hex)\n", pPacket->write_address);
-	printfv("message_write_value = %u (decimal)\n", pPacket->write_value);
-	fflush(stdout);
-
-	// perform the actual memory write:
-	write_value(pPacket->write_address, 'w', pPacket->write_value);
-
-	return true;
-}
-
-// Read a buffer by reading repeatedly at the same address (intended to be used with registers_read.vhd)
-bool packet_handler_read_repeat(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
-{
-	if (!magicBytesMatch(message_buff, msg_end, magic_bytes_read_repeat))
-		return false;
-
-	struct binary_packet_read_repeat_t* pPacket = (binary_packet_read_repeat_t*) message_buff;
-	if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
-		return false;
-
-	printfv("Received a read repeat packet.\n");
-	printfv("pPacket->start_address = 0x%X (hex)\n", pPacket->start_address);
-	printfv("pPacket->number_of_points = %u (decimal)\n", pPacket->number_of_points);
-
-    struct timespec time_start, time_end;
-    clock_gettime(CLOCK_REALTIME, &time_start);
-	uint32_t acq_size = MIN(LOGGER_REPEAT_SIZE, pPacket->number_of_points);
-	readRepeat(pPacket->start_address, &acq_size, data_buffer32);
-    clock_gettime(CLOCK_REALTIME, &time_end);
-    printfv("readRepeat elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-
-	// dump this into the TCP socket:
-	printfv("before socket send()\n");
-	clock_gettime(CLOCK_REALTIME, &time_start);
-	send(connfd, data_buffer32, (size_t)acq_size*sizeof(int32_t), 0);
-    clock_gettime(CLOCK_REALTIME, &time_end);
-    printfv("send() elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-	printfv("socket send() complete\n");
-	
-	return true;
-}
-
-
-// Returns true if packet is handled by this function (could be partially handled if size wasn't big enough)
-bool packet_handler_flank_servo(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
-{
-	if (!magicBytesMatch(message_buff, msg_end, magic_bytes_flank_servo))
-		return false;
-
-	struct binary_packet_flank_servo_t* pPacket = (binary_packet_flank_servo_t*) message_buff;
-	if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
-		return false;
-
-	absorption_flank_servo(	connfd,
-							pPacket->iStopAfterZC, 
-							pPacket->ramp_minimum, 
-							pPacket->number_of_ramps, 
-							pPacket->number_of_steps,
-							pPacket->max_iterations,
-							pPacket->threshold_int16,
-							pPacket->ki );
-	
-	return true;
-}
-
-/////////////////////////////////// End of packet handler functions: ///////////////////////////////////
-
-void initMemoryMap()
-{
-	printf("MAP_SIZE = %lu\n", MAP_SIZE);
-	if((fd_dev_mem = open("/dev/mem", O_RDWR | O_SYNC)) == -1) FATAL;
-	map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd_dev_mem, FPGA_MEMORY_START & ~MAP_MASK);
-	if(map_base == (void *) -1) FATAL;
-
-	// open XADC memory map:
-	map_base_xadc = mmap(0, MAP_SIZE_XADC, PROT_READ | PROT_WRITE, MAP_SHARED, fd_dev_mem, FPGA_MEMORY_START_XADC & ~MAP_MASK_XADC);
-	if(map_base_xadc == (void *) -1) FATAL;
-}
-
-void closeMemoryMap()
-{
-	// close main memory map to 0x4000_0000 to 0x6000_0000
-	if (map_base != (void*)(-1)) {
-		if(munmap(map_base, MAP_SIZE) == -1) FATAL;
-		map_base = (void*)(-1);
-	}
-	// close XADC memory map to 0x8000_0000 to ...
-	if (map_base != (void*)(-1)) {
-		if(munmap(map_base, MAP_SIZE) == -1) FATAL;
-		map_base = (void*)(-1);
-	}
-	close(fd_dev_mem);
-}
-
-
-uint32_t read_value(uint32_t a_addr) {
-	void* virt_addr;
-	if (a_addr < FPGA_MEMORY_START_XADC)
-		virt_addr = map_base + (a_addr & MAP_MASK);	// register is in main memory map (0x4000_0000 to 0x6000_0000)
-	else
-		virt_addr = map_base_xadc + (a_addr & MAP_MASK_XADC); // register is in XADC memory map (0x8XXX_XXXX)
-	uint32_t read_result = 0;
-	read_result = *((uint32_t *) virt_addr);
-	//printf("0x%08x\n", read_result);
-	//fflush(stdout);
-	return read_result;
-}
-
-void write_value(unsigned long a_addr, int a_type, unsigned long a_value) {
-	void* virt_addr;
-	if (a_addr < FPGA_MEMORY_START_XADC)
-		virt_addr = map_base + (a_addr & MAP_MASK);	// register is in main memory map (0x4000_0000 to 0x6000_0000)
-	else
-		virt_addr = map_base_xadc + (a_addr & MAP_MASK_XADC); // register is in XADC memory map (0x8XXX_XXXX)
-	
-	//printf("writing at addr = 0x%08lx, ", (a_addr & MAP_MASK));
-	//printf("map_base = 0x%08lx, ", (unsigned long)(map_base));
-	//printf("virt_addr = 0x%08lx\n", (unsigned long)(virt_addr));
-
-	switch(a_type) {
-		case 'b':
-			*((unsigned char *) virt_addr) = a_value;
-			break;
-		case 'h':
-			*((unsigned short *) virt_addr) = a_value;
-			break;
-		case 'w':
-			*((unsigned long *) virt_addr) = a_value;
-			break;
-	}
-
-}
-
-void readBuffer(uint32_t* size, int16_t* buffer_in)
-{
-    *size = MIN(*size, LOGGER_BUFFER_SIZE);
-
-    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
-
-    printfv("readBuffer: reading %u points, starting from address 0x%lX\n", *size, LOGGER_BASE_ADDR + LOGGER_DATA_OFFSET);
-
-    for (uint32_t i = 0; i < (*size); ++i) {
-        buffer_in[i] = (raw_buffer[i % LOGGER_BUFFER_SIZE]);
-    }
-    printfv("buffer_in[0] = %hd\n", buffer_in[0]);
-}
-
-void readRepeat(uint32_t start_address, uint32_t* size, int32_t* buffer_in)
-{
-    *size = MIN(*size, LOGGER_REPEAT_SIZE);
-
-    const volatile uint32_t* raw_buffer = (uint32_t*)(map_base + (start_address & MAP_MASK));
-
-    printfv("readRepeat: reading %u points, starting from address 0x%X\n", *size, start_address);
-
-    for (uint32_t i = 0; i < (*size); ++i) {
-        buffer_in[i] = *raw_buffer;
-    }
-
-    // printfv("buffer_in[0] = %d\n", buffer_in[0]);
-}
-
-void read_write_loop_minimum()
-{
-	double buf;
-	const volatile uint32_t* virt_addr_read = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + 0x00094);
-	void* virt_addr_write = (void*)((char*)map_base + 0x500000);
-	//volatile uint32_t* raw_buffer_write = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + 0x00094);
-
-    struct timespec time_start, time_end;
-    clock_gettime(CLOCK_REALTIME, &time_start);
-    // stuff to be timed would go here
-
-    //unsigned short a_value = 1;
-
-	double val_min, val_max;
-	val_min = 16e3*10.;
-	val_max = -val_min;
-
-    printf("entering read_write_loop_minimum()\n");
-
-	for (int k=0; k<100000; k++)
-	{
-		buf = (double) (int16_t) (*virt_addr_read & 0xFFFF);	// the 16 LSBs contain channel A, while the LSBs contain channel B, both sign-extended from 14 bits to 16 bits
-		if (buf < val_min)
-			val_min = buf;
-		if (buf > val_max)
-			val_max = buf;
-		if (buf > 1e3)
-			*((unsigned long *) virt_addr_write) = (long int) (int16_t) -2e3;
-		else
-			*((unsigned long *) virt_addr_write) = (long int) (int16_t) 2e3;
-		//*((unsigned long *) virt_addr_write) = (long int) (int16_t) -1.0 * buf;	// for now this is just a pass-through
-	}
-
-    clock_gettime(CLOCK_REALTIME, &time_end);
-    printf("read_write_loop_minimum(), elapsed = %d seconds + %ld ms\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec)/1000000);
-
-    printf("val_min = %f, val_max = %f", val_min, val_max);
-}
-
-
-void absorption_flank_servo(int connfd, uint16_t iStopAfterZC, int16_t ramp_minimum, uint32_t number_of_ramps, uint32_t number_of_steps,
-							uint32_t max_iterations, int16_t threshold_int16, double ki)
-{
-	printf("absorption_flank_servo(): iStopAfterZC = %u, ramp_minimum = %d, number_of_ramps = %u, number_of_steps = %u,\nmax_iterations = %u, threshold_int16 = %d, ki = %f\n", 
-		iStopAfterZC, ramp_minimum, number_of_ramps, number_of_steps,
-		max_iterations, threshold_int16, ki
-		);
-	fflush(stdout);
-
-	const volatile uint32_t* virt_addr_read = (uint32_t*)((char*)map_base + OSC_BASE_ADDR + 0x00094);
-	unsigned long* virt_addr_write = (unsigned long*)((char*)map_base + 0x500000);
-
-	printf("sizeof(unsigned long int) = %u\n", sizeof(unsigned long int));
-	printf("sizeof(unsigned int) = %u\n", sizeof(unsigned int));
-	printf("sizeof(double) = %u\n", sizeof(double));
-
-
-	int16_t * RAM_buffer = calloc((number_of_ramps*number_of_steps+max_iterations)*2, sizeof(int16_t));
-	if (!RAM_buffer)
-	{
-		printf("Error, unable to allocate %u bytes for the ram buffer. exiting...\n", (number_of_ramps*number_of_steps+max_iterations)*2*sizeof(int16_t));
-		return;
-	}
-
-	uint32_t k, k2, kOut = 0;
-	int16_t ramp_output = 0;
-	int16_t dac_output, adc_input;
-	uint32_t current_sign, last_sign;
-
-
-	for (k =0; k< number_of_ramps; k++)
-	{
-		// this inner loop does a single ramp
-		// current_sign = 1;
-		// last_sign = 1;
-		ramp_output = ramp_minimum;
-		dac_output = ramp_output;
-		// set dac
-		//*((unsigned long *) virt_addr_write) = (long int) (int16_t) dac_output;
-		*virt_addr_write = (long int) (int16_t) dac_output;
-		// wait for output to settle
-		printf("start of ramp\n");
-		fflush(stdout);
-		usleep(1000);	// argument is in microseconds
-		for (k2 =0; k2<number_of_steps; k2++)
-		{
-			// read adc
-			//printf("before adc read\n");
-			adc_input = (int16_t) (*virt_addr_read & 0xFFFF);	// the 16 LSBs contain channel A, while the LSBs contain channel B, both sign-extended from 14 bits to 16 bits
-			//printf("after adc read\n");
-			// set dac
-			//*((unsigned long *) virt_addr_write) = (long int) (int16_t) dac_output;
-			dac_output = ramp_output;
-			*virt_addr_write = (long int) (int16_t) dac_output;
-			// increment ramp output for next step
-			ramp_output++;
-			
-			// put both values in RAM to be sent to the PC
-			RAM_buffer[kOut++] = adc_input;
-			RAM_buffer[kOut++] = dac_output;
-			//printf("end of loop\n");
-			// check threshold crossing
-			current_sign = (adc_input > threshold_int16 ? 1 : 0);
-			if (k2 == 0) last_sign = current_sign;
-			if (current_sign != last_sign)
-			{
-				// we just crossed threshold, either positive or negative crossing AND we are at the last ramp
-				if (iStopAfterZC && k == number_of_ramps-1)
-					goto run_control_loop;
-			}
-
-			last_sign = current_sign;
-
-		}
-	}
-
-	// if we get here, that means that we didn't find the zero crossing condition or weren't told to look for it (iStopAfterZC == 0)
-	if (iStopAfterZC)
-		printf("finished looping without finding zero crossing.\n");
-	else
-		printf("finished looping, skipping control loop since iStopAfterZC = 0\n");
-	goto skip_control_loop;
-
-run_control_loop:
-	printf("Running control loop for %u iterations (0 means infinite).\n", max_iterations);
-
-	uint32_t kIterations = 0;
-	double current_error = 0., integrator_state = 0., delta_t = 1.0;
-	while (kIterations < max_iterations || max_iterations==0)
-	{
-		// read adc value
-		adc_input = (int16_t) (*virt_addr_read & 0xFFFF);	// the 16 LSBs contain channel A, while the LSBs contain channel B, both sign-extended from 14 bits to 16 bits
-		// compute error
-		current_error = (double) (threshold_int16 - adc_input);
-		// compute output value (integrate)
-		delta_t = 1.0;	// TODO: get actual timer value to compute delta_t
-		integrator_state += ki * current_error * delta_t;
-		// saturate integrator state, TODO: should change to anti-windup behavior (and saturate at the dac_output instead of at the integrator state)
-		if (integrator_state > 8191.)
-			integrator_state = 8191.;
-		if (integrator_state < -8192.)
-			integrator_state = -8192.;
-		// set dac value
-		dac_output = integrator_state + ramp_output;
-		*virt_addr_write = (long int) (int16_t) dac_output;
-
-		// put both values in RAM to be sent to the PC later
-		if (max_iterations != 0)
-		{
-			RAM_buffer[kOut++] = adc_input;
-			RAM_buffer[kOut++] = dac_output;
-		}
-
-		if (app_exit)
-		{
-			printf("quit signal detected. quitting loop.\n");
-			fflush(stdout);
-			break;
-		}
-		kIterations++;
-	}
-skip_control_loop:
-
-
-	// send contents of the ram buffer through the tcp connection:
-	printf("Sending RAM buffer...\n");
-	//int16_t * RAM_buffer = calloc(number_of_ramps*number_of_steps*2, sizeof(int16_t));
-	if (!app_exit)
-		send(connfd, RAM_buffer, (size_t)(number_of_ramps*number_of_steps+max_iterations)*2*sizeof(int16_t), 0);
-	printf("after send()\n");
-	// for now: dump out the RAM_buffer:
-	// printf("Dumping RAM buffer...\n");
-	// kOut = 0;
-	// for (k =0; k< number_of_ramps; k++)
-	// {
-	// 	for (k2 =0; k2<number_of_steps; k2++)
-	// 	{
-	// 		printf("%d, %d, ", RAM_buffer[kOut], RAM_buffer[kOut+1]);
-	// 		kOut++;
-	// 		kOut++;
-	// 	}
-
-	// }
-	// printf("\n");
-
-
-}
+/////////////////////////////////// End of packet handler functions ///////////////////////////////////
 
 
 /////////////////////////////////////////////////////
@@ -609,8 +75,6 @@ static void handleCloseChildEvents()
     };
     sigaction(SIGCHLD, &sigchld_action, NULL);
 }
-
-
 
 static void termSignalHandler(int signum)
 {
@@ -628,142 +92,6 @@ static void installTermSignalHandler()
     sigaction(SIGTERM, &action, NULL);
     sigaction(SIGINT, &action, NULL);
 }
-
-
-void continuous_fifo_read(  )
-{
-	uint32_t iChunk, iOut;
-    const volatile uint32_t* fifo_buffer = (uint32_t*)((char*)map_base + 4*0x00039U);
-
-    // start the reading process by setting a few registers:
-    write_value(FPGA_MEMORY_START + 0x42*4, 'w', 1);	//    assert fifo synchronous reset (and also resets max_fifo_count)
-    write_value(FPGA_MEMORY_START + 0x42*4, 'w', 0);	// de-assert fifo synchronous reset
-    write_value(FPGA_MEMORY_START + 0x41*4, 'w', 1);	// bWritesEnabled = 1
-
-
-    // Read the fifo as quickly as we can
-    iOut = 0;
-    while (iOut < FIFO_LOGGER_BUFFER_SIZE) {
-    	// wait until fifo is not empty
-    	while (read_value(FPGA_MEMORY_START + 0x38*4)) ;
-    	// "not empty" in this case means at least 10 samples in the fifo
-    	for (iChunk=0; iChunk<10; iChunk++)
-        	data_buffer_with_fifo[iOut++] = (*fifo_buffer);
-    }
-    write_value(FPGA_MEMORY_START + 0x41*4, 'w', 1);	// bWritesEnabled = 0
-
-    // what is max data count for fifo?
-    uint32_t max_fifo_count = read_value(FPGA_MEMORY_START + 0x40*4);
-
-    // show results, first few points of the buffer:
-    for (iOut=0; iOut<50; iOut++)
-    	printf("%u, ", data_buffer_with_fifo[iOut]);
-    printf("\n");
-
-    printf("max_fifo_count = %u\n", max_fifo_count);
-
-	return;
-}
-
-void throughput_test(  )
-{
-	int32_t current_delta;
-    int32_t min_delta_counter, max_delta_counter, total_delta_counter;
-    uint32_t number_of_counts_above_threshold = 0;
-
-    min_delta_counter = 0x7fffffff;	// hex(2^31-1)
-    max_delta_counter = 0;
-    printf("throughput_test\n");
-    printf("min_delta_counter at start = %d, max_delta_counter = %d\n", min_delta_counter, max_delta_counter);
-
-
-    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + 4*0x00037U);
-
-    // Read a buffer as quickly as we can
-    uint32_t i;
-    for (i = 0; i < NO_FIFO_LOGGER_BUFFER_SIZE; ++i) {
-        data_buffer_no_fifo[i] = (*raw_buffer);
-    }
-    
-    // count min, max and average counter steps:
-	for (i = 1; i < NO_FIFO_LOGGER_BUFFER_SIZE; ++i)
-	{
-		// compute delta
-		current_delta = (int32_t)data_buffer_no_fifo[i] - (int32_t)data_buffer_no_fifo[i-1];
-
-		// show first 50 pts:
-		if (i<250)
-			printf("%d, ", current_delta);
-
-
-		// how many above a certain threshold? set at 2* mean
-		if (current_delta > 40)
-			number_of_counts_above_threshold++;
-
-		// running min
-		if (current_delta < min_delta_counter)
-			min_delta_counter = current_delta;
-		// running max
-		if (current_delta > max_delta_counter)
-			max_delta_counter = current_delta;
-	}
-	total_delta_counter = (int32_t)data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE-1] - (int32_t)data_buffer_no_fifo[0];
-
-	printf("\n");
-	printf("total delta = %d counts, avg = %d counts\n", total_delta_counter, total_delta_counter / NO_FIFO_LOGGER_BUFFER_SIZE);
-	printf("min_delta_counter = %d counts, max_delta_counter = %d counts\n", min_delta_counter, max_delta_counter);
-	printf("number_of_counts_above_threshold = %d\n", number_of_counts_above_threshold);
-
-	return;
-}
-
-
-void *second_thread_function( void *ptr )
-{
-	// we want to run for ~10 seconds:
-	// a loop of: reading an FPGA register, sleeping for 1 us, counting the time taken
-	// compute and show min max time over this 10 secs period.
-    struct timespec time_start, time_start_of_all, time_end;
-    
-    long int min_in_ns, max_in_ns, current_in_ns;
-
-    min_in_ns = 1000000000;
-    max_in_ns = 0;
-
-	uint32_t cumul = 0;
-
-	clock_gettime(CLOCK_REALTIME, &time_start_of_all);
-
-	printf("hi, we are starting thread 2, time = %ld", (long int) time_start_of_all.tv_sec);
-
-	int k = 0;
-
-	while (1)
-	{
-		clock_gettime(CLOCK_REALTIME, &time_start);
-		// todo: read fpga register.
-		cumul = cumul + read_value(0x40000000);
-		//usleep(1); // argument is in microseconds
-		clock_gettime(CLOCK_REALTIME, &time_end);
-		current_in_ns = 1000000000L * (long int)(time_end.tv_sec-time_start.tv_sec) + (long int)(time_end.tv_nsec-time_start.tv_nsec);
-		if (current_in_ns < min_in_ns)
-			min_in_ns = current_in_ns;
-		if (current_in_ns > max_in_ns)
-			max_in_ns = current_in_ns;
-		if (time_end.tv_sec - time_start_of_all.tv_sec >= 10)
-			break;
-		//printf("in loop, %ld = ", (long int) time_start.tv_sec);
-		if (k >= 1000000)
-			break;
-		k++;
-	}
-
-	printf("cumul = %d\n", cumul);
-	printf("min_in_ns = %ld ns, max_in_ns = %ld\n", min_in_ns, max_in_ns);
-
-	return NULL;
-}
-
 
 /**
  * This is main method of every child process. Here communication with client is handled.
@@ -848,10 +176,10 @@ static int handleConnection(int connfd) {
         // Copy read buffer into message buffer
         memcpy(message_buff + msg_end, buffer, read_size);
         msg_end += read_size;
-        //printf("msg_end = %u\n", (uint32_t)msg_end);
 
         while (msg_end >= bytes_needed)
         {
+        	//printfv("msg_end=%u, bytes_needed=%u, bHaveMagicBytes=%u", msg_end, bytes_needed, bHaveMagicBytes);
         	if (!bHaveMagicBytes)
         	{
         		if (getMagicBytes(message_buff, msg_end, &message_magic_bytes))
@@ -950,11 +278,6 @@ static int handleConnection(int connfd) {
 	        	} else if (packet_handler_read_repeat(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd))
 	        	{
 	        		bHaveMagicBytes = false;
-	        	////////////////////////////////////////////////////////////
-	        	// Run a software control loop (integrator only) to lock a laser on the flank of an absorption line
-	        	} else if (packet_handler_flank_servo(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd))
-	        	{
-	        		bHaveMagicBytes = false;
 
 	        	////////////////////////////////////////////////////////////
 	        	// Read/Write a file to the filesystem
@@ -1000,8 +323,6 @@ static int handleConnection(int connfd) {
 								printfv("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
 								memcpy((void*) strNewFileName, (void*)(message_buff+sizeof(binary_packet_write_file_t)), pPacketWriteFile->filename_length);
 								printfv("memcpy succeeded\n");
-								printfv("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
-								printfv("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
 								// add \0 termination
 								strNewFileName[pPacketWriteFile->filename_length] = '\0';
 
@@ -1048,14 +369,14 @@ static int handleConnection(int connfd) {
 										if (!file_contents)
 										{
 											// allocation error, send back an empty file:
-											printfv("Error allocating memory for file %s. Will send back an empty file instead.", strNewFileName);
+											printfv("Error allocating memory for file %s. Will send back an empty file instead.\n", strNewFileName);
 											file_size = 0;
 											send(connfd, &file_size, sizeof(file_size), 0); // file size, clamped to 0
 										} else {
 											size_t retval = fread(file_contents, 1, file_size, file_pointer);
 											if (retval != file_size)
 												printfv("fread returned %u instead of %u\n", retval, file_size);
-											printfv("Sending file %s, %u bytes.", strNewFileName, file_size);
+											printfv("Sending file %s, %u bytes.\n", strNewFileName, file_size);
 											send(connfd, &file_size, sizeof(file_size), 0); // file size
 											send(connfd, file_contents, file_size, 0);
 										}
@@ -1188,6 +509,8 @@ static int handleConnection(int connfd) {
 	        } // if (bHaveMagicBytes)
 
 
+
+
 	    	// move the rest of the message to the beginning of the buffer
 	    	if (bytes_consumed > 0)
 	    	{
@@ -1196,13 +519,15 @@ static int handleConnection(int connfd) {
 	    			bytes_consumed = 0;
 	    			printfv("Assert error: msg_end < bytes_consumed, msg_end = %u, bytes_consumed = %u\n", (uint32_t)msg_end, (uint32_t)bytes_consumed);
 	    		} else {
-	        		printfv("consumed %u bytes from the buffer.\n", (uint32_t)bytes_consumed);
+	        		printfv("consumed %u bytes from the buffer. msg_end before=%u", (uint32_t)bytes_consumed, msg_end);
 		        	msg_end -= bytes_consumed;
 		        	char *m = message_buff + bytes_consumed;
 			        if (message_buff != m && msg_end > 0) {
 			            memmove(message_buff, m, msg_end);
 			        }
 			        bytes_consumed = 0;
+	        		printfv(", msg_end after=%u\n", msg_end);
+
 		    	}
 			}
 
