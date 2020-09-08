@@ -137,6 +137,29 @@ uint32_t magic_bytes_read_file = 0xABCD123B; // this packet uses the same header
 #pragma pack(pop)
 
 
+// Stuff for the data acquisition:
+#include "monitor-tcp.h"
+
+// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger.vhd
+#define LOGGER_BUFFER_SIZE (1UL<<15)
+// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger_v2.vhd
+#define LOGGER_REPEAT_SIZE (1UL<<13)
+#define LOGGER_BASE_ADDR 0x00100000UL
+#define LOGGER_DATA_OFFSET  (1UL<<19)
+#define LOGGER_START_WRITE_OFFSET  0x1004UL
+
+int16_t  data_buffer[LOGGER_BUFFER_SIZE];
+int32_t  data_buffer32[LOGGER_REPEAT_SIZE];
+
+// this can be as long as we want (as long as it fits in the Zynq's RAM)
+// currently sizeof(uint32_t)*(1UL<<20) = 4 MB
+#define NO_FIFO_LOGGER_BUFFER_SIZE (1U<<20)
+uint32_t data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE];
+
+// 16e6 samples (64 MB)
+#define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
+uint32_t data_buffer_with_fifo[FIFO_LOGGER_BUFFER_SIZE];
+
 /////////////////////////////////////////////////////
 // stuff for writing to the fpga memory
 /////////////////////////////////////////////////////
@@ -148,8 +171,15 @@ uint32_t magic_bytes_read_file = 0xABCD123B; // this packet uses the same header
 #define MAP_SIZE (1UL<<29)	// (1 GB = 2^30 = 1<<30, but I couldn't get it to work with 1 GB so I changed to 512 MB instead)
 #define MAP_MASK (MAP_SIZE - 1)
 
+void initMemoryMap();
+void closeMemoryMap();
+void readBuffer(uint32_t* size, int16_t* buffer_in);
+void readRepeat(uint32_t start_address, uint32_t* size, int32_t* buffer_in);
+void read_write_loop_minimum();
 uint32_t read_value(uint32_t a_addr);
 void write_value(unsigned long a_addr, int a_type, unsigned long a_value);
+void absorption_flank_servo(int connfd, uint16_t iStopAfterZC, int16_t ramp_minimum, uint32_t number_of_ramps, uint32_t number_of_steps,
+							uint32_t max_iterations, int16_t threshold_int16, double ki);
 
 uint32_t FPGA_MEMORY_START = 0x40000000UL;
 void* map_base = (void*)(-1);
@@ -162,6 +192,126 @@ int fd_dev_mem = -1;
 uint32_t FPGA_MEMORY_START_XADC = 0x80000000UL;
 void* map_base_xadc = (void*)(-1);
 
+// Returns true if we had enough data to parse out the magic bytes
+bool getMagicBytes(char* const message_buff, size_t msg_end, uint32_t* const magic_bytes)
+{
+	if (msg_end < sizeof(*magic_bytes)) // early exit if we haven't received enough bytes yet
+		return false;
+
+	*magic_bytes = *((uint32_t*)&message_buff[0]);
+	return true;
+}
+
+// Returns true if magic bytes match start of message
+bool magicBytesMatch(char* message_buff, size_t msg_end, uint32_t magic_bytes)
+{
+	uint32_t message_magic_bytes;
+	if (!getMagicBytes(message_buff, msg_end, &message_magic_bytes))
+		return false; // early exit if we haven't received enough bytes yet
+
+	return (message_magic_bytes == magic_bytes);
+}
+
+// Returns true if mapping a struct of size struct_size to the given buffer is possible, false otherwise.
+// Also sets the values of *bytes_needed and *bytes_consumed accordingly
+bool canConsumeStructFromBuffer(size_t struct_size,
+							    char* message_buff, size_t msg_end,
+							    size_t* bytes_needed, size_t* bytes_consumed)
+{
+	if (msg_end >= struct_size)
+	{
+		// pStruct = (void*) message_buff;
+		*bytes_needed = 0;
+		*bytes_consumed = struct_size;
+		return true;
+	} else {
+		*bytes_needed = struct_size;
+		*bytes_consumed = 0;
+		return false;
+	}
+}
+
+/////////////////////////////////// Packet handler functions: ///////////////////////////////////
+// All of these functions return true if packet was handled by this function
+
+
+// Write 32 bits value to specified FPGA register
+bool packet_handler_write_reg(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
+{
+	if (!magicBytesMatch(message_buff, msg_end, magic_bytes_write_reg))
+		return false;
+
+	struct binary_packet_write_reg_t* pPacket = (binary_packet_write_reg_t*) message_buff;
+	if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
+		return false;
+
+	printfv("Received a register write packet.\n");
+	printfv("message_write_address = 0x%X (hex)\n", pPacket->write_address);
+	printfv("message_write_value = %u (decimal)\n", pPacket->write_value);
+	fflush(stdout);
+
+	// perform the actual memory write:
+	write_value(pPacket->write_address, 'w', pPacket->write_value);
+
+	return true;
+}
+
+// Read a buffer by reading repeatedly at the same address (intended to be used with registers_read.vhd)
+bool packet_handler_read_repeat(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
+{
+	if (!magicBytesMatch(message_buff, msg_end, magic_bytes_read_repeat))
+		return false;
+
+	struct binary_packet_read_repeat_t* pPacket = (binary_packet_read_repeat_t*) message_buff;
+	if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
+		return false;
+
+	printfv("Received a read repeat packet.\n");
+	printfv("pPacket->start_address = 0x%X (hex)\n", pPacket->start_address);
+	printfv("pPacket->number_of_points = %u (decimal)\n", pPacket->number_of_points);
+
+    struct timespec time_start, time_end;
+    clock_gettime(CLOCK_REALTIME, &time_start);
+	uint32_t acq_size = MIN(LOGGER_REPEAT_SIZE, pPacket->number_of_points);
+	readRepeat(pPacket->start_address, &acq_size, data_buffer32);
+    clock_gettime(CLOCK_REALTIME, &time_end);
+    printfv("readRepeat elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
+
+	// dump this into the TCP socket:
+	printfv("before socket send()\n");
+	clock_gettime(CLOCK_REALTIME, &time_start);
+	send(connfd, data_buffer32, (size_t)acq_size*sizeof(int32_t), 0);
+    clock_gettime(CLOCK_REALTIME, &time_end);
+    printfv("send() elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
+	printfv("socket send() complete\n");
+	
+	return true;
+}
+
+
+// Returns true if packet is handled by this function (could be partially handled if size wasn't big enough)
+bool packet_handler_flank_servo(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
+{
+	if (!magicBytesMatch(message_buff, msg_end, magic_bytes_flank_servo))
+		return false;
+
+	struct binary_packet_flank_servo_t* pPacket = (binary_packet_flank_servo_t*) message_buff;
+	if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
+		return false;
+
+	absorption_flank_servo(	connfd,
+							pPacket->iStopAfterZC, 
+							pPacket->ramp_minimum, 
+							pPacket->number_of_ramps, 
+							pPacket->number_of_steps,
+							pPacket->max_iterations,
+							pPacket->threshold_int16,
+							pPacket->ki );
+	
+	return true;
+}
+
+/////////////////////////////////// End of packet handler functions: ///////////////////////////////////
 
 void initMemoryMap()
 {
@@ -228,29 +378,6 @@ void write_value(unsigned long a_addr, int a_type, unsigned long a_value) {
 	}
 
 }
-
-// Stuff for the data acquisition:
-#include "monitor-tcp.h"
-
-// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger.vhd
-#define LOGGER_BUFFER_SIZE (1UL<<15)
-// should be equal to 2^ADDRESS_WIDTH generic in ram_data_logger_v2.vhd
-#define LOGGER_REPEAT_SIZE (1UL<<13)
-#define LOGGER_BASE_ADDR 0x00100000UL
-#define LOGGER_DATA_OFFSET  (1UL<<19)
-#define LOGGER_START_WRITE_OFFSET  0x1004UL
-
-int16_t  data_buffer[LOGGER_BUFFER_SIZE];
-int32_t  data_buffer32[LOGGER_REPEAT_SIZE];
-
-// this can be as long as we want (as long as it fits in the Zynq's RAM)
-// currently sizeof(uint32_t)*(1UL<<20) = 4 MB
-#define NO_FIFO_LOGGER_BUFFER_SIZE (1U<<20)
-uint32_t data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE];
-
-// 16e6 samples (64 MB)
-#define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
-uint32_t data_buffer_with_fifo[FIFO_LOGGER_BUFFER_SIZE];
 
 void readBuffer(uint32_t* size, int16_t* buffer_in)
 {
@@ -685,7 +812,7 @@ static int handleConnection(int connfd) {
 	// // run a FPGA<->PS continuous fifo read throughput test:
 	// continuous_fifo_read();
 
-    size_t iRequiredBytes = sizeof(message_magic_bytes);	// to start, we only need 4 bytes before starting to parse out the message.
+    size_t bytes_needed = sizeof(message_magic_bytes);	// to start, we only need 4 bytes before starting to parse out the message.
 
     // Variables used for handling "write file" messages
     bool bHaveFileWriteHeader = false;
@@ -723,58 +850,29 @@ static int handleConnection(int connfd) {
         msg_end += read_size;
         //printf("msg_end = %u\n", (uint32_t)msg_end);
 
-        while (msg_end >= iRequiredBytes)
+        while (msg_end >= bytes_needed)
         {
-
-	        if (~bHaveMagicBytes)
-	        {
-	        	if (msg_end >= sizeof(message_magic_bytes))
-	        	{
-					// we can read the packet 'header', or magic bytes:
-					printfv("buffer is long enough to parse out magic bytes at least.\n");
-		        	// check the packet "header"
-		        	message_magic_bytes = *((uint32_t*)&message_buff[0]);
-		        	printfv("message_magic_bytes = 0x%X\n", message_magic_bytes);
-		        	bHaveMagicBytes = true;
-	        	}
-	        }
+        	if (!bHaveMagicBytes)
+        	{
+        		if (getMagicBytes(message_buff, msg_end, &message_magic_bytes))
+        		{
+			        bHaveMagicBytes = true;
+			        printfv("message_magic_bytes = 0x%X\n", message_magic_bytes);
+			    }
+			}
 	        if (bHaveMagicBytes)
 	        {
 	        	// we know which type of packet is coming in:
 	        	// parse out the correct type of packet
-
-	        	////////////////////////////////////////////////////////////
-	        	// Write 32 bits value to specified FPGA register
-	        	if (message_magic_bytes == magic_bytes_write_reg)
-	        	{
-	        		iRequiredBytes = sizeof(binary_packet_write_reg_t);
-	        		if (msg_end >= iRequiredBytes){
-		        		struct binary_packet_write_reg_t * pPacketWriteReg;
-		        		pPacketWriteReg = (binary_packet_write_reg_t*) message_buff;
-
-
-		        		printfv("Received a register write packet.\n");
-		        		printfv("message_write_address = 0x%X (hex)\n", pPacketWriteReg->write_address);
-		        		printfv("message_write_value = %u (decimal)\n", pPacketWriteReg->write_value);
-		        		fflush(stdout);
-
-		        		// perform the actual memory write:
-		        		write_value(pPacketWriteReg->write_address, 'w', pPacketWriteReg->write_value);
-
-		        		// reset our message parsing state variables
-		        		bytes_consumed = sizeof(binary_packet_write_reg_t);
-		        		bHaveMagicBytes = false;
-		        		iRequiredBytes = sizeof(message_magic_bytes);
-	        		} else {
-	        			printfv("Received a register write packet, but we have not received the full packet yet.\n");
-
-	        		}
+	        	if (packet_handler_write_reg(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd)) {
+	        		bHaveMagicBytes = false;
+	        			
 	        	////////////////////////////////////////////////////////////
 	        	// Read 32 bits value to specified FPGA register
 	        	} else if (message_magic_bytes == magic_bytes_read_reg)
 	        	{
-	        		iRequiredBytes = sizeof(binary_packet_read_reg_t);
-	        		if (msg_end >= iRequiredBytes)
+	        		bytes_needed = sizeof(binary_packet_read_reg_t);
+	        		if (msg_end >= bytes_needed)
 	        		{
 		        		struct binary_packet_read_reg_t * pPacketReadReg;
 		        		pPacketReadReg = (binary_packet_read_reg_t*) message_buff;
@@ -796,7 +894,7 @@ static int handleConnection(int connfd) {
 		        		// reset our message parsing state variables
 		        		bytes_consumed = sizeof(binary_packet_read_reg_t);
 		        		bHaveMagicBytes = false;
-		        		iRequiredBytes = sizeof(message_magic_bytes);
+		        		bytes_needed = sizeof(message_magic_bytes);
 
 		        	} else {
 		        		printfv("Received a register read packet, but we have not received the full packet yet.\n");
@@ -806,8 +904,8 @@ static int handleConnection(int connfd) {
 	        	// Read a buffer of continuous value from an ADC input
 	        	} else if (message_magic_bytes == magic_bytes_read_buffer) {
 
-	        		iRequiredBytes = sizeof(binary_packet_read_buffer_t);
-	        		if (msg_end >= iRequiredBytes) {
+	        		bytes_needed = sizeof(binary_packet_read_buffer_t);
+	        		if (msg_end >= bytes_needed) {
 		        		
 		        		struct binary_packet_read_buffer_t * pPacketReadBuffer;
 		        		pPacketReadBuffer = (binary_packet_read_buffer_t*) message_buff;
@@ -841,7 +939,7 @@ static int handleConnection(int connfd) {
 		        		// reset our message parsing state variables
 		        		bytes_consumed = sizeof(binary_packet_read_buffer_t);
 		        		bHaveMagicBytes = false;
-		        		iRequiredBytes = sizeof(message_magic_bytes);
+		        		bytes_needed = sizeof(message_magic_bytes);
 	        		} else {
 	        			printfv("Received a buffer read packet, but we have not received the full packet yet.\n");
 
@@ -849,72 +947,14 @@ static int handleConnection(int connfd) {
 
 	        	////////////////////////////////////////////////////////////
 	        	// Read a buffer (intended to be used with registers_read.vhd)
-	        	} else if (message_magic_bytes == magic_bytes_read_repeat) {
-
-	        		iRequiredBytes = sizeof(binary_packet_read_repeat_t);
-	        		if (msg_end >= iRequiredBytes) {
-		        		
-		        		struct binary_packet_read_repeat_t * pPacketReadRepeat;
-		        		pPacketReadRepeat = (binary_packet_read_repeat_t*) message_buff;
-
-		        		printfv("Received a read repeat packet.\n");
-		        		printfv("pPacketReadRepeat->start_address = 0x%X (hex)\n", pPacketReadRepeat->start_address);
-		        		printfv("pPacketReadRepeat->number_of_points = %u (decimal)\n", pPacketReadRepeat->number_of_points);
-
-					    struct timespec time_start, time_end;
-					    clock_gettime(CLOCK_REALTIME, &time_start);
-		        		uint32_t acq_size = MIN(LOGGER_REPEAT_SIZE, pPacketReadRepeat->number_of_points);
-		        		readRepeat(pPacketReadRepeat->start_address, &acq_size, data_buffer32);
-					    clock_gettime(CLOCK_REALTIME, &time_end);
-					    printfv("readRepeat elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-
-		        		// dump this into the TCP socket:
-		        		printfv("before socket send()\n");
-		        		clock_gettime(CLOCK_REALTIME, &time_start);
-		        		send(connfd, data_buffer32, (size_t)acq_size*sizeof(int32_t), 0);
-					    clock_gettime(CLOCK_REALTIME, &time_end);
-					    printfv("send() elapsed = %d seconds + %ld ns\n", (int)(time_end.tv_sec-time_start.tv_sec), (long int)(time_end.tv_nsec-time_start.tv_nsec));
-		        		printfv("socket send() complete\n");
-
-
-		        		// reset our message parsing state variables
-		        		bytes_consumed = sizeof(binary_packet_read_repeat_t);
-		        		bHaveMagicBytes = false;
-		        		iRequiredBytes = sizeof(message_magic_bytes);
-	        		} else {
-	        			printfv("Received a read repeat packet, but we have not received the full packet yet.\n");
-
-	        		}
-
+	        	} else if (packet_handler_read_repeat(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd))
+	        	{
+	        		bHaveMagicBytes = false;
 	        	////////////////////////////////////////////////////////////
 	        	// Run a software control loop (integrator only) to lock a laser on the flank of an absorption line
-	        	} else if (message_magic_bytes == magic_bytes_flank_servo)
+	        	} else if (packet_handler_flank_servo(message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd))
 	        	{
-	        		iRequiredBytes = sizeof(binary_packet_flank_servo_t);
-		        	if (msg_end >= iRequiredBytes) {
-
-		        		struct binary_packet_flank_servo_t * pPacketFlankServo;
-		        		pPacketFlankServo = (binary_packet_flank_servo_t*) message_buff;
-
-
-
-		        		absorption_flank_servo(	connfd,
-		        								pPacketFlankServo->iStopAfterZC, 
-		        								pPacketFlankServo->ramp_minimum, 
-		        								pPacketFlankServo->number_of_ramps, 
-		        								pPacketFlankServo->number_of_steps,
-		        								pPacketFlankServo->max_iterations,
-		        								pPacketFlankServo->threshold_int16,
-		        								pPacketFlankServo->ki );
-
-		        		// reset our message parsing state variables
-		        		bytes_consumed = sizeof(binary_packet_flank_servo_t);
-		        		bHaveMagicBytes = false;
-		        		iRequiredBytes = sizeof(message_magic_bytes);
-		        	} else {
-		        		if (bVerbose)
-		        			printf("Received a 'start flank servo' packet, but we have not received the full packet yet.\n");
-		        	}
+	        		bHaveMagicBytes = false;
 
 	        	////////////////////////////////////////////////////////////
 	        	// Read/Write a file to the filesystem
@@ -924,8 +964,8 @@ static int handleConnection(int connfd) {
 	        		// we need at least the first two 32 bits value before we can figure out the size of this message.
 	        		if (!bHaveFileWriteHeader)
 	        		{
-	        			iRequiredBytes = sizeof(binary_packet_write_file_t);
-	        			if (msg_end >= iRequiredBytes) {
+	        			bytes_needed = sizeof(binary_packet_write_file_t);
+	        			if (msg_end >= bytes_needed) {
 	        				bHaveFileWriteHeader = true;
 	        				printfv("Received complete file read/write header.\n");
 			        		
@@ -933,17 +973,18 @@ static int handleConnection(int connfd) {
 			        		printfv("address of message_buff = 0x%x, address of pPacketWriteFile = 0x%x\n", (uint) message_buff, (uint) pPacketWriteFile);
 			        		printfv("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
 			        		printfv("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
-			        		iRequiredBytes = sizeof(binary_packet_write_file_t) + pPacketWriteFile->filename_length + pPacketWriteFile->file_size;
-			        		printfv("iRequiredBytes                    = %u\n", iRequiredBytes);
+			        		bytes_needed = sizeof(binary_packet_write_file_t) + pPacketWriteFile->filename_length + pPacketWriteFile->file_size;
+			        		printfv("bytes_needed                    = %u\n", bytes_needed);
 
 
 	        			}
 	        		}
 	        		if (bHaveFileWriteHeader) {
 	        			// we know how long the total message needs to be, so we just wait to have received everything.
-	        			if (msg_end >= iRequiredBytes) {
+	        			if (msg_end >= bytes_needed)
+	        			{
 	        				printfv("Complete file read/write message received.\n");
-	        				printfv("msg_end = %u, iRequiredBytes = %u\n", msg_end, iRequiredBytes);
+	        				printfv("msg_end = %u, bytes_needed = %u\n", msg_end, bytes_needed);
 
 							// first copy the filename to a string
 							pPacketWriteFile = (binary_packet_write_file_t*) message_buff;	// we need to update our packet pointer because message_buf might have changed its location if it has been reallocated since last time pPacketWriteFile was set
@@ -951,7 +992,8 @@ static int handleConnection(int connfd) {
 							if (!strNewFileName)
 							{
 								printfv("malloc failed to allocate a string of size: %u\n", pPacketWriteFile->filename_length+1);
-							} else {
+							} else
+							{
 								printfv("address of strNewFileName = 0x%x, address of pPacketWriteFile = 0x%x\n", (uint) strNewFileName, (uint) pPacketWriteFile);
 								printfv("malloc succeeded to allocate a string of size: %u\n", pPacketWriteFile->filename_length+1);
 								printfv("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
@@ -971,7 +1013,7 @@ static int handleConnection(int connfd) {
 									file_pointer = fopen(strNewFileName, "wb");
 									if (!file_pointer)
 									{
-										printfv("Error opening file %s. No contents written.", strNewFileName);
+										printfv("Error opening file %s. No contents written.\n", strNewFileName);
 									} else {
 										// write file contents
 										fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
@@ -994,7 +1036,7 @@ static int handleConnection(int connfd) {
 										send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
 										file_size = 0;
 										send(connfd, &file_size, sizeof(file_size), 0); // file size
-										printfv("Error opening file %s. No contents read.", strNewFileName);
+										printfv("Error opening file %s. No contents read.\n", strNewFileName);
 									} else {
 										file_valid = 1;
 										send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
@@ -1033,9 +1075,9 @@ static int handleConnection(int connfd) {
 
 			        		// reset our message parsing state variables
 			        		bHaveFileWriteHeader = false;
-			        		bytes_consumed = iRequiredBytes;
+			        		bytes_consumed = bytes_needed;
 			        		bHaveMagicBytes = false;
-			        		iRequiredBytes = sizeof(message_magic_bytes);
+			        		bytes_needed = sizeof(message_magic_bytes);
 	        			}
 	        		}
 
@@ -1051,25 +1093,25 @@ static int handleConnection(int connfd) {
 	        		// we need at least the first two 32 bits values before we can figure out the size of this message.
 	        		if (!bHaveShellCommandHeader)
 	        		{
-	        			iRequiredBytes = sizeof(binary_packet_shell_command_t);
-	        			if (msg_end >= iRequiredBytes) {
+	        			bytes_needed = sizeof(binary_packet_shell_command_t);
+	        			if (msg_end >= bytes_needed) {
 	        				bHaveShellCommandHeader = true;
 	        				printfv("Received complete shell command header.\n");
 			        		
 			        		pPacketShellCommand = (binary_packet_shell_command_t*) message_buff;
 
 			        		printfv("pPacketShellCommand->command_length = %u\n", pPacketShellCommand->command_length);
-			        		iRequiredBytes = sizeof(binary_packet_write_file_t) + pPacketShellCommand->command_length;
-			        		printfv("iRequiredBytes                    = %u\n", iRequiredBytes);
+			        		bytes_needed = sizeof(binary_packet_write_file_t) + pPacketShellCommand->command_length;
+			        		printfv("bytes_needed                    = %u\n", bytes_needed);
 
 
 	        			}
 	        		}
 	        		if (bHaveShellCommandHeader) {
 	        			// we know how long the total message needs to be, so we just wait to have received everything.
-	        			if (msg_end >= iRequiredBytes) {
+	        			if (msg_end >= bytes_needed) {
 	        				printfv("Complete shell command message received.\n");
-	        				printfv("msg_end = %u, iRequiredBytes = %u\n", msg_end, iRequiredBytes);
+	        				printfv("msg_end = %u, bytes_needed = %u\n", msg_end, bytes_needed);
 
 							// first copy the filename to a string
 							pPacketShellCommand = (binary_packet_shell_command_t*) message_buff;	// we need to update our packet pointer because message_buf might have changed its location if it has been reallocated since last time pPacketWriteFile was set
@@ -1096,9 +1138,9 @@ static int handleConnection(int connfd) {
 
 			        		// reset our message parsing state variables
 			        		bHaveShellCommandHeader = false;
-			        		bytes_consumed = iRequiredBytes;
+			        		bytes_consumed = bytes_needed;
 			        		bHaveMagicBytes = false;
-			        		iRequiredBytes = sizeof(message_magic_bytes);
+			        		bytes_needed = sizeof(message_magic_bytes);
 	        			}
 	        		}
 
@@ -1111,8 +1153,8 @@ static int handleConnection(int connfd) {
 	        	// To do this, we first need to kill our parent process, then we exit the loop and run a system() call which launches ourselves again.
 	        	else if (message_magic_bytes == magic_bytes_reboot_monitor)
 	        	{
-	        		iRequiredBytes = sizeof(binary_packet_reboot_monitor_t);
-		        	if (msg_end >= iRequiredBytes) {
+	        		bytes_needed = sizeof(binary_packet_reboot_monitor_t);
+		        	if (msg_end >= bytes_needed) {
 		        		// there is no other information in this type of packet.
 
 		        		// kill returns 0 if no error, so we wait until the process is gone
@@ -1128,7 +1170,7 @@ static int handleConnection(int connfd) {
 		        		// reset our message parsing state variables
 		        		bytes_consumed = sizeof(binary_packet_reboot_monitor_t);
 		        		bHaveMagicBytes = false;
-		        		iRequiredBytes = sizeof(message_magic_bytes);
+		        		bytes_needed = sizeof(message_magic_bytes);
 		        	}
 
 
@@ -1164,7 +1206,7 @@ static int handleConnection(int connfd) {
 		    	}
 			}
 
-		} // while (msg_end >= iRequiredBytes)
+		} // while (msg_end >= bytes_needed)
         
 		// debug:
 		//printf("at the end of the recv loop: msg_end = %u, bHaveMagicBytes = %d\n", (uint32_t)msg_end, bHaveMagicBytes);
