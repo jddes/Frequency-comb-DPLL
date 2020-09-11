@@ -121,9 +121,17 @@ begin
     -- Stimulus process
     process
     begin
+        -- 100 cycles at fixed frequency:
+        for I2 in 0 to 100-1 loop
+            for I in 0 to 10-1 loop
+                wait until rising_edge(clk);
+                    data1_in <= std_logic_vector(shift_right(cos_fixed(I, 10, data1_in'length), 1));
+            end loop;
+        end loop;
+        -- send a pulse to measure latency
         for I in 0 to 10-1 loop
             wait until rising_edge(clk);
-                data1_in <= std_logic_vector(shift_right(cos_fixed(I, 10, data1_in'length), 1));
+                data1_in <= std_logic_vector(to_signed(2**(DATA_WIDTH-1)-1, DATA_WIDTH));
         end loop;
     end process;
 

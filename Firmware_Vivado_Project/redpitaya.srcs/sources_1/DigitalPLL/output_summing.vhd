@@ -36,31 +36,38 @@ entity output_summing is
         GUARD_BITS  : integer := 6
     );
     Port ( 
-        clk             : in  std_logic;
-        in0             : in  std_logic_vector(INPUT_SIZE-1 downto 0);
-        in1             : in  std_logic_vector(INPUT_SIZE-1 downto 0);
-        in2             : in  std_logic_vector(INPUT_SIZE-1 downto 0);
-        in3             : in  std_logic_vector(INPUT_SIZE-1 downto 0);
-        data_output     : out std_logic_vector(OUTPUT_SIZE-1 downto 0);
-        positive_limit  : in  std_logic_vector(OUTPUT_SIZE-1 downto 0);
-        negative_limit  : in  std_logic_vector(OUTPUT_SIZE-1 downto 0);
-        railed_positive : out std_logic;
-        railed_negative : out std_logic
+        clk               : in  std_logic;
+        input_clk_enable  : in  std_logic;
+        in0               : in  std_logic_vector(INPUT_SIZE-1 downto 0);
+        in1               : in  std_logic_vector(INPUT_SIZE-1 downto 0);
+        in2               : in  std_logic_vector(INPUT_SIZE-1 downto 0);
+        in3               : in  std_logic_vector(INPUT_SIZE-1 downto 0);
+        output_clk_enable : out std_logic;
+        data_output       : out std_logic_vector(OUTPUT_SIZE-1 downto 0);
+        positive_limit    : in  std_logic_vector(OUTPUT_SIZE-1 downto 0);
+        negative_limit    : in  std_logic_vector(OUTPUT_SIZE-1 downto 0);
+        railed_positive   : out std_logic;
+        railed_negative   : out std_logic
     );
 end output_summing;
 
 architecture Behavioral of output_summing is
     signal sum_register : signed(OUTPUT_SIZE+GUARD_BITS-1 downto 0) := (others => '0');
-    
+    signal output_clk_enable_int : std_logic := '0';
+    signal input_clk_enable_int  : std_logic := '0';
 begin
     process (clk)
     begin
         if rising_edge(clk) then
             -- If this block has trouble meeting timing, we can always switch to a tree of 2-inputs adders (3 adders total)
             -- instead of this 4-inputs adder
-            sum_register <= resize(signed(in0), sum_register'length) + resize(signed(in1), sum_register'length)
-                                    + resize(signed(in2), sum_register'length) + resize(signed(in3), sum_register'length);
+            input_clk_enable_int <= input_clk_enable;
+            if input_clk_enable = '1' then
+                sum_register <= resize(signed(in0), sum_register'length) + resize(signed(in1), sum_register'length)
+                                        + resize(signed(in2), sum_register'length) + resize(signed(in3), sum_register'length);
+            end if;
                                     
+            output_clk_enable_int <= input_clk_enable_int;
             if sum_register > signed(positive_limit) then
                 data_output <= positive_limit;
                 railed_positive <= '1';
@@ -78,5 +85,6 @@ begin
         end if;
     end process;
 
+    output_clk_enable <= output_clk_enable_int;
 end Behavioral;
 

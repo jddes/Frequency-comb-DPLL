@@ -59,6 +59,8 @@ end dither_lockin;
 architecture Behavioral of dither_lockin is
     -- register stage for the input signal:
     signal data_input_reg : signed(N_BITS_INPUT-1 downto 0) := (others => '0');
+    signal data_input_minus_offset : signed(N_BITS_INPUT-1 downto 0) := (others => '0');
+    signal data_offset : signed(N_BITS_INPUT-1 downto 0) := (others => '0');
     -- delay line for the sync signals:
     signal sync_I, sync_Q, sync_I_delayed, sync_I_delayed_last, sync_Q_delayed, sync_Q_delayed_last : std_logic := '0';
     signal sync_I_srl, sync_Q_srl : std_logic_vector(SYNC_DELAY-1 downto 0) := (others => '0');
@@ -100,6 +102,7 @@ begin
             
             -- register for the input data (to make achieving timing closure easier):
             data_input_reg <= signed(data_input);
+            data_input_minus_offset <= data_input_reg - data_offset;
         end if;
     end process;
     
@@ -113,6 +116,7 @@ begin
                     modulation_periods_counter <= modulation_periods_counter + 1;
                 else
                     modulation_periods_counter <= (others => '0');
+                    data_offset <= signed(data_input);
                 end if;
             end if;
         end if;
@@ -130,27 +134,27 @@ begin
                     output_clk_enable_internal <= '1';
                     -- Immediately start integrating the next sample:
                     -- since we know that we are on a rising edge of sync_I, we know that we should integrate positively for I and negatively for Q:
-                    integrator_I <=  resize(data_input_reg, INTEGRATORS_BITS);
-                    integrator_Q <= -resize(data_input_reg, INTEGRATORS_BITS);
+                    integrator_I <=  resize(data_input_minus_offset, INTEGRATORS_BITS);
+                    integrator_Q <= -resize(data_input_minus_offset, INTEGRATORS_BITS);
                 else
                     -- normal mode: integrate, except that we know the signs:
                     -- since we know that we are on a rising edge of sync_I, we know that we should integrate positively for I and negatively for Q:
-                    integrator_I <= integrator_I + resize(data_input_reg, INTEGRATORS_BITS);
-                    integrator_Q <= integrator_Q - resize(data_input_reg, INTEGRATORS_BITS);
+                    integrator_I <= integrator_I + resize(data_input_minus_offset, INTEGRATORS_BITS);
+                    integrator_Q <= integrator_Q - resize(data_input_minus_offset, INTEGRATORS_BITS);
                     output_clk_enable_internal <= '0';
                 end if;
             else
                 -- integrate, with a positive or a negative sign
                 if sync_I_delayed = '1' then
-                    integrator_I <= integrator_I + resize(data_input_reg, INTEGRATORS_BITS);
+                    integrator_I <= integrator_I + resize(data_input_minus_offset, INTEGRATORS_BITS);
                 else
-                    integrator_I <= integrator_I - resize(data_input_reg, INTEGRATORS_BITS);
+                    integrator_I <= integrator_I - resize(data_input_minus_offset, INTEGRATORS_BITS);
                 end if;
                 
                 if sync_Q_delayed = '1' then
-                    integrator_Q <= integrator_Q + resize(data_input_reg, INTEGRATORS_BITS);
+                    integrator_Q <= integrator_Q + resize(data_input_minus_offset, INTEGRATORS_BITS);
                 else
-                    integrator_Q <= integrator_Q - resize(data_input_reg, INTEGRATORS_BITS);
+                    integrator_Q <= integrator_Q - resize(data_input_minus_offset, INTEGRATORS_BITS);
                 end if;
                 
                 output_clk_enable_internal <= '0';

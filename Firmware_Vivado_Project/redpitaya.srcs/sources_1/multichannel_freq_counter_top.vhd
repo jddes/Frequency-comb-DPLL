@@ -9,7 +9,8 @@ generic (
     FREQ_WIDTH    : integer := 48;
     IQ_WIDTH      : integer := 16;
     COUNTER_WIDTH : integer := 32;
-    PHASE_WIDTH   : integer := 14
+    PHASE_WIDTH   : integer := 14;
+    DDS_WIDTH     : integer := 48
 
 
 ); port (
@@ -29,6 +30,12 @@ generic (
     DACout1               : out std_logic_vector(16-1 downto 0);
     DACout2               : out std_logic_vector(16-1 downto 0);
     
+    DDS_clk_enable        : out std_logic;
+    DDSout1               : out std_logic_vector(DDS_WIDTH-1 downto 0);
+    DDSout2               : out std_logic_vector(DDS_WIDTH-1 downto 0);
+    DDSout3               : out std_logic_vector(DDS_WIDTH-1 downto 0);
+    DDSout4               : out std_logic_vector(DDS_WIDTH-1 downto 0);
+
     -- CPU interface
     sys_addr              : in  std_logic_vector(32-1 downto 0);   -- bus address
     sys_wdata             : in  std_logic_vector(32-1 downto 0);   -- bus write data
@@ -67,12 +74,66 @@ architecture Behavioral of multichannel_freq_counter_top is
 
     signal logger_mux_selector : std_logic_vector(5-1 downto 0) := (others => '0');
     signal trigger_identification : std_logic := '0';
-    signal positive_limit_dac0, positive_limit_dac1 : std_logic_vector(16-1 downto 0) := ('0', others => '1');
-    signal negative_limit_dac0, negative_limit_dac1 : std_logic_vector(16-1 downto 0) := ('1', others => '0');
-    signal manual_offset_dac0, manual_offset_dac1 : std_logic_vector(16-1 downto 0) := (others => '0');
 
     signal DDS_cosine1     : std_logic_vector(16-1 downto 0);
     signal DDS_sine1       : std_logic_vector(16-1 downto 0);
+
+    -- new stuff for PI to DDSes:
+    signal n_cycles_to_pi    : std_logic_vector(COUNTER_WIDTH-1 downto 0) := std_logic_vector(to_unsigned(20, 32));
+    signal P_enable          : std_logic_vector(4-1 downto 0)             := (others => '0');
+    signal I_enable          : std_logic_vector(4-1 downto 0)             := (others => '0');
+    signal gain_fine1        : std_logic_vector(4-1 downto 0)             := std_logic_vector(to_signed(3, 4));
+    signal gain_fine2        : std_logic_vector(4-1 downto 0)             := std_logic_vector(to_signed(3, 4));
+    signal gain_fine4        : std_logic_vector(4-1 downto 0)             := std_logic_vector(to_signed(3, 4));
+    signal gain_fine3        : std_logic_vector(4-1 downto 0)             := std_logic_vector(to_signed(3, 4));
+    signal P_gain_coarse1    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal P_gain_coarse2    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal P_gain_coarse3    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal P_gain_coarse4    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal I_gain_coarse1    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal I_gain_coarse2    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal I_gain_coarse3    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal I_gain_coarse4    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal manual_offset_dds1    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
+    signal manual_offset_dds2    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
+    signal manual_offset_dds3    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
+    signal manual_offset_dds4    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
+    signal manual_offset_dds1_lsbs : std_logic_vector(32-1 downto 0)  := (others => '0');
+    signal manual_offset_dds2_lsbs : std_logic_vector(32-1 downto 0)  := (others => '0');
+    signal manual_offset_dds3_lsbs : std_logic_vector(32-1 downto 0)  := (others => '0');
+    signal manual_offset_dds4_lsbs : std_logic_vector(32-1 downto 0)  := (others => '0');
+
+    signal limit_high_dds1       : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(2**15-1, 16));
+    signal limit_high_dds2       : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(2**15-1, 16));
+    signal limit_high_dds3       : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(2**15-1, 16));
+    signal limit_high_dds4       : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(2**15-1, 16));
+    signal limit_low_dds1        : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(-2**15, 16));
+    signal limit_low_dds2        : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(-2**15, 16));
+    signal limit_low_dds3        : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(-2**15, 16));
+    signal limit_low_dds4        : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(-2**15, 16));
+
+    signal dither_results1 : std_logic_vector(64-1 downto 0);
+    signal dither_results2 : std_logic_vector(64-1 downto 0);
+    signal dither_results3 : std_logic_vector(64-1 downto 0);
+    signal dither_results4 : std_logic_vector(64-1 downto 0);
+
+    signal DDS1_clk_enable_to_logger, DDS2_clk_enable_to_logger, DDS3_clk_enable_to_logger, DDS4_clk_enable_to_logger : std_logic := '0';
+    signal DDS1_sync, DDS2_sync, DDS3_sync, DDS4_sync : std_logic := '0';
+    signal DDSout1_to_logger, DDSout2_to_logger, DDSout3_to_logger, DDSout4_to_logger : std_logic_vector(16-1 downto 0);
+
+    signal DDS_clk_enable_int      : std_logic;
+    signal DDSout1_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
+    signal DDSout2_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
+    signal DDSout3_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
+    signal DDSout4_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
+
+    attribute mark_debug : string;
+    attribute mark_debug of P_enable:           signal is "True";
+    attribute mark_debug of I_enable:           signal is "True";
+    attribute mark_debug of gain_fine1:         signal is "True";
+    attribute mark_debug of P_gain_coarse1:     signal is "True";
+    attribute mark_debug of DDS_clk_enable_int: signal is "True";
+    --attribute mark_debug of DDSout1_int:        signal is "True";
 begin
 
     ddc_multichannel_inst : entity work.ddc_multichannel
@@ -117,6 +178,10 @@ begin
         wrapped_phase_in2 => phi2,
         wrapped_phase_in3 => phi3,
         wrapped_phase_in4 => phi4,
+        dither_results1   => dither_results1,
+        dither_results2   => dither_results2,
+        dither_results3   => dither_results3,
+        dither_results4   => dither_results4,
         n_cycles          => n_cycles,
         sys_addr          => sys_addr,
         sys_wdata         => sys_wdata,
@@ -139,10 +204,10 @@ begin
         in3             => (iq_sync & iq_clk_enable & IQ2),
         in4             => (iq_sync & iq_clk_enable & IQ3),
         in5             => (iq_sync & iq_clk_enable & IQ4),
-        in6             => ('1', '1', others => '0'),
-        in7             => ('1', '1', others => '0'),
-        in8             => ('1', '1', others => '0'),
-        in9             => ('1', '1', others => '0'),
+        in6             => (DDS1_sync & DDS1_clk_enable_to_logger & DDSout1_to_logger),
+        in7             => (DDS2_sync & DDS2_clk_enable_to_logger & DDSout2_to_logger),
+        in8             => (DDS3_sync & DDS3_clk_enable_to_logger & DDSout3_to_logger),
+        in9             => (DDS4_sync & DDS4_clk_enable_to_logger & DDSout4_to_logger),
         in10            => ('1', '1', others => '0'),
         selector        => logger_mux_selector,
         selected_output => selected_output
@@ -159,6 +224,114 @@ begin
         clk_enable_out => LoggerData_clk_enable,
         data_out       => LoggerData
     );
+    -- the DDS outputs are DDS_WIDTH=48 bits, but our logger input is 16 bits, so we serialize this
+    serialize_M_to_N_bits_inst1 : entity work.serialize_M_to_N_bits
+    generic map (
+        INPUT_WIDTH  => DDS_WIDTH,
+        OUTPUT_WIDTH => 16
+    ) port map (
+        clk               => clk,
+        input_clk_enable  => DDS_clk_enable_int,
+        data_in           => DDSout1_int,
+        output_clk_enable => DDS1_clk_enable_to_logger,
+        output_sync       => DDS1_sync,
+        data_out          => DDSout1_to_logger
+    );
+    serialize_M_to_N_bits_inst2 : entity work.serialize_M_to_N_bits
+    generic map (
+        INPUT_WIDTH  => DDS_WIDTH,
+        OUTPUT_WIDTH => 16
+    ) port map (
+        clk               => clk,
+        input_clk_enable  => DDS_clk_enable_int,
+        data_in           => DDSout2_int,
+        output_clk_enable => DDS2_clk_enable_to_logger,
+        output_sync       => DDS2_sync,
+        data_out          => DDSout2_to_logger
+    );
+    serialize_M_to_N_bits_inst3 : entity work.serialize_M_to_N_bits
+    generic map (
+        INPUT_WIDTH  => DDS_WIDTH,
+        OUTPUT_WIDTH => 16
+    ) port map (
+        clk               => clk,
+        input_clk_enable  => DDS_clk_enable_int,
+        data_in           => DDSout3_int,
+        output_clk_enable => DDS3_clk_enable_to_logger,
+        output_sync       => DDS3_sync,
+        data_out          => DDSout3_to_logger
+    );
+    serialize_M_to_N_bits_inst4 : entity work.serialize_M_to_N_bits
+    generic map (
+        INPUT_WIDTH  => DDS_WIDTH,
+        OUTPUT_WIDTH => 16
+    ) port map (
+        clk               => clk,
+        input_clk_enable  => DDS_clk_enable_int,
+        data_in           => DDSout4_int,
+        output_clk_enable => DDS4_clk_enable_to_logger,
+        output_sync       => DDS4_sync,
+        data_out          => DDSout4_to_logger
+    );
+
+    -- PI section:
+    PI_4ch_inst : entity work.PI_4ch
+    generic map (
+        INPUT_WIDTH     => PHASE_WIDTH,
+        COUNTER_WIDTH   => COUNTER_WIDTH,
+        OUTPUT_WIDTH    => DDS_WIDTH
+    ) port map (
+        clk               => clk,
+        clk_enable_in     => phi_clk_enable,
+        wrapped_phase_in1 => phi1,
+        wrapped_phase_in2 => phi2,
+        wrapped_phase_in3 => phi3,
+        wrapped_phase_in4 => phi4,
+        n_cycles          => n_cycles_to_pi,
+        P_enable          => P_enable,
+        I_enable          => I_enable,
+        gain_fine1        => gain_fine1,
+        gain_fine2        => gain_fine2,
+        gain_fine4        => gain_fine4,
+        gain_fine3        => gain_fine3,
+        P_gain_coarse1    => P_gain_coarse1,
+        P_gain_coarse2    => P_gain_coarse2,
+        P_gain_coarse3    => P_gain_coarse3,
+        P_gain_coarse4    => P_gain_coarse4,
+        I_gain_coarse1    => I_gain_coarse1,
+        I_gain_coarse2    => I_gain_coarse2,
+        I_gain_coarse3    => I_gain_coarse3,
+        I_gain_coarse4    => I_gain_coarse4,
+        manual_offset1    => manual_offset_dds1,
+        manual_offset2    => manual_offset_dds2,
+        manual_offset3    => manual_offset_dds3,
+        manual_offset4    => manual_offset_dds4,
+        limit_high1       => limit_high_dds1,
+        limit_high2       => limit_high_dds2,
+        limit_high3       => limit_high_dds3,
+        limit_high4       => limit_high_dds4,
+        limit_low1        => limit_low_dds1,
+        limit_low2        => limit_low_dds2,
+        limit_low3        => limit_low_dds3,
+        limit_low4        => limit_low_dds4,
+        cmd_trig          => sys_wen,
+        cmd_addr          => (x"0000" & sys_addr(16-1+2 downto 2)),
+        cmd_data          => sys_wdata,
+        dither_results1   => dither_results1,
+        dither_results2   => dither_results2,
+        dither_results3   => dither_results3,
+        dither_results4   => dither_results4,
+        clk_enable_out    => DDS_clk_enable_int,
+        freq_out1         => DDSout1_int,
+        freq_out2         => DDSout2_int,
+        freq_out3         => DDSout3_int,
+        freq_out4         => DDSout4_int
+    );
+    DDS_clk_enable <= DDS_clk_enable_int;
+    DDSout1 <= DDSout1_int;
+    DDSout2 <= DDSout2_int;
+    DDSout3 <= DDSout3_int;
+    DDSout4 <= DDSout4_int;
 
     -------------------------------------------------
     -- config registers
@@ -173,10 +346,9 @@ begin
             if sys_wen = '1' then
                 case sys_addr(16-1+2 downto 2) is -- note that we divide the Zynq addresses by 4 when mapping to the DPLL addresses.  This is because the Zynq cannot address memory locations that are not on 32-bits boundaries, but the legacy bus didn't have this restriction.
                     when x"1" => logger_mux_selector <= sys_wdata(logger_mux_selector'range);
-                    when x"2" => manual_offset_dac0 <= sys_wdata(manual_offset_dac0'range);
-                    when x"3" => manual_offset_dac1 <= sys_wdata(manual_offset_dac0'range);
-                    when x"4" => positive_limit_dac0 <= sys_wdata(16-1+16 downto 16); negative_limit_dac0 <= sys_wdata(16-1 downto 0);
-                    when x"5" => positive_limit_dac1 <= sys_wdata(16-1+16 downto 16); negative_limit_dac1 <= sys_wdata(16-1 downto 0);
+                    when x"2" => n_cycles            <= sys_wdata(n_cycles'range);
+                    when x"3" => n_cycles_to_pi      <= sys_wdata(n_cycles_to_pi'range);
+
                     when x"6" => trigger_identification <= '1';
 
                     -- written as two 32-bits registers that update when the MSBs are written
@@ -195,7 +367,46 @@ begin
                     when x"D" => freq4_in_lsbs <= sys_wdata(32-1 downto 0);
                     when x"E" => freq4_in <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & freq4_in_lsbs);
 
-                    when x"F" => n_cycles <= sys_wdata(n_cycles'range);
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"10" => manual_offset_dds1_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"11" => manual_offset_dds1 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds1_lsbs);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"12" => manual_offset_dds2_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"13" => manual_offset_dds2 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds2_lsbs);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"14" => manual_offset_dds3_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"15" => manual_offset_dds3 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds3_lsbs);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"16" => manual_offset_dds4_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"17" => manual_offset_dds4 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds4_lsbs);
+
+                    when x"18" => limit_high_dds1 <= sys_wdata(16-1+16 downto 16); limit_low_dds1 <= sys_wdata(16-1 downto 0);
+                    when x"19" => limit_high_dds2 <= sys_wdata(16-1+16 downto 16); limit_low_dds2 <= sys_wdata(16-1 downto 0);
+                    when x"1A" => limit_high_dds3 <= sys_wdata(16-1+16 downto 16); limit_low_dds3 <= sys_wdata(16-1 downto 0);
+                    when x"1B" => limit_high_dds4 <= sys_wdata(16-1+16 downto 16); limit_low_dds4 <= sys_wdata(16-1 downto 0);
+
+                    when x"1C" => I_enable <= sys_wdata(4-1+4 downto 4); P_enable <= sys_wdata(4-1 downto 0);
+                    when x"1D" =>
+                        gain_fine1 <= sys_wdata(gain_fine1'length-1+gain_fine1'length*0 downto gain_fine1'length*0);
+                        gain_fine2 <= sys_wdata(gain_fine1'length-1+gain_fine1'length*1 downto gain_fine1'length*1);
+                        gain_fine3 <= sys_wdata(gain_fine1'length-1+gain_fine1'length*2 downto gain_fine1'length*2);
+                        gain_fine4 <= sys_wdata(gain_fine1'length-1+gain_fine1'length*3 downto gain_fine1'length*3);
+
+                    when x"1E" =>
+                        P_gain_coarse1 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*0 downto P_gain_coarse1'length*0);
+                        P_gain_coarse2 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*1 downto P_gain_coarse1'length*1);
+                        P_gain_coarse3 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*2 downto P_gain_coarse1'length*2);
+                        P_gain_coarse4 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*3 downto P_gain_coarse1'length*3);
+
+                    when x"1F" =>
+                        I_gain_coarse1 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*0 downto P_gain_coarse1'length*0);
+                        I_gain_coarse2 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*1 downto P_gain_coarse1'length*1);
+                        I_gain_coarse3 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*2 downto P_gain_coarse1'length*2);
+                        I_gain_coarse4 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*3 downto P_gain_coarse1'length*3);
+
 
                     when others => 
                 end case;
@@ -203,18 +414,5 @@ begin
 
         end if;
     end process;
-
-    ---- debugging output
-    --DACout1_int <= std_logic_vector(shift_right(signed(DDS_cosine1), 1));
-    --DACout2_int <= std_logic_vector(shift_right(signed(DDS_sine1), 1));
-
-    --DACout1_int <= freq1_in(freq1_in'left downto freq1_in'left-16+1);
-    --DACout2_int <= freq1_in(freq1_in'left-16 downto freq1_in'left-16-16+1);
-
-    DACout1_int <= manual_offset_dac0;
-    DACout2_int <= manual_offset_dac1;
-
-    DACout1 <= DACout1_int;
-    DACout2 <= DACout2_int;
 
 end;

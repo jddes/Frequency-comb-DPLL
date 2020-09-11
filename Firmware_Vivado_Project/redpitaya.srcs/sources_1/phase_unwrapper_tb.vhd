@@ -16,6 +16,7 @@ architecture behavior of phase_unwrapper_tb is
     -- Inputs
     signal clk              : std_logic                                := '0';
     signal clk_enable_in    : std_logic                                := '0';
+    signal reset_offset     : std_logic                                := '0';
     signal wrapped_phase_in : std_logic_vector(INPUT_WIDTH-1 downto 0) := (others => '0');
     -- Outputs
     signal clk_enable_out      : std_logic;
@@ -42,6 +43,7 @@ begin
         clk                 => clk,
         clk_enable_in       => clk_enable_in,
         wrapped_phase_in    => wrapped_phase_in,
+        reset_offset        => reset_offset,
         clk_enable_out      => clk_enable_out,
         unwrapped_phase_out => unwrapped_phase_out
     );
@@ -89,6 +91,30 @@ begin
 
         -- simple ramp over all pts (three times), with clk enable pattern
         for I in 0 to 3*(2**(OUTPUT_WIDTH)-1) loop
+            wait until rising_edge(clk);
+                clk_enable_in <= '1';
+                unwrapped_phase_in <= to_signed(I, unwrapped_phase_in'length);
+            wait until rising_edge(clk);
+                clk_enable_in <= '0';
+            wait for clk_period*3;
+        end loop;
+
+        -- test reset mechanics:
+        for I in 0 to 2*(2**(OUTPUT_WIDTH)-1) + 1000 loop
+            wait until rising_edge(clk);
+                clk_enable_in <= '1';
+                unwrapped_phase_in <= to_signed(I, unwrapped_phase_in'length);
+            wait until rising_edge(clk);
+                clk_enable_in <= '0';
+            wait for clk_period*3;
+        end loop;
+
+        wait until rising_edge(clk);
+            reset_offset <= '1';
+        wait until rising_edge(clk);
+            reset_offset <= '0';
+
+        for I in 1000+1 to 3*(2**(OUTPUT_WIDTH)-1) + 1000 loop
             wait until rising_edge(clk);
                 clk_enable_in <= '1';
                 unwrapped_phase_in <= to_signed(I, unwrapped_phase_in'length);

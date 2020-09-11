@@ -444,7 +444,7 @@ multiplexer_NbitsxMsignals_to_Nbits
     .in7({1'b1, DACout1}), 
     .in8({1'b1, DACout2}),
     //.in9({crash_monitor_output_to_logger_clk_enable, crash_monitor_output_to_logger}),
-    .in9({0'b0, 8'b0}),
+    .in9({0'b0, 16'b0}),
     .selector(selector[4:0]), 
     .selected_output({LoggerData_clk_enable, LoggerData})
     );
@@ -1422,7 +1422,6 @@ wire                                dither0_lockin_output_clk_enable, dither1_lo
 dither_lockin_wrapper #
 (
     .BASE_ADDRESS(16'h8100),
-    .CMD_BUS_BITS(16),
     .N_BITS_INPUT(10),
     .N_BITS_OUTPUT(16),
     .COUNTER_BITS(27),              // 27 bits gives ~ 134 Millions clock cycles, or 1.34 seconds at 100 MHz clock rate

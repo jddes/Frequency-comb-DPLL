@@ -491,16 +491,16 @@ reg [32-1:0] selected_output;
 wire fifo_empty;
 wire fifo_full;
 
-
-wire debug_out_1;
-wire debug_out_2;
-wire debug_out_3;
-wire debug_out_4;
-
 reg [26-1:0] led_counter;
 
+wire DDS_clk_enable;
+wire [48-1:0] DDSout1;
+wire [48-1:0] DDSout2;
+wire [48-1:0] DDSout3;
+wire [48-1:0] DDSout4;
+
 assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
-assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
+// assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
 
 multichannel_freq_counter_top multichannel_freq_counter_top_inst (
     .clk                  (adc_clk),
@@ -512,6 +512,11 @@ multichannel_freq_counter_top multichannel_freq_counter_top_inst (
     .LoggerIsWriting      (LoggerIsWriting),
     .DACout1              (DACout0),
     .DACout2              (DACout1),
+    .DDS_clk_enable       (DDS_clk_enable),
+    .DDSout1              (DDSout1),
+    .DDSout2              (DDSout2),
+    .DDSout3              (DDSout3),
+    .DDSout4              (DDSout4),
     .sys_addr             (sys_addr                   ),  // address
     .sys_wdata            (sys_wdata                  ),  // write data
     .sys_wen              (sys_wen[0]                 ),  // write enable
@@ -718,6 +723,18 @@ ram_data_logger ram_data_logger_i (
 
 //  );
 // //assign dac_b = vco0_cosine_out[16-1:2];
+
+    // soft DDS for testing purposes until we get the real hardware
+    wire [32-1:0] lo_dds_m_axis_data_tdata;
+    LO_DDS LO_DDS_inst
+    (
+        .aclk(adc_clk),
+        .s_axis_phase_tvalid(1'b1),
+        .s_axis_phase_tdata(DDSout1),
+        .m_axis_data_tvalid(),
+        .m_axis_data_tdata(lo_dds_m_axis_data_tdata)
+    );
+    assign dac_b = lo_dds_m_axis_data_tdata[16-1:2];
 
 //---------------------------------------------------------------------------------
 //  House Keeping

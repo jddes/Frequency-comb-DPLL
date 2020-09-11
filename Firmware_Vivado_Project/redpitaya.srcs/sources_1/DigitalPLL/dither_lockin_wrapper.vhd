@@ -46,7 +46,7 @@ entity dither_lockin_wrapper is
         data_input        : in  std_logic_vector (N_BITS_INPUT-1 downto 0);
         -- Config bus
         cmd_trig          : in  std_logic;
-        cmd_addr          : in  std_logic_vector (16-1 downto 0);
+        cmd_addr          : in  std_logic_vector (32-1 downto 0);
         cmd_data          : in  std_logic_vector (32-1 downto 0);
         -- output ports:
         output_to_dac     : out std_logic_vector (N_BITS_OUTPUT-1      downto 0);
@@ -60,7 +60,7 @@ end dither_lockin_wrapper;
 architecture Behavioral of dither_lockin_wrapper is
     -- local buffered copy of the cmd bus:
     signal cmd_trig_internal                            : std_logic        := '0';
-    signal cmd_addr_internal                            : std_logic_vector (cmd_addr_internal'length-1   downto 0) := (others => '0');
+    signal cmd_addr_internal                            : std_logic_vector (cmd_addr'length-1   downto 0) := (others => '0');
     signal cmd_data_internal                            : std_logic_vector (cmd_data'length-1 downto 0) := (others => '0');
     
     -- parallel bus registers:
@@ -128,8 +128,8 @@ begin
 
     parallel_bus_register_amplitude: entity work.parallel_bus_register_32bits_or_less
     Generic map (
-        REGISTER_SIZE => modulation_amplitude'length,
-        REGISTER_DEFAULT_VALUE => 1,
+        REGISTER_SIZE => 32,
+        REGISTER_DEFAULT_VALUE => 0,
         ADDRESS => BASE_ADDRESS+3
     )
     Port map (
@@ -137,7 +137,7 @@ begin
         bus_strobe      => cmd_trig_internal,
         bus_address     => cmd_addr_internal,
         bus_data        => cmd_data_internal,
-        register_output => modulation_amplitude
+        register_output => modulation_amplitude(modulation_amplitude'left downto modulation_amplitude'left-32+1)
     );
     
     dither_lockin_inst: entity work.dither_lockin

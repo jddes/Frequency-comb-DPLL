@@ -43,13 +43,13 @@ architecture Behavioral of PI_loop_filter is
     constant MAX_SHIFT : integer := 48;
     
     signal clk_enable_error_scaled : std_logic := '0';
-    signal error_valid : std_logic := '0';
-    signal error_valid_gated : std_logic := '0';
+    signal error_valid             : std_logic := '0';
+    signal error_valid_gated       : std_logic := '0';
     signal error_scaled : std_logic_vector(INPUT_WIDTH+gain_fine'length-1 downto 0) := (others => '0');
 
-    signal error_scaled_P : std_logic_vector(OUTPUT_WIDTH-1 downto 0) := (others => '0');
+    signal error_scaled_P       : std_logic_vector(OUTPUT_WIDTH-1 downto 0) := (others => '0');
     signal error_scaled_P_gated : std_logic_vector(OUTPUT_WIDTH-1 downto 0) := (others => '0');
-    signal error_scaled_I : std_logic_vector(OUTPUT_WIDTH-1 downto 0) := (others => '0');
+    signal error_scaled_I       : std_logic_vector(OUTPUT_WIDTH-1 downto 0) := (others => '0');
     signal error_scaled_I_clk_enable : std_logic := '0';
 
     signal error_valid_d1       : std_logic := '0';
@@ -59,11 +59,11 @@ architecture Behavioral of PI_loop_filter is
     signal int_plus_error : signed(int'length+1-1 downto 0) := (others => '0'); -- this has one extra bit to avoid overflow
 
 
-    signal PI_sum_clk_enable : std_logic := '0';
+    signal PI_sum_clk_enable     : std_logic := '0';
     signal output_clk_enable_int : std_logic := '0';
 
-    signal PI_sum : signed(OUTPUT_WIDTH-1 downto 0) := (others => '0');
-    signal output_int : signed(OUTPUT_WIDTH-1 downto 0) := (others => '0');
+    signal PI_sum     : signed(OUTPUT_WIDTH+1-1 downto 0) := (others => '0'); -- this has a guard bit to avoid saturation at the summing stage
+    signal output_int : signed(OUTPUT_WIDTH  -1 downto 0) := (others => '0');
 
     -- all part of the anti-windup feature:
     signal railed_high_P          : std_logic := '0';
@@ -76,6 +76,16 @@ architecture Behavioral of PI_loop_filter is
     signal railed_low_prev        : std_logic := '0';
     signal railed_high_int        : std_logic := '0';
     signal railed_low_int         : std_logic := '0';
+
+    attribute mark_debug : string;
+    attribute mark_debug of int:                       signal is "True";
+    attribute mark_debug of error_scaled_I:            signal is "True";
+    attribute mark_debug of error_valid_d2:            signal is "True";
+    attribute mark_debug of error_scaled_I_clk_enable: signal is "True";
+    attribute mark_debug of PI_sum_clk_enable:         signal is "True";
+
+
+
 begin
 
     ----------------------------------------------------------
@@ -182,7 +192,7 @@ begin
             -- saturate
             output_clk_enable_int <= PI_sum_clk_enable;
             if PI_sum_clk_enable='1' then
-                output_int <= saturate(PI_sum, OUTPUT_WIDTH);
+                output_int <= resize(saturate(PI_sum, OUTPUT_WIDTH), OUTPUT_WIDTH);
                 -- compute combined saturation flags:
                 if PI_sum > max_int(OUTPUT_WIDTH) or railed_high_PI = '1' then
                     railed_high_prev <= '1';
