@@ -170,7 +170,10 @@ class FactoredInteger():
         if isinstance(x, FactoredInteger):
             self.x = x.x
             self.factors = x.factors
-        elif isinstance(x, int):
+        elif isinstance(x, int) or isinstance(x, float):
+            if isinstance(x, float):
+                print("Warning, creating FactoredInteger from float %f, accuracy might be limited" % x)
+                x = int(x)
             self.x = x
             if factors is None:
                 self.factors = factor(x)

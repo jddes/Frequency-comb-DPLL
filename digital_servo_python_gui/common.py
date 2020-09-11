@@ -11,6 +11,9 @@ style_sheets = {
     'ok': 'color: rgb(255, 255, 255); background-color: rgb(0, 165, 114)',
 }
 
+def bitmask(Nbits):
+    return (1<<Nbits)-1
+
 def round_to_N_sig_figs(x, Nsigfigs):
     """ Returns x rounded to Nsigfigs significant figures """
     leading_pos = np.floor(np.log10(np.abs(x)))
@@ -74,6 +77,12 @@ def getPowerColorName(mean_power_dBm):
         return 'bad'
     elif mean_power_dBm <= -20:
         return 'warning'
+    else:
+        return 'ok'
+
+def getExtClkColorName(ext_clk_freq):
+    if ext_clk_freq <= 1e6:
+        return 'bad'
     else:
         return 'ok'
 

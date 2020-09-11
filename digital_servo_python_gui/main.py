@@ -7,6 +7,8 @@ import inspect
 import time
 import socket
 from collections import OrderedDict
+import pprint
+import winsound
 
 import numpy as np
 import pyqtgraph as pg
@@ -20,7 +22,7 @@ import connection_widget
 import config_widget
 import controller_settings_widget
 
-from common import tictoc, colorCoding, readFloatFromTextbox
+from common import tictoc, colorCoding, readFloatFromTextbox, getExtClkColorName
 import bin_conv
 
 # Set a few global PyQtGraph settings before creating plots:
@@ -84,6 +86,7 @@ class MainWidget(QtWidgets.QMainWindow):
         self.tab_widget.addTab(self.config_widget, "Config")
         self.tab_widget.addTab(self.summary_tab_gui, "Summary")
 
+        self.populateClosedLoopBW()
         # Connect signals to slots:
         self.connection_widget.btnConnect.clicked.connect(self.connect_clicked)
         self.config_widget.btnCommit.clicked.connect(self.commit)
@@ -116,11 +119,6 @@ class MainWidget(QtWidgets.QMainWindow):
             # vbox.addWidget(GUI)
             self.tab_widget.addTab(GUI, "Channel %d" % (channel_id))
             self.channel_GUIs[channel_id] = GUI
-
-        # TODO: handle the case of either FNC or counter-only hardware, create or hide child widgets accordingly
-
-
-        self.populateClosedLoopBW()
 
         self.tab_widget.currentChanged.connect(self.updateTabVisibility)
         self.setWindowTitle('Frequency counter/phase meter')
@@ -165,14 +163,12 @@ class MainWidget(QtWidgets.QMainWindow):
         # also show relevant status directly next to the pushbutton that controls it:
         if field == "connection":
             target_widgets.append(self.connection_widget.lblStatus)
-
-        if field == "commit":
+        elif field == "commit":
             target_widgets.append(self.config_widget.lblStatus)
 
         for w in target_widgets:
             w.setText(text)
             colorCoding(w, color_name)
-
 
     def connect_clicked(self, bConnect):
         self.config_done = False
@@ -191,6 +187,10 @@ class MainWidget(QtWidgets.QMainWindow):
 
             self.sl.dev.OpenTCPConnection(strIP, port)
             self.hw_description = self.sl.getHardwareDescription()
+            # self.sl.write("PI_fine_gains", 1)
+            # print(self.sl.read("phase_logger_write_addr"))
+            # time.sleep(1)
+            # self.sl.dev.CloseTCPConnection()
             # Handle various versions of the hardware changing the exact GUI that we should present to the user:
             bHasDDS = self.hw_description.get("has_dds", False)
             # bHasDDS = False # force to false for testing
@@ -240,7 +240,33 @@ class MainWidget(QtWidgets.QMainWindow):
         self.sl.phaseReadoutDriver.setOutputRate(system_settings["output_data_rate"])
         for channel_id, channel_settings in channels_settings.items():
             self.setup_LO(system_settings, channel_settings)
+            self.setup_controller(system_settings, channel_settings)
+        self.sl.commit_controller_settings()
 
+        pprint.pprint(self.sl.user_inputs)
+        pprint.pprint(self.sl.reg_values)
+        print(bin(self.sl.reg_values["PI_fine_gains"]))
+        # frequency_in_hz = 10e6
+        # for k in range(10):
+        #     winsound.Beep(1000, 50)
+        #     print(frequency_in_hz)
+        #     self.sl.set_dds_offset_freq(1, frequency_in_hz)
+        #     time.sleep(3)
+        #     frequency_in_hz += 1e6
+
+    def setup_controller(self, system_settings, channels_settings):
+        if channels_settings["mode"] == "FNC":
+            self.sl.setup_controller(channels_settings["channel_id"],
+                                     channels_settings["nominal_output_freq"],
+                                     channels_settings["target_BW"],
+                                     channels_settings["loop_sign"],
+                                     channels_settings["bLock"])
+        else:
+            self.sl.setup_controller(channels_settings["channel_id"],
+                                     0,
+                                     1e3,
+                                     1,
+                                     False)
     def emit_system_settings(self):
         """ This is used to notify the channel GUIs of the system settings,
         so that the GUIs can do proper scaling calculations, etc """
@@ -294,6 +320,7 @@ class MainWidget(QtWidgets.QMainWindow):
         R = a.reg["R"]
         LO_actual = s["ref_freq"] * float(INT / (D*R))
         IF_actual = abs(c["expected_freq"] - LO_actual)
+        self.sl.set_ddc_ref_freq(k, IF_actual)
 
         # Gather all the required information for the channel GUI to operate properly
         result = dict(c) # also copies all the fields from c
@@ -305,8 +332,6 @@ class MainWidget(QtWidgets.QMainWindow):
             result["chosen_IF_text"] += "= input - LO freq"
         else:
             result["chosen_IF_text"] += "= LO freq - input"
-
-        self.sl.set_ddc_ref_freq(k, IF_actual)
 
         for field in result:
             prefix = "ch%d_" % k
@@ -329,6 +354,11 @@ class MainWidget(QtWidgets.QMainWindow):
         from the device, and apply the necessary post-processing if any. """
         return self.sl.dev.valid_socket and self.config_done
 
+    def updateExtClkFreq(self):
+        ext_clk_freq = self.sl.getExtClockFreq()
+        self.config_widget.lblRefFreq.setText('%.8f' % (ext_clk_freq/1e6))
+        colorCoding(self.config_widget.lblRefFreq, getExtClkColorName(ext_clk_freq))
+
     def slowTimerEvent(self):
         """ Reads the slow phase streaming data (100 phase samples/seconds nominal, read every counter gate period).
         Current limitation of the way we do things is that the max counter period is related with
@@ -336,7 +366,7 @@ class MainWidget(QtWidgets.QMainWindow):
         This function also computes the frequency offset from said phase data, and emits the result as a signal """
         if not self.sl.dev.valid_socket:
             return
-        self.config_widget.lblRefFreq.setText('%.8f' % (self.sl.getExtClockFreq()/1e6))
+        self.updateExtClkFreq()
         if not self.validDeviceAndConfigKnown():
             return
 
@@ -381,7 +411,13 @@ class MainWidget(QtWidgets.QMainWindow):
         ts = ts.astype(np.float)
         freq = 0
         fit = np.polynomial.Polynomial.fit(ts, phi, 1)
-        freq = fit.convert().coef[1] # freq is in units of cycles of the IQ waveform/cycles of the ADC clock
+        fit_conv = fit.convert()
+        if len(fit_conv) == 1:
+            # this is kind of weird, but if the y values sent to the fit function are exactly constant,
+            # the fit object simply doesn't have a coefficient for the slope (instead of simply putting 0)
+            freq = 0.
+        else:
+            freq = fit_conv.coef[1] # freq is in units of cycles of the IQ waveform/cycles of the ADC clock
         freq_Hz = freq * self.sl.fs
         tictoc(self, "fit")
         # self.bDisplayTiming = False

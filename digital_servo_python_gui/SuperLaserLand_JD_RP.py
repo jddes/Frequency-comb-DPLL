@@ -14,6 +14,7 @@ import sys
 import traceback
 import weakref
 import logging
+import pprint
 
 import RP_PLL
 import bin_conv
@@ -22,7 +23,7 @@ import adf4351
 import rationals
 import zynq_mmcm
 
-from common import make_sure_path_exists, tictoc, smooth
+from common import make_sure_path_exists, tictoc, smooth, bitmask
 
 class SuperLaserLand_JD_RP:
     # Data members:
@@ -74,7 +75,7 @@ class SuperLaserLand_JD_RP:
         "dds4_limits": counter2absolute(0x001B),
 
         # PI settings
-        "PI_n_cycles":       counter2absolute(0x0003),
+        "PI_n_cycles":       counter2absolute(0x0003), # extra decimation ratio from IQ data rate to DDS data rate
         "PI_enables":        counter2absolute(0x001C),
         "PI_fine_gains":     counter2absolute(0x001D),
         "PI_coarse_P_gains": counter2absolute(0x001E),
@@ -125,10 +126,10 @@ class SuperLaserLand_JD_RP:
         'IQ2':           3,
         'IQ3':           4,
         'IQ4':           5,
-        'IN6':           6,           # unused for now
-        'IN7':           7,           # unused for now
-        'IN8':           8,           # unused for now
-        'IN9':           2**4,        # unused for now
+        'DDS1':          6,
+        'DDS2':          7,
+        'DDS3':          8,
+        'DDS4':          2**4,
         'IN10':          2**4 + 2**3, # unused for now
         }
     ############################################################
@@ -149,6 +150,7 @@ class SuperLaserLand_JD_RP:
         self.adc_bits = 14
         self.phase_bits = 14
         self.dds_bits = 48
+        self.PI_n_cycles = 20 # decimation between arctan and PI to DDS
         self.R_LO3 = dict()
         for channel_id in self.channels_list:
             self.R_LO3[channel_id] = rationals.RationalNumber(0, 1) # this will get filled in once we know all the required values
@@ -241,6 +243,22 @@ class SuperLaserLand_JD_RP:
         data_complex = data_real[:N_min] + 1j*data_imag[:N_min]
         data_complex = self.convertIQCountsToVolts(data_complex)
         return data_complex
+
+    def demux_DDS_data(self, logger_data):
+        logger_data = logger_data[:3*(len(logger_data)//3)]
+        logger_data.dtype = np.uint16
+        data_counts = logger_data[0::2].astype(np.int64)
+        data_counts |= logger_data[1::2].astype(np.int64)
+        data_counts |= logger_data[2::2].astype(np.int64)
+        data_counts = data_counts & bitmask(47) - (data_counts & (1<<47)) # sign-extend from 48 bits to 64
+        data_Hz = float(data_counts) / 2**48 * self.fs_dds
+        return data_Hz
+
+    def getDDSdata(self, channel_id, N_samples):
+        raw_data = self.getDataSafe(self.LOGGER_MUX['DDS%d' % channel_id], int(N_samples))
+        (timestamp, logger_data) = self.demux_logger_timestamp(raw_data)
+        dds_value_in_Hz = self.demux_DDS_data(logger_data)
+        return (timestamp, dds_value_in_Hz)
 
     def getADCdata(self, adc_number, N_samples):
         raw_data = self.getDataSafe(self.LOGGER_MUX['ADC%d' % adc_number], int(N_samples))
@@ -557,6 +575,74 @@ class SuperLaserLand_JD_RP:
         denom = D*R
         return (num, denom)
 
+    def KiForKp(self, Kp_coarse, target_BW):
+        """ Returns the value of the coarse part of Ki for a given value of Kp,
+        sets the crossover between the integrator and proportional
+        to roughly 1/10th of the loop's unity gain frequency """
+        target_crossover_freq = target_BW/10
+        Ki_coarse = Kp_coarse * 2 * np.pi * target_crossover_freq/self.fs_dds
+        Ki_coarse = 2**int(round(np.log2(Ki_coarse)))
+        if Ki_coarse < 1:
+            print("Warning, clamping coarse I gain to 1. this may cause loop instability")
+            Ki_coarse = 1
+        return Ki_coarse
+
+    def setup_controller(self, channel_id, nominal_output_freq, target_BW, loop_sign, bLock):
+        """ Sets all required values for one controller channel.
+        Doesn't actually commit to device: this happens all at once for all four channels
+        when calling commit_controller_settings() """
+        self.user_inputs["target_BW_ch%d"%channel_id] = target_BW
+        (gain_combined, gain_fine, gain_coarse) = self.getKpForBW(target_BW)
+        self.user_inputs["Kp_fine_ch%d"%channel_id] = gain_fine * loop_sign
+        self.user_inputs["Kp_coarse_ch%d"%channel_id] = gain_coarse
+        self.user_inputs["Ki_coarse_ch%d"%channel_id] = self.KiForKp(gain_coarse, target_BW)
+        self.user_inputs["actual_BW_ch%d"%channel_id] = self.getClosedLoopBW(gain_combined)
+        self.user_inputs["nominal_output_freq_ch%d"%channel_id] = nominal_output_freq
+
+        self.user_inputs["Kp_enable_ch%d"%channel_id] = bLock
+        self.user_inputs["Ki_enable_ch%d"%channel_id] = bLock
+        
+    def commit_controller_settings(self):
+        """ Commits controller settings for all channels.
+        Each channel must have been set up previously using setup_controller() """
+        N_bits_coarse_gain = 6
+        N_bits_fine_gain = 4
+
+        fine_gain_reg     = 0
+        coarse_P_gain_reg = 0
+        coarse_I_gain_reg = 0
+        PI_enables_reg    = 0
+        for channel_id in self.channels_list:
+            fine_gain = self.user_inputs["Kp_fine_ch%d"%channel_id]
+            fine_gain_reg |= (fine_gain & bitmask(N_bits_fine_gain)) << (N_bits_fine_gain*(channel_id-1))
+
+            coarse_P_gain = int(np.log2(self.user_inputs["Kp_coarse_ch%d"%channel_id]))
+            coarse_P_gain_reg |= (coarse_P_gain & bitmask(N_bits_coarse_gain)) << (N_bits_coarse_gain*(channel_id-1))
+
+            coarse_I_gain = int(np.log2(self.user_inputs["Ki_coarse_ch%d"%channel_id]))
+            coarse_I_gain_reg |= (coarse_I_gain & bitmask(N_bits_coarse_gain)) << (N_bits_coarse_gain*(channel_id-1))
+
+            PI_enables_reg |= self.user_inputs["Kp_enable_ch%d"%channel_id] << (channel_id-1)
+
+            actuator_range = 10e6
+            nominal_freq = self.user_inputs["nominal_output_freq_ch%d"%channel_id]
+            self.set_dds_limits(channel_id, nominal_freq-actuator_range/2, nominal_freq+actuator_range/2)
+            self.set_dds_offset_freq(channel_id, nominal_freq)
+
+        # turn the lock on without integrator briefly, to allow the error to converge to 0
+        self.write("PI_fine_gains", fine_gain_reg)
+        self.write("PI_coarse_P_gains", coarse_P_gain_reg)
+        self.write("PI_coarse_I_gains", coarse_I_gain_reg)
+        self.write("PI_enables", PI_enables_reg)
+        time.sleep(10e-3)
+
+        # now turn on the integrators:
+        for channel_id in self.channels_list:
+            PI_enables_reg |= self.user_inputs["Ki_enable_ch%d"%channel_id] << (channel_id-1+len(self.channels_list))
+        self.write("PI_enables", PI_enables_reg)
+
+        self.write("PI_n_cycles", self.PI_n_cycles) # TODO: could tweak this later once we have the hardware
+
     def getAllPossiblePgains(self):
         """ Returns a numpy array with all available values of the proportional gain,
         in units of Hz/rad.
@@ -564,7 +650,7 @@ class SuperLaserLand_JD_RP:
         gain_fine, gain_coarse = np.meshgrid(np.arange(1, 8, dtype=np.int64), 2**np.arange(0, 48, dtype=np.int64))
         gain_fine     = gain_fine.flatten()
         gain_coarse   = gain_coarse.flatten()
-        gain_combined = gain_fine * gain_coarse
+        gain_combined = gain_fine * gain_coarse * self.PI_n_cycles
         _, indices = np.unique(gain_combined, return_index=True)
         gain_fine     = gain_fine[indices]
         gain_coarse   = gain_coarse[indices]
@@ -594,6 +680,7 @@ class SuperLaserLand_JD_RP:
         d = dict()
         f = self.dev.read_file_from_remote("/opt/hardware.txt")
         f = f.decode('ascii')
+        f = "has_dds=1\nhas_mixer_board=1\n" # for testing
         for line in f.split('\n'):
             if line == '':
                 continue
@@ -643,7 +730,7 @@ class phaseReadoutDriver():
         self.fs_nominal = 125e6 # just used once to set output rate, will NOT be updated later
         self.nominal_output_rate = 100 # this is the target, the actual rate will be a bit off, since that doesn't yield an integer number of cycles
         self.n_bits_phase = 14 # fractional bits on the arctan extraction inside the fpga
-        self.last_phi_int64 = {k: np.int64(0) for k in self.sl.channels_list} # holds the value of the most recent raw phase (without offset)
+        self.last_phi_int64   = {k: np.int64(0) for k in self.sl.channels_list} # holds the value of the most recent raw phase (without offset)
         self.phi_offset_int64 = {k: np.int64(0) for k in self.sl.channels_list} # holds the value of the phase when the user presses "reset phase"
 
     def write(self, reg_name, value):
@@ -807,6 +894,7 @@ class phaseReadoutDriver():
             R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
         else: # test mode: ADC is phase-locked to internal ref
             # this is not exact, since the physical frequencies aren't exactly known anyway
+            pprint.pprint(self.sl.user_inputs)
             R_adc_ref_vs_ext_ref = rationals.RationalNumber(self.sl.user_inputs["adc_f_ref_hz"], self.sl.user_inputs["ref_freq_ch%d" % channel_id])
             R_ADC = rationals.RationalNumber(self.sl.user_inputs["CLKFBOUT_MULT"], self.sl.user_inputs["CLKOUT0_DIVIDE"])
             R_ADC = R_ADC * R_adc_ref_vs_ext_ref

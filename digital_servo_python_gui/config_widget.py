@@ -8,7 +8,7 @@ import UDPRedPitayaDiscovery
 from RP_PLL import RP_PLL_device # needed to update FPGA firmware and CPU (Zynq) software
 import devicesData
 
-from common import colorCoding, readFloatFromTextbox, freq_text_eng_format
+from common import colorCoding, readFloatFromTextbox, freq_text_eng_format, freq_value_from_text
 
 class ConfigWidget(QtWidgets.QWidget):
     sig_user_settings_changed = QtCore.pyqtSignal()
@@ -17,6 +17,7 @@ class ConfigWidget(QtWidgets.QWidget):
     def __init__(self, channels_list, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channels_list = channels_list
+        self.config_files_filter = "Configuration files (*.cfg)"
         self.setupUI()
 
         print("ConfigWidget(): TODO: heuristics for choosing target IF in basic config mode")
@@ -25,46 +26,51 @@ class ConfigWidget(QtWidgets.QWidget):
         uic.loadUi("config_widget.ui", self)
 
         self.editExpectedFreq_dict = {k: getattr(self, "editExpectedFreq%d" % k) for k in self.channels_list}
-        
-        self.controller_widgets = dict()
-        self.adv_per_channel = dict()
+        self.controller_widgets    = {k: getattr(self, "tabBasic%d"         % k) for k in self.channels_list}
+        self.adv_per_channel       = {k: getattr(self, "tab%d"              % k) for k in self.channels_list}
+
         for channel_id in self.channels_list:
-            self.controller_widgets[channel_id] = getattr(self, "tabBasic%d" % channel_id)
-
-            self.controller_widgets[channel_id].editModulatorNominalFreq.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
-            self.controller_widgets[channel_id].editModulatorGain.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
-
-            adv_per_channel = getattr(self, "tab%d" % channel_id) # shorthand
-            self.adv_per_channel[channel_id] = adv_per_channel
-
+            self.adv_per_channel[channel_id].chkEnableLO.setVisible(False)
             # default values for target IF:
             if channel_id in (1, 3): # odd channels are low-passed
                 self.adv_per_channel[channel_id].editTargetIF.setText('20')
             else: # even channels are highpassed
                 self.adv_per_channel[channel_id].editTargetIF.setText('40')
 
-            # connect signals to slots
-            getattr(self, 'editExpectedFreq%d' % channel_id).textChanged.connect(self.user_settings_changed)
+        self.populateLOcombo()
+        # connect signals to slots
+        for channel_id in self.channels_list:
+            cw = self.controller_widgets[channel_id]
+            adv_per_channel = self.adv_per_channel[channel_id]
+
+            cw.editModulatorNominalFreq.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
+            cw.editModulatorGain.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
 
             # widgets in advanced settings, per channel
-            for signal in [adv_per_channel.chkEnableLO.clicked,
-                           adv_per_channel.editTargetIF.textChanged,
-                           adv_per_channel.radioUpper.clicked,
-                           adv_per_channel.radioLower.clicked,
-                           adv_per_channel.comboLOpower.currentTextChanged]:
+            for w in [adv_per_channel.chkEnableLO,
+                      adv_per_channel.editTargetIF,
+                      adv_per_channel.radioUpper,
+                      adv_per_channel.radioLower,
+                      adv_per_channel.comboLOpower,
+                      self.editExpectedFreq_dict[channel_id]] + cw.openloop_widgets + cw.closedloop_widgets:
+                if isinstance(w, QtWidgets.QAbstractButton):
+                    signal = w.clicked
+                elif isinstance(w, QtWidgets.QLineEdit):
+                    signal = w.textChanged
+                elif isinstance(w, QtWidgets.QComboBox):
+                    signal = w.currentTextChanged
+                else:
+                    continue
                 signal.connect(self.user_settings_changed)
 
-        self.populateLOcombo()
-
-        self.config_files_filter = "Configuration files (*.cfg)"
         self.btnLoadFromFile.clicked.connect(self.loadFromFileClicked)
         self.btnSaveToFile.clicked.connect(self.saveToFileClicked)
         self.btnBrowse.clicked.connect(self.browseClicked)
 
     def populateLOcombo(self):
         from adf4351 import pwr_map
-        for text in pwr_map:
-            for channel_id in self.channels_list:
+        for channel_id in self.channels_list:
+            for text in pwr_map:
                 self.adv_per_channel[channel_id].comboLOpower.addItem(text)
 
     def populateClosedLoopBW(self, BW_all):
@@ -140,18 +146,25 @@ class ConfigWidget(QtWidgets.QWidget):
                 c["LO_pwr"]            = adv_settings.comboLOpower.currentText()
                 c["LO_enable"]         = adv_settings.chkEnableLO.isChecked()
 
+                c["mode"] = "counter" # this might get changed later on
                 if self.bHasDDS:
                     w = self.controller_widgets[channel_id] # shorthand
                     c["expected_freq_MHz_str"] = w.editExpectedFreq.text()
                     c["expected_freq"]         = readFloatFromTextbox(w.editExpectedFreq)*1e6
-                    if w.comboMode.currentText() == 'Closed-loop fiber noise canceler':
-                        c["mode"] = "FNC"
-                    else:
-                        c["mode"] = "counter"
+                    if w.comboMode.currentText() != 'Closed-loop fiber noise canceler':
+                        continue
+                    c["mode"]                = "FNC"
+                    c["nominal_output_freq"] = readFloatFromTextbox(w.editModulatorNominalFreq)*1e6
+                    c["target_BW"]           = freq_value_from_text(w.comboTargetBW.currentText())
+                    actuator_sign = w.comboModulatorSign.currentText() == "Upshift"
+                    print("actuator_sign=", actuator_sign)
+                    print('c["upper_sideband"=', c["upper_sideband"])
+                    c["loop_sign"]           = 1 if actuator_sign == c["upper_sideband"] else -1
+                    print('c["loop_sign"]=', c["loop_sign"])
+                    c["bLock"]               = w.chkLock.isChecked()
                 else:
                     c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
                     c["expected_freq"]         = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6
-                    c["mode"]                  = "counter"
                 channels_settings[channel_id] = c
 
         except (ValueError, SyntaxError):
