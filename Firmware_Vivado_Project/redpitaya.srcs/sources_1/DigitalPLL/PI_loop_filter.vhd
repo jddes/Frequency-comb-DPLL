@@ -77,14 +77,12 @@ architecture Behavioral of PI_loop_filter is
     signal railed_high_int        : std_logic := '0';
     signal railed_low_int         : std_logic := '0';
 
-    attribute mark_debug : string;
-    attribute mark_debug of int:                       signal is "True";
-    attribute mark_debug of error_scaled_I:            signal is "True";
-    attribute mark_debug of error_valid_d2:            signal is "True";
-    attribute mark_debug of error_scaled_I_clk_enable: signal is "True";
-    attribute mark_debug of PI_sum_clk_enable:         signal is "True";
-
-
+    --attribute mark_debug : string;
+    --attribute mark_debug of int:                       signal is "True";
+    --attribute mark_debug of error_scaled_I:            signal is "True";
+    --attribute mark_debug of error_valid_d2:            signal is "True";
+    --attribute mark_debug of error_scaled_I_clk_enable: signal is "True";
+    --attribute mark_debug of PI_sum_clk_enable:         signal is "True";
 
 begin
 

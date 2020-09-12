@@ -16,6 +16,7 @@
     <Option Name="CompiledLibDirRiviera" Val="$PCACHEDIR/compile_simlib/riviera"/>
     <Option Name="CompiledLibDirActivehdl" Val="$PCACHEDIR/compile_simlib/activehdl"/>
     <Option Name="BoardPart" Val=""/>
+    <Option Name="SourceMgmtMode" Val="DisplayOnly"/>
     <Option Name="ActiveSimSet" Val="sim_9_ddc_multichannel"/>
     <Option Name="DefaultLib" Val="work"/>
     <Option Name="EnableCoreContainer" Val="FALSE"/>
@@ -34,12 +35,6 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/simple_dualport_ram.vhd">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/maths_helper.vhd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -135,15 +130,10 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.hwdef"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system_bd.tcl"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_register_slice_0_0/system_axi_register_slice_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_crossbar_0_0/system_axi_crossbar_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.v"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system.hwh"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="system_ooc.xdc"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpio_0_2/system_axi_gpio_0_2.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_util_ds_buf_0_0/system_util_ds_buf_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xlslice_0_0/system_xlslice_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpio_freq1_0/system_axi_gpio_freq1_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpio_0_0/system_axi_gpio_0_0.xci"/>
@@ -153,6 +143,10 @@
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_protocol_converter_0_0/system_axi_protocol_converter_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_clk_wiz_0_0/system_clk_wiz_0_0.xci"/>
         <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xadc_0/system_xadc_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="system_ooc.xdc"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system_bd.tcl"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system.hwh"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.hwdef"/>
       </File>
       <File Path="$PSRCDIR/sources_1/simple_dualport_ram_with_init.vhd">
         <FileInfo>
@@ -281,18 +275,15 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_scope.v">
+      <File Path="$PSRCDIR/sources_1/uart_tx.vhd">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_scope.v"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
           <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pwm.sv">
+      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_scope.v">
         <FileInfo>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pwm.sv"/>
+          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_scope.v"/>
           <Attr Name="ImportTime" Val="1453373286"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -353,12 +344,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/uart_tx.vhd">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/multichannel_freq_counter_top.vhd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -374,374 +359,44 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/internal_vco.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/mux_internal_vco.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/programmable_delay_line.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/helper_functions.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/boxcar_4_pts_filter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/boxcar_2_pts_filter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/adjustable_boxcar_filter_v2.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/system_identification_macc_behav.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/resize_with_saturation.vhd">
+      <File Path="$PSRCDIR/sources_1/DigitalPLL/helper_functions.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/quantizer.vhd">
+      <File Path="$PSRCDIR/sources_1/DigitalPLL/adjustable_boxcar_filter_v2.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/limiter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/integrator_with_saturation.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/IIR_LPF.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/ddc_frontend_lowpass_filter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/system_identification_with_dither2.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/variable_duty_cycle_oscillator.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/dac2_error_computation.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/acquisition_FLL.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/Status_LED_driver.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/residuals_monitor.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/PLL_loop_filters_with_saturation.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/parallel_bus_register_64_bits_or_less.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1_async.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/DDC_wideband_filters.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/adjustable_boxcar_filter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/system_identification_vna_with_dither_wrapper.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/dpll_wrapper.v">
+      <File Path="$PSRCDIR/sources_1/DigitalPLL/registers_read_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/MAX5541_SPI_DAC_interface.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/multiplexer_3to1.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/output_multiplexer.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pid_block.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pid_block.v"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_asg_ch.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_asg_ch.v"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/lfsr_8bits.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/dualport_ram_for_monitor.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/system_identification.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/serialize_register_value.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/residuals_streaming.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_pid.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_pid.v"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/imports/rtl/red_pitaya_asg.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../rtl/red_pitaya_asg.v"/>
-          <Attr Name="ImportTime" Val="1453373286"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/PWM_generator.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/programmable_delay_line_v2.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/programmable_clk_divider.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/prbs_generator.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/PLL_loop_filters.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/parallel_bus_register_128_bits_or_less.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/N_times_clk_FIR_wrapper_testbench.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/fir_3tap_plus_2ndorder_boxcar.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/first_order_IIR_lowpass_filter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/differentiator_with_filter.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/crash_monitor_v1.vhd">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -751,9 +406,20 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/DigitalPLL/registers_read_testbench.vhd">
+      <File Path="$PSRCDIR/sources_1/AD9912/AD9912_DDS_controller.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/AD9912/SPI_master_write_only.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/maths_helper.vhd">
+        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -790,7 +456,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/DDC_test_bench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/DDC_test_bench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -799,21 +464,18 @@
       </File>
       <File Path="$PSRCDIR/sources_1/addr_packed_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/fast_arctan_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/zero_deadtime_counter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/zero_deadtime_counter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -822,7 +484,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/triangular_frequency_counter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/triangular_frequency_counter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -831,7 +492,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/system_identification_vna_with_dither_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/system_identification_vna_with_dither_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -840,7 +500,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/system_identification_vna_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/system_identification_vna_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -849,7 +508,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/system_identification_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/system_identification_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -858,7 +516,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/Status_LED_driver_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/Status_LED_driver_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -867,14 +524,12 @@
       </File>
       <File Path="$PSRCDIR/sources_1/simple_dualport_ram_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/serialize_register_value_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/serialize_register_value_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -883,7 +538,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/resize_with_saturation_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/resize_with_saturation_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -892,7 +546,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/residuals_streaming_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/residuals_streaming_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -901,7 +554,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/residuals_monitor_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/residuals_monitor_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -910,21 +562,18 @@
       </File>
       <File Path="$PSRCDIR/sources_1/ram_tb.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/ram_data_logger_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/quantizer_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/quantizer_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -933,7 +582,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/quadrature_dither_generator_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/quadrature_dither_generator_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -942,7 +590,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/programmable_delay_line_test_bench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/programmable_delay_line_test_bench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -951,7 +598,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/programmable_clk_divider_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/programmable_clk_divider_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -960,7 +606,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/prbs_generator_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/prbs_generator_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -969,7 +614,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/PLL_loop_filters_testbench2.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/PLL_loop_filters_testbench2.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -978,7 +622,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/PLL_loop_filters_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/PLL_loop_filters_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -987,7 +630,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/parallel_bus_register_64_bits_or_less_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/parallel_bus_register_64_bits_or_less_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -996,7 +638,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/output_summing_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/output_summing_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1005,7 +646,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/multiplexer_NbitsxMsignals_to_Nbits_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/multiplexer_NbitsxMsignals_to_Nbits_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1014,7 +654,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/LTC2195_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/LTC2195_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1023,7 +662,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/lockin_dither_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/lockin_dither_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1032,21 +670,18 @@
       </File>
       <File Path="$PSRCDIR/sources_1/internal_vco_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/FSM_addr_packed_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/fir_3tap_plus_2ndorder_boxcar_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/fir_3tap_plus_2ndorder_boxcar_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1055,7 +690,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/first_order_IIR_lowpass_filter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/first_order_IIR_lowpass_filter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1064,14 +698,12 @@
       </File>
       <File Path="$PSRCDIR/sources_1/FIFO_tb.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/dual_type_frequency_counter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/dual_type_frequency_counter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1080,7 +712,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/differentiator_with_filter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/differentiator_with_filter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1089,7 +720,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/dfr_timing_module_v1_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/dfr_timing_module_v1_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1098,7 +728,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/dac2_error_computation_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/dac2_error_computation_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1107,7 +736,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/crash_monitor_v1_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/crash_monitor_v1_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1116,7 +744,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/boxcar_4_pts_filter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/boxcar_4_pts_filter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1125,7 +752,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/aux_data_mux_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/aux_data_mux_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1134,14 +760,12 @@
       </File>
       <File Path="$PSRCDIR/sources_1/arctan_comparison_tb.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/adjustable_boxcar_filter_v2_testbench_vs_v1.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/adjustable_boxcar_filter_v2_testbench_vs_v1.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1150,7 +774,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/adjustable_boxcar_filter_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/adjustable_boxcar_filter_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1159,7 +782,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/AD9783_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/AD9783_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1168,7 +790,6 @@
       </File>
       <File Path="$PSRCDIR/sim_1/imports/DigitalPLL/acquisition_FLL_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="ImportPath" Val="$PSRCDIR/sources_1/DigitalPLL/acquisition_FLL_testbench.vhd"/>
           <Attr Name="ImportTime" Val="1471066605"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -1234,45 +855,6 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
-    <FileSet Name="pll_32x32_mult_ii" Type="BlockSrcs" RelSrcDir="$PSRCDIR/pll_32x32_mult_ii">
-      <File Path="$PSRCDIR/sources_1/ip/pll_32x32_mult_ii/pll_32x32_mult_ii.xci">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="pll_32x32_mult_ii"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
-    <FileSet Name="pll_18x32_mult_d" Type="BlockSrcs" RelSrcDir="$PSRCDIR/pll_18x32_mult_d">
-      <File Path="$PSRCDIR/sources_1/ip/pll_18x32_mult_d/pll_18x32_mult_d.xci">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="pll_18x32_mult_d"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
-    <FileSet Name="pll_wide_mult" Type="BlockSrcs" RelSrcDir="$PSRCDIR/pll_wide_mult">
-      <File Path="$PSRCDIR/sources_1/ip/pll_wide_mult/pll_wide_mult.xci">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="pll_wide_mult"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
     <FileSet Name="system_identification_outputgain_mult" Type="BlockSrcs" RelSrcDir="$PSRCDIR/system_identification_outputgain_mult">
       <File Path="$PSRCDIR/sources_1/ip/system_identification_outputgain_mult/system_identification_outputgain_mult.xci">
         <FileInfo>
@@ -1286,24 +868,10 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
-    <FileSet Name="fir_compiler_minimumphase_N_times_clk" Type="BlockSrcs" RelSrcDir="$PSRCDIR/fir_compiler_minimumphase_N_times_clk">
-      <File Path="$PSRCDIR/sources_1/ip/fir_compiler_minimumphase_N_times_clk/fir_compiler_minimumphase_N_times_clk.xci">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="fir_compiler_minimumphase_N_times_clk"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
     <FileSet Name="sim_2" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_2">
       <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/N_times_clk_FIR_wrapper.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1313,19 +881,6 @@
         <Option Name="TopModule" Val="red_pitaya_top"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
         <Option Name="SrcSet" Val="sources_1"/>
-      </Config>
-    </FileSet>
-    <FileSet Name="fifo_generator_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/fifo_generator_0">
-      <File Path="$PSRCDIR/sources_1/ip/fifo_generator_0/fifo_generator_0.xci">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="fifo_generator_0"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
     <FileSet Name="FIFO_addr_packed" Type="BlockSrcs" RelSrcDir="$PSRCDIR/FIFO_addr_packed">
@@ -1338,19 +893,6 @@
       </File>
       <Config>
         <Option Name="TopModule" Val="FIFO_addr_packed"/>
-        <Option Name="UseBlackboxStub" Val="1"/>
-      </Config>
-    </FileSet>
-    <FileSet Name="clk_10MHz_sync" Type="BlockSrcs" RelSrcDir="$PSRCDIR/clk_10MHz_sync">
-      <File Path="$PSRCDIR/sources_1/ip/clk_10MHz_sync/clk_10MHz_sync.xci">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <Config>
-        <Option Name="TopModule" Val="clk_10MHz_sync"/>
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
@@ -1421,7 +963,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/binary_to_gray_4bits_tb.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1569,49 +1110,48 @@
       </File>
       <File Path="$PSRCDIR/sources_1/maths_helper.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/ddc_multichannel.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/N_times_clk_FIR_multichannel.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/ram_data_logger_v2.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/mux_phase_to_logger.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/integrate_and_dump.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/phase_unwrapper.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/simple_dualport_ram.vhd">
+        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1663,14 +1203,12 @@
       </File>
       <File Path="$PSRCDIR/sources_1/phase_unwrapper.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/integrate_and_dump_4ch.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1725,7 +1263,18 @@
       </File>
       <File Path="$PSRCDIR/sources_1/DigitalPLL/registers_read_testbench.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/ram_data_logger_v2.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/simple_dualport_ram.vhd">
+        <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1733,7 +1282,7 @@
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="registers_read_testbench"/>
-        <Option Name="SrcSet" Val="sources_1"/>
+        <Option Name="SrcSet" Val=""/>
       </Config>
     </FileSet>
     <FileSet Name="sim_13_serial_shifter" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_13_serial_shifter">
@@ -1878,7 +1427,6 @@
       </File>
       <File Path="$PSRCDIR/sources_1/integrate_and_dump.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -1958,41 +1506,7 @@
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="pll_32x32_mult_ii_synth_1" Type="Ft3:Synth" SrcSet="pll_32x32_mult_ii" Part="xc7z010clg400-1" ConstrsSet="pll_32x32_mult_ii" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/pll_32x32_mult_ii_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-    </Run>
-    <Run Id="pll_18x32_mult_d_synth_1" Type="Ft3:Synth" SrcSet="pll_18x32_mult_d" Part="xc7z010clg400-1" ConstrsSet="pll_18x32_mult_d" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-    </Run>
-    <Run Id="pll_wide_mult_synth_1" Type="Ft3:Synth" SrcSet="pll_wide_mult" Part="xc7z010clg400-1" ConstrsSet="pll_wide_mult" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/pll_wide_mult_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-    </Run>
     <Run Id="system_identification_outputgain_mult_synth_1" Type="Ft3:Synth" SrcSet="system_identification_outputgain_mult" Part="xc7z010clg400-1" ConstrsSet="system_identification_outputgain_mult" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/system_identification_outputgain_mult_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-    </Run>
-    <Run Id="fir_compiler_minimumphase_N_times_clk_synth_1" Type="Ft3:Synth" SrcSet="fir_compiler_minimumphase_N_times_clk" Part="xc7z010clg400-1" ConstrsSet="fir_compiler_minimumphase_N_times_clk" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/fir_compiler_minimumphase_N_times_clk_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
-        <Step Id="synth_design"/>
-      </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-    </Run>
-    <Run Id="fifo_generator_0_synth_1" Type="Ft3:Synth" SrcSet="fifo_generator_0" Part="xc7z010clg400-1" ConstrsSet="fifo_generator_0" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/fifo_generator_0_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
@@ -2005,12 +1519,6 @@
         <Step Id="synth_design"/>
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
-    </Run>
-    <Run Id="clk_10MHz_sync_synth_1" Type="Ft3:Synth" SrcSet="clk_10MHz_sync" Part="xc7z010clg400-1" ConstrsSet="clk_10MHz_sync" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
-        <Step Id="synth_design"/>
-      </Strategy>
     </Run>
     <Run Id="LO_DDS_synth_1" Type="Ft3:Synth" SrcSet="LO_DDS" Part="xc7z010clg400-1" ConstrsSet="LO_DDS" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/LO_DDS_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
@@ -2069,48 +1577,6 @@
         <Step Id="write_bitstream"/>
       </Strategy>
     </Run>
-    <Run Id="pll_32x32_mult_ii_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="pll_32x32_mult_ii" Description="Vivado Implementation Defaults" SynthRun="pll_32x32_mult_ii_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-    </Run>
-    <Run Id="pll_18x32_mult_d_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="pll_18x32_mult_d" Description="Vivado Implementation Defaults" SynthRun="pll_18x32_mult_d_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-    </Run>
-    <Run Id="pll_wide_mult_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="pll_wide_mult" Description="Vivado Implementation Defaults" SynthRun="pll_wide_mult_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-    </Run>
     <Run Id="system_identification_outputgain_mult_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="system_identification_outputgain_mult" Description="Vivado Implementation Defaults" SynthRun="system_identification_outputgain_mult_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
@@ -2125,49 +1591,7 @@
         <Step Id="write_bitstream"/>
       </Strategy>
     </Run>
-    <Run Id="fir_compiler_minimumphase_N_times_clk_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="fir_compiler_minimumphase_N_times_clk" Description="Vivado Implementation Defaults" SynthRun="fir_compiler_minimumphase_N_times_clk_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-    </Run>
-    <Run Id="fifo_generator_0_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="fifo_generator_0" Description="Vivado Implementation Defaults" SynthRun="fifo_generator_0_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-    </Run>
     <Run Id="FIFO_addr_packed_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="FIFO_addr_packed" Description="Vivado Implementation Defaults" SynthRun="FIFO_addr_packed_synth_1" IncludeInArchive="true">
-      <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
-        <Step Id="init_design"/>
-        <Step Id="opt_design"/>
-        <Step Id="power_opt_design"/>
-        <Step Id="place_design"/>
-        <Step Id="post_place_power_opt_design"/>
-        <Step Id="phys_opt_design"/>
-        <Step Id="route_design"/>
-        <Step Id="post_route_phys_opt_design"/>
-        <Step Id="write_bitstream"/>
-      </Strategy>
-    </Run>
-    <Run Id="clk_10MHz_sync_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="clk_10MHz_sync" Description="Vivado Implementation Defaults" SynthRun="clk_10MHz_sync_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
         <Step Id="init_design"/>
