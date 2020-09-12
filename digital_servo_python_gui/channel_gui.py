@@ -19,7 +19,7 @@ pg.setConfigOption('antialias', True)
 
 class ChannelGUI(QtWidgets.QWidget):
     sig_set_num_points    = QtCore.pyqtSignal(int, dict)
-    sig_update_lock_state = QtCore.pyqtSignal(int, float)
+    sig_update_lock_state = QtCore.pyqtSignal(int, bool)
     # these signals will be connected to the summary tab:
     sig_new_Amplitude     = QtCore.pyqtSignal(int, float, float)
     sig_new_SNR           = QtCore.pyqtSignal(int, float)
