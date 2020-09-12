@@ -157,6 +157,8 @@ class ConfigWidget(QtWidgets.QWidget):
                         actuator_sign = w.comboModulatorSign.currentText() == "Upshift"
                         c["loop_sign"]           = 1 if actuator_sign == c["upper_sideband"] else -1
                         c["bLock"]               = w.chkLock.isChecked()
+
+                        c["DDS_output_current_word"] = adv_settings.spinDDSpower.value()
                 else:
                     c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
                     c["expected_freq"]         = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6

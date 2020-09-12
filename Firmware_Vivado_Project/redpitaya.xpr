@@ -17,7 +17,7 @@
     <Option Name="CompiledLibDirActivehdl" Val="$PCACHEDIR/compile_simlib/activehdl"/>
     <Option Name="BoardPart" Val=""/>
     <Option Name="SourceMgmtMode" Val="DisplayOnly"/>
-    <Option Name="ActiveSimSet" Val="sim_9_ddc_multichannel"/>
+    <Option Name="ActiveSimSet" Val="sim_17_ad9912"/>
     <Option Name="DefaultLib" Val="work"/>
     <Option Name="EnableCoreContainer" Val="FALSE"/>
     <Option Name="CreateRefXciForCoreContainers" Val="FALSE"/>
@@ -1456,6 +1456,31 @@
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="serialize_M_to_N_bits_tb"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
+        <Option Name="SrcSet" Val=""/>
+      </Config>
+    </FileSet>
+    <FileSet Name="sim_17_ad9912" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_17_ad9912">
+      <File Path="$PSRCDIR/sources_1/AD9912/SPI_master_write_only.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/AD9912/AD9912_DDS_controller.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/AD9912/AD9912_DDS_controller_tb.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="DesignMode" Val="RTL"/>
+        <Option Name="TopModule" Val="AD9912_DDS_controller_tb"/>
         <Option Name="SrcSet" Val=""/>
       </Config>
     </FileSet>

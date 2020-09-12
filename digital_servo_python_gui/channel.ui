@@ -197,7 +197,7 @@
      <item row="0" column="0" colspan="2">
       <widget class="QCheckBox" name="chkAutorefresh">
        <property name="text">
-        <string>Auto-refresh</string>
+        <string>Display refresh</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -227,7 +227,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Lock</string>
+          <string>Lock phase</string>
          </property>
         </widget>
        </item>

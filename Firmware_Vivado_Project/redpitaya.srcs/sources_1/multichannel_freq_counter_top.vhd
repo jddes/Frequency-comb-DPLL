@@ -25,6 +25,14 @@ generic (
     LoggerData_clk_enable : out std_logic;
     LoggerData            : out std_logic_vector(16-1 downto 0);
     LoggerIsWriting       : in  std_logic;
+
+    -- this is used to update AD9912 registers directly
+    AD9912_register_write1  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
+    AD9912_register_write2  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
+    AD9912_register_write3  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
+    AD9912_register_write4  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
+    AD9912_register_address : out std_logic_vector(13-1 downto 0);
+    AD9912_register_value   : out std_logic_vector( 8-1 downto 0);
     
     -- data output:
     DACout1               : out std_logic_vector(16-1 downto 0);
@@ -341,6 +349,10 @@ begin
     begin
         if rising_edge(clk) then
             manual_offset_changed <= (others => '0');
+            AD9912_register_write1 <= '0';
+            AD9912_register_write2 <= '0';
+            AD9912_register_write3 <= '0';
+            AD9912_register_write4 <= '0';
             -- Note: sys_ack is generated inside registers_read, and is strobed by default in response to all reads/writes
 
             -- defaults, for implementing strobes on writes:
@@ -409,6 +421,26 @@ begin
                         I_gain_coarse2 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*1 downto P_gain_coarse1'length*1);
                         I_gain_coarse3 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*2 downto P_gain_coarse1'length*2);
                         I_gain_coarse4 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*3 downto P_gain_coarse1'length*3);
+
+                    when x"20" =>
+                        AD9912_register_write1  <= '1';
+                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+
+                    when x"21" =>
+                        AD9912_register_write2  <= '1';
+                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+
+                    when x"22" =>
+                        AD9912_register_write3  <= '1';
+                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+
+                    when x"23" =>
+                        AD9912_register_write4  <= '1';
+                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
 
 
                     when others => 

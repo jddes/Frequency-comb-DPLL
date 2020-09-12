@@ -81,6 +81,11 @@ class SuperLaserLand_JD_RP:
         "PI_coarse_P_gains": counter2absolute(0x001E),
         "PI_coarse_I_gains": counter2absolute(0x001F),
 
+        "AD9912_SPI1":        counter2absolute(0x0020),
+        "AD9912_SPI2":        counter2absolute(0x0021),
+        "AD9912_SPI3":        counter2absolute(0x0022),
+        "AD9912_SPI4":        counter2absolute(0x0023),
+
         # Phase logger registers, implemented in registers_read.vhd
         "phase_logger_start_write":        counter2absolute(0x0041),
         "phase_logger_start_read":         counter2absolute(0x0042),
@@ -109,6 +114,7 @@ class SuperLaserLand_JD_RP:
         "clk_freq_reg3":      bd2absolute(0x0005_0000),
 
         "uart_to_spi_bridge": bd2absolute(0x0005_0008),
+
     }
     for xadc_channel in range(15+1):
         addr["xadc_channel%d" % xadc_channel] = addr["xadc_base"]+0x240+4*xadc_channel
@@ -150,7 +156,14 @@ class SuperLaserLand_JD_RP:
         self.adc_bits = 14
         self.phase_bits = 14
         self.dds_bits = 48
-        self.PI_n_cycles = 20 # decimation between arctan and PI to DDS
+
+        self.LPF_DECIM = 6 # decimation ratio done by fir_lpf_decim_by_6
+        self.dds_spi_clk_div = 4 # must be equal to "clk_div" from red_pitaya_top.v
+        self.dds_spi_bits_per_transaction = 100 # approximate number of bits in each SPI transfer to the DDS chip. must be an overestimate
+        # decimation between arctan and PI to DDS.
+        # must satisfy constraint: self.fs/(self.LPF_DECIM*self.PI_n_cycles) < self.fs/(self.dds_spi_bits_per_transaction*self.dds_spi_clk_div)
+        # reduces to: self.LPF_DECIM*self.PI_n_cycles > self.dds_spi_bits_per_transaction*self.dds_spi_clk_div
+        self.PI_n_cycles = int(np.ceil(self.dds_spi_bits_per_transaction*self.dds_spi_clk_div/self.LPF_DECIM))
         self.R_LO3 = dict()
         for channel_id in self.channels_list:
             self.R_LO3[channel_id] = rationals.RationalNumber(0, 1) # this will get filled in once we know all the required values
@@ -650,7 +663,7 @@ class SuperLaserLand_JD_RP:
             PI_enables_reg |= self.user_inputs["Ki_enable_ch%d"%channel_id] << (channel_id-1+len(self.channels_list))
         self.write("PI_enables", PI_enables_reg)
 
-        self.write("PI_n_cycles", self.PI_n_cycles) # TODO: could tweak this later once we have the hardware
+        self.write("PI_n_cycles", self.PI_n_cycles)
 
     def getAllPossiblePgains(self):
         """ Returns a numpy array with all available values of the proportional gain,
@@ -719,6 +732,44 @@ class SuperLaserLand_JD_RP:
         file_data = description.encode('ascii')
         self.dev.write_file_on_remote("", strFilenameRemote="/opt/hardware.txt", file_data=file_data)
 
+    def write_AD9912_SPI(self, channel_id, reg_addr, reg_value):
+        reg_combined = reg_value & bitmask(8)
+        reg_combined |= (reg_addr & bitmask(13)) << 8
+        print("write_AD9912_SPI(): reg_addr=0x%x, reg_value=0x%x, reg_combined=0x%x" % (reg_addr, reg_value, reg_combined))
+        self.write("AD9912_SPI%d" % channel_id, reg_combined)
+        time.sleep(1e-3)
+
+    def getAD9912currentForWord(self, current_word):
+        """ Returns the value of the DDS DAC's fullscale current, in Amperes,
+        for a given value of the current tuning word (10 bits) """
+        # equations from the AD9912 datasheet
+        I_DAC_ref = 1.2/10e3 # Rset = 10 kOhms on the DDS board, as recommended per the datasheet
+        I_DAC_fullscale = I_DAC_ref * (72 + 192*current_word/1024)
+        return I_DAC_fullscale
+
+    def getAD9912outputPower(self, current_word):
+        """ Returns the output power in Watts into a 50 ohms load.
+        Calculation is not trivial due to the presence of the transformer
+        which coherently combines the two DAC outputs """
+        I_DAC_fullscale = self.getAD9912currentForWord(current_word)
+        I_peak = I_DAC_fullscale/2
+        I_load = 2/3 * I_peak
+        R_load = 50
+        P_nominal = R_load * I_load**2/2
+        extra_loss = 0.5 # loss in dB between actual power and nominal
+        P_actual = P_nominal * 10**(-extra_loss/10)
+        return P_actual
+
+    def setAD9912current(self, channel_id, current_word):
+        """ Sets the reference current for the DDS DAC.
+        current_word is a 10 bits word, where 0 corresponds to 8.6 mA and 1023 corresponds to 31.7 mA.
+        The default value is 20 mA (current_word=512) """
+        ad9912_addr_lsb = 0x40B
+        reg_lsbs =  current_word     & bitmask(8)
+        reg_msbs = (current_word>>8) & bitmask(2)
+        self.write_AD9912_SPI(channel_id, ad9912_addr_lsb,   reg_lsbs)
+        self.write_AD9912_SPI(channel_id, ad9912_addr_lsb+1, reg_msbs)
+
 class phaseReadoutDriver():
     def __init__(self, sl):
         """ sl must be a SuperLaserLand_JD_RP() instance """
@@ -744,7 +795,7 @@ class phaseReadoutDriver():
         self.last_chunk_id = -1
         self.first_read = True
         self.read_counter = 0
-        self.LPF_DECIM = 6 # decimation ratio done by fir_lpf_decim_by_6
+        self.LPF_DECIM = self.sl.LPF_DECIM # decimation ratio done by fir_lpf_decim_by_6
         self.fs_nominal = 125e6 # just used once to set output rate, will NOT be updated later
         self.nominal_output_rate = 100 # this is the target, the actual rate will be a bit off, since that doesn't yield an integer number of cycles
         self.n_bits_phase = 14 # fractional bits on the arctan extraction inside the fpga

@@ -121,6 +121,10 @@ class MainWidget(QtWidgets.QMainWindow):
             self.tab_widget.addTab(GUI, "Channel %d" % (channel_id))
             self.channel_GUIs[channel_id] = GUI
 
+        for k, w in self.config_widget.adv_per_channel.items():
+            w.power_code_to_dBm = lambda x: 10*np.log10(1e3*self.sl.getAD9912outputPower(x))
+            w.spinDDSpower_valueChanged(w.spinDDSpower.value())
+
         self.tab_widget.currentChanged.connect(self.updateTabVisibility)
         self.setWindowTitle('FNC-100 Digital PLL/Frequency counter/phase meter')
 
@@ -245,6 +249,7 @@ class MainWidget(QtWidgets.QMainWindow):
         for channel_id, channel_settings in channels_settings.items():
             self.setup_LO(system_settings, channel_settings)
             self.setup_controller(system_settings, channel_settings)
+            self.sl.setAD9912current(channel_settings["channel_id"], channel_settings["DDS_output_current_word"])
         self.sl.commit_controller_settings()
 
         pprint.pprint(self.sl.user_inputs)

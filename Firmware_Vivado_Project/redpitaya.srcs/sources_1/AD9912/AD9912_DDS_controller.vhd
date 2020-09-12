@@ -1,4 +1,3 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -7,18 +6,22 @@ entity AD9912_DDS_controller is
     port 
     ( 
         clk                        : in  std_logic;
-        do_config                  : in  std_logic;
-        config_done                : out std_logic;
-        freq_word                  : in  std_logic_vector (47 downto 0);
-        freq_word_delay_only       : in  std_logic_vector (47 downto 0);
+        freq_word                  : in  std_logic_vector(48-1 downto 0);
+        freq_word_delay_only       : in  std_logic_vector(48-1 downto 0);
         update_freq                : in  std_logic;
-        current_dds_freq           : out std_logic_vector (47 downto 0);
-        timestamp_in               : in  std_logic_vector (64-1 downto 0);
-        timestamp_at_freq_update   : out std_logic_vector (64-1 downto 0);
-        clk_div                    : in std_logic_vector(15 downto 0);
-        SPI_SCLK                   : out  std_logic;
-        SPI_SDIO                   : out  std_logic;
-        SPI_CSB                    : out  std_logic
+
+        -- this is used to update AD9912 registers directly
+        register_write             : in  std_logic; -- rising edge on this starts the transfer at the next opportuinity
+        register_address           : in  std_logic_vector(13-1 downto 0);
+        register_value             : in  std_logic_vector( 8-1 downto 0);
+
+        current_dds_freq           : out std_logic_vector(48-1 downto 0);
+        timestamp_in               : in  std_logic_vector(64-1 downto 0);
+        timestamp_at_freq_update   : out std_logic_vector(64-1 downto 0);
+        clk_div                    : in  std_logic_vector(16-1 downto 0);
+        SPI_SCLK                   : out std_logic;
+        SPI_SDIO                   : out std_logic;
+        SPI_CSB                    : out std_logic
     );
 end entity;
 
@@ -30,16 +33,16 @@ architecture behavioral of AD9912_DDS_controller is
                             FSM_WAIT_FOR_CORE2,
                             FSM_SEND_FREQ_WORD, 
                             FSM_SEND_UPDATE_BIT,
-                            FSM_SEND_REG1, 
-                            FSM_SEND_REG2, 
-                            FSM_SEND_REG3);
+                            FSM_SEND_USER_CONFIG
+                            );
     signal FSM_state                    : fsm_state_type                    := FSM_WAIT;
     signal FSM_next_state               : fsm_state_type                    := FSM_WAIT;
     
     -- Configuration signals
-    signal do_config_internal           : std_logic                         := '0';
-    signal initial_config_done          : std_logic                         := '0';
-    signal initial_config_timer         : unsigned(16-1 downto 0)           := to_unsigned(1e3, 16);
+    signal register_write_d1      : std_logic := '0';
+    signal pending_register_write : std_logic := '0';
+    signal register_address_reg   : std_logic_vector(register_address'length-1 downto 0) := (others => '0');
+    signal register_value_reg     : std_logic_vector(register_value'length-1 downto 0) := (others => '0');
     
     signal freq_reg                     : std_logic_vector(48-1 downto 0)   := (others => '0');
     
@@ -62,26 +65,31 @@ architecture behavioral of AD9912_DDS_controller is
 
 begin
 
-    input_regs : process (clk) is
-    begin
-        if rising_edge(clk) then
-            do_config_internal <= do_config;
-        end if;
-    end process;
-
     --------------------------------------------------------------------------------------------------------------------------------
     -- The controller FSM for the whole module.
     --------------------------------------------------------------------------------------------------------------------------------
     fsm : process (clk) is
     begin
         if rising_edge(clk) then
+            -- remember register writes until we actually have a chance to commit them
+            register_write_d1 <= register_write;
+            if register_write = '1' and register_write_d1 = '0' then
+                pending_register_write <= '1';
+                register_address_reg   <= register_address;
+                register_value_reg     <= register_value;
+            end if;
+
             case FSM_state is
             
                 when FSM_WAIT =>
                     send_reg <= '0';
-                    if do_config_internal = '1' then
+                    --if do_config_internal = '1' then
+                    --    FSM_state <= FSM_WAIT_FOR_CORE1;
+                    --    FSM_next_state <= FSM_SEND_REG1;
+                    if pending_register_write = '1' then
+                        pending_register_write <= '0';
                         FSM_state <= FSM_WAIT_FOR_CORE1;
-                        FSM_next_state <= FSM_SEND_REG1;
+                        FSM_next_state <= FSM_SEND_USER_CONFIG;
                         
                     elsif update_freq = '1' then
                         FSM_state <= FSM_WAIT_FOR_CORE1;
@@ -92,40 +100,48 @@ begin
                 -- these are the configuration states:
                 ---------------------------------------
                 
-                -- this either disables the internal PLL so that the external clock drives the DDS core directly, or enables it so that the SYSCLK input frequency can be multiplied up.
-                when FSM_SEND_REG1 =>    
+--                -- this either disables the internal PLL so that the external clock drives the DDS core directly, or enables it so that the SYSCLK input frequency can be multiplied up.
+--                when FSM_SEND_REG1 =>    
 
-                    reg_address <= b"0" & x"010";
+--                    reg_address <= b"0" & x"010";
+--                    reg_size_in_bits <= std_logic_vector(to_unsigned(8, reg_size_in_bits'length));
+--                    data_input <= (x"D0" & std_logic_vector(to_unsigned(0, 48-8)));    -- Power-down SYSCLK PLL
+----                    data_input <= (x"C0" & std_logic_vector(to_unsigned(0, 48-8)));    -- Enable SYSCLK PLL
+--                    send_reg <= '1';
+                    
+--                    FSM_state <= FSM_WAIT_FOR_CORE1;
+--                    FSM_next_state <= FSM_SEND_REG2;
+                    
+                    
+--                -- sets the N-divider value (register 0x0020)
+--                when FSM_SEND_REG2 =>    
+--                    reg_address <= b"0" & x"020";
+--                    reg_size_in_bits <= std_logic_vector(to_unsigned(8, reg_size_in_bits'length));
+--                    data_input <= (x"00" & std_logic_vector(to_unsigned(0, 48-8)));    -- a value of 0 in this register means a division ratio of (0+2)*2 = 4 of the internal VCO, meaning a multiplication of the input clock by 4
+--                    send_reg <= '1';
+                    
+--                    FSM_state <= FSM_WAIT_FOR_CORE1;
+--                    FSM_next_state <= FSM_SEND_REG3;
+                    
+--                -- sets the VCO range register (register 0x0022)
+--                when FSM_SEND_REG3 =>    
+--                    reg_address <= b"0" & x"022";
+--                    reg_size_in_bits <= std_logic_vector(to_unsigned(8, reg_size_in_bits'length));
+--                    data_input <= (b"0000_0011" & std_logic_vector(to_unsigned(0, 48-8)));    -- VCO range to low-band (700-810 MHz), Charge-pump current of 125 uA (the lowest setting)
+--                    send_reg <= '1';
+                    
+--                    FSM_state <= FSM_WAIT_FOR_CORE1;
+--                    FSM_next_state <= FSM_WAIT;
+                    
+--                    initial_config_done <= '1';
+
+                when FSM_SEND_USER_CONFIG =>
+                    reg_address <= register_address_reg;
+                    data_input <= register_value_reg & x"00_0000_0000"; -- data is padded from 8 bits to 48 bits, value stuffed in MSBs
                     reg_size_in_bits <= std_logic_vector(to_unsigned(8, reg_size_in_bits'length));
-                    data_input <= (x"D0" & std_logic_vector(to_unsigned(0, 48-8)));    -- Power-down SYSCLK PLL
---                    data_input <= (x"C0" & std_logic_vector(to_unsigned(0, 48-8)));    -- Enable SYSCLK PLL
                     send_reg <= '1';
-                    
-                    FSM_state <= FSM_WAIT_FOR_CORE1;
-                    FSM_next_state <= FSM_SEND_REG2;
-                    
-                    
-                -- sets the N-divider value (register 0x0020)
-                when FSM_SEND_REG2 =>    
-                    reg_address <= b"0" & x"020";
-                    reg_size_in_bits <= std_logic_vector(to_unsigned(8, reg_size_in_bits'length));
-                    data_input <= (x"00" & std_logic_vector(to_unsigned(0, 48-8)));    -- a value of 0 in this register means a division ratio of (0+2)*2 = 4 of the internal VCO, meaning a multiplication of the input clock by 4
-                    send_reg <= '1';
-                    
-                    FSM_state <= FSM_WAIT_FOR_CORE1;
-                    FSM_next_state <= FSM_SEND_REG3;
-                    
-                -- sets the VCO range register (register 0x0022)
-                when FSM_SEND_REG3 =>    
-                    reg_address <= b"0" & x"022";
-                    reg_size_in_bits <= std_logic_vector(to_unsigned(8, reg_size_in_bits'length));
-                    data_input <= (b"0000_0011" & std_logic_vector(to_unsigned(0, 48-8)));    -- VCO range to low-band (700-810 MHz), Charge-pump current of 125 uA (the lowest setting)
-                    send_reg <= '1';
-                    
                     FSM_state <= FSM_WAIT_FOR_CORE1;
                     FSM_next_state <= FSM_WAIT;
-                    
-                    initial_config_done <= '1';
 
                 ----------------------------------------
                     
@@ -196,7 +212,6 @@ begin
     -- Connect the output signals
     --------------------------------------------------------------------------------------------------------------------------------
     current_dds_freq         <= current_dds_freq_internal;
-    config_done              <= initial_config_done;
     timestamp_at_freq_update <= timestamp_at_freq_update_int;
           
 end architecture;

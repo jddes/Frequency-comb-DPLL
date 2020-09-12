@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
-    <height>207</height>
+    <width>334</width>
+    <height>247</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -100,6 +100,77 @@
     <widget class="QLabel" name="lblChosenIF">
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>DDS settings</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Output power [0-1023]</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QSpinBox" name="spinDDSpower">
+     <property name="toolTip">
+      <string>Output power can be tuned by changing this value from 0 to 1023, covering -7.3 dBm to 3.9 dBm, with the nominal value being 512 corresponding to 0 dBm</string>
+     </property>
+     <property name="maximum">
+      <number>1023</number>
+     </property>
+     <property name="singleStep">
+      <number>20</number>
+     </property>
+     <property name="value">
+      <number>512</number>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Output power [-7.3 dBm to 3.9 dBm]</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QLabel" name="lblDDSpower">
+     <property name="text">
+      <string>TextLabel</string>
      </property>
     </widget>
    </item>

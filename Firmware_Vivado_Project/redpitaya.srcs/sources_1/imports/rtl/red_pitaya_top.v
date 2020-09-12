@@ -508,6 +508,14 @@ wire [48-1:0] DDSout2;
 wire [48-1:0] DDSout3;
 wire [48-1:0] DDSout4;
 
+
+wire AD9912_register_write1;
+wire AD9912_register_write2;
+wire AD9912_register_write3;
+wire AD9912_register_write4;
+wire [13-1:0] AD9912_register_address;
+wire [ 8-1:0] AD9912_register_value;
+
 assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
 // assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
 
@@ -519,6 +527,12 @@ multichannel_freq_counter_top multichannel_freq_counter_top_inst (
     .LoggerData_clk_enable(LoggerData_clk_enable),
     .LoggerData           (LoggerData),
     .LoggerIsWriting      (LoggerIsWriting),
+    .AD9912_register_write1  (AD9912_register_write1),
+    .AD9912_register_write2  (AD9912_register_write2),
+    .AD9912_register_write3  (AD9912_register_write3),
+    .AD9912_register_write4  (AD9912_register_write4),
+    .AD9912_register_address (AD9912_register_address),
+    .AD9912_register_value   (AD9912_register_value),
     .DACout1              (DACout0),
     .DACout2              (DACout1),
     .DDS_clk_enable       (DDS_clk_enable),
@@ -924,26 +938,29 @@ red_pitaya_ams i_ams (
 
   //---------------------------------------------------------------------------------
   //  SPI communication with a AD9912 1 GHz DDS, 48 bits frequency word
-  // Inputs
-  wire do_config                   = 1'b0;
-  reg [15:0] clk_div              = 16'd25; // 125 MHz/25 = 5 MHz for now
-  // Outputs
-  wire config_done;
+  // now try pushing the SPI clock rate to what we'll actually be using
+  // the AD9912 has 50 MHz as its maximum SPI clock in the specs, but our clock rate is 125 MHz,
+  // so we can only do 125 MHz/4 = 31.25 MHz
+  // since we are limited to even number of cycles per clock periods with the current implementation
+  reg [15:0] clk_div              = 16'd4; // 125 MHz/4 = 31.25 MHz
+  wire AD9912_SPI_SCLK;
+  wire AD9912_SPI_SCLK_P;
+  wire AD9912_SPI_SCLK_N;
+  wire AD9912_SPI_SDIO1, AD9912_SPI_SDIO2, AD9912_SPI_SDIO3, AD9912_SPI_SDIO4;
+  wire AD9912_SPI_CSB;
 
-  (* mark_debug = "true" *) wire AD9912_SPI_SCLK;
-  (* mark_debug = "true" *) wire AD9912_SPI_SCLK_P;
-  (* mark_debug = "true" *) wire AD9912_SPI_SCLK_N;
-  (* mark_debug = "true" *) wire AD9912_SPI_SDIO1, AD9912_SPI_SDIO2, AD9912_SPI_SDIO3, AD9912_SPI_SDIO4;
-  (* mark_debug = "true" *) wire AD9912_SPI_CSB;
 
-
-  AD9912_DDS_controller # () AD9912_DDS_controller_inst (
+  AD9912_DDS_controller # () AD9912_DDS_controller_inst1 (
       .clk                     (adc_clk),
-      .do_config               (do_config),
-      .config_done             (config_done),
       .freq_word               (DDSout1),
       .freq_word_delay_only    (),
       .update_freq             (DDS_clk_enable),
+
+        // this is used to update AD9912 registers directly
+      .register_write          (AD9912_register_write1),
+      .register_address        (AD9912_register_address),
+      .register_value          (AD9912_register_value),
+
       .current_dds_freq        (),
       .timestamp_in            (),
       .timestamp_at_freq_update(),
@@ -951,6 +968,63 @@ red_pitaya_ams i_ams (
       .SPI_SCLK                (AD9912_SPI_SCLK),
       .SPI_SDIO                (AD9912_SPI_SDIO1),
       .SPI_CSB                 (AD9912_SPI_CSB)
+  );
+  AD9912_DDS_controller # () AD9912_DDS_controller_inst2 (
+      .clk                     (adc_clk),
+      .freq_word               (DDSout2),
+      .freq_word_delay_only    (),
+      .update_freq             (DDS_clk_enable),
+
+        // this is used to update AD9912 registers directly
+      .register_write          (AD9912_register_write2),
+      .register_address        (AD9912_register_address),
+      .register_value          (AD9912_register_value),
+
+      .current_dds_freq        (),
+      .timestamp_in            (),
+      .timestamp_at_freq_update(),
+      .clk_div                 (clk_div),
+      .SPI_SCLK                (),
+      .SPI_SDIO                (AD9912_SPI_SDIO2),
+      .SPI_CSB                 ()
+  );
+  AD9912_DDS_controller # () AD9912_DDS_controller_inst3 (
+      .clk                     (adc_clk),
+      .freq_word               (DDSout3),
+      .freq_word_delay_only    (),
+      .update_freq             (DDS_clk_enable),
+
+        // this is used to update AD9912 registers directly
+      .register_write          (AD9912_register_write3),
+      .register_address        (AD9912_register_address),
+      .register_value          (AD9912_register_value),
+
+      .current_dds_freq        (),
+      .timestamp_in            (),
+      .timestamp_at_freq_update(),
+      .clk_div                 (clk_div),
+      .SPI_SCLK                (),
+      .SPI_SDIO                (AD9912_SPI_SDIO3),
+      .SPI_CSB                 ()
+  );
+  AD9912_DDS_controller # () AD9912_DDS_controller_inst4 (
+      .clk                     (adc_clk),
+      .freq_word               (DDSout4),
+      .freq_word_delay_only    (),
+      .update_freq             (DDS_clk_enable),
+
+        // this is used to update AD9912 registers directly
+      .register_write          (AD9912_register_write4),
+      .register_address        (AD9912_register_address),
+      .register_value          (AD9912_register_value),
+
+      .current_dds_freq        (),
+      .timestamp_in            (),
+      .timestamp_at_freq_update(),
+      .clk_div                 (clk_div),
+      .SPI_SCLK                (),
+      .SPI_SDIO                (AD9912_SPI_SDIO4),
+      .SPI_CSB                 ()
   );
 
   assign AD9912_SPI_SCLK_P = AD9912_SPI_SCLK;

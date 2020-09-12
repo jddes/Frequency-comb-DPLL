@@ -102,7 +102,7 @@ class ChannelGUI(QtWidgets.QWidget):
         d = dict()
         d["channel_id"] = self.channel_id
         d["pts_ADC"] = self.RBW_to_pts(freq_value_from_text(self.comboRBW.currentText()))
-        if self.comboPlotType.currentText() == 'IQ timeseries':
+        if self.comboPlotType.currentText() in ['IQ timeseries', 'IQ spectrum']:
             d["pts_IQ"] = d["pts_ADC"]
         else:
             d["pts_IQ"] = int(1e3) # hard-coded for now, this will need to change when we add the option to plot the time domain phase or phase PSD
