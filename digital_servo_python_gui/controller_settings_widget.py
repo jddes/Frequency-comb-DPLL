@@ -30,7 +30,7 @@ class ControllerSettingsWidget(QtWidgets.QWidget):
             self.comboTargetBW.addItem(freq_text_eng_format(BW))
 
     def comboMode_currentIndexChanged(self):
-        mode_is_closed_loop = self.comboMode.currentText() == "Closed-loop fiber noise canceler"
+        mode_is_closed_loop = self.comboMode.currentText() == "Phase-locked loop (PLL)"
         for w in self.openloop_widgets:
             w.setEnabled(not mode_is_closed_loop)
         for w in self.closedloop_widgets:

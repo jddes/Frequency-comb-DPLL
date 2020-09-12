@@ -43,6 +43,7 @@ port (
     I_gain_coarse3    : in  std_logic_vector(6-1 downto 0); -- max is 48 bits shift
     I_gain_coarse4    : in  std_logic_vector(6-1 downto 0); -- max is 48 bits shift
 
+    manual_offset_changed : in  std_logic_vector(N_CHANNELS-1 downto 0);
     manual_offset1 : in  std_logic_vector(OUTPUT_WIDTH-1 downto 0);
     manual_offset2 : in  std_logic_vector(OUTPUT_WIDTH-1 downto 0);
     manual_offset3 : in  std_logic_vector(OUTPUT_WIDTH-1 downto 0);
@@ -118,10 +119,10 @@ architecture Behavioral of PI_4ch is
     signal reset_offset4 : std_logic := '0';
     signal P_enable_d1 : std_logic_vector(N_CHANNELS-1 downto 0) := (others => '0');
 
-    attribute mark_debug : string;
-    attribute mark_debug of wrapped_phase_in1: signal is "True";
-    attribute mark_debug of phi_integrated:    signal is "True";
-    attribute mark_debug of phi_unwrapped:     signal is "True";
+    --attribute mark_debug : string;
+    --attribute mark_debug of wrapped_phase_in1: signal is "True";
+    --attribute mark_debug of phi_integrated:    signal is "True";
+    --attribute mark_debug of phi_unwrapped:     signal is "True";
 begin
 
     -- unwraps from 14 to 25 bits, integrate and dump
@@ -202,7 +203,7 @@ begin
             GUARD_BITS  => 2
         ) port map (
             clk               =>                      clk,
-            input_clk_enable  =>  PI_output_clk_enable(I),
+            input_clk_enable  =>  PI_output_clk_enable(I) or manual_offset_changed(I),
             in0               =>           PI_data_out(I),
             in1               =>         manual_offset(I),
             in2               =>            dither_out(I),

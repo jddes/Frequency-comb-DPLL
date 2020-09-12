@@ -107,8 +107,23 @@ module red_pitaya_top (
    input  wire  [ 5-1: 0] vinp_i             ,  // voltages p
    input  wire  [ 5-1: 0] vinn_i             ,  // voltages n
    // Expansion connector
-   inout  wire  [ 8-1: 0] exp_p_io           ,
-   inout  wire  [ 8-1: 0] exp_n_io           ,
+   output wire            DIO0_P           ,
+   output wire            DIO0_N           ,
+   output wire            DIO1_P           ,
+   output wire            DIO1_N           ,
+   output wire            DIO2_P           ,
+   output wire            DIO2_N           ,
+   output wire            DIO3_P           ,
+   output wire            DIO3_N           ,
+   output wire            DIO4_P           ,
+   output wire            DIO4_N           ,
+   input  wire            DIO5_P           ,
+   input  wire            DIO5_N           ,
+   output wire            DIO6_P           ,
+   output wire            DIO6_N           ,
+   output wire            DIO7_P           ,
+   output wire            DIO7_N           ,
+
    // SATA connector
    output wire  [ 2-1: 0] daisy_p_o          ,  // line 1 is clock capable
    output wire  [ 2-1: 0] daisy_n_o          ,
@@ -153,7 +168,7 @@ wire wr_do_t;
 wire ack_timout_t;
 wire ack_combine_t;
 
-wire [1:0] gpio_io_o;
+wire [2:0] gpio_io_o;
 wire ps_gpio_rst;
 wire clk_int_or_ext;
 wire [10-1:0] to_uart;
@@ -224,8 +239,7 @@ red_pitaya_ps i_ps (
   .ack_timout_o  (ack_timout_t ),
   .ack_combine_o (ack_combine_t),
 
-  .clk_ext_in(exp_p_in[5]), // 10 MHz-200 MHz external clock input on DIO5_P
-  .clk_ext_bufg(clk_ext_bufg), // copy of the exp_p_in[5] signal, after a BUFG
+  .clk_ext_in(clk_ext_bufg), // exp_p_in[5]), after a bufg // 10 MHz-200 MHz external clock input on DIO5_P/DIO5_N
   .clk_to_adc(clk_to_adc),
   .gpio_io_o(gpio_io_o),
   .to_uart(to_uart), // 10 bits to uart uC: 1 bit pwr/enable, 1 bit send strobe signal, 8 bits data
@@ -279,14 +293,11 @@ assign ps_sys_err   = |(sys_cs & sys_err);
 assign ps_sys_ack   = |(sys_cs & sys_ack);
 
 // unused system bus slave ports
-
 // channel 0 is DPLL
 // channel 1 is BRAM-based data logger
 // channel 2 is to read data in the RAM for addr_packed
-
-
 // channel 3 is "Housekeeping"
-// channel 4 is AMS
+// channel 4 is AMS (handles the XADC)
 // channel 5 is empty
 // channel 6 is empty
 // channel 7 is empty
@@ -477,8 +488,6 @@ wire LoggerData_clk_enable;
 wire LoggerIsWriting;
 
 reg dpll_output_selector;
-
-wire osc_output;  // for testing a switching regulator
 
 wire [ 32-1:0] dpll_output;
 wire dpll_ack;
@@ -783,44 +792,8 @@ red_pitaya_hk i_hk (
   .sys_ack         (  sys_ack[3]                 )   // acknowledge signal
 );
 
-// // always @(posedge adc_clk) begin
-// //   if (adc_rstn == 1'b0) begin
-// //     led_counter <= 26'h0;
-// //   end
-// //   else begin
-// //     led_counter <= led_counter + 26'h1;
-// //   end
-// // end
 
-
-// assign exp_n_out[8-1:0] = {5'b10000000};
-// assign exp_p_out[8-1:0] = {8'b00000000};
-
-// Set the direction of each IO pins:
-assign exp_n_dir[8-1:0] = {8'b00111111};  // pins 0-5 set as outputs, the rest as inputs
-assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest as inputs
-
-assign exp_n_out[2] = osc_output;
-assign exp_n_out[5] = 1'b0;   // unused GPIO set as output with 0V for the moment
-assign exp_n_out[3] = to_uart[9];   // uart uC pwr/enable
 wire uart_serial_out;
-assign exp_p_out[3] = uart_serial_out & to_uart[9];   // uart serial data 
-
-// assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
-//assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
-
-
-// // 125 MHz generated from 200 MHz, either internal or external clocks
-// ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
-
-// Use this to map the digital IO to the house keeping module:
-// IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );
-// IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out_hk), .T(~exp_n_dir) );
-// Use this to use the digital IO connectors differently:
-// Drive "exp_p_out" and "exp_n_out" and set "exp_n_dir" and "exp_p_dir" accordingly
-IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
-IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
-
 
 uart_tx # (
     .CLK_DIVIDER  (1736), // 200 MHz clock/1736 ~ 115200 baud
@@ -949,82 +922,73 @@ red_pitaya_ams i_ams (
  .sys_ack         (  sys_ack[4]                 )   // acknowledge signal
 );
 
-red_pitaya_pwm pwm [4-1:0] (
- // system signals
- .clk   (pwm_clk ),
- .rstn  (pwm_rstn),
- // configuration
- .cfg   ({pwm_cfg_d, pwm_cfg_c, pwm_cfg_b, pwm_cfg_a}),
- // PWM outputs
- .pwm_o (dac_pwm_o),
- .pwm_s ()
-);
+  //---------------------------------------------------------------------------------
+  //  SPI communication with a AD9912 1 GHz DDS, 48 bits frequency word
+  // Inputs
+  wire do_config                   = 1'b0;
+  reg [15:0] clk_div              = 16'd25; // 125 MHz/25 = 5 MHz for now
+  // Outputs
+  wire config_done;
 
-//---------------------------------------------------------------------------------
-//  Daisy chain
-//  simple communication module
-
-reg [3-1:0] daisy_counter;
-
-wire clk_out_10;
-
-always @(posedge adc_clk) begin
-  if (adc_rstn == 1'b0) begin
-    daisy_counter <= 3'h0;
-  end
-  else begin
-    daisy_counter <= daisy_counter + 3'h1;
-  end
-end
-
-// clk_10MHz_sync 
-// (// Clock in ports
-//   .clk_in1    ( adc_clk   ),
-//   // Clock out ports
-//   .clk_out1   (clk_out_10 ),
-//   // Status and control signals
-//   .locked     (           )
-//  );
+  (* mark_debug = "true" *) wire AD9912_SPI_SCLK;
+  (* mark_debug = "true" *) wire AD9912_SPI_SCLK_P;
+  (* mark_debug = "true" *) wire AD9912_SPI_SCLK_N;
+  (* mark_debug = "true" *) wire AD9912_SPI_SDIO1, AD9912_SPI_SDIO2, AD9912_SPI_SDIO3, AD9912_SPI_SDIO4;
+  (* mark_debug = "true" *) wire AD9912_SPI_CSB;
 
 
-assign daisy_p_o = {clk_out_10, 1'bz};  //Important : if you want to use only one of the signals (p or n), terminate the other one with a 50 Ohm. To do so
-assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SMA connector at the end (one for the "p" and one for the "n" signal).
+  AD9912_DDS_controller # () AD9912_DDS_controller_inst (
+      .clk                     (adc_clk),
+      .do_config               (do_config),
+      .config_done             (config_done),
+      .freq_word               (DDSout1),
+      .freq_word_delay_only    (),
+      .update_freq             (DDS_clk_enable),
+      .current_dds_freq        (),
+      .timestamp_in            (),
+      .timestamp_at_freq_update(),
+      .clk_div                 (clk_div),
+      .SPI_SCLK                (AD9912_SPI_SCLK),
+      .SPI_SDIO                (AD9912_SPI_SDIO1),
+      .SPI_CSB                 (AD9912_SPI_CSB)
+  );
 
+  assign AD9912_SPI_SCLK_P = AD9912_SPI_SCLK;
+  assign AD9912_SPI_SCLK_N = ~AD9912_SPI_SCLK;
 
-// //---------------------------------------------------------------------------------
-// //  SPI communication with a MAX5541 16-bits, SPI DAC.
+  // map all the required signals to the expansion connector E1
+   // reading this from the DDS board's schematic
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst0_P   (.O(DIO0_P), .I(AD9912_SPI_SDIO2));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst0_N   (.O(DIO0_N), .I(AD9912_SPI_SDIO1));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst1_P   (.O(DIO1_P), .I(AD9912_SPI_CSB));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst1_N   (.O(DIO1_N), .I(AD9912_SPI_SCLK_P));
 
-//   reg [16-1:0] dac_ramp_test;
-//   wire data_loaded_clk_enable;
-//   wire max5541_scl;
-//   wire max5541_sda;
-//   wire max5541_csb;
-//   wire opamp_30V_enable = 1'b1;
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst2_P   (.O(DIO2_P), .I(AD9912_SPI_SCLK_P));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst2_N   (.O(DIO2_N), .I(AD9912_SPI_SCLK_N));
 
-//   // // we simply play a ramp in a loop for now:
-//   // always @(posedge adc_clk) begin
-//   //   if (data_loaded_clk_enable == 1'b1) begin
-//   //     dac_ramp_test <= dac_ramp_test + 16'd1;
-//   //   end
-//   // end
+   // Ideally we would have used the differential output buffers, but we also need 3.3V outputs, for which there are no available standards
+   // OBUFDS #(.IOSTANDARD("DIFF_HSTL_I"), .SLEW("SLOW"))            OBUFDS_inst2PN (.O(DIO2_P),
+   //                                                                               .OB(DIO2_N), .I(AD9912_SPI_SCLK_P));
+   // uart bus to uC, talks to a bunch of ADF4351
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst3_P   (.O(DIO3_P), .I(uart_serial_out & to_uart[9])); // uart serial data
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst3_N   (.O(DIO3_N), .I(to_uart[9])); // uart uC pwr/enable
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst4_P   (.O(DIO4_P), .I(AD9912_SPI_SDIO3));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst4_N   (.O(DIO4_N), .I(AD9912_SPI_CSB));
+  // external clock input, goes to an MMCM inside the block design
+   // IBUFGDS #(.IOSTANDARD("DIFF_HSTL_II"), .DIFF_TERM("FALSE"),.IBUF_LOW_PWR("FALSE"))
+   //                                                                IBUFGDS_inst   (.I(DIO5_P),
+   //                                                                               .IB(DIO5_N), .O(clk_ext_bufg) );
+   IBUFGDS #(.IOSTANDARD("LVDS_25"),    .DIFF_TERM("FALSE"),.IBUF_LOW_PWR("FALSE"))
+                                                                  IBUFGDS_inst   (.I(DIO5_P),
+                                                                                 .IB(DIO5_N), .O(clk_ext_bufg) );
 
-//   max5541_spi_dac_interface max5541_spi_dac_interface_inst
-//   (
-//     .clk(adc_clk),
-//     .data_in(DACout2),
-//     .data_loaded_clk_enable(data_loaded_clk_enable),
-//     .scl(max5541_scl),
-//     .sda(max5541_sda),
-//     .csb(max5541_csb)
-//   );
-//   // Map the SPI port to specific IO pins:
-//   assign exp_p_out[0] = max5541_csb; // before 2018-06-29: max5541_scl
-//   assign exp_n_out[0] = max5541_scl; // before 2018-06-29: max5541_sda
-//   assign exp_n_out[1] = max5541_sda; 
-//   assign exp_p_out[1] = 0; // before 2018-06-29: max5541_csb, now is just an input (unused, but wired in parallel with an output on one of the boards
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst6_P   (.O(DIO6_P), .I(AD9912_SPI_SCLK_P));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst6_N   (.O(DIO6_N), .I(AD9912_SPI_SCLK_N));
+   // OBUFDS #(.IOSTANDARD("DIFF_HSTL_I"), .SLEW("SLOW"))            OBUFDS_inst6PN (.O(DIO6_P),
+   //                                                                               .OB(DIO6_N), .I(AD9912_SPI_SCLK_P));
 
-//   assign exp_n_out[3] = opamp_30V_enable; // this turns ON Q1 in the schematic, which turns on Q2, which activates 15 mA of bias current into the non-inverting pin in order to put the opamp inside it's common-mode input range
-
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst7_P   (.O(DIO7_P), .I(AD9912_SPI_SDIO4));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst7_N   (.O(DIO7_N), .I(AD9912_SPI_CSB));
 
 endmodule
 

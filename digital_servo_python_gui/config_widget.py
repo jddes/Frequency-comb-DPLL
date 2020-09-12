@@ -93,7 +93,6 @@ class ConfigWidget(QtWidgets.QWidget):
 
     def updateExpectedFreq(self, channel_id):
         """ Set the expected input frequency based on the nominal modulator frequency """
-        print("updateExpectedFreq")
         w = self.controller_widgets[channel_id]
         w.editExpectedFreq.setText(w.editModulatorNominalFreq.text() + "*" + w.editModulatorGain.text())
 
@@ -151,17 +150,13 @@ class ConfigWidget(QtWidgets.QWidget):
                     w = self.controller_widgets[channel_id] # shorthand
                     c["expected_freq_MHz_str"] = w.editExpectedFreq.text()
                     c["expected_freq"]         = readFloatFromTextbox(w.editExpectedFreq)*1e6
-                    if w.comboMode.currentText() != 'Closed-loop fiber noise canceler':
-                        continue
-                    c["mode"]                = "FNC"
-                    c["nominal_output_freq"] = readFloatFromTextbox(w.editModulatorNominalFreq)*1e6
-                    c["target_BW"]           = freq_value_from_text(w.comboTargetBW.currentText())
-                    actuator_sign = w.comboModulatorSign.currentText() == "Upshift"
-                    print("actuator_sign=", actuator_sign)
-                    print('c["upper_sideband"=', c["upper_sideband"])
-                    c["loop_sign"]           = 1 if actuator_sign == c["upper_sideband"] else -1
-                    print('c["loop_sign"]=', c["loop_sign"])
-                    c["bLock"]               = w.chkLock.isChecked()
+                    if w.comboMode.currentText() == 'Phase-locked loop (PLL)':
+                        c["mode"]                = "PLL"
+                        c["nominal_output_freq"] = readFloatFromTextbox(w.editModulatorNominalFreq)*1e6
+                        c["target_BW"]           = freq_value_from_text(w.comboTargetBW.currentText())
+                        actuator_sign = w.comboModulatorSign.currentText() == "Upshift"
+                        c["loop_sign"]           = 1 if actuator_sign == c["upper_sideband"] else -1
+                        c["bLock"]               = w.chkLock.isChecked()
                 else:
                     c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
                     c["expected_freq"]         = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6

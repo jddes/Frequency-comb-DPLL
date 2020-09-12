@@ -18,10 +18,11 @@ pg.setConfigOption('foreground', 'k')
 pg.setConfigOption('antialias', True)
 
 class ChannelGUI(QtWidgets.QWidget):
-    sig_set_num_points = QtCore.pyqtSignal(int, dict)
+    sig_set_num_points    = QtCore.pyqtSignal(int, dict)
+    sig_update_lock_state = QtCore.pyqtSignal(int, float)
     # these signals will be connected to the summary tab:
-    sig_new_Amplitude = QtCore.pyqtSignal(int, float, float)
-    sig_new_SNR       = QtCore.pyqtSignal(int, float)
+    sig_new_Amplitude     = QtCore.pyqtSignal(int, float, float)
+    sig_new_SNR           = QtCore.pyqtSignal(int, float)
 
     def __init__(self, channel_id=1, parent=None):
         super().__init__(parent)
@@ -68,6 +69,11 @@ class ChannelGUI(QtWidgets.QWidget):
         self.comboRBW.currentTextChanged.connect(self.probingSettingsChanged)
         self.comboPlotType.currentTextChanged.connect(self.probingSettingsChanged)
 
+        self.chkLock.clicked.connect(self.chkLock_clicked)
+
+    def chkLock_clicked(self, is_checked):
+        self.sig_update_lock_state.emit(self.channel_id, is_checked)
+
     def setVisibility(self, bVisible):
         self.tab_visible = bVisible
 
@@ -79,6 +85,15 @@ class ChannelGUI(QtWidgets.QWidget):
             
         if d["type"] == "system":
             self.system_settings = dict(d)
+
+        if d["type"] == "lock" and d["channel_id"] == self.channel_id:
+            if "mode" in d:
+                if d["mode"] == "PLL":
+                    self.chkLock.setVisible(True)
+                else:
+                    self.chkLock.setVisible(False)
+            if "bLock" in d:
+                self.chkLock.setChecked(d["bLock"])
 
     def systemSettingsUpdated(self, fs):
         self.fs = fs

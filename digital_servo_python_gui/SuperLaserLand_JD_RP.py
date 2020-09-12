@@ -30,7 +30,7 @@ class SuperLaserLand_JD_RP:
     ############################################################
     # System parameters:
     fs = 125e6  # default adc sampling rate
-    fs_dds = 125e6 # default dds sampling rate (1 GHz nominal)
+    fs_dds = 1e9 # default dds sampling rate (1 GHz nominal)
 
     # input channels ids start from 1
     num_channels = 4
@@ -599,12 +599,21 @@ class SuperLaserLand_JD_RP:
         self.user_inputs["actual_BW_ch%d"%channel_id] = self.getClosedLoopBW(gain_combined)
         self.user_inputs["nominal_output_freq_ch%d"%channel_id] = nominal_output_freq
 
+        self.updateLockState(channel_id, bLock)
+
+    def updateLockState(self, channel_id, bLock):
+        """ Update the lock state for a single channel, without committing.
+        setup_controller() must have been called prior to using this function """
         self.user_inputs["Kp_enable_ch%d"%channel_id] = bLock
         self.user_inputs["Ki_enable_ch%d"%channel_id] = bLock
         
-    def commit_controller_settings(self):
-        """ Commits controller settings for all channels.
+    def commit_controller_settings(self, channel_id=None):
+        """ Commits controller settings for a given channel, or for all channels if channel_id=None.
         Each channel must have been set up previously using setup_controller() """
+        if channel_id is None:
+            channels_to_update = self.channels_list
+        else:
+            channels_to_update = [channel_id]
         N_bits_coarse_gain = 6
         N_bits_fine_gain = 4
 
@@ -612,7 +621,7 @@ class SuperLaserLand_JD_RP:
         coarse_P_gain_reg = 0
         coarse_I_gain_reg = 0
         PI_enables_reg    = 0
-        for channel_id in self.channels_list:
+        for channel_id in channels_to_update:
             fine_gain = self.user_inputs["Kp_fine_ch%d"%channel_id]
             fine_gain_reg |= (fine_gain & bitmask(N_bits_fine_gain)) << (N_bits_fine_gain*(channel_id-1))
 
@@ -637,7 +646,7 @@ class SuperLaserLand_JD_RP:
         time.sleep(10e-3)
 
         # now turn on the integrators:
-        for channel_id in self.channels_list:
+        for channel_id in channels_to_update:
             PI_enables_reg |= self.user_inputs["Ki_enable_ch%d"%channel_id] << (channel_id-1+len(self.channels_list))
         self.write("PI_enables", PI_enables_reg)
 
@@ -680,7 +689,7 @@ class SuperLaserLand_JD_RP:
         d = dict()
         f = self.dev.read_file_from_remote("/opt/hardware.txt")
         f = f.decode('ascii')
-        f = "has_dds=1\nhas_mixer_board=1\n" # for testing
+        # f = "has_dds=1\nhas_mixer_board=1\n" # for testing
         for line in f.split('\n'):
             if line == '':
                 continue
@@ -700,6 +709,15 @@ class SuperLaserLand_JD_RP:
         if ind != -1:
             d["mac"] = f[ind+len(mac_token):].strip()
         return d
+
+    def sendHardwareDescription(self, bHasMixerBoard=False, bHasDDS=False):
+        """ Creates a file that describes various add-ons to the RP,
+        and sends it to the currently-connected device.
+        To be used only once when upgrading a given RP """
+        description = "has_mixer_board=%d\n" % int(bool(bHasMixerBoard))
+        description += "has_dds=%d\n" % int(bool(bHasDDS))
+        file_data = description.encode('ascii')
+        self.dev.write_file_on_remote("", strFilenameRemote="/opt/hardware.txt", file_data=file_data)
 
 class phaseReadoutDriver():
     def __init__(self, sl):

@@ -101,10 +101,12 @@ class RP_PLL_device():
             
         return buf
 
-    def write_file_on_remote(self, strFilenameLocal, strFilenameRemote):
-        """ Write a local file to the RP file system """
+    def write_file_on_remote(self, strFilenameLocal, strFilenameRemote, file_data=None):
+        """ Write a local file to the RP file system.
+        Can also be used to write a byte string directly by specifying the file_data argument """
         # open local file and load into memory:
-        file_data = np.fromfile(strFilenameLocal, dtype=np.uint8)
+        if file_data is None:
+            file_data = np.fromfile(strFilenameLocal, dtype=np.uint8).tobytes()
         try:
             # send header
             packet_to_send = struct.pack('=III', self.MAGIC_BYTES_WRITE_FILE, len(strFilenameRemote), len(file_data))
@@ -112,7 +114,7 @@ class RP_PLL_device():
             # send filename
             self.sock.sendall(strFilenameRemote.encode('ascii'))
             # send actual file
-            self.sock.sendall(file_data.tobytes())
+            self.sock.sendall(file_data)
         except OSError as e:
             print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
             self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
@@ -130,10 +132,10 @@ class RP_PLL_device():
             # where both file_valid and file_size are uint32:
             file_valid, file_size = struct.unpack('II', self.read(8))
             if not file_valid:
-                print("Could not read file from remote (file_valid=0).")
+                print("Could not read file '%s' from remote (file_valid=0)." % strFilenameRemote)
                 return b''
             if file_size == 0:
-                print("Received empty file from remote (file_size=0)")
+                print("Received empty file '%s' from remote (file_size=0)" % strFilenameRemote)
                 return b''
             else:
                 # print("About to read file of size %d from remote" % file_size)
@@ -144,7 +146,7 @@ class RP_PLL_device():
                 #     print("Successfully received file of size %d from remote" % len(file_data))
                 return file_data
         except OSError as e:
-            print("RP_PLL.py: read_file_from_remote(): exception while reading file!")
+            print("RP_PLL.py: read_file_from_remote(): exception while reading file '%s'!" % strFilenameRemote)
             self.logger.warning('Red_Pitaya_GUI{}: read_file_from_remote(): exception while reading file!'.format(self.logger_name))
             self.socketErrorEvent(e)
             return b''

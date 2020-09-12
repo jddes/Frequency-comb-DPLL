@@ -45,14 +45,21 @@
    </item>
    <item row="0" column="0" rowspan="3">
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="2" column="0">
+     <item row="1" column="1">
+      <widget class="QLabel" name="lblExpectedFreq">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
         <string>Current freq offset</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QComboBox" name="comboPlotType">
        <item>
         <property name="text">
@@ -81,31 +88,14 @@
        </item>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QCheckBox" name="chkAutorefresh">
-       <property name="text">
-        <string>Auto-refresh</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Expected freq [MHz]</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="lblExpectedFreq">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -118,45 +108,38 @@
        </property>
       </spacer>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Plot type</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="lblAmplitude">
        <property name="text">
         <string>Amplitude</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="lblCurrentFreq">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="lblSNR_value">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QComboBox" name="comboRBW"/>
      </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="lblAmplitude_value">
+     <item row="2" column="1">
+      <widget class="QLabel" name="lblIFfreq">
        <property name="text">
-        <string/>
+        <string>TextLabel</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="5" column="0">
+      <widget class="QLabel" name="lblSNR">
+       <property name="text">
+        <string>SNR</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
       <widget class="QLabel" name="lblADCFill_value">
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -166,21 +149,28 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="lblSNR">
+     <item row="3" column="1">
+      <widget class="QLabel" name="lblCurrentFreq">
        <property name="text">
-        <string>SNR</string>
+        <string/>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label">
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Resolution BW</string>
+        <string>IF freq [MHz]</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="5" column="1">
+      <widget class="QLabel" name="lblSNR_value">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
       <widget class="QLabel" name="lblADCFill">
        <property name="text">
         <string>ADC fill</string>
@@ -190,19 +180,58 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
+     <item row="8" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>IF freq [MHz]</string>
+        <string>Resolution BW</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="lblIFfreq">
+     <item row="4" column="1">
+      <widget class="QLabel" name="lblAmplitude_value">
        <property name="text">
-        <string>TextLabel</string>
+        <string/>
        </property>
       </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QCheckBox" name="chkAutorefresh">
+       <property name="text">
+        <string>Auto-refresh</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chkLock">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Lock</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

@@ -94,6 +94,7 @@ architecture Behavioral of multichannel_freq_counter_top is
     signal I_gain_coarse2    : std_logic_vector(6-1 downto 0)             := (others => '0');
     signal I_gain_coarse3    : std_logic_vector(6-1 downto 0)             := (others => '0');
     signal I_gain_coarse4    : std_logic_vector(6-1 downto 0)             := (others => '0');
+    signal manual_offset_changed : std_logic_vector(4-1 downto 0) := (others => '0');
     signal manual_offset_dds1    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
     signal manual_offset_dds2    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
     signal manual_offset_dds3    : std_logic_vector(DDS_WIDTH-1 downto 0)  := (others => '0');
@@ -127,13 +128,13 @@ architecture Behavioral of multichannel_freq_counter_top is
     signal DDSout3_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
     signal DDSout4_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
 
-    attribute mark_debug : string;
-    attribute mark_debug of P_enable:           signal is "True";
-    attribute mark_debug of I_enable:           signal is "True";
-    attribute mark_debug of gain_fine1:         signal is "True";
-    attribute mark_debug of P_gain_coarse1:     signal is "True";
-    attribute mark_debug of DDS_clk_enable_int: signal is "True";
-    --attribute mark_debug of DDSout1_int:        signal is "True";
+    --attribute mark_debug : string;
+    --attribute mark_debug of P_enable:           signal is "True";
+    --attribute mark_debug of I_enable:           signal is "True";
+    --attribute mark_debug of gain_fine1:         signal is "True";
+    --attribute mark_debug of P_gain_coarse1:     signal is "True";
+    --attribute mark_debug of DDS_clk_enable_int: signal is "True";
+    ----attribute mark_debug of DDSout1_int:        signal is "True";
 begin
 
     ddc_multichannel_inst : entity work.ddc_multichannel
@@ -302,6 +303,7 @@ begin
         I_gain_coarse2    => I_gain_coarse2,
         I_gain_coarse3    => I_gain_coarse3,
         I_gain_coarse4    => I_gain_coarse4,
+        manual_offset_changed => manual_offset_changed,
         manual_offset1    => manual_offset_dds1,
         manual_offset2    => manual_offset_dds2,
         manual_offset3    => manual_offset_dds3,
@@ -338,6 +340,7 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
+            manual_offset_changed <= (others => '0');
             -- Note: sys_ack is generated inside registers_read, and is strobed by default in response to all reads/writes
 
             -- defaults, for implementing strobes on writes:
@@ -369,19 +372,19 @@ begin
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"10" => manual_offset_dds1_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"11" => manual_offset_dds1 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds1_lsbs);
+                    when x"11" => manual_offset_dds1 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds1_lsbs); manual_offset_changed(0) <= '1';
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"12" => manual_offset_dds2_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"13" => manual_offset_dds2 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds2_lsbs);
+                    when x"13" => manual_offset_dds2 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds2_lsbs); manual_offset_changed(1) <= '1';
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"14" => manual_offset_dds3_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"15" => manual_offset_dds3 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds3_lsbs);
+                    when x"15" => manual_offset_dds3 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds3_lsbs); manual_offset_changed(2) <= '1';
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"16" => manual_offset_dds4_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"17" => manual_offset_dds4 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds4_lsbs);
+                    when x"17" => manual_offset_dds4 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & manual_offset_dds4_lsbs); manual_offset_changed(3) <= '1';
 
                     when x"18" => limit_high_dds1 <= sys_wdata(16-1+16 downto 16); limit_low_dds1 <= sys_wdata(16-1 downto 0);
                     when x"19" => limit_high_dds2 <= sys_wdata(16-1+16 downto 16); limit_low_dds2 <= sys_wdata(16-1 downto 0);

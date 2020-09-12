@@ -26,7 +26,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Closed-loop fiber noise canceler</string>
+       <string>Phase-locked loop (PLL)</string>
       </property>
      </item>
     </widget>

@@ -100,6 +100,7 @@ class MainWidget(QtWidgets.QMainWindow):
             # Connect signals to slots
             GUI.sig_set_num_points.connect(self.set_num_points)
             GUI.phaseWidget.sig_reset_phase.connect(self.reset_channel_phase)
+            GUI.sig_update_lock_state.connect(self.updateLockState)
             self.perChannelEmitters[channel_id].sig_new_adc_data.connect(GUI.newADCdata)
             self.perChannelEmitters[channel_id].sig_new_iq_data.connect(GUI.newIQdata)
             self.perChannelEmitters[channel_id].sig_new_freq.connect(GUI.newFreqData)
@@ -121,7 +122,7 @@ class MainWidget(QtWidgets.QMainWindow):
             self.channel_GUIs[channel_id] = GUI
 
         self.tab_widget.currentChanged.connect(self.updateTabVisibility)
-        self.setWindowTitle('Frequency counter/phase meter')
+        self.setWindowTitle('FNC-100 Digital PLL/Frequency counter/phase meter')
 
         self.enableOrDisableWidgetsRequiringConnection(False)
         self.createStatusBar()
@@ -178,6 +179,7 @@ class MainWidget(QtWidgets.QMainWindow):
             if self.sl.dev.valid_socket:
                 self.sl.dev.CloseTCPConnection()
             self.setStatus('connection', 'Disconnected.', 'bad')
+            self.connection_widget.btnConnect.setText('Connect to device')
         else:
             # attempt to establish connection to selected device
             (strMAC, strIP, port) = self.connection_widget.getSelectedHost()
@@ -186,24 +188,27 @@ class MainWidget(QtWidgets.QMainWindow):
                 return
 
             self.sl.dev.OpenTCPConnection(strIP, port)
-            self.hw_description = self.sl.getHardwareDescription()
-            # self.sl.write("PI_fine_gains", 1)
-            # print(self.sl.read("phase_logger_write_addr"))
-            # time.sleep(1)
-            # self.sl.dev.CloseTCPConnection()
-            # Handle various versions of the hardware changing the exact GUI that we should present to the user:
-            bHasDDS = self.hw_description.get("has_dds", False)
-            # bHasDDS = False # force to false for testing
-            self.config_widget.setHardwareType(bHasDDS)
+            if self.sl.dev.valid_socket:
+                # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
+                self.hw_description = self.sl.getHardwareDescription()
+                # self.sl.write("PI_fine_gains", 1)
+                # print(self.sl.read("phase_logger_write_addr"))
+                # time.sleep(1)
+                # self.sl.dev.CloseTCPConnection()
+                # Handle various versions of the hardware changing the exact GUI that we should present to the user:
+                bHasDDS = self.hw_description.get("has_dds", False)
+                # bHasDDS = False # force to false for testing
+                self.config_widget.setHardwareType(bHasDDS)
 
-            self.sl.set_dds_offset_freq(1, 10e6)
-            self.sl.set_dds_limits(1, 5e6, 20e6)
-            self.sl.write("PI_enables", 0*2**4 + 1*2**0)
-            self.sl.write("PI_fine_gains", 1)
-            self.sl.write("PI_coarse_P_gains", 20)
-            self.sl.write("PI_coarse_I_gains", 0)
-            self.sl.phaseReadoutDriver.startLogging()
-            self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
+                self.sl.phaseReadoutDriver.startLogging()
+                self.connection_widget.btnConnect.setText('Disconnect from device')
+                self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
+
+            else:
+                bConnect = False
+                self.connection_widget.btnConnect.setChecked(False)
+                self.setStatus('connection', 'Error attempting to connect to %s' % strIP, 'bad')
+
             print("connect_clicked(): TODO: set config file name")
 
         self.enableOrDisableWidgetsRequiringConnection(bConnect)
@@ -224,7 +229,6 @@ class MainWidget(QtWidgets.QMainWindow):
             (system_settings, channels_settings) = self.config_widget.readConfigFromGUI()
         except (ValueError, SyntaxError):
             return # don't commit anything since there is an invalid value somewhere
-
         self.pushSettingsToDevice(system_settings, channels_settings)
         self.setStatus('commit', 'Committed', 'ok')
         
@@ -245,38 +249,44 @@ class MainWidget(QtWidgets.QMainWindow):
 
         pprint.pprint(self.sl.user_inputs)
         pprint.pprint(self.sl.reg_values)
-        print(bin(self.sl.reg_values["PI_fine_gains"]))
-        # frequency_in_hz = 10e6
-        # for k in range(10):
-        #     winsound.Beep(1000, 50)
-        #     print(frequency_in_hz)
-        #     self.sl.set_dds_offset_freq(1, frequency_in_hz)
-        #     time.sleep(3)
-        #     frequency_in_hz += 1e6
 
-    def setup_controller(self, system_settings, channels_settings):
-        if channels_settings["mode"] == "FNC":
-            self.sl.setup_controller(channels_settings["channel_id"],
-                                     channels_settings["nominal_output_freq"],
-                                     channels_settings["target_BW"],
-                                     channels_settings["loop_sign"],
-                                     channels_settings["bLock"])
+    def setup_controller(self, system_settings, channel_settings):
+        if channel_settings["mode"] == "PLL":
+            self.sl.setup_controller(channel_settings["channel_id"],
+                                     channel_settings["nominal_output_freq"],
+                                     channel_settings["target_BW"],
+                                     channel_settings["loop_sign"],
+                                     channel_settings["bLock"])
         else:
-            self.sl.setup_controller(channels_settings["channel_id"],
+            self.sl.setup_controller(channel_settings["channel_id"],
                                      0,
                                      1e3,
                                      1,
                                      False)
+
+        self.emit_lock_settings(channel_settings)
+
     def emit_system_settings(self):
         """ This is used to notify the channel GUIs of the system settings,
         so that the GUIs can do proper scaling calculations, etc """
         d = dict()
         d["type"] = "system"
         d["fs"] = self.sl.fs
-        d["n_bits_phase"] = self.sl.phaseReadoutDriver.n_bits_phase
         d["LPF_DECIM"] = self.sl.phaseReadoutDriver.LPF_DECIM
-        d["n_cycles"] = self.sl.phaseReadoutDriver.n_cycles # number of decimated samples per integration time
         self.sig_new_settings.emit(d)
+
+    def emit_lock_settings(self, channel_settings):
+        """ Used to notify the channel GUIs of the lock settings for a single channel """
+        d = dict(channel_settings)
+        d["type"] = "lock"
+        self.sig_new_settings.emit(d)
+
+    def updateLockState(self, channel_id, bLock):
+        """ Called when the GUI wants to update the lock state for a single channel,
+        after all the rest of the config has been done """
+        self.sl.updateLockState(channel_id, bLock)
+        self.sl.commit_controller_settings(channel_id)
+        # self.sig_new_settings.emit({"channel_id": channel_id, "bLock": bLock}) # not useful because the text box has already changed state...
 
     def set_num_points(self, channel_id, d):
         """ Called when the GUI wants to change the number of points being read from the ADC and IQ sources """
@@ -358,6 +368,22 @@ class MainWidget(QtWidgets.QMainWindow):
         ext_clk_freq = self.sl.getExtClockFreq()
         self.config_widget.lblRefFreq.setText('%.8f' % (ext_clk_freq/1e6))
         colorCoding(self.config_widget.lblRefFreq, getExtClkColorName(ext_clk_freq))
+
+        self.validateExtClkFreq(ext_clk_freq)
+
+    def validateExtClkFreq(self, ext_clk_freq_measured):
+        """ validate that the measured ref clk and given ref clk agree """
+        try:
+            ext_clk_freq_given = 1e6*readFloatFromTextbox(self.config_widget.editRefFreq)
+        except:
+            return
+
+        if abs(ext_clk_freq_measured - ext_clk_freq_given) < 1e5:
+            colorCoding(self.config_widget.editRefFreq, "ok")
+        elif abs(ext_clk_freq_measured - ext_clk_freq_given) < 1e6:
+            colorCoding(self.config_widget.editRefFreq, "warning")
+        else:
+            colorCoding(self.config_widget.editRefFreq, "bad")
 
     def slowTimerEvent(self):
         """ Reads the slow phase streaming data (100 phase samples/seconds nominal, read every counter gate period).

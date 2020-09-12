@@ -1,7 +1,7 @@
 //Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-//Date        : Sat Jul 11 20:42:41 2020
+//Date        : Fri Sep 11 16:49:35 2020
 //Host        : jdbureau running 64-bit major release  (build 9200)
 //Command     : generate_target system_wrapper.bd
 //Design      : system_wrapper
@@ -166,7 +166,6 @@ module system_wrapper
     Vaux9_v_p,
     Vp_Vn_v_n,
     Vp_Vn_v_p,
-    clk_ext_bufg,
     clk_ext_in,
     clk_to_adc,
     gpio_io_o,
@@ -330,7 +329,6 @@ module system_wrapper
   input Vaux9_v_p;
   input Vp_Vn_v_n;
   input Vp_Vn_v_p;
-  output [0:0]clk_ext_bufg;
   input clk_ext_in;
   output clk_to_adc;
   output [2:0]gpio_io_o;
@@ -495,7 +493,6 @@ module system_wrapper
   wire Vaux9_v_p;
   wire Vp_Vn_v_n;
   wire Vp_Vn_v_p;
-  wire [0:0]clk_ext_bufg;
   wire clk_ext_in;
   wire clk_to_adc;
   wire [2:0]gpio_io_o;
@@ -661,7 +658,6 @@ module system_wrapper
         .Vaux9_v_p(Vaux9_v_p),
         .Vp_Vn_v_n(Vp_Vn_v_n),
         .Vp_Vn_v_p(Vp_Vn_v_p),
-        .clk_ext_bufg(clk_ext_bufg),
         .clk_ext_in(clk_ext_in),
         .clk_to_adc(clk_to_adc),
         .gpio_io_o(gpio_io_o),
