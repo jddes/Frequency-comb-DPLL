@@ -12,15 +12,15 @@ def get_integer_N_solution(f_ref, f_target_adc):
     f_adc = f_ref * float(M)/N
     f_vco = f_ref * float(M)
 
-    # print("get_integer_N_solution(): f_ref=%f MHz, M=%d, N=%d, f_vco=%f MHz, f_adc=%f MHz" % (f_ref/1e6, M, N, f_vco/1e6, f_adc/1e6))
+    print("get_integer_N_solution(): f_ref=%f MHz, M=%d, N=%d, f_vco=%f MHz, f_adc=%f MHz" % (f_ref/1e6, M, N, f_vco/1e6, f_adc/1e6))
     return (M, N)
 
 def get_f_out_possibilities(f_ref, f_target_adc):
     # partly following equations 3-6 to 3-9 from UG472
     vco_min = 600e6  # these two values are from DS182
     vco_max = 1200e6 # these two values are from DS182
-    M_min = np.ceil(vco_min/f_ref)
-    M_max = np.floor(vco_max/f_ref)
+    M_min = max(2, np.ceil(vco_min/f_ref))
+    M_max = min(np.floor(vco_max/f_ref), 64)
     M_ar = np.arange(M_min, M_max+1)
     N_ar = np.arange(1, 128+1)
     M_ar = np.repeat(M_ar, len(N_ar))

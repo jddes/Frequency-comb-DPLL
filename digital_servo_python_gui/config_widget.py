@@ -52,6 +52,8 @@ class ConfigWidget(QtWidgets.QWidget):
                       adv_per_channel.radioUpper,
                       adv_per_channel.radioLower,
                       adv_per_channel.comboLOpower,
+                      adv_per_channel.spinDDSpower,
+                      self.editRefFreq,
                       self.editExpectedFreq_dict[channel_id]] + cw.openloop_widgets + cw.closedloop_widgets:
                 if isinstance(w, QtWidgets.QAbstractButton):
                     signal = w.clicked
@@ -59,6 +61,8 @@ class ConfigWidget(QtWidgets.QWidget):
                     signal = w.textChanged
                 elif isinstance(w, QtWidgets.QComboBox):
                     signal = w.currentTextChanged
+                elif isinstance(w, QtWidgets.QAbstractSpinBox):
+                    signal = w.valueChanged
                 else:
                     continue
                 signal.connect(self.user_settings_changed)

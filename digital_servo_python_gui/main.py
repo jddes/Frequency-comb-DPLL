@@ -245,15 +245,20 @@ class MainWidget(QtWidgets.QMainWindow):
         """ Push settings to an already-connected device """
         self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
                                bExternalClock=system_settings["adc_use_external_clock"])
+        self.sl.setDDSclockPLL(system_settings["ref_freq"])
+
+
         self.sl.phaseReadoutDriver.setOutputRate(system_settings["output_data_rate"])
         for channel_id, channel_settings in channels_settings.items():
             self.setup_LO(system_settings, channel_settings)
-            self.setup_controller(system_settings, channel_settings)
-            self.sl.setAD9912current(channel_settings["channel_id"], channel_settings["DDS_output_current_word"])
+            if "DDS_output_current_word" in channel_settings:
+                self.sl.setAD9912current(channel_settings["channel_id"], channel_settings["DDS_output_current_word"])
+
+            self.setup_controller(system_settings, channel_settings) # needs to happen after setDDSclockPLL()
         self.sl.commit_controller_settings()
 
-        pprint.pprint(self.sl.user_inputs)
-        pprint.pprint(self.sl.reg_values)
+        # pprint.pprint(self.sl.user_inputs)
+        # pprint.pprint(self.sl.reg_values)
 
     def setup_controller(self, system_settings, channel_settings):
         if channel_settings["mode"] == "PLL":

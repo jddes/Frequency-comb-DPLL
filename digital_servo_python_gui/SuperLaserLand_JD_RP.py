@@ -335,6 +335,7 @@ class SuperLaserLand_JD_RP:
         assert channel_id in self.channels_list
         self.user_inputs["dds_ref_freq%d_hz" % channel_id] = frequency_in_hz
         dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs_dds)
+        # print("dds_target_freq = %f Hz, dds_freq_ratio = %f" % (dds_freq_word/2**48*self.fs_dds, dds_freq_word/2**48))
         self.write_64bits("manual_offset_dds%d"%channel_id, dds_freq_word)
 
     def dds_freq_to_word(self, frequency_in_hz, ref_freq):
@@ -387,6 +388,7 @@ class SuperLaserLand_JD_RP:
         if bExternalClock == False:
             f_ref = 200e6 # this is hardcoded in the firmware
 
+        print("setADCclockPLL(): f_ref=", f_ref)
         (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
         self.user_inputs["adc_f_ref_hz"]   = f_ref
         self.user_inputs["bExternalClock"] = bExternalClock
@@ -614,6 +616,43 @@ class SuperLaserLand_JD_RP:
 
         self.updateLockState(channel_id, bLock)
 
+    def setDDSclockPLL(self, ref_clk_Hz):
+        target_fs = 1e9
+        if ref_clk_Hz < 1e9/66:
+            # have to use the SYSCLK PLL Doubler to reach 1 GHz
+            # ratio can only be 8 to 132, multiples of 8
+            all_ratios = np.arange(8, 132+1, 8)
+            doubler_ratio = 2
+            doubler_enable = 1
+        else:
+            # ratio can only be 4 to 66, multiples of 2
+            all_ratios = np.arange(4, 66+1, 2)
+            doubler_ratio = 1
+            doubler_enable = 0
+
+        fs_ddc = all_ratios*ref_clk_Hz
+        invalid_ratios = np.nonzero(fs_ddc > target_fs)
+        fs_ddc     = np.delete(fs_ddc, invalid_ratios)
+        all_ratios = np.delete(all_ratios, invalid_ratios)
+        closest_ind = np.argmin(np.abs(fs_ddc-target_fs))
+        chosen_ratio = all_ratios[closest_ind]
+        self.user_inputs["dds_fs_over_ref_clk"] = chosen_ratio
+
+        ad9912_addr_power_down = 0x10
+        ad9912_addr_n_divider = 0x20
+        ad9912_addr_pll_parameters = 0x22
+        reg_pd_value = (1<<7) # power down HSTL output driver
+        reg_n_divider = int(chosen_ratio/2/doubler_ratio-2)
+        reg_pll_parameters = (1<<7) | (doubler_enable<<3)
+
+        for channel_id in self.channels_list:
+            self.write_AD9912_SPI(channel_id, ad9912_addr_power_down, reg_pd_value)
+            self.write_AD9912_SPI(channel_id, ad9912_addr_n_divider, reg_n_divider)
+            self.write_AD9912_SPI(channel_id, ad9912_addr_pll_parameters, reg_pll_parameters)
+
+        self.fs_dds = ref_clk_Hz * chosen_ratio
+        # print("setDDSclockPLL(): chosen_ratio = %d, fs_ddc = %f MHz, doubler=%d" % (chosen_ratio, self.fs_dds/1e6, doubler_enable))
+
     def updateLockState(self, channel_id, bLock):
         """ Update the lock state for a single channel, without committing.
         setup_controller() must have been called prior to using this function """
@@ -735,7 +774,7 @@ class SuperLaserLand_JD_RP:
     def write_AD9912_SPI(self, channel_id, reg_addr, reg_value):
         reg_combined = reg_value & bitmask(8)
         reg_combined |= (reg_addr & bitmask(13)) << 8
-        print("write_AD9912_SPI(): reg_addr=0x%x, reg_value=0x%x, reg_combined=0x%x" % (reg_addr, reg_value, reg_combined))
+        # print("write_AD9912_SPI(): reg_addr=0x%x, reg_value=0x%x, reg_combined=0x%x" % (reg_addr, reg_value, reg_combined))
         self.write("AD9912_SPI%d" % channel_id, reg_combined)
         time.sleep(1e-3)
 
