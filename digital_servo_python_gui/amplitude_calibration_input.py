@@ -6,7 +6,7 @@ import numpy as np
 # measure the tracking generator's amplitude vs frequency
 # with a coax doing the loopback between the TG Source and RF input ports,
 # then the user moves the coax from the spectrum analyzer's RF input to the frequency counter's input
-# and we redou the sweep, measuring the amplitude through the ADC data
+# and we redo the sweep, measuring the amplitude through the ADC data
 
 def getline(s):
     result = s.recv(1)

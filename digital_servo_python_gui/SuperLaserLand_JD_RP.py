@@ -335,7 +335,7 @@ class SuperLaserLand_JD_RP:
         assert channel_id in self.channels_list
         self.user_inputs["dds_ref_freq%d_hz" % channel_id] = frequency_in_hz
         dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs_dds)
-        # print("dds_target_freq = %f Hz, dds_freq_ratio = %f" % (dds_freq_word/2**48*self.fs_dds, dds_freq_word/2**48))
+        # print("dds_target_freq = %f Hz, dds_freq_ratio = %f, word=0x%x" % (dds_freq_word/2**48*self.fs_dds, dds_freq_word/2**48, dds_freq_word))
         self.write_64bits("manual_offset_dds%d"%channel_id, dds_freq_word)
 
     def dds_freq_to_word(self, frequency_in_hz, ref_freq):
@@ -352,6 +352,11 @@ class SuperLaserLand_JD_RP:
         limit_high = self.dds_freq_to_word(limit_high_hz, self.fs_dds)//2**32
 
         self.write_2x_16bits("dds%d_limits"%channel_id, limit_low, limit_high)
+
+    def set_dds_unlimited(self, channel_id):
+        """ Removes all limiting from the given channel id """
+        self.write_2x_16bits("dds%d_limits"%channel_id, -2**(16-1), 2**(16-1)-1)
+        # self.write_2x_16bits("dds%d_limits"%channel_id, 0, 2**(16-1)-1)
 
     def get_ddc_filter(self):
         """ Returns the filter implemented in fir_lpf_decim_by_6 """

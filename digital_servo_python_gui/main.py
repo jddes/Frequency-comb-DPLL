@@ -175,6 +175,22 @@ class MainWidget(QtWidgets.QMainWindow):
             w.setText(text)
             colorCoding(w, color_name)
 
+    def freq_sweep(self):
+        self.sl.setDDSclockPLL(10e6)
+        # self.sl.set_dds_limits(1, 0, 499e6)
+        self.sl.set_dds_unlimited(1)
+
+
+        frequency_in_hz = 0
+        for k in range(300):
+            frequency_in_hz += 500e6/300
+            print("freq [MHz] = ", frequency_in_hz/1e6)
+            self.sl.set_dds_offset_freq(1, frequency_in_hz)
+            time.sleep(1)
+
+        pass
+
+
     def connect_clicked(self, bConnect):
         self.config_done = False
         self.setStatus('commit', 'Uncommitted', 'bad')
@@ -188,30 +204,34 @@ class MainWidget(QtWidgets.QMainWindow):
             # attempt to establish connection to selected device
             (strMAC, strIP, port) = self.connection_widget.getSelectedHost()
             if strIP is None:
-                print("Could not get valid IP address")
-                return
-
-            self.sl.dev.OpenTCPConnection(strIP, port)
-            if self.sl.dev.valid_socket:
-                # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
-                self.hw_description = self.sl.getHardwareDescription()
-                # self.sl.write("PI_fine_gains", 1)
-                # print(self.sl.read("phase_logger_write_addr"))
-                # time.sleep(1)
-                # self.sl.dev.CloseTCPConnection()
-                # Handle various versions of the hardware changing the exact GUI that we should present to the user:
-                bHasDDS = self.hw_description.get("has_dds", False)
-                # bHasDDS = False # force to false for testing
-                self.config_widget.setHardwareType(bHasDDS)
-
-                self.sl.phaseReadoutDriver.startLogging()
-                self.connection_widget.btnConnect.setText('Disconnect from device')
-                self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
-
-            else:
                 bConnect = False
                 self.connection_widget.btnConnect.setChecked(False)
-                self.setStatus('connection', 'Error attempting to connect to %s' % strIP, 'bad')
+
+                self.setStatus('connection', 'No IP selected', 'bad')
+            else:
+                self.sl.dev.OpenTCPConnection(strIP, port)
+                if self.sl.dev.valid_socket:
+                    # self.freq_sweep()
+
+                    # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
+                    self.hw_description = self.sl.getHardwareDescription()
+                    # self.sl.write("PI_fine_gains", 1)
+                    # print(self.sl.read("phase_logger_write_addr"))
+                    # time.sleep(1)
+                    # self.sl.dev.CloseTCPConnection()
+                    # Handle various versions of the hardware changing the exact GUI that we should present to the user:
+                    bHasDDS = self.hw_description.get("has_dds", False)
+                    # bHasDDS = False # force to false for testing
+                    self.config_widget.setHardwareType(bHasDDS)
+
+                    self.sl.phaseReadoutDriver.startLogging()
+                    self.connection_widget.btnConnect.setText('Disconnect from device')
+                    self.setStatus('connection', 'Connected to %s' % strIP, 'ok')
+
+                else:
+                    bConnect = False
+                    self.connection_widget.btnConnect.setChecked(False)
+                    self.setStatus('connection', 'Error attempting to connect to %s' % strIP, 'bad')
 
             print("connect_clicked(): TODO: set config file name")
 
