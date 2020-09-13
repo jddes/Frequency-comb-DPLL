@@ -86,6 +86,28 @@ class SuperLaserLand_JD_RP:
         "AD9912_SPI3":        counter2absolute(0x0022),
         "AD9912_SPI4":        counter2absolute(0x0023),
 
+        # Dither modules
+        # from PI_4ch.vhd: "constant DITHER_BASE_ADDRESS : addresses_type := (16#100#, 16#110#, 16#120#, 16#130#);"
+        "Dither1_enable":    counter2absolute(0x100 + 0),
+        "Dither1_period":    counter2absolute(0x100 + 1),
+        "Dither1_N_periods": counter2absolute(0x100 + 2),
+        "Dither1_amplitude": counter2absolute(0x100 + 3),
+
+        "Dither2_enable":    counter2absolute(0x110 + 0),
+        "Dither2_period":    counter2absolute(0x110 + 1),
+        "Dither2_N_periods": counter2absolute(0x110 + 2),
+        "Dither2_amplitude": counter2absolute(0x110 + 3),
+
+        "Dither3_enable":    counter2absolute(0x120 + 0),
+        "Dither3_period":    counter2absolute(0x120 + 1),
+        "Dither3_N_periods": counter2absolute(0x120 + 2),
+        "Dither3_amplitude": counter2absolute(0x120 + 3),
+
+        "Dither4_enable":    counter2absolute(0x130 + 0),
+        "Dither4_period":    counter2absolute(0x130 + 1),
+        "Dither4_N_periods": counter2absolute(0x130 + 2),
+        "Dither4_amplitude": counter2absolute(0x130 + 3),
+
         # Phase logger registers, implemented in registers_read.vhd
         "phase_logger_start_write":        counter2absolute(0x0041),
         "phase_logger_start_read":         counter2absolute(0x0042),
@@ -164,6 +186,7 @@ class SuperLaserLand_JD_RP:
         # must satisfy constraint: self.fs/(self.LPF_DECIM*self.PI_n_cycles) < self.fs/(self.dds_spi_bits_per_transaction*self.dds_spi_clk_div)
         # reduces to: self.LPF_DECIM*self.PI_n_cycles > self.dds_spi_bits_per_transaction*self.dds_spi_clk_div
         self.PI_n_cycles = int(np.ceil(self.dds_spi_bits_per_transaction*self.dds_spi_clk_div/self.LPF_DECIM))
+
         self.R_LO3 = dict()
         for channel_id in self.channels_list:
             self.R_LO3[channel_id] = rationals.RationalNumber(0, 1) # this will get filled in once we know all the required values
@@ -813,6 +836,23 @@ class SuperLaserLand_JD_RP:
         reg_msbs = (current_word>>8) & bitmask(2)
         self.write_AD9912_SPI(channel_id, ad9912_addr_lsb,   reg_lsbs)
         self.write_AD9912_SPI(channel_id, ad9912_addr_lsb+1, reg_msbs)
+
+    def setupDither(self, channel_id, integration_time_in_seconds, modulation_frequency_in_hz, output_amplitude_normalized, bEnableDither):
+        """ output_amplitude_normalized is between 0 and 1, normalized to the DDS clock rate,
+        ie output_amplitude_normalized=1 means 1 GHz peak-peak of dither """
+
+        modulation_period = round(self.fs/modulation_frequency_in_hz)
+        integration_time_in_samples = integration_time_in_seconds*self.fs
+        N_periods = np.ceil(integration_time_in_samples/modulation_period)
+
+        modulation_period_divided_by_4_minus_one = int(round(modulation_period/4-1))
+        N_periods_integration_minus_one = int(N_periods-1)
+        amplitude = int(round(output_amplitude_normalized * 2 * (2**32-1) * self.fs_dds)) # not sure why there needs to be an extra factor of 2 here compared to what I would calculate
+
+        self.write("Dither%d_period"%channel_id, modulation_period_divided_by_4_minus_one)
+        self.write("Dither%d_N_periods"%channel_id, N_periods_integration_minus_one)
+        self.write("Dither%d_amplitude"%channel_id, amplitude)
+        self.write("Dither%d_enable"%channel_id, bEnableDither)
 
 class phaseReadoutDriver():
     def __init__(self, sl):
