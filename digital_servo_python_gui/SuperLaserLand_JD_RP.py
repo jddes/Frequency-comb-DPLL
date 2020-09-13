@@ -201,6 +201,10 @@ class SuperLaserLand_JD_RP:
         self.phaseReadoutDriver = phaseReadoutDriver(self)
         self.populateEmptyRegValues()
 
+    def fs_PI(self):
+        """ Returns the PI's sampling rate, which is also the DDS's sampling rate (not to be confused by the DDS clock rate) """
+        return self.fs/self.PI_n_cycles
+
     def populateEmptyRegValues(self):
         for reg_name in self.addr:
             self.reg_values[reg_name] = None
@@ -623,10 +627,10 @@ class SuperLaserLand_JD_RP:
         sets the crossover between the integrator and proportional
         to roughly 1/10th of the loop's unity gain frequency """
         target_crossover_freq = target_BW/10
-        Ki_coarse = Kp_coarse * 2 * np.pi * target_crossover_freq/self.fs_dds
+        Ki_coarse = Kp_coarse * 2 * np.pi * target_crossover_freq/self.fs_PI()
         Ki_coarse = 2**int(round(np.log2(Ki_coarse)))
         if Ki_coarse < 1:
-            print("Warning, clamping coarse I gain to 1. this may cause loop instability")
+            print("Warning, clamping coarse I gain to 1 (was %e). this may cause loop instability" % Ki_coarse)
             Ki_coarse = 1
         return Ki_coarse
 
