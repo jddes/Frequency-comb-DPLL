@@ -117,6 +117,8 @@ class MainWidget(QtWidgets.QMainWindow):
             # Trigger a few updates now that the signals have been connected
             GUI.probingSettingsChanged()
 
+            GUI.IQ_decim = self.sl.LPF_DECIM # make sure that these values are the same
+
             # vbox.addWidget(GUI)
             self.tab_widget.addTab(GUI, "Channel %d" % (channel_id))
             self.channel_GUIs[channel_id] = GUI
@@ -190,7 +192,6 @@ class MainWidget(QtWidgets.QMainWindow):
 
         pass
 
-
     def connect_clicked(self, bConnect):
         self.config_done = False
         self.setStatus('commit', 'Uncommitted', 'bad')
@@ -212,6 +213,7 @@ class MainWidget(QtWidgets.QMainWindow):
                 self.sl.dev.OpenTCPConnection(strIP, port)
                 if self.sl.dev.valid_socket:
                     # self.freq_sweep()
+                    # self.sl.setupDither(1, 0.1, 1, 100e3/1e9, 1)
 
                     # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
                     self.hw_description = self.sl.getHardwareDescription()

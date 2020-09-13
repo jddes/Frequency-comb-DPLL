@@ -32,7 +32,7 @@ class ChannelGUI(QtWidgets.QWidget):
         self.last_amplitude_update = time.perf_counter()
         self.fs = 125e6 # default, will get updated via signals
         self.settings = None
-        self.IQ_decim = 6 # decimation of the IQ data compared to ADC rate
+        self.IQ_decim = 6 # decimation of the IQ data compared to ADC rate; gets updated automatically based on the value from SuperLaserLand object
 
         self.setupUI()
         self.tests()
@@ -68,6 +68,7 @@ class ChannelGUI(QtWidgets.QWidget):
         self.chkAutorefresh.clicked.connect(self.probingSettingsChanged)
         self.comboRBW.currentTextChanged.connect(self.probingSettingsChanged)
         self.comboPlotType.currentTextChanged.connect(self.probingSettingsChanged)
+        self.comboPlotType.currentTextChanged.connect(self.populateRBWcombo)
 
         self.chkLock.clicked.connect(self.chkLock_clicked)
 
@@ -101,8 +102,11 @@ class ChannelGUI(QtWidgets.QWidget):
     def probingSettingsChanged(self):
         d = dict()
         d["channel_id"] = self.channel_id
-        d["pts_ADC"] = self.RBW_to_pts(freq_value_from_text(self.comboRBW.currentText()))
-        if self.comboPlotType.currentText() in ['IQ timeseries', 'IQ spectrum']:
+        rbw_text = self.comboRBW.currentText()
+        if rbw_text == '': # this means that this slot was called while we were updating the combo elements
+            return
+        d["pts_ADC"] = self.RBW_to_pts(freq_value_from_text(rbw_text))
+        if self.comboPlotType.currentText().startswith('IQ'):
             d["pts_IQ"] = d["pts_ADC"]
         else:
             d["pts_IQ"] = int(1e3) # hard-coded for now, this will need to change when we add the option to plot the time domain phase or phase PSD
@@ -124,19 +128,34 @@ class ChannelGUI(QtWidgets.QWidget):
         self.widgetSettings.setVisible(checked)
 
     def populateRBWcombo(self):
+        self.comboRBW.blockSignals(True)
         self.comboRBW.clear()
-        for value in [10e3, 30e3, 100e3, 300e3, 1e6]:
+        for value in [self.pts_to_RBW(2**15-1), 10e3, 30e3, 100e3, 300e3, 1e6]:
             self.comboRBW.addItem(freq_text_eng_format(value))
-             #print("For RBW=%f Hz, pts required = %d" % (value, self.RBW_to_pts(value)))
+            # if self.channel_id == 1:
+            #     print("For RBW=%f Hz, pts required = %d" % (value, self.RBW_to_pts(value)))
         self.comboRBW.setCurrentText(freq_text_eng_format(100e3))
+        self.comboRBW.blockSignals(False)
+
+    def plot_fs(self):
+        """ Returns the sampling rate for the data that will be plotted.
+        This is always equal to either the full sampling rate, or the IQ sampling rate """
+        if self.comboPlotType.currentText().startswith('IQ'):
+            return self.fs/self.IQ_decim
+        else:
+            return self.fs
 
     def RBW_to_pts(self, rbw):
         """ Returns the number of points required in the FFT to reach a given RBW for the default window.
         Approach is to compute the RBW for a fixed number of points, then scale back to the desired RBW """
         test_pts = int(1e3)
-        test_NEB = self.computeNEB(self.computeWindowFunction(int(test_pts)), self.fs)
+        test_NEB = self.pts_to_RBW(test_pts)
         required_pts = int(round(test_pts * test_NEB/rbw))
         return required_pts
+
+    def pts_to_RBW(self, pts):
+        """ Returns the resolution bandwidth for a given number of points """
+        return self.computeNEB(self.computeWindowFunction(int(pts)), self.plot_fs())
 
     def newADCdata(self, data, data_max, scale_factor_adc_to_input):
         """ data must be in volts, refered at the ADC input
@@ -145,11 +164,11 @@ class ChannelGUI(QtWidgets.QWidget):
         plot_type = self.comboPlotType.currentText()
         if plot_type == "RF spectrum":
             # scale to input-refered amplitudes
-            self.plotSpectrum(data/scale_factor_adc_to_input, self.fs, plot_type)
+            self.plotSpectrum(data/scale_factor_adc_to_input, self.plot_fs(), plot_type)
         elif plot_type == "Baseband spectrum":
-            self.plotSpectrum(data, self.fs, plot_type)
+            self.plotSpectrum(data, self.plot_fs(), plot_type)
         elif plot_type == "Baseband timeseries":
-            self.plotADCTimeseries(data, self.fs, plot_type)
+            self.plotADCTimeseries(data, self.plot_fs(), plot_type)
         elif plot_type == "IQ timeseries":
             # in this case, we don't do anything with the ADC data
             pass
@@ -170,9 +189,9 @@ class ChannelGUI(QtWidgets.QWidget):
 
         plot_type = self.comboPlotType.currentText()
         if plot_type == "IQ timeseries":
-            self.plotIQTimeseries(complex_baseband*scale_factor_adc_to_input, self.fs/self.IQ_decim, plot_type) # this is adc-referred
+            self.plotIQTimeseries(complex_baseband*scale_factor_adc_to_input, self.plot_fs(), plot_type) # this is adc-referred
         if plot_type == "IQ spectrum":
-            self.plotSpectrum(complex_baseband*scale_factor_adc_to_input, self.fs/self.IQ_decim, plot_type)
+            self.plotSpectrum(complex_baseband*scale_factor_adc_to_input, self.plot_fs(), plot_type)
 
     def newPhasePoint(self, phase_data):
         if phase_data is None:
