@@ -70,7 +70,6 @@ class RP_PLL_device():
             raise CommsLoggeableError(e)
 
     def CloseTCPConnection(self):
-        print("RP_PLL_device::CloseTCPConnection()")
         self.sock = None # socket_placeholder()
         self.valid_socket = False
 

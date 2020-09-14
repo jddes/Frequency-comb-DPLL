@@ -18,6 +18,11 @@ port (
     dither_results3   : in  std_logic_vector(64-1 downto 0);
     dither_results4   : in  std_logic_vector(64-1 downto 0);
 
+    -- monitors actual clock mode:
+    clk_int_or_ext_actual   : in  std_logic;
+    clk_int_or_ext_desired  : in  std_logic;
+    clk_ext_good            : in  std_logic;
+
     -- these get written to ram_data_logger_v2
     clk_enable_logger                      : in  std_logic;
     new_data_chunk                         : in  std_logic;
@@ -60,6 +65,20 @@ architecture Behavioral of registers_read is
     signal write_address : std_logic_vector(ADDRESS_WIDTH-1 downto 0);
 
 
+    signal loss_of_clk_detected : std_logic := '0';
+
+    -- clock-domain crossing registers:
+    signal clk_int_or_ext_actual_reg1, clk_int_or_ext_actual_reg2    : std_logic := '0';
+    signal clk_int_or_ext_desired_reg1, clk_int_or_ext_desired_reg2  : std_logic := '0';
+    signal clk_ext_good_reg1, clk_ext_good_reg2                      : std_logic := '0';
+
+    attribute ASYNC_REG : string;
+    attribute ASYNC_REG of clk_int_or_ext_actual_reg1  : signal is "TRUE";
+    attribute ASYNC_REG of clk_int_or_ext_actual_reg2  : signal is "TRUE";
+    attribute ASYNC_REG of clk_int_or_ext_desired_reg1 : signal is "TRUE";
+    attribute ASYNC_REG of clk_int_or_ext_desired_reg2 : signal is "TRUE";
+    attribute ASYNC_REG of clk_ext_good_reg1           : signal is "TRUE";
+    attribute ASYNC_REG of clk_ext_good_reg2           : signal is "TRUE";
 begin
 
     ram_data_logger_inst : entity work.ram_data_logger_v2
@@ -81,6 +100,19 @@ begin
         read_start_address => read_start_address
     );
 
+    process( clk )
+    begin
+        if rising_edge(clk) then
+            -- clock domain crossing:
+            clk_int_or_ext_actual_reg1 <= clk_int_or_ext_actual;
+            clk_int_or_ext_actual_reg2 <= clk_int_or_ext_actual_reg1;
+            clk_int_or_ext_desired_reg1 <= clk_int_or_ext_desired;
+            clk_int_or_ext_desired_reg2 <= clk_int_or_ext_desired_reg1;
+            clk_ext_good_reg1 <= clk_ext_good;
+            clk_ext_good_reg2 <= clk_ext_good_reg1;
+        end if;
+    end process;
+
     -----------------------------------------
     -- registers
 
@@ -90,6 +122,11 @@ begin
         if rising_edge(clk) then
             sys_err <= '0';
             sys_en := sys_wen or sys_ren;
+
+            -- latch loss of ext clock events:
+            if clk_int_or_ext_desired_reg2 = '0' and clk_int_or_ext_actual_reg2 = '1' then
+                loss_of_clk_detected <= '1';
+            end if;
 
             -- default
             read_ack <= '0';
@@ -133,6 +170,7 @@ begin
                     when x"00044" => sys_ack <= sys_en; sys_rdata <= read_data;     read_ack <= '1';
                     when x"00045" => sys_ack <= sys_en; sys_rdata(write_address'range) <= write_address;
                     
+                    when x"00046" => sys_ack <= sys_en; sys_rdata(4-1 downto 0) <= (loss_of_clk_detected & clk_ext_good_reg2 & clk_int_or_ext_actual_reg2 & clk_int_or_ext_desired_reg2); loss_of_clk_detected <= '0';
 
                     when others   => sys_ack <= sys_en;     sys_rdata <=  (others => '0');
                 end case;

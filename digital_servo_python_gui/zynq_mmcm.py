@@ -12,7 +12,7 @@ def get_integer_N_solution(f_ref, f_target_adc):
     f_adc = f_ref * float(M)/N
     f_vco = f_ref * float(M)
 
-    print("get_integer_N_solution(): f_ref=%f MHz, M=%d, N=%d, f_vco=%f MHz, f_adc=%f MHz" % (f_ref/1e6, M, N, f_vco/1e6, f_adc/1e6))
+    # print("get_integer_N_solution(): f_ref=%f MHz, M=%d, N=%d, f_vco=%f MHz, f_adc=%f MHz" % (f_ref/1e6, M, N, f_vco/1e6, f_adc/1e6))
     return (M, N)
 
 def get_f_out_possibilities(f_ref, f_target_adc):

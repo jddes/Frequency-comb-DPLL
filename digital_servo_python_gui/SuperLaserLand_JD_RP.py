@@ -116,6 +116,9 @@ class SuperLaserLand_JD_RP:
         "phase_logger_write_addr":         counter2absolute(0x0045),
         "phase_logger_n_cycles":           counter2absolute(0x0002), # phase cycles per integration time
 
+        "ext_clk_status":                  counter2absolute(0x0046),
+
+
         # addresses implemented in the "Board design" 
         # XADC-related
         "xadc_base":   bd2absolute(0x0001_0000),
@@ -417,20 +420,23 @@ class SuperLaserLand_JD_RP:
     def setADCclockPLL(self, f_ref, bExternalClock):
         """ Computes and commits closest integer-N solution for the ADC clock.
         In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
-        if bExternalClock == False:
-            f_ref = 200e6 # this is hardcoded in the firmware
-
         print("setADCclockPLL(): f_ref=", f_ref)
-        (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
-        self.user_inputs["adc_f_ref_hz"]   = f_ref
         self.user_inputs["bExternalClock"] = bExternalClock
-        self.user_inputs["CLKFBOUT_MULT"]  = M
-        self.user_inputs["CLKOUT0_DIVIDE"] = N
-        self._setADCclockPLL()
+        if bExternalClock:
+            (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
+            self.user_inputs["adc_f_ref_hz"]   = f_ref
+            self.user_inputs["CLKFBOUT_MULT"]  = M
+            self.user_inputs["CLKOUT0_DIVIDE"] = N
+            self._setADCclockPLL()
+        else:
+            # we are not even using the MMCM
+            self.user_inputs["adc_f_ref_hz"]   = 125e6
+            self.user_inputs["CLKFBOUT_MULT"]  = 1
+            self.user_inputs["CLKOUT0_DIVIDE"] = 1
+            self._setClkSelectAndReset(False, bExternalClock)
 
     def _setADCclockPLL(self):
-        """ f_ref is the frequency of the selected clock source (200 MHz in internal clock mode,
-        can be whatever is connected to GPIO_P[5] in external clock mode) """
+        """ f_ref is the frequency of the clock connected to GPIO_P[5] in external clock mode """
 
         # From PG065:
         # "You should first write all the required clock configuration registers and then check for the
@@ -453,13 +459,13 @@ class SuperLaserLand_JD_RP:
             print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
             return
 
-        self._setClkSelectAndReset(True) # assert reset on the incoming ADC clock
+        self._setClkSelectAndReset(True, self.user_inputs["bExternalClock"]) # assert reset on the incoming ADC clock
         self.write("clkw_reg23", 0x7)
         self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
         self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
         time.sleep(0.1)
-        self._setClkSelectAndReset(False) # de-assert reset on the incoming ADC clock
+        self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # de-assert reset on the incoming ADC clock
 
     def _waitForReg(self, reg_name, desired_value, timeout=1.):
         """ Read a register in a loop, until it either becomes a desired value or we hit a timeout.
@@ -471,9 +477,8 @@ class SuperLaserLand_JD_RP:
             time.sleep(1e-3)
         return reg_value == desired_value
 
-    def _setClkSelectAndReset(self, bReset):
+    def _setClkSelectAndReset(self, bReset, bExternalClock):
         """ Select external or internal clock source, and also sets the reset """
-        bExternalClock = self.user_inputs["bExternalClock"]
         reg_clk_sel_and_reset = int(not bExternalClock) | (int(bReset)<<1)
         self.write("clk_sel_and_reset", reg_clk_sel_and_reset)
 
@@ -550,6 +555,21 @@ class SuperLaserLand_JD_RP:
         conversion_gain = N_cycles_gate_time * (N_cycles_gate_time + 1)
         freq_counter_samples = self.ensure_float(freq_counter_samples) * f_ref / 2**(N_INPUT_BITS) / conversion_gain
         return freq_counter_samples
+
+    def getClkStatus(self):
+        """ Returns four boolean flags:
+        (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
+        loss_of_clk_detected is True if the user set external clock mode, but the system fell back to internal clock mode
+        at any point since the last reading of this flag.
+        clk_int_or_ext_desired = True means internal clock
+        clk_int_or_ext_actual = True means internal clock
+        """
+        reg_value = self.read("ext_clk_status")
+        loss_of_clk_detected   = bool((reg_value>>3) & 0x1)
+        clk_ext_good           = bool((reg_value>>2) & 0x1)
+        clk_int_or_ext_actual  = bool((reg_value>>1) & 0x1)
+        clk_int_or_ext_desired = bool((reg_value>>0) & 0x1)
+        return (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
 
     def uart_uc_set_enable(self, bEnable):
         reg = int(bool(bEnable)) * (1<<9)

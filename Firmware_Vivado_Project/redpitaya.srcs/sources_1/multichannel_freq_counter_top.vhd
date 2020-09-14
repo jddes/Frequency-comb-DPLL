@@ -33,6 +33,11 @@ generic (
     AD9912_register_write4  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
     AD9912_register_address : out std_logic_vector(13-1 downto 0);
     AD9912_register_value   : out std_logic_vector( 8-1 downto 0);
+
+    -- monitors actual clock mode:
+    clk_int_or_ext_actual   : in  std_logic;
+    clk_int_or_ext_desired  : in  std_logic;
+    clk_ext_good            : in  std_logic;
     
     -- data output:
     DACout1               : out std_logic_vector(16-1 downto 0);
@@ -191,6 +196,9 @@ begin
         dither_results2   => dither_results2,
         dither_results3   => dither_results3,
         dither_results4   => dither_results4,
+        clk_int_or_ext_actual  => clk_int_or_ext_actual,
+        clk_int_or_ext_desired => clk_int_or_ext_desired,
+        clk_ext_good           => clk_ext_good,
         n_cycles          => n_cycles,
         sys_addr          => sys_addr,
         sys_wdata         => sys_wdata,

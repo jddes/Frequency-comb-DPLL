@@ -404,7 +404,7 @@
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>CLK_DOMAIN</spirit:name>
-          <spirit:value spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.CLOCK_CLK_IN1.CLK_DOMAIN">system_processing_system7_0_FCLK_CLK3</spirit:value>
+          <spirit:value spirit:resolve="generated" spirit:id="BUSIFPARAM_VALUE.CLOCK_CLK_IN1.CLK_DOMAIN">system_clk_ext_in</spirit:value>
         </spirit:parameter>
         <spirit:parameter>
           <spirit:name>ASSOCIATED_BUSIF</spirit:name>
@@ -520,7 +520,7 @@
       <spirit:vendorExtensions>
         <xilinx:busInterfaceInfo>
           <xilinx:enablement>
-            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.clock_CLK_IN2" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_clock_capable_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_non_clock_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;No_buffer&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Global_buffer&quot;)) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER&apos;))=1))">true</xilinx:isEnabled>
+            <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="BUSIF_ENABLEMENT.clock_CLK_IN2" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_clock_capable_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_non_clock_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;No_buffer&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Global_buffer&quot;)) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER&apos;))=1))">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:busInterfaceInfo>
       </spirit:vendorExtensions>
@@ -1066,7 +1066,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>39b9cd8d</spirit:value>
+            <spirit:value>70ee44e7</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1074,7 +1074,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1082,7 +1082,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:36 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:06 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1100,7 +1100,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>39b9cd8d</spirit:value>
+            <spirit:value>70ee44e7</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1108,7 +1108,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1116,7 +1116,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:38 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:08 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1134,7 +1134,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>39b9cd8d</spirit:value>
+            <spirit:value>70ee44e7</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1142,7 +1142,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1150,7 +1150,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:38 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:08 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1168,7 +1168,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>70dc5cc8</spirit:value>
+            <spirit:value>1932d020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1176,7 +1176,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1184,7 +1184,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:38 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:08 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1202,7 +1202,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>70dc5cc8</spirit:value>
+            <spirit:value>1932d020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1210,7 +1210,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1218,7 +1218,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:38 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:08 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1236,7 +1236,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>39b9cd8d</spirit:value>
+            <spirit:value>70ee44e7</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1244,7 +1244,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1252,7 +1252,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:38 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:09 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1270,7 +1270,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>customizationCRC</spirit:name>
-            <spirit:value>39b9cd8d</spirit:value>
+            <spirit:value>70ee44e7</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>customizationCRCversion</spirit:name>
@@ -1278,7 +1278,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRC</spirit:name>
-            <spirit:value>f5659900</spirit:value>
+            <spirit:value>94470569</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>boundaryCRCversion</spirit:name>
@@ -1286,7 +1286,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Fri Sep 11 20:49:38 UTC 2020</spirit:value>
+            <spirit:value>Mon Sep 14 00:00:09 UTC 2020</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>StaleAtRelink</spirit:name>
@@ -1824,7 +1824,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.clk_in2" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_clock_capable_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_non_clock_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;No_buffer&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Global_buffer&quot;)) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER&apos;))=1))">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.clk_in2" xilinx:dependency="(((spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_clock_capable_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Single_ended_non_clock_pin&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;No_buffer&quot;) or (spirit:decode(id(&apos;MODELPARAM_VALUE.C_SECONDARY_SOURCE&apos;))=&quot;Global_buffer&quot;)) and (spirit:decode(id(&apos;MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER&apos;))=1))">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -1893,7 +1893,7 @@
         <spirit:vendorExtensions>
           <xilinx:portInfo>
             <xilinx:enablement>
-              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.clk_in_sel" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER&apos;))=1)">true</xilinx:isEnabled>
+              <xilinx:isEnabled xilinx:resolve="dependent" xilinx:id="PORT_ENABLEMENT.clk_in_sel" xilinx:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER&apos;))=1)">false</xilinx:isEnabled>
             </xilinx:enablement>
           </xilinx:portInfo>
         </spirit:vendorExtensions>
@@ -2966,7 +2966,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="INTEGER">
         <spirit:name>C_USE_PHASE_ALIGNMENT</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_USE_PHASE_ALIGNMENT" spirit:order="206">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_USE_PHASE_ALIGNMENT" spirit:order="206">0</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_PRIM_IN_JITTER</spirit:name>
@@ -2998,7 +2998,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="INTEGER">
         <spirit:name>C_USE_INCLK_SWITCHOVER</spirit:name>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER" spirit:order="214">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_USE_INCLK_SWITCHOVER" spirit:order="214">0</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="INTEGER">
         <spirit:name>C_USE_DYN_RECONFIG</spirit:name>
@@ -3046,7 +3046,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_PRIM_SOURCE</spirit:name>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PRIM_SOURCE" spirit:order="224">Single_ended_clock_capable_pin</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PRIM_SOURCE" spirit:order="224">No_buffer</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_SECONDARY_SOURCE</spirit:name>
@@ -3130,7 +3130,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_INCLK_SUM_ROW2</spirit:name>
-        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_INCLK_SUM_ROW2" spirit:order="244">_secondary___________200___________10.000</spirit:value>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_INCLK_SUM_ROW2" spirit:order="244">no_secondary_input_clock </spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_OUTCLK_SUM_ROW0A</spirit:name>
@@ -3391,7 +3391,7 @@
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_MMCM_CLKIN2_PERIOD</spirit:name>
-        <spirit:value spirit:format="float" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_MMCM_CLKIN2_PERIOD" spirit:order="300">5.0</spirit:value>
+        <spirit:value spirit:format="float" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_MMCM_CLKIN2_PERIOD" spirit:order="300">5.000</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="STRING">
         <spirit:name>C_MMCM_CLKOUT4_CASCADE</spirit:name>
@@ -4242,7 +4242,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>USE_INCLK_SWITCHOVER</spirit:name>
-      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.USE_INCLK_SWITCHOVER" spirit:order="13.9" spirit:configGroups="0 NoDisplay">true</spirit:value>
+      <spirit:value spirit:format="bool" spirit:resolve="user" spirit:id="PARAM_VALUE.USE_INCLK_SWITCHOVER" spirit:order="13.9" spirit:configGroups="0 NoDisplay">false</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>SECONDARY_IN_FREQ</spirit:name>
@@ -4518,7 +4518,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>PRIM_SOURCE</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PRIM_SOURCE" spirit:choiceRef="choice_pairs_11d71346" spirit:order="14.1" spirit:configGroups="0 NoDisplay">Single_ended_clock_capable_pin</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PRIM_SOURCE" spirit:choiceRef="choice_pairs_11d71346" spirit:order="14.1" spirit:configGroups="0 NoDisplay">No_buffer</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>CLKOUT1_DRIVES</spirit:name>
@@ -4702,7 +4702,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>MMCM_CLKIN2_PERIOD</spirit:name>
-      <spirit:value spirit:format="float" spirit:resolve="user" spirit:id="PARAM_VALUE.MMCM_CLKIN2_PERIOD" spirit:order="130" spirit:configGroups="0 NoDisplay">5.0</spirit:value>
+      <spirit:value spirit:format="float" spirit:resolve="user" spirit:id="PARAM_VALUE.MMCM_CLKIN2_PERIOD" spirit:order="130" spirit:configGroups="0 NoDisplay">5.000</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>MMCM_CLKOUT4_CASCADE</spirit:name>
@@ -5137,6 +5137,7 @@
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN1.BOARD.ASSOCIATED_PARAM" xilinx:valueSource="constant"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN1.CLK_DOMAIN" xilinx:valueSource="default_prop"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN1.FREQ_HZ" xilinx:valueSource="user"/>
+        <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN1.PHASE" xilinx:valueSource="user_prop"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN2.BOARD.ASSOCIATED_PARAM" xilinx:valueSource="constant"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN2.FREQ_HZ" xilinx:valueSource="user"/>
         <xilinx:configElementInfo xilinx:referenceId="BUSIFPARAM_VALUE.CLOCK_CLK_IN2.PHASE" xilinx:valueSource="user_prop"/>

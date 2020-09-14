@@ -1,7 +1,7 @@
 //Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-//Date        : Fri Sep 11 16:49:35 2020
+//Date        : Sun Sep 13 20:23:32 2020
 //Host        : jdbureau running 64-bit major release  (build 9200)
 //Command     : generate_target system_wrapper.bd
 //Design      : system_wrapper
@@ -26,8 +26,6 @@ module system_wrapper
     DDR_reset_n,
     DDR_we_n,
     FCLK_CLK0,
-    FCLK_CLK1,
-    FCLK_CLK2,
     FCLK_CLK3,
     FCLK_RESET0_N,
     FCLK_RESET1_N,
@@ -189,8 +187,6 @@ module system_wrapper
   inout DDR_reset_n;
   inout DDR_we_n;
   output FCLK_CLK0;
-  output FCLK_CLK1;
-  output FCLK_CLK2;
   output FCLK_CLK3;
   output FCLK_RESET0_N;
   output FCLK_RESET1_N;
@@ -353,8 +349,6 @@ module system_wrapper
   wire DDR_reset_n;
   wire DDR_we_n;
   wire FCLK_CLK0;
-  wire FCLK_CLK1;
-  wire FCLK_CLK2;
   wire FCLK_CLK3;
   wire FCLK_RESET0_N;
   wire FCLK_RESET1_N;
@@ -518,8 +512,6 @@ module system_wrapper
         .DDR_reset_n(DDR_reset_n),
         .DDR_we_n(DDR_we_n),
         .FCLK_CLK0(FCLK_CLK0),
-        .FCLK_CLK1(FCLK_CLK1),
-        .FCLK_CLK2(FCLK_CLK2),
         .FCLK_CLK3(FCLK_CLK3),
         .FCLK_RESET0_N(FCLK_RESET0_N),
         .FCLK_RESET1_N(FCLK_RESET1_N),

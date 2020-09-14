@@ -132,6 +132,7 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.enableOrDisableWidgetsRequiringConnection(False)
         self.createStatusBar()
+        self.clearLossOfClockEvents()
 
         self.updateTabVisibility(0)
         self.fasterTimer.start(5)
@@ -148,9 +149,13 @@ class MainWidget(QtWidgets.QMainWindow):
     def createStatusBar(self):
         self.status_bar_fields = OrderedDict()
         self.status_bar_fields["connection"] = QtWidgets.QLabel('Disconnected.')
-        self.status_bar_fields["commit"] = QtWidgets.QLabel('No config committed')
-        self.status_bar_fields["spacer"] = QtWidgets.QLabel('')
-        self.status_bar_fields["config"] = QtWidgets.QLabel('No config file selected')
+        self.status_bar_fields["commit"]     = QtWidgets.QLabel('No config committed')
+        self.status_bar_fields["clock"]      = QtWidgets.QLabel('')
+        self.status_bar_fields["clock_loss"] = QtWidgets.QLabel('')
+        self.status_bar_fields["spacer"]     = QtWidgets.QLabel('')
+        self.status_bar_fields["config"]     = QtWidgets.QLabel('No config file selected')
+
+
 
         self.setStatus("connection", "Disconnected.", "bad")
         self.setStatus("config", "No config file selected", "bad")
@@ -213,14 +218,10 @@ class MainWidget(QtWidgets.QMainWindow):
                 self.sl.dev.OpenTCPConnection(strIP, port)
                 if self.sl.dev.valid_socket:
                     # self.freq_sweep()
-                    # self.sl.setupDither(1, 0.1, 1, 100e3/1e9, 1)
+                    # self.sl.setupDither(1, 0.1, 1e3, 100e3/1e9, 1)
 
                     # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
                     self.hw_description = self.sl.getHardwareDescription()
-                    # self.sl.write("PI_fine_gains", 1)
-                    # print(self.sl.read("phase_logger_write_addr"))
-                    # time.sleep(1)
-                    # self.sl.dev.CloseTCPConnection()
                     # Handle various versions of the hardware changing the exact GUI that we should present to the user:
                     bHasDDS = self.hw_description.get("has_dds", False)
                     # bHasDDS = False # force to false for testing
@@ -256,6 +257,7 @@ class MainWidget(QtWidgets.QMainWindow):
         except (ValueError, SyntaxError):
             return # don't commit anything since there is an invalid value somewhere
         self.pushSettingsToDevice(system_settings, channels_settings)
+        self.clearLossOfClockEvents()
         self.setStatus('commit', 'Committed', 'ok')
         
         self.emit_system_settings()
@@ -268,7 +270,6 @@ class MainWidget(QtWidgets.QMainWindow):
         self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
                                bExternalClock=system_settings["adc_use_external_clock"])
         self.sl.setDDSclockPLL(system_settings["ref_freq"])
-
 
         self.sl.phaseReadoutDriver.setOutputRate(system_settings["output_data_rate"])
         for channel_id, channel_settings in channels_settings.items():
@@ -403,6 +404,37 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.validateExtClkFreq(ext_clk_freq)
 
+    def clearLossOfClockEvents(self):
+        # reading this register will clear the flag inside the FPGA
+        if self.sl.dev.valid_socket:
+            (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired) = self.sl.getClkStatus()
+        self.loss_of_clock_events = 0
+        self.loss_of_clk_detected = False
+        self.setStatus("clock_loss", "No loss of clock event", "ok")
+
+    def updateClkStatus(self):
+        (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired) = self.sl.getClkStatus()
+        # clk_int_or_ext_desired = True means internal clock
+        # clk_int_or_ext_actual = True means internal clock
+
+        if clk_int_or_ext_desired == True:
+            self.setStatus("clock", "Internal clock mode", "warning")
+        else:
+            # external clock desired
+            if clk_int_or_ext_actual == False:
+                self.setStatus("clock", "External clock mode", "ok")
+            else:
+                self.setStatus("clock", "Internal clock mode", "bad")
+
+        if loss_of_clk_detected and not self.loss_of_clk_detected:
+            if self.loss_of_clock_events == 0:
+                self.loss_of_clock_time = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+            self.loss_of_clock_events += 1
+            event_str = 'event' if self.loss_of_clock_events == 1 else 'events'
+            self.setStatus("clock_loss", "%d loss of ext clock %s since %s " % (self.loss_of_clock_events, event_str, self.loss_of_clock_time), "bad")
+
+        self.loss_of_clk_detected = loss_of_clk_detected
+
     def validateExtClkFreq(self, ext_clk_freq_measured):
         """ validate that the measured ref clk and given ref clk agree """
         try:
@@ -425,6 +457,7 @@ class MainWidget(QtWidgets.QMainWindow):
         if not self.sl.dev.valid_socket:
             return
         self.updateExtClkFreq()
+        self.updateClkStatus()
         if not self.validDeviceAndConfigKnown():
             return
 
@@ -518,6 +551,8 @@ class MainWidget(QtWidgets.QMainWindow):
                 continue
             N = self.pts_settings[iq_channel_id]["pts_IQ"]
             (timestamp, complex_baseband) = self.sl.getIQdata(iq_channel_id, N) # ids are 1-based here too
+            # with open("iq.bin", "wb") as f:
+            #     f.write(complex_baseband.tobytes())
             # complex_baseband = 0.1*np.exp(1j*np.linspace(0, 2*np.pi, N)) + 0.01*np.random.randn(N) + 0.01*1j*np.random.randn(N)
             scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(iq_channel_id))
             self.perChannelEmitters[iq_channel_id].sig_new_iq_data.emit(complex_baseband, scale_factor_adc_to_input)

@@ -26,6 +26,10 @@ port (
     dither_results3   : in  std_logic_vector(64-1 downto 0);
     dither_results4   : in  std_logic_vector(64-1 downto 0);
 
+    clk_int_or_ext_actual   : in  std_logic;
+    clk_int_or_ext_desired  : in  std_logic;
+    clk_ext_good            : in  std_logic;
+
     -- config port:
     n_cycles          : in  std_logic_vector(COUNTER_WIDTH-1 downto 0);
 
@@ -105,6 +109,11 @@ begin
         dither_results2             => dither_results2,
         dither_results3             => dither_results3,
         dither_results4             => dither_results4,
+
+        clk_int_or_ext_actual       => clk_int_or_ext_actual,
+        clk_int_or_ext_desired      => clk_int_or_ext_desired,
+        clk_ext_good                => clk_ext_good,
+
         -- phase streaming input 
         clk_enable_logger           => clk_enable_to_logger,
         new_data_chunk              => new_data_chunk,

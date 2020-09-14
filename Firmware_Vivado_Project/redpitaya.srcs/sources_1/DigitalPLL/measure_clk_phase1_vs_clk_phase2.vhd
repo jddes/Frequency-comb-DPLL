@@ -32,6 +32,12 @@ architecture Behavioral of measure_clk_phase1_vs_clk_phase2 is
     signal counter_binary_increments : unsigned(        GRAY_BITS-1 downto 0) := (others => '0');
     signal counter_unwrapped_ref     : unsigned(       PHASE_BITS-1 downto 0) := (others => '0');
 
+
+    attribute ASYNC_REG : string;
+    attribute ASYNC_REG of counter_gray_ref_reg1 : signal is "TRUE";
+    attribute ASYNC_REG of counter_gray_ref_reg2 : signal is "TRUE";
+    attribute ASYNC_REG of counter_gray_ref      : signal is "TRUE";
+
 begin
     ------------------------------------------------
     -- clk_target clock domain

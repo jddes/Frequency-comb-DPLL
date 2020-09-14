@@ -19,9 +19,7 @@ preplace port FIXED_IO -pg 1 -y 50 -defaultsOSRD
 preplace port FCLK_RESET2_N -pg 1 -y 310 -defaultsOSRD
 preplace port FCLK_CLK0 -pg 1 -y 190 -defaultsOSRD
 preplace port clk_to_adc -pg 1 -y 1580 -defaultsOSRD
-preplace port FCLK_CLK1 -pg 1 -y 210 -defaultsOSRD
 preplace port Vaux8 -pg 1 -y 930 -defaultsOSRD
-preplace port FCLK_CLK2 -pg 1 -y 230 -defaultsOSRD
 preplace port Vaux9 -pg 1 -y 950 -defaultsOSRD
 preplace port S_AXI_HP0 -pg 1 -y 140 -defaultsOSRD
 preplace portBus reg_to_axi1 -pg 1 -y 600 -defaultsOSRD -right
@@ -29,7 +27,6 @@ preplace portBus reg_to_axi2 -pg 1 -y 630 -defaultsOSRD -right
 preplace portBus reg_to_axi3 -pg 1 -y 660 -defaultsOSRD -right
 preplace portBus to_uart -pg 1 -y 970 -defaultsOSRD
 preplace portBus gpio_io_o -pg 1 -y 740 -defaultsOSRD
-preplace inst xlslice_0 -pg 1 -lvl 4 -y 1640 -defaultsOSRD
 preplace inst axi_crossbar_0 -pg 1 -lvl 4 -y 360 -defaultsOSRD
 preplace inst xlconstant -pg 1 -lvl 1 -y 620 -defaultsOSRD
 preplace inst axi_protocol_converter_0 -pg 1 -lvl 3 -y 460 -defaultsOSRD
@@ -42,47 +39,44 @@ preplace inst xadc -pg 1 -lvl 3 -y 960 -defaultsOSRD
 preplace inst clk_wiz_0 -pg 1 -lvl 5 -y 1590 -defaultsOSRD
 preplace inst proc_sys_reset -pg 1 -lvl 3 -y 720 -defaultsOSRD
 preplace netloc Vaux0_1 1 0 3 NJ 890 NJ 890 480
-preplace netloc processing_system7_0_ddr 1 3 3 N 10 NJ 10 NJ
-preplace netloc processing_system7_0_fclk_reset3_n 1 2 4 520 -100 1000 270 NJ 270 NJ
+preplace netloc processing_system7_0_ddr 1 3 3 N 30 NJ 30 NJ
+preplace netloc processing_system7_0_fclk_reset3_n 1 2 4 530 -30 980 270 NJ 270 NJ
 preplace netloc s_axi_hp0_1 1 0 3 NJ 120 NJ 120 N
 preplace netloc axi_register_slice_0_M_AXI 1 2 1 N
-preplace netloc axi_crossbar_0_M00_AXI 1 2 3 530 -50 NJ -50 1320
-preplace netloc clk_ext_in_1 1 0 5 NJ 1560 NJ 1560 NJ 1560 NJ 1560 1320
-preplace netloc axi_crossbar_0_M04_AXI 1 4 1 1370
-preplace netloc axi_crossbar_0_M03_AXI 1 3 2 1050 460 1320
+preplace netloc axi_crossbar_0_M00_AXI 1 2 3 520 -70 NJ -70 1330
+preplace netloc clk_ext_in_1 1 0 5 NJ 1560 NJ 1560 NJ 1560 NJ 1560 1330
+preplace netloc axi_crossbar_0_M04_AXI 1 4 1 1360
+preplace netloc axi_crossbar_0_M03_AXI 1 3 2 1030 460 1330
 preplace netloc reg_to_axi3_1 1 4 2 NJ 660 NJ
-preplace netloc processing_system7_FCLK_CLK0 1 3 3 N 170 NJ 170 NJ
-preplace netloc processing_system7_0_fclk_reset2_n 1 3 3 1040 260 NJ 260 NJ
-preplace netloc processing_system7_0_M_AXI_GP0 1 3 3 N 70 NJ 70 NJ
+preplace netloc processing_system7_FCLK_CLK0 1 3 3 N 190 NJ 190 NJ
+preplace netloc processing_system7_0_fclk_reset2_n 1 3 3 960 260 NJ 260 NJ
+preplace netloc processing_system7_0_M_AXI_GP0 1 3 3 N 90 NJ 90 NJ
 preplace netloc xlconstant_dout 1 1 2 NJ 620 500
-preplace netloc processing_system7_0_fclk_reset1_n 1 3 3 990 250 NJ 250 NJ
-preplace netloc Vp_Vn_1 1 0 3 NJ 870 NJ 870 510
-preplace netloc axi_crossbar_0_M02_AXI 1 3 2 1040 450 1330
-preplace netloc xadc_wiz_0_ip2intc_irpt 1 2 2 NJ -70 970
+preplace netloc processing_system7_0_fclk_reset1_n 1 3 3 N 250 NJ 250 NJ
+preplace netloc Vp_Vn_1 1 0 3 NJ 870 NJ 870 500
+preplace netloc axi_crossbar_0_M02_AXI 1 3 2 1020 450 1340
+preplace netloc xadc_wiz_0_ip2intc_irpt 1 2 2 NJ -20 970
 preplace netloc s_axi_hp0_aclk 1 0 3 NJ 200 NJ 200 N
 preplace netloc s_axi_hp1_1 1 0 3 NJ 160 NJ 160 500
-preplace netloc axi_gpio_clk_sel_gpio_io_o 1 3 3 1060 740 1330 740 NJ
+preplace netloc axi_gpio_clk_sel_gpio_io_o 1 4 2 N 580 NJ
 preplace netloc proc_sys_reset_0_interconnect_aresetn 1 1 3 170 510 500 530 960
 preplace netloc Vaux8_1 1 0 3 NJ 930 NJ 930 460
-preplace netloc axi_protocol_converter_0_M_AXI 1 3 1 1020
+preplace netloc axi_protocol_converter_0_M_AXI 1 3 1 1000
 preplace netloc reg_to_axi2_1 1 4 2 1340 630 NJ
 preplace netloc axi_gpio_freq2_gpio2_io_o 1 4 2 1380 970 NJ
 preplace netloc reg_to_axi1_1 1 4 2 NJ 600 NJ
 preplace netloc clk_wiz_0_clk_out1 1 5 1 NJ
 preplace netloc s_axi_hp1_aclk 1 0 3 NJ 220 NJ 220 N
-preplace netloc processing_system7_0_fclk_reset0_n 1 3 3 980 240 NJ 240 NJ
+preplace netloc processing_system7_0_fclk_reset0_n 1 3 3 N 230 NJ 230 NJ
 preplace netloc Vaux9_1 1 0 3 NJ 950 NJ 950 450
-preplace netloc processing_system7_0_fixed_io 1 3 3 N 30 NJ 30 NJ
-preplace netloc processing_system7_M_AXI_GP1 1 1 3 160 -40 NJ -40 960
-preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 540 1130 1030 1310 NJ
+preplace netloc processing_system7_0_fixed_io 1 3 3 N 50 NJ 50 NJ
+preplace netloc processing_system7_M_AXI_GP1 1 1 3 160 -50 NJ -50 960
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 3 540 1130 1010 1310 NJ
 preplace netloc Vaux1_1 1 0 3 NJ 910 NJ 910 470
-preplace netloc processing_system7_0_fclk_clk1 1 3 3 N 190 NJ 190 NJ
 preplace netloc m_axi_gp0_aclk_1 1 0 3 NJ 150 NJ 150 510
-preplace netloc axi_crossbar_0_M01_AXI 1 3 2 1060 500 1340
-preplace netloc processing_system7_0_fclk_clk2 1 3 3 N 210 NJ 210 NJ
-preplace netloc processing_system7_0_fclk_clk3 1 1 5 170 370 490 -80 1010 230 1360 230 NJ
-preplace netloc xlslice_0_Dout 1 4 1 N
-levelinfo -pg 1 -50 100 340 750 1190 1490 1680 -top -110 -bot 1690
+preplace netloc axi_crossbar_0_M01_AXI 1 3 2 1040 500 1350
+preplace netloc processing_system7_0_fclk_clk3 1 1 5 170 370 490 -40 990 240 1370 240 NJ
+levelinfo -pg 1 -50 100 340 750 1200 1490 1680 -top -110 -bot 1690
 ",
 }
 {
