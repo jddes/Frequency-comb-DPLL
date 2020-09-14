@@ -877,19 +877,23 @@ class SuperLaserLand_JD_RP:
         DDS_enables must be a dictionary containing a boolean entry for each signal,
         True meaning to enable this signal, False meaning to disable it """
         reg_val =  int(bool(DDS_SPI_enables["freq_updates"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO0_P_SDIO2"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO0_N_SDIO1"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO1_P_CSB"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO1_N_SCLK_P"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO2_P_SCLK_P"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO2_N_SCLK_N"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO4_P_SDIO3"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO4_N_CSB"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO6_P_SCLK_P"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO6_N_SCLK_N"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO7_P_SDIO4"]))
-        reg_val &= int(bool(DDS_SPI_enables["DIO7_N_CSB"]))
-        self.write("DDS_enables", reg_val)
+        DDS_SPI_enables_names = ["DIO0_P_SDIO2",
+                                 "DIO0_N_SDIO1",
+                                 "DIO1_P_CSB",
+                                 "DIO1_N_SCLK_P",
+                                 "DIO2_P_SCLK_P",
+                                 "DIO2_N_SCLK_N",
+                                 "DIO4_P_SDIO3",
+                                 "DIO4_N_CSB",
+                                 "DIO6_P_SCLK_P",
+                                 "DIO6_N_SCLK_N",
+                                 "DIO7_P_SDIO4",
+                                 "DIO7_N_CSB"]
+        for ind, key in enumerate(DDS_SPI_enables_names):
+            bit_number = ind+1
+            reg_val |= int(bool(DDS_SPI_enables[key])) << bit_number
+        print("DDS_SPI_enables = ", bin(reg_val))
+        self.write("DDS_SPI_enables", reg_val)
 
         return
 

@@ -21,6 +21,7 @@ import summary_tab
 import connection_widget
 import config_widget
 import controller_settings_widget
+import checkboxes_collection_widget
 
 from common import tictoc, colorCoding, readFloatFromTextbox, getExtClkColorName
 import bin_conv
@@ -289,6 +290,24 @@ class MainWidget(QtWidgets.QMainWindow):
         # self.sl.set_dds_limits(2, 0, 0)
         # self.sl.set_dds_limits(3, 0, 0)
         # self.sl.set_dds_limits(4, 0, 0)
+        
+        # SPI_wire_names = ["freq_updates",
+        #                   "DIO0_P_SDIO2",
+        #                   "DIO0_N_SDIO1",
+        #                   "DIO1_P_CSB",
+        #                   "DIO1_N_SCLK_P",
+        #                   "DIO2_P_SCLK_P",
+        #                   "DIO2_N_SCLK_N",
+        #                   "DIO4_P_SDIO3",
+        #                   "DIO4_N_CSB",
+        #                   "DIO6_P_SCLK_P",
+        #                   "DIO6_N_SCLK_N",
+        #                   "DIO7_P_SDIO4",
+        #                   "DIO7_N_CSB"]
+        # self.spi_debug_widget = checkboxes_collection_widget.CheckboxesCollectionWidget(SPI_wire_names)
+        # self.spi_debug_widget.sig_new_state.connect(self.sl.setAD9912enable)
+        # self.spi_debug_widget.setWindowTitle('SPI debug')
+        # self.spi_debug_widget.show()
 
         # pprint.pprint(self.sl.user_inputs)
         # pprint.pprint(self.sl.reg_values)
