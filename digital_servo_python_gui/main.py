@@ -220,6 +220,7 @@ class MainWidget(QtWidgets.QMainWindow):
                     # self.freq_sweep()
                     # self.sl.setupDither(1, 0.1, 1e3, 100e3/1e9, 1)
 
+
                     # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
                     self.hw_description = self.sl.getHardwareDescription()
                     # Handle various versions of the hardware changing the exact GUI that we should present to the user:
@@ -276,9 +277,18 @@ class MainWidget(QtWidgets.QMainWindow):
             self.setup_LO(system_settings, channel_settings)
             if "DDS_output_current_word" in channel_settings:
                 self.sl.setAD9912current(channel_settings["channel_id"], channel_settings["DDS_output_current_word"])
+                self.sl.setAD9912powerState(channel_settings["channel_id"], channel_settings["DDS_output_enable"])
 
             self.setup_controller(system_settings, channel_settings) # needs to happen after setDDSclockPLL()
         self.sl.commit_controller_settings()
+
+        # for testing only:
+        # self.sl.setAD9912enable((False, False, False, False))
+        # self.sl.setAD9912enable((True, True, True, True))
+        # self.sl.set_dds_limits(1, 0, 0)
+        # self.sl.set_dds_limits(2, 0, 0)
+        # self.sl.set_dds_limits(3, 0, 0)
+        # self.sl.set_dds_limits(4, 0, 0)
 
         # pprint.pprint(self.sl.user_inputs)
         # pprint.pprint(self.sl.reg_values)
@@ -537,6 +547,8 @@ class MainWidget(QtWidgets.QMainWindow):
             (timestamp, adc_data) = self.sl.getADCdata(adc_channel_id, N_ADC) # adc numbers are 1-based
             if adc_data is None:
                 continue
+            with open("adc_data.bin", "wb") as f:
+                f.write(adc_data.tobytes())
             scale_factor_adc_to_input = self.sl.scale_factor_adc_to_input(self.get_approximate_input_freq(adc_channel_id))
 
             if self.shouldIQchannelRefresh(iq_channel1):

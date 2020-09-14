@@ -86,6 +86,8 @@ class SuperLaserLand_JD_RP:
         "AD9912_SPI3":        counter2absolute(0x0022),
         "AD9912_SPI4":        counter2absolute(0x0023),
 
+        "DDS_SPI_enables":    counter2absolute(0x0024),
+
         # Dither modules
         # from PI_4ch.vhd: "constant DITHER_BASE_ADDRESS : addresses_type := (16#100#, 16#110#, 16#120#, 16#130#);"
         "Dither1_enable":    counter2absolute(0x100 + 0),
@@ -690,20 +692,27 @@ class SuperLaserLand_JD_RP:
         chosen_ratio = all_ratios[closest_ind]
         self.user_inputs["dds_fs_over_ref_clk"] = chosen_ratio
 
-        ad9912_addr_power_down = 0x10
         ad9912_addr_n_divider = 0x20
         ad9912_addr_pll_parameters = 0x22
-        reg_pd_value = (1<<7) # power down HSTL output driver
         reg_n_divider = int(chosen_ratio/2/doubler_ratio-2)
         reg_pll_parameters = (1<<7) | (doubler_enable<<3)
 
         for channel_id in self.channels_list:
-            self.write_AD9912_SPI(channel_id, ad9912_addr_power_down, reg_pd_value)
+            # self.setAD9912powerState(channel_id, True)
             self.write_AD9912_SPI(channel_id, ad9912_addr_n_divider, reg_n_divider)
             self.write_AD9912_SPI(channel_id, ad9912_addr_pll_parameters, reg_pll_parameters)
 
         self.fs_dds = ref_clk_Hz * chosen_ratio
         # print("setDDSclockPLL(): chosen_ratio = %d, fs_ddc = %f MHz, doubler=%d" % (chosen_ratio, self.fs_dds/1e6, doubler_enable))
+
+    def setAD9912powerState(self, channel_id, bPowerOn):
+        """ Powers down or up the AD9912 chips using the "power down" register """
+        # This powers down the AD9912 themselves
+        ad9912_addr_power_down = 0x10
+        reg_pd_value = (1<<7) # power down HSTL output driver, since we never use it
+        if bPowerOn == False:
+            reg_pd_value |= (1<<7) | (1<<1) # also set full power down bit
+        self.write_AD9912_SPI(channel_id, ad9912_addr_power_down, reg_pd_value)
 
     def updateLockState(self, channel_id, bLock):
         """ Update the lock state for a single channel, without committing.
@@ -826,7 +835,7 @@ class SuperLaserLand_JD_RP:
     def write_AD9912_SPI(self, channel_id, reg_addr, reg_value):
         reg_combined = reg_value & bitmask(8)
         reg_combined |= (reg_addr & bitmask(13)) << 8
-        # print("write_AD9912_SPI(): reg_addr=0x%x, reg_value=0x%x, reg_combined=0x%x" % (reg_addr, reg_value, reg_combined))
+        # print("write_AD9912_SPI(): id=%d, reg_addr=0x%x, reg_value=0x%x, reg_combined=0x%x" % (channel_id, reg_addr, reg_value, reg_combined))
         self.write("AD9912_SPI%d" % channel_id, reg_combined)
         time.sleep(1e-3)
 
@@ -860,6 +869,29 @@ class SuperLaserLand_JD_RP:
         reg_msbs = (current_word>>8) & bitmask(2)
         self.write_AD9912_SPI(channel_id, ad9912_addr_lsb,   reg_lsbs)
         self.write_AD9912_SPI(channel_id, ad9912_addr_lsb+1, reg_msbs)
+
+    def setAD9912enable(self, DDS_SPI_enables):
+        """ Enables or disables various SPI signals going to the AD9912.
+        This is mostly a low-level debugging feature, and should not be used
+        unless you have some idea of how the board is wired up.
+        DDS_enables must be a dictionary containing a boolean entry for each signal,
+        True meaning to enable this signal, False meaning to disable it """
+        reg_val =  int(bool(DDS_SPI_enables["freq_updates"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO0_P_SDIO2"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO0_N_SDIO1"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO1_P_CSB"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO1_N_SCLK_P"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO2_P_SCLK_P"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO2_N_SCLK_N"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO4_P_SDIO3"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO4_N_CSB"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO6_P_SCLK_P"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO6_N_SCLK_N"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO7_P_SDIO4"]))
+        reg_val &= int(bool(DDS_SPI_enables["DIO7_N_CSB"]))
+        self.write("DDS_enables", reg_val)
+
+        return
 
     def setupDither(self, channel_id, integration_time_in_seconds, modulation_frequency_in_hz, output_amplitude_normalized, bEnableDither):
         """ output_amplitude_normalized is between 0 and 1, normalized to the DDS clock rate,

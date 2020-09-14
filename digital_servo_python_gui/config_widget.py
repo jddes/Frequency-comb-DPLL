@@ -163,6 +163,7 @@ class ConfigWidget(QtWidgets.QWidget):
                         c["bLock"]               = w.chkLock.isChecked()
 
                         c["DDS_output_current_word"] = adv_settings.spinDDSpower.value()
+                        c["DDS_output_enable"]       = adv_settings.chkEnableDDS.isChecked()
                 else:
                     c["expected_freq_MHz_str"] = self.editExpectedFreq_dict[channel_id].text()
                     c["expected_freq"]         = readFloatFromTextbox(self.editExpectedFreq_dict[channel_id])*1e6

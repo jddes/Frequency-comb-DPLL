@@ -555,48 +555,50 @@ wire [48-1:0] DDSout2;
 wire [48-1:0] DDSout3;
 wire [48-1:0] DDSout4;
 
+wire [16-1:0] DDS_SPI_enables; // this can be used to gate out various SPI signals going to the DDS board, mostly for diagnosing crosstalk issues
 
-wire AD9912_register_write1;
-wire AD9912_register_write2;
-wire AD9912_register_write3;
-wire AD9912_register_write4;
-wire [13-1:0] AD9912_register_address;
+wire AD9912_register_write;
+wire [13-1:0] AD9912_register_address1;
+wire [13-1:0] AD9912_register_address2;
+wire [13-1:0] AD9912_register_address3;
+wire [13-1:0] AD9912_register_address4;
 wire [ 8-1:0] AD9912_register_value;
 
 assign dac_a = DACout0[16-1:2];   // converts 16 bits DACout to 14 bits for dac_a
 // assign dac_b = DACout1[16-1:2];   // converts 16 bits DACout to 14 bits for dac_b
 
 multichannel_freq_counter_top multichannel_freq_counter_top_inst (
-    .clk                  (adc_clk),
-    .clk_times_N          (adc_clk_2x),
-    .data1_in             (adc_a),
-    .data2_in             (adc_b),
-    .LoggerData_clk_enable(LoggerData_clk_enable),
-    .LoggerData           (LoggerData),
-    .LoggerIsWriting      (LoggerIsWriting),
-    .AD9912_register_write1  (AD9912_register_write1),
-    .AD9912_register_write2  (AD9912_register_write2),
-    .AD9912_register_write3  (AD9912_register_write3),
-    .AD9912_register_write4  (AD9912_register_write4),
-    .AD9912_register_address (AD9912_register_address),
-    .AD9912_register_value   (AD9912_register_value),
-    .clk_int_or_ext_actual   (clk_int_or_ext_actual),
-    .clk_int_or_ext_desired  (clk_int_or_ext_desired),
-    .clk_ext_good            (clk_ext_good),
-    .DACout1              (DACout0),
-    .DACout2              (DACout1),
-    .DDS_clk_enable       (DDS_clk_enable),
-    .DDSout1              (DDSout1),
-    .DDSout2              (DDSout2),
-    .DDSout3              (DDSout3),
-    .DDSout4              (DDSout4),
-    .sys_addr             (sys_addr                   ),  // address
-    .sys_wdata            (sys_wdata                  ),  // write data
-    .sys_wen              (sys_wen[0]                 ),  // write enable
-    .sys_ren              (sys_ren[0]                 ),  // read enable
-    .sys_rdata            (sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
-    .sys_err              (sys_err[0]                 ),  // error indicator
-    .sys_ack              (sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
+    .clk                      (adc_clk),
+    .clk_times_N              (adc_clk_2x),
+    .data1_in                 (adc_a),
+    .data2_in                 (adc_b),
+    .LoggerData_clk_enable    (LoggerData_clk_enable),
+    .LoggerData               (LoggerData),
+    .LoggerIsWriting          (LoggerIsWriting),
+    .AD9912_register_write    (AD9912_register_write),
+    .AD9912_register_address1 (AD9912_register_address1),
+    .AD9912_register_address2 (AD9912_register_address2),
+    .AD9912_register_address3 (AD9912_register_address3),
+    .AD9912_register_address4 (AD9912_register_address4),
+    .AD9912_register_value    (AD9912_register_value),
+    .DDS_SPI_enables          (DDS_SPI_enables),
+    .clk_int_or_ext_actual    (clk_int_or_ext_actual),
+    .clk_int_or_ext_desired   (clk_int_or_ext_desired),
+    .clk_ext_good             (clk_ext_good),
+    .DACout1                  (DACout0),
+    .DACout2                  (DACout1),
+    .DDS_clk_enable           (DDS_clk_enable),
+    .DDSout1                  (DDSout1),
+    .DDSout2                  (DDSout2),
+    .DDSout3                  (DDSout3),
+    .DDSout4                  (DDSout4),
+    .sys_addr                 (sys_addr                   ),  // address
+    .sys_wdata                (sys_wdata                  ),  // write data
+    .sys_wen                  (sys_wen[0]                 ),  // write enable
+    .sys_ren                  (sys_ren[0]                 ),  // read enable
+    .sys_rdata                (sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
+    .sys_err                  (sys_err[0]                 ),  // error indicator
+    .sys_ack                  (sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
 );
 
 addr_packed addr_packed_inst (
@@ -1007,8 +1009,8 @@ red_pitaya_ams i_ams (
       .update_freq             (DDS_clk_enable),
 
         // this is used to update AD9912 registers directly
-      .register_write          (AD9912_register_write1),
-      .register_address        (AD9912_register_address),
+      .register_write          (AD9912_register_write),
+      .register_address        (AD9912_register_address1),
       .register_value          (AD9912_register_value),
 
       .current_dds_freq        (),
@@ -1026,8 +1028,8 @@ red_pitaya_ams i_ams (
       .update_freq             (DDS_clk_enable),
 
         // this is used to update AD9912 registers directly
-      .register_write          (AD9912_register_write2),
-      .register_address        (AD9912_register_address),
+      .register_write          (AD9912_register_write),
+      .register_address        (AD9912_register_address2),
       .register_value          (AD9912_register_value),
 
       .current_dds_freq        (),
@@ -1045,8 +1047,8 @@ red_pitaya_ams i_ams (
       .update_freq             (DDS_clk_enable),
 
         // this is used to update AD9912 registers directly
-      .register_write          (AD9912_register_write3),
-      .register_address        (AD9912_register_address),
+      .register_write          (AD9912_register_write),
+      .register_address        (AD9912_register_address3),
       .register_value          (AD9912_register_value),
 
       .current_dds_freq        (),
@@ -1064,8 +1066,8 @@ red_pitaya_ams i_ams (
       .update_freq             (DDS_clk_enable),
 
         // this is used to update AD9912 registers directly
-      .register_write          (AD9912_register_write4),
-      .register_address        (AD9912_register_address),
+      .register_write          (AD9912_register_write),
+      .register_address        (AD9912_register_address4),
       .register_value          (AD9912_register_value),
 
       .current_dds_freq        (),
@@ -1082,22 +1084,20 @@ red_pitaya_ams i_ams (
 
   // map all the required signals to the expansion connector E1
    // reading this from the DDS board's schematic
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst0_P   (.O(DIO0_P), .I(AD9912_SPI_SDIO2));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst0_N   (.O(DIO0_N), .I(AD9912_SPI_SDIO1));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst1_P   (.O(DIO1_P), .I(AD9912_SPI_CSB));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst1_N   (.O(DIO1_N), .I(AD9912_SPI_SCLK_P));
-
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst2_P   (.O(DIO2_P), .I(AD9912_SPI_SCLK_P));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst2_N   (.O(DIO2_N), .I(AD9912_SPI_SCLK_N));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst0_P   (.O(DIO0_P), .I(AD9912_SPI_SDIO2  & DDS_SPI_enables[1]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst0_N   (.O(DIO0_N), .I(AD9912_SPI_SDIO1  & DDS_SPI_enables[2]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst1_P   (.O(DIO1_P), .I(AD9912_SPI_CSB    & DDS_SPI_enables[3]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst1_N   (.O(DIO1_N), .I(AD9912_SPI_SCLK_P & DDS_SPI_enables[4]));
 
    // Ideally we would have used the differential output buffers, but we also need 3.3V outputs, for which there are no available standards
-   // OBUFDS #(.IOSTANDARD("DIFF_HSTL_I"), .SLEW("SLOW"))            OBUFDS_inst2PN (.O(DIO2_P),
-   //                                                                               .OB(DIO2_N), .I(AD9912_SPI_SCLK_P));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst2_P   (.O(DIO2_P), .I(AD9912_SPI_SCLK_P & DDS_SPI_enables[5]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst2_N   (.O(DIO2_N), .I(AD9912_SPI_SCLK_N & DDS_SPI_enables[6]));
+
    // uart bus to uC, talks to a bunch of ADF4351
    OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst3_P   (.O(DIO3_P), .I(uart_serial_out & to_uart[9])); // uart serial data
    OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst3_N   (.O(DIO3_N), .I(to_uart[9])); // uart uC pwr/enable
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst4_P   (.O(DIO4_P), .I(AD9912_SPI_SDIO3));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst4_N   (.O(DIO4_N), .I(AD9912_SPI_CSB));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst4_P   (.O(DIO4_P), .I(AD9912_SPI_SDIO3  & DDS_SPI_enables[7]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst4_N   (.O(DIO4_N), .I(AD9912_SPI_CSB    & DDS_SPI_enables[8]));
   // external clock input, goes to an MMCM inside the block design
    // IBUFGDS #(.IOSTANDARD("DIFF_HSTL_II"), .DIFF_TERM("FALSE"),.IBUF_LOW_PWR("FALSE"))
    //                                                                IBUFGDS_inst   (.I(DIO5_P),
@@ -1106,13 +1106,11 @@ red_pitaya_ams i_ams (
                                                                   IBUFGDS_inst   (.I(DIO5_P),
                                                                                  .IB(DIO5_N), .O(clk_ext_bufg) );
 
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst6_P   (.O(DIO6_P), .I(AD9912_SPI_SCLK_P));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst6_N   (.O(DIO6_N), .I(AD9912_SPI_SCLK_N));
-   // OBUFDS #(.IOSTANDARD("DIFF_HSTL_I"), .SLEW("SLOW"))            OBUFDS_inst6PN (.O(DIO6_P),
-   //                                                                               .OB(DIO6_N), .I(AD9912_SPI_SCLK_P));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst6_P   (.O(DIO6_P), .I(AD9912_SPI_SCLK_P & DDS_SPI_enables[9]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst6_N   (.O(DIO6_N), .I(AD9912_SPI_SCLK_N & DDS_SPI_enables[10]));
 
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst7_P   (.O(DIO7_P), .I(AD9912_SPI_SDIO4));
-   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst7_N   (.O(DIO7_N), .I(AD9912_SPI_CSB));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst7_P   (.O(DIO7_P), .I(AD9912_SPI_SDIO4  & DDS_SPI_enables[11]));
+   OBUF   #(.IOSTANDARD("LVCMOS33"),    .SLEW("SLOW"), .DRIVE(4)) OBUF_inst7_N   (.O(DIO7_N), .I(AD9912_SPI_CSB    & DDS_SPI_enables[12]));
 
 
 // //////////////////////// test loss of clock event

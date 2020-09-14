@@ -27,12 +27,19 @@ generic (
     LoggerIsWriting       : in  std_logic;
 
     -- this is used to update AD9912 registers directly
-    AD9912_register_write1  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
-    AD9912_register_write2  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
-    AD9912_register_write3  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
-    AD9912_register_write4  : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
-    AD9912_register_address : out std_logic_vector(13-1 downto 0);
-    AD9912_register_value   : out std_logic_vector( 8-1 downto 0);
+    -- the way we access each individual AD9912 is a bit peculiar because of how we shared
+    -- all the SCK and CSB signals on the board (only SDIOx is different for each):
+    -- the register address is always set to an invalid value 
+    -- except for the chip that we want to write to,
+    -- hence the shared write enable and value signals,
+    -- but not addresses
+    AD9912_register_write    : out std_logic; -- rising edge on this starts the transfer at the next opportuinity
+    AD9912_register_address1 : out std_logic_vector(13-1 downto 0);
+    AD9912_register_address2 : out std_logic_vector(13-1 downto 0);
+    AD9912_register_address3 : out std_logic_vector(13-1 downto 0);
+    AD9912_register_address4 : out std_logic_vector(13-1 downto 0);
+    AD9912_register_value    : out std_logic_vector( 8-1 downto 0);
+    DDS_SPI_enables          : out std_logic_vector(16-1 downto 0);
 
     -- monitors actual clock mode:
     clk_int_or_ext_actual   : in  std_logic;
@@ -141,6 +148,7 @@ architecture Behavioral of multichannel_freq_counter_top is
     signal DDSout3_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
     signal DDSout4_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
 
+    signal DDS_SPI_enables_int     :  std_logic_vector(16-1 downto 0) := (others => '1');
     --attribute mark_debug : string;
     --attribute mark_debug of P_enable:           signal is "True";
     --attribute mark_debug of I_enable:           signal is "True";
@@ -345,11 +353,12 @@ begin
         freq_out3         => DDSout3_int,
         freq_out4         => DDSout4_int
     );
-    DDS_clk_enable <= DDS_clk_enable_int;
+    DDS_clk_enable <= DDS_clk_enable_int and DDS_SPI_enables_int(0);
     DDSout1 <= DDSout1_int;
     DDSout2 <= DDSout2_int;
     DDSout3 <= DDSout3_int;
     DDSout4 <= DDSout4_int;
+    DDS_SPI_enables <= DDS_SPI_enables_int;
 
     -------------------------------------------------
     -- config registers
@@ -357,10 +366,13 @@ begin
     begin
         if rising_edge(clk) then
             manual_offset_changed <= (others => '0');
-            AD9912_register_write1 <= '0';
-            AD9912_register_write2 <= '0';
-            AD9912_register_write3 <= '0';
-            AD9912_register_write4 <= '0';
+            AD9912_register_write <= '0';
+            -- I hope there is actually no register at this address, this is meant to disable the write
+            -- the datasheet lists none at this address, but who knows
+            AD9912_register_address1 <= '0' & x"210";
+            AD9912_register_address2 <= '0' & x"210";
+            AD9912_register_address3 <= '0' & x"210";
+            AD9912_register_address4 <= '0' & x"210";
             -- Note: sys_ack is generated inside registers_read, and is strobed by default in response to all reads/writes
 
             -- defaults, for implementing strobes on writes:
@@ -431,25 +443,27 @@ begin
                         I_gain_coarse4 <= sys_wdata(P_gain_coarse1'length-1+P_gain_coarse1'length*3 downto P_gain_coarse1'length*3);
 
                     when x"20" =>
-                        AD9912_register_write1  <= '1';
-                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
-                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+                        AD9912_register_write    <= '1';
+                        AD9912_register_value    <= sys_wdata(                                AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address1 <= sys_wdata(AD9912_register_address1'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
 
                     when x"21" =>
-                        AD9912_register_write2  <= '1';
-                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
-                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+                        AD9912_register_write    <= '1';
+                        AD9912_register_value    <= sys_wdata(                                AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address2 <= sys_wdata(AD9912_register_address1'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
 
                     when x"22" =>
-                        AD9912_register_write3  <= '1';
-                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
-                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+                        AD9912_register_write    <= '1';
+                        AD9912_register_value    <= sys_wdata(                                AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address3 <= sys_wdata(AD9912_register_address1'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
 
                     when x"23" =>
-                        AD9912_register_write4  <= '1';
-                        AD9912_register_value   <= sys_wdata(                               AD9912_register_value'length-1 downto 0);
-                        AD9912_register_address <= sys_wdata(AD9912_register_address'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
+                        AD9912_register_write    <= '1';
+                        AD9912_register_value    <= sys_wdata(                                AD9912_register_value'length-1 downto 0);
+                        AD9912_register_address4 <= sys_wdata(AD9912_register_address1'length+AD9912_register_value'length-1 downto AD9912_register_value'length);
 
+                    when x"24" =>
+                        DDS_SPI_enables_int <= sys_wdata(DDS_SPI_enables_int'range);
 
                     when others => 
                 end case;

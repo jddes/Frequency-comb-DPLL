@@ -287,7 +287,7 @@ class ChannelGUI(QtWidgets.QWidget):
         tictoc(self, "setTitle")
 
         f_ddc = self.settings["chosen_IF"]/fs
-        self.updateFilterSpcDisplay(f_ddc, N_fft, frequency_axis_baseband, frequency_axis_rf, plot_type)
+        # self.updateFilterSpcDisplay(f_ddc, N_fft, frequency_axis_baseband, frequency_axis_rf, plot_type)
 
     def updateFilterSpcDisplay(self, f_ddc, N_fft, f_axis_baseband, f_axis_rf, plot_type):
         lpf = self.settings["lpf"]
