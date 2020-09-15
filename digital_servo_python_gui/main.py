@@ -154,6 +154,7 @@ class MainWidget(QtWidgets.QMainWindow):
         self.status_bar_fields["clock"]      = QtWidgets.QLabel('')
         self.status_bar_fields["clock_loss"] = QtWidgets.QLabel('')
         self.status_bar_fields["spacer"]     = QtWidgets.QLabel('')
+        self.status_bar_fields["temp"]       = QtWidgets.QLabel('')
         self.status_bar_fields["config"]     = QtWidgets.QLabel('No config file selected')
 
 
@@ -290,7 +291,7 @@ class MainWidget(QtWidgets.QMainWindow):
         # self.sl.set_dds_limits(2, 0, 0)
         # self.sl.set_dds_limits(3, 0, 0)
         # self.sl.set_dds_limits(4, 0, 0)
-        
+
         # SPI_wire_names = ["freq_updates",
         #                   "DIO0_P_SDIO2",
         #                   "DIO0_N_SDIO1",
@@ -433,6 +434,17 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.validateExtClkFreq(ext_clk_freq)
 
+    def updateTemperature(self):
+        t = self.sl.readZynqTemperature()
+        if t >= 85:
+            color_name = "bad"
+        elif t >= 75:
+            color_name = "warning"
+        else:
+            color_name = "ok"
+
+        self.setStatus("temp", "Zynq temp: %.1f deg C" % t, color_name)
+
     def clearLossOfClockEvents(self):
         # reading this register will clear the flag inside the FPGA
         if self.sl.dev.valid_socket:
@@ -487,6 +499,7 @@ class MainWidget(QtWidgets.QMainWindow):
             return
         self.updateExtClkFreq()
         self.updateClkStatus()
+        self.updateTemperature()
         if not self.validDeviceAndConfigKnown():
             return
 

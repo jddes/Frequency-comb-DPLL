@@ -892,7 +892,7 @@ class SuperLaserLand_JD_RP:
         for ind, key in enumerate(DDS_SPI_enables_names):
             bit_number = ind+1
             reg_val |= int(bool(DDS_SPI_enables[key])) << bit_number
-        print("DDS_SPI_enables = ", bin(reg_val))
+        # print("DDS_SPI_enables = ", bin(reg_val))
         self.write("DDS_SPI_enables", reg_val)
 
         return
