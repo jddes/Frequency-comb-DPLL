@@ -33,9 +33,9 @@ class ConfigWidget(QtWidgets.QWidget):
             self.adv_per_channel[channel_id].chkEnableLO.setVisible(False)
             # default values for target IF:
             if channel_id in (1, 3): # odd channels are low-passed
-                self.adv_per_channel[channel_id].editTargetIF.setText('20')
+                self.adv_per_channel[channel_id].editTargetIF.setText('10')
             else: # even channels are highpassed
-                self.adv_per_channel[channel_id].editTargetIF.setText('40')
+                self.adv_per_channel[channel_id].editTargetIF.setText('45')
 
         self.populateLOcombo()
         # connect signals to slots

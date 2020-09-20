@@ -34,7 +34,7 @@
    <item row="2" column="1">
     <widget class="QLineEdit" name="editModulatorNominalFreq">
      <property name="text">
-      <string>20</string>
+      <string>40</string>
      </property>
     </widget>
    </item>
