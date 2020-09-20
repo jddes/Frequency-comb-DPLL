@@ -72,6 +72,9 @@ class MainWidget(QtWidgets.QMainWindow):
         self.slowTimer = QtCore.QTimer(self)
         self.slowTimer.timeout.connect(self.slowTimerEvent)
 
+        self.debugTimer = QtCore.QTimer(self)
+        self.debugTimer.timeout.connect(self.debugTimerEvent)
+
         self.setupUI()
 
     def setupUI(self):
@@ -139,8 +142,13 @@ class MainWidget(QtWidgets.QMainWindow):
         self.fasterTimer.start(5)
         self.fastTimer.start(20)
         self.slowTimer.start(100)
+        # self.debugTimer.start(3000)
 
         self.show()
+
+    def debugTimerEvent(self):
+        if self.config_widget.isEnabled():
+            self.config_widget.btnCommit.clicked.emit()
 
     def populateClosedLoopBW(self):
         (gain_combined, gain_fine, gain_coarse) = self.sl.getAllPossiblePgains()

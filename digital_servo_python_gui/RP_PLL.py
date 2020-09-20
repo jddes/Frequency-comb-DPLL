@@ -32,6 +32,7 @@ class socket_placeholder():
 
 class RP_PLL_device():
 
+    MAGIC_BYTES_WRITE_REPEAT_REG = 0xABCD1232
     MAGIC_BYTES_WRITE_REG       = 0xABCD1233
     MAGIC_BYTES_READ_REG        = 0xABCD1234
     MAGIC_BYTES_READ_BUFFER     = 0xABCD1235
@@ -242,10 +243,21 @@ class RP_PLL_device():
         self.send(packet_to_send)
         return self.read(int(4*n_repeats))
 
+    def write_Zynq_register_32bits_repeat(self, absolute_addr, data_32bits, iSleepUs=0, bSigned=False):
+        self.validate_address(absolute_addr)
+        data_32bits_sanitized = [int(x) & 0xFFFFFFFF for x in data_32bits]
+        packet_to_send =  struct.pack('IIII', self.MAGIC_BYTES_WRITE_REPEAT_REG, absolute_addr, iSleepUs, len(data_32bits))
+        packet_to_send += struct.pack('I'*len(data_32bits), *data_32bits_sanitized)
+        self.send(packet_to_send)
+
     #######################################################
     # Functions used to access Zynq registers, but which do not interact directly with the socket,
     # and instead use the lower-level functions above
     #######################################################
+
+    def write_repeat_uint32(self, address_uint32, data_uint32, iSleepUs=0):
+        """ write multiple times to an absolute address """
+        self.write_Zynq_register_32bits_repeat(address_uint32, data_uint32, iSleepUs=iSleepUs, bSigned=False)
 
     def write_uint32(self, address_uint32, data_uint32):
         """ write to absolute address """

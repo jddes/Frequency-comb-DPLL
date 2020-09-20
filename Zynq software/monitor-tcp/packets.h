@@ -4,15 +4,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-extern const uint32_t magic_bytes_write_reg;
-extern const uint32_t magic_bytes_read_reg;
-extern const uint32_t magic_bytes_read_buffer;
-extern const uint32_t magic_bytes_flank_servo;
-extern const uint32_t magic_bytes_write_file;
-extern const uint32_t magic_bytes_shell_command;
-extern const uint32_t magic_bytes_reboot_monitor;
-extern const uint32_t magic_bytes_read_repeat;
-extern const uint32_t magic_bytes_read_file; // this packet uses the same header as binary_packet_write_file_t
+typedef struct binary_packet_write_repeat_reg_t {
+    uint32_t magic_bytes;   // 0xABCD1232
+    uint32_t write_address;
+    uint32_t sleep_us; // number of us to sleep in between each write
+    uint32_t repeats;
+    // packet must contain "repeats" 32-bits words afterwards
+} binary_packet_write_repeat_reg_t;
 
 typedef struct binary_packet_write_reg_t {
     uint32_t magic_bytes;   // 0xABCD1233
@@ -77,6 +75,7 @@ char * extractStringFromBuffer(char* message_buff, int str_len, size_t offset);
 void read_file_from_socket_to_disk(const char * const strFilename, char * message_buff, size_t offset, unsigned int file_size, int connfd);
 void send_file_to_socket(const char * const strFilename, int connfd);
 
+bool packet_handler_write_repeat_reg(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
 bool packet_handler_write_reg      (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
 bool packet_handler_read_repeat    (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);
 bool packet_handler_reboot         (char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd);

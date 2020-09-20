@@ -219,6 +219,12 @@ class SuperLaserLand_JD_RP:
         self.dev.write_uint32(self.addr[reg_name], int(data_32bits))
         self.reg_values[reg_name] = int(data_32bits)
 
+    def write_repeat(self, reg_name, values_32bits, iSleepUs=0):
+        """ Write multiple consecutive values to a single address.
+        values_32bits must be an iterable """
+        self.dev.write_repeat_uint32(self.addr[reg_name], values_32bits, iSleepUs)
+        self.reg_values[reg_name] = int(values_32bits[-1])
+
     def write_64bits(self, reg_name, data_64bits):
         """ This is broken up into two consecutive 32-bits writes,
         with the MSBs written last """
@@ -578,20 +584,24 @@ class SuperLaserLand_JD_RP:
         self.write("uart_to_spi_bridge", reg)
 
     def uart_write(self, data_uint8):
-        reg_func = lambda bEnable, write_strobe, data : (int(bool(bEnable)) * (1<<9)) | (write_strobe<<8) | (data_uint8 & 0xff)
+        reg_func = lambda bEnable, write_strobe, data : (int(bool(bEnable)) * (1<<9)) | (write_strobe<<8) | (data & 0xff)
         self.write("uart_to_spi_bridge", reg_func(1, 1, data_uint8))
         self.write("uart_to_spi_bridge", reg_func(1, 0, data_uint8))
+
+    def uart_write_multiple(self, data_uint8):
+        reg_func = lambda bEnable, write_strobe, data : (int(bool(bEnable)) * (1<<9)) | (write_strobe<<8) | (data & 0xff)
+        data_out = []
+        for data in data_uint8:
+            data_out.append(reg_func(1, 1, data))
+            data_out.append(reg_func(1, 0, data))
+        self.write_repeat("uart_to_spi_bridge", data_out, iSleepUs=100)
 
     def set_adf4351(self, val):
         # self.bDisplayTiming = True
         tictoc(self)
         self.uart_uc_set_enable(1)
         # time.sleep(200e-3) # leave some time for the uC to boot. not needed anymore since I am setting the uC power on by default in the fpga code
-        for value in val:
-            self.uart_write(value)
-            time.sleep(1e-3)
-        # time.sleep(100e-3) # leave some time for the uC to finish programming the adf4351
-        # self.uart_uc_set_enable(0)
+        self.uart_write_multiple(val)
         tictoc(self, 'writing %d values' % len(val))
         self.bDisplayTiming = False
 

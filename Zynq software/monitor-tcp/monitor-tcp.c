@@ -181,7 +181,8 @@ static int handleConnection(int connfd) {
 
         	// we have received enough data to know which packet type it is at least
         	bool bPacketHandled = false;
-			bPacketHandled = bPacketHandled || packet_handler_write_reg      (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+			bPacketHandled = bPacketHandled || packet_handler_write_repeat_reg (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
+            bPacketHandled = bPacketHandled || packet_handler_write_reg      (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
 			bPacketHandled = bPacketHandled || packet_handler_read_reg       (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
 			bPacketHandled = bPacketHandled || packet_handler_read_buffer    (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);
 			bPacketHandled = bPacketHandled || packet_handler_read_repeat    (message_buff, msg_end, &bytes_needed, &bytes_consumed, connfd);

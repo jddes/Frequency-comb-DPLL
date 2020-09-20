@@ -14,6 +14,7 @@
 #include "memory_interface.h"
 #include "common.h"
 
+const uint32_t magic_bytes_write_repeat_reg = 0xABCD1232;
 const uint32_t magic_bytes_write_reg      = 0xABCD1233;
 const uint32_t magic_bytes_read_reg       = 0xABCD1234;
 const uint32_t magic_bytes_read_buffer    = 0xABCD1235;
@@ -24,6 +25,7 @@ const uint32_t magic_bytes_reboot_monitor = 0xABCD1239;
 const uint32_t magic_bytes_read_repeat    = 0xABCD123A;
 const uint32_t magic_bytes_read_file      = 0xABCD123B; // this packet uses the same header as binary_packet_write_file_t
 
+const size_t BYTES_NEEDED_FOR_MAGIC_BYTES_ONLY = sizeof(magic_bytes_write_reg); // default size needed
 
 extern bool bVerbose; // this allows enabling lots of debugging messages.
 extern int16_t  data_buffer[LOGGER_BUFFER_SIZE];
@@ -34,7 +36,7 @@ extern bool bReboot; // signals to the main loop that it needs to close
 // Returns true if we had enough data to parse out the magic bytes
 bool getMagicBytes(char* const message_buff, size_t msg_end, uint32_t* const magic_bytes)
 {
-    if (msg_end < sizeof(*magic_bytes)) // early exit if we haven't received enough bytes yet
+    if (msg_end < BYTES_NEEDED_FOR_MAGIC_BYTES_ONLY) // early exit if we haven't received enough bytes yet
         return false;
 
     *magic_bytes = *((uint32_t*)&message_buff[0]);
@@ -59,7 +61,7 @@ bool canConsumeStructFromBuffer(size_t struct_size,
 {
     if (msg_end >= struct_size)
     {
-        *bytes_needed = sizeof(magic_bytes_write_reg); // default size needed
+        *bytes_needed = BYTES_NEEDED_FOR_MAGIC_BYTES_ONLY; // default size needed
         *bytes_consumed = struct_size;
         return true;
     } else {
@@ -124,6 +126,48 @@ bool packet_handler_write_reg(char* message_buff, size_t msg_end, size_t* bytes_
 
     // perform the actual memory write:
     write_value(pPacket->write_address, 'w', pPacket->write_value);
+
+    return true;
+}
+
+// Write multiple 32 bits values to specified FPGA register
+bool packet_handler_write_repeat_reg(char* message_buff, size_t msg_end, size_t* bytes_needed, size_t* bytes_consumed, int connfd)
+{
+    if (!magicBytesMatch(message_buff, msg_end, magic_bytes_write_repeat_reg))
+        return false;
+
+    struct binary_packet_write_repeat_reg_t* pPacket = (binary_packet_write_repeat_reg_t*) message_buff;
+    if (!canConsumeStructFromBuffer(sizeof(*pPacket), message_buff, msg_end, bytes_needed, bytes_consumed))
+        return false;
+
+    *bytes_consumed = 0; // set this back to 0 since we have more rules to apply before we can parse out this message completely
+    if (pPacket->repeats > 10000)
+    {
+        return false; // avoid waiting for a ridiculous number of words
+    }
+    *bytes_needed = sizeof(*pPacket) + sizeof(uint32_t)*(pPacket->repeats);
+
+    // we know how long the total message needs to be, so we just wait to have received everything.
+    if (msg_end < *bytes_needed)
+        return false;
+
+    printfv("Received a register write repeat packet.\n");
+    printfv("*bytes_needed  = %u, msg_end=%u\n",   *bytes_needed, (uint)msg_end);
+    printfv("address = 0x%X (hex)\n",              pPacket->write_address);
+    printfv("sleep time between writes = %u us\n", pPacket->sleep_us);
+    printfv("number of repeats = %u (decimal)\n",  pPacket->repeats);
+
+    *bytes_consumed = *bytes_needed;
+    *bytes_needed = BYTES_NEEDED_FOR_MAGIC_BYTES_ONLY; // set this back to default
+
+    // perform the actual memory writes:
+    uint32_t *value_ptr = &(pPacket->repeats) + 1;
+    for (uint32_t k=0; k<pPacket->repeats; k++)
+    {
+        write_value(pPacket->write_address, 'w', *value_ptr);
+        usleep(pPacket->sleep_us);
+        value_ptr++;
+    }
 
     return true;
 }
@@ -264,7 +308,7 @@ bool packet_handler_shell_command(char* message_buff, size_t msg_end, size_t* by
         return false;
 
     *bytes_consumed = *bytes_needed;
-    *bytes_needed = sizeof(magic_bytes_shell_command); // set this back to default
+    *bytes_needed = BYTES_NEEDED_FOR_MAGIC_BYTES_ONLY; // set this back to default
 
     printfv("Complete shell command message received.\n");
     printfv("msg_end = %zu, bytes_needed = %zu, *bytes_consumed = %zu\n", msg_end, *bytes_needed, *bytes_consumed);
@@ -315,7 +359,7 @@ bool packet_handler_file_rw_command(char* message_buff, size_t msg_end, size_t* 
         return false;
 
     *bytes_consumed = *bytes_needed;
-    *bytes_needed = sizeof(magic_bytes_shell_command); // set this back to default
+    *bytes_needed = BYTES_NEEDED_FOR_MAGIC_BYTES_ONLY; // set this back to default
 
     printfv("Complete file read/write message received.\n");
     printfv("msg_end = %zu, bytes_needed = %zu, *bytes_consumed = %zu\n", msg_end, *bytes_needed, *bytes_consumed);
