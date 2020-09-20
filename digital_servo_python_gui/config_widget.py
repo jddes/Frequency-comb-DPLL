@@ -159,7 +159,7 @@ class ConfigWidget(QtWidgets.QWidget):
                         c["nominal_output_freq"] = readFloatFromTextbox(w.editModulatorNominalFreq)*1e6
                         c["target_BW"]           = freq_value_from_text(w.comboTargetBW.currentText())
                         actuator_sign = w.comboModulatorSign.currentText() == "Upshift"
-                        c["loop_sign"]           = 1 if actuator_sign == c["upper_sideband"] else -1
+                        c["loop_sign"]           = 1 if actuator_sign != c["upper_sideband"] else -1
                         c["bLock"]               = w.chkLock.isChecked()
 
                         c["DDS_output_current_word"] = adv_settings.spinDDSpower.value()
