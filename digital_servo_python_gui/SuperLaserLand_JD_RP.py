@@ -586,7 +586,7 @@ class SuperLaserLand_JD_RP:
         # self.bDisplayTiming = True
         tictoc(self)
         self.uart_uc_set_enable(1)
-        time.sleep(10e-3) # leave some time for the uC to boot
+        # time.sleep(200e-3) # leave some time for the uC to boot. not needed anymore since I am setting the uC power on by default in the fpga code
         for value in val:
             self.uart_write(value)
             time.sleep(1e-3)
