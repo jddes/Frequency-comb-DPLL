@@ -79,7 +79,7 @@ class UDPRedPitayaDiscovery():
         self.send_broadcast()
         
         # then we check for answers:
-        start_time = time.clock()
+        start_time = time.perf_counter()
         ElapsedTime = 0
         while ElapsedTime < Timeout:
             
@@ -88,7 +88,7 @@ class UDPRedPitayaDiscovery():
             print((host, mac_address))
             
             time.sleep(0.1)
-            ElapsedTime = time.clock() - start_time
+            ElapsedTime = time.perf_counter() - start_time
             
             
 def main():

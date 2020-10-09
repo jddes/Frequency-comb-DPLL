@@ -246,14 +246,14 @@ class PythonSoup(QtGui.QDialog):
             print(freq)
 #        counter = self.counters[0]
 #        freq = float(counter.ask(':FETCH:FREQUENCY?'))
-#        time_after = time.clock()
+#        time_after = time.perf_counter()
 #        print('Time after: %f sec' % (time_after-time_before))
 #        print(freq)
 #        frequencies.append(freq)
 #        
 #        counter = self.counters[1]
 #        freq = float(counter.ask(':FETCH:FREQUENCY?'))
-#        time_after = time.clock()
+#        time_after = time.perf_counter()
 #        print('Time after: %f sec' % (time_after-time_before))
 #        print(freq)
 #        

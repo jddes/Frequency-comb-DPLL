@@ -157,7 +157,7 @@ class DataLoggingDisplayWidget(QtGui.QWidget):
 
     def startTestMode(self):
         # this generates fake data based on a timer, for testing purposes:
-        self.time_start = time.clock()
+        self.time_start = time.perf_counter()
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.testModeUpdate)
         self.timer.start(500) # 500 ms update period
@@ -165,7 +165,7 @@ class DataLoggingDisplayWidget(QtGui.QWidget):
 
     def testModeUpdate(self):
         # generate a new data point:
-        x = time.clock() - self.time_start
+        x = time.perf_counter() - self.time_start
         y_list = list()
         for k in range(self.numCurvesPerPlot):
             y_list.append(np.cos(2*math.pi*0.1*x*np.ones(self.numPlots)) + 0.1*np.random.randn(self.numPlots))
