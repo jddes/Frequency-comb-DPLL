@@ -98,7 +98,7 @@ self.sl
 
 	def displayADC(self):
 				
-		start_time = time.clock()
+		start_time = time.perf_counter()
 		
 		# Check if another function is currently using the DDR2 logger:
 		if self.sl.bDDR2InUse:
@@ -147,8 +147,8 @@ self.sl
 		self.sl.bDDR2InUse = False
 		
 		if self.bDisplayTiming == True:
-			print('Elapsed time (Comm) = %f' % (time.clock()-start_time))
-		start_time = time.clock()
+			print('Elapsed time (Comm) = %f' % (time.perf_counter()-start_time))
+		start_time = time.perf_counter()
 		
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		max_abs = np.max(np.abs(samples_out))
@@ -188,8 +188,8 @@ self.sl
 		if self.qcombo_adc_plottype.currentIndex() == 0:    # Display Spectrum
 
 			if self.bDisplayTiming == True:
-				print('Elapsed time (pre-FFT) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (pre-FFT) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 			
 			# Normalize samples to +/- 1:
 			samples_out = samples_out/2**15
@@ -197,15 +197,15 @@ self.sl
 			samples_out_windowed = (samples_out-np.mean(samples_out)) * window_function
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (pre-FFT2) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (pre-FFT2) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 			
 			# Compute the spectrum of the raw data:
 			spc = np.fft.fft(samples_out_windowed, N_fft)
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (FFT) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (FFT) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 						
 			spc = np.real(spc * np.conj(spc))/(np.sum(window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra
 			spc_single_sided_psd = spc*2/window_NEB * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
@@ -224,8 +224,8 @@ self.sl
 			
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (10log10 abs(FFT) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (10log10 abs(FFT) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 			
 			# Update the graph data:
 			self.curve_spc.setData(frequency_axis[0:last_index_shown]/1e6, spc[0:last_index_shown])
@@ -278,8 +278,8 @@ self.sl
 			complex_baseband = self.sl.frontend_DDC_processing(samples_out, ref_exp0, self.selected_ADC)
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (Compute complex baseband) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (Compute complex baseband) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 			
 			
 			# Compute the SNR on the amplitude of the baseband signal:    
@@ -387,8 +387,8 @@ self.sl
 			# self.qplt_IQ.replot()
 			
 			if self.bDisplayTiming == True:
-				print('Elapsed time (Display IQ) = %f' % (time.clock()-start_time))
-			start_time = time.clock()     
+				print('Elapsed time (Display IQ) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()     
 
 			
 			if self.qcombo_adc_plottype.currentIndex() == 0:
@@ -437,8 +437,8 @@ self.sl
 				self.curve_DDC0_spc_amplitude_noise.setVisible(False)
 				
 			if self.bDisplayTiming == True:
-				print('Elapsed time (Spectrum of amplitude noise) = %f' % (time.clock()-start_time))
-			start_time = time.clock()
+				print('Elapsed time (Spectrum of amplitude noise) = %f' % (time.perf_counter()-start_time))
+			start_time = time.perf_counter()
 			
 			
 
@@ -456,7 +456,7 @@ self.sl
 		
 		
 		if self.bDisplayTiming == True:
-			print('Elapsed time (self.plt_spc.replot()) = %f' % (time.clock()-start_time))
-		start_time = time.clock()
+			print('Elapsed time (self.plt_spc.replot()) = %f' % (time.perf_counter()-start_time))
+		start_time = time.perf_counter()
 		
 #        self.bDisplayTiming = False

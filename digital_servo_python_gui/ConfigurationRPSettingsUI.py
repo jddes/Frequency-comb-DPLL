@@ -180,7 +180,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qgroupbox_xadc.setAutoFillBackground(True)
 		grid = Qt.QGridLayout()
 
-		self.time_start = time.clock()
+		self.time_start = time.perf_counter()
 		self.qplots = DataLoggingDisplayWidget.DataLoggingDisplayWidget(numPlots=1, numCurvesPerPlot=1)
 		self.qplots.pltItemsList[0].setLabel('left', 'Temp [degC]')
 		# self.qplots.show()
@@ -360,7 +360,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			self.qlbl_vccint.setText('Vccint = %.2f V' % Vccint)
 			self.qlbl_vccaux.setText('Vccaux = %.2f V' % Vccaux)
 
-			self.qplots.addDataPoint(time.clock()-self.time_start, [ZynqTempInDegC])
+			self.qplots.addDataPoint(time.perf_counter()-self.time_start, [ZynqTempInDegC])
 		except:
 			self.qlbl_Temp          = Qt.QLabel('Zynq temperature: N/A degC')
 			self.qlbl_vccint        = Qt.QLabel('Vccint = N/A V')

@@ -63,7 +63,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # if self.client is None:
         #     print('Warning: no connection to temp control: {}'.format(strTitle))
             
-        self.last_update = time.clock()
+        self.last_update = time.perf_counter()
         self.initUI()
         self.openOutputFiles()
         
@@ -158,10 +158,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
 
     def openTCPConnection(self):
-        start_time = time.clock()
+        start_time = time.perf_counter()
         if self.port_number != 0:
             try:
-                time_before = time.clock()
+                time_before = time.perf_counter()
                 self.client = AsyncSocketComms.AsyncSocketClient(self.port_number)
                 self.last_update = float("-inf")
                 self.setpoint_change = 0.
@@ -169,14 +169,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.logger.info('Red_Pitaya_GUI{}: Starting temperature control on port {}'.format(self.logger_name, self.port_number))
             except Exception as e:
                 print(e)
-                time_after = time.clock()
+                time_after = time.perf_counter()
                 #print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
                 self.client = None
-                self.last_update = time.clock()
+                self.last_update = time.perf_counter()
                 self.setpoint_change = 0.
         else:
             self.client = None
-        end_time = time.clock()
+        end_time = time.perf_counter()
         #print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
     
     def closeTCPConnection(self):
@@ -558,7 +558,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                             self.setpoint_change = -10.
                             delta_temperature = 0
                         
-                        self.last_update = time.clock()
+                        self.last_update = time.perf_counter()
 
                         try:                        
                             print('Sending a new setpoint: %f degrees' % self.setpoint_change)
@@ -741,7 +741,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 
                 if self.output_number == 1:
                     self.checkAutoUnlock(self.output_number, DAC2_output)
-                    self.runTempControlLoop(time.clock(), DAC2_output)
+                    self.runTempControlLoop(time.perf_counter(), DAC2_output)
                 
                 
                 

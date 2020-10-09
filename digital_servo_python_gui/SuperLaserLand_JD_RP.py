@@ -1975,9 +1975,9 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x208, reg)
 
 		# check status register:
-		time_start = time.clock()
+		time_start = time.perf_counter()
 		status_reg = 0x0
-		while status_reg != 0x1 and time.clock()-time_start < 1.: # 1 sec timeout
+		while status_reg != 0x1 and time.perf_counter()-time_start < 1.: # 1 sec timeout
 			status_reg = self.dev.read_Zynq_AXI_register_uint32(self.clkw_base_addr+0x04)
 
 		if status_reg != 0x1:
@@ -2025,7 +2025,7 @@ class SuperLaserLand_JD_RP:
 		# See Xilinx document UG480 chapter 2 for conversion factors
 		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
 		xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
-		time_start = time.clock()
+		time_start = time.perf_counter()
 		# average 10 readings because otherwise they are quite noisy:
 		# this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
 		N_average = 10.
@@ -2035,7 +2035,7 @@ class SuperLaserLand_JD_RP:
 			reg_avg += float(reg)
 			
 		reg_avg = float(reg_avg)/N_average
-		# print("elapsed = %f" % (time.clock()-time_start))
+		# print("elapsed = %f" % (time.perf_counter()-time_start))
 		ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
 		return ZynqTempInDegC
 		
