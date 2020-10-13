@@ -18,6 +18,7 @@ import os, errno    # for makesurepathexists()
 
 import traceback
 import weakref
+import struct
 
 from SuperLaserLand2_JD2_PLL import PLL0_module, PLL1_module, PLL2_module
 import RP_PLL
@@ -130,6 +131,10 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_DAC0_CURRENT                               = 0x00035
 	BUS_ADDR_DAC1_CURRENT                               = 0x00036
 	BUS_ADDR_DAC2_CURRENT                               = 0x00037
+
+	BUS_ADDR_DIN1_COUNTER_HAS_DATA                      = 0x00041
+	BUS_ADDR_DIN1_COUNTER_LSBS                          = 0x00042
+	BUS_ADDR_DIN1_COUNTER_MSBS                          = 0x00043
 	
 	# Address to change the amplitude and the offset of the VCO
 	BUS_ADDR_vco_amplitude                              = (6 << 20) + 0x00000
@@ -2067,5 +2072,26 @@ class SuperLaserLand_JD_RP:
 		freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
 		# print("getExtClockFreq(): freq_Hz=%e Hz" % freq_Hz)
 		return freq_Hz
-        
+
+	def getDin1Freq(self):
+		""" Read the frequency read by the digital frequency counter
+		that reads the freq on Din1 wrt to the ADC clock.
+		Returns None if there is no new data since last read,
+		or the frequency in Hz """
+		have_new_data = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DIN1_COUNTER_HAS_DATA*4)
+		print("getDin1Freq(): have_new_data=%d" % have_new_data)
+		if not have_new_data:
+			return None
+
+		freq_64bits =  self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DIN1_COUNTER_LSBS*4)
+		freq_64bits += self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DIN1_COUNTER_MSBS*4) << 32
+		print("freq_64bits = %d" % freq_64bits)
+
+		freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, f_ref=self.fs, N_cycles_gate_time=125e6) # reference frequency in this case is the ADC clock itself
+		freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
+		print("freq_Hz = %f Hz" % freq_Hz)
+		with open("freq_out.bin", "ab") as f:
+			f.write(struct.pack("d", freq_Hz))
+		return freq_Hz
+
 # end class definition

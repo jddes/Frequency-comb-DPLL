@@ -144,7 +144,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 	def startTimers(self):
 	# This gets called when we have a valid connection to a device.
-		self.timerXADC.start(1000)
+		self.timerXADC.start(500)
 
 	def killTimers(self):
 	# This gets called by the controller object in XEM_GUI3.py when we lose connection to a device.
@@ -370,6 +370,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		# read ext clk frequency:
 		try:
 			self.lblExtClkFreq.setText('Ext clk freq = %.8f MHz' % (self.sl.getExtClockFreq()/1e6))
+			self.sl.getDin1Freq()
 		except:
 			self.lblExtClkFreq.setText('Ext clk freq = N/A MHz')
 
@@ -425,6 +426,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			# f_ext          = 10e6
 			# CLKFBOUT_MULT  = 62
 			# CLKOUT0_DIVIDE = 5
+
+			# # For 25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+			# f_ext          = 25e6
+			# CLKFBOUT_MULT  = 40
+			# CLKOUT0_DIVIDE = 8
 
 			self.sl.setADCclockPLL(f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 

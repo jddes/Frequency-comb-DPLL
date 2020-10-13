@@ -236,10 +236,6 @@ red_pitaya_ps i_ps (
 ////////////////////////////////////////////////////////////////////////////////
 // counts the frequency of the external clock on exp_p_in[5] against fclk[3] (200 MHz)
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 digital_clock_freq_counter # (
     .N_gate_time(32'd200000000) // fixed for clk_ref = 200 MHz, 1 sec gate time
 ) digital_clock_freq_counter_inst (
@@ -252,6 +248,23 @@ digital_clock_freq_counter # (
     .out_reg_to_axi3  (reg_to_axi3) // see inside this module for the data format in those three registers
 );
 
+////////////////////////////////////////////////////////////////////////////////
+// counts the frequency of the external clock on exp_p_in[2] against adc_clk (125 MHz)
+////////////////////////////////////////////////////////////////////////////////
+wire counter_new_data;
+wire [64-1:0] counter_reg_to_dpll;
+
+digital_clock_freq_counter # (
+    .N_gate_time(32'd125000000) // fixed for clk_ref = 125 MHz, 1 sec gate time
+) digital_clock_freq_counter_inst2 (
+    .clk_ref          (adc_clk),
+    .clk_target       (exp_p_in[2]),
+    .output_clk_enable(counter_new_data),
+    .freq_count_out   (counter_reg_to_dpll),
+    .out_reg_to_axi1  (),
+    .out_reg_to_axi2  (),
+    .out_reg_to_axi3  ()
+);
 
 ////////////////////////////////////////////////////////////////////////////////
 // system bus decoder & multiplexer (it breaks memory addresses into 8 regions)
@@ -522,6 +535,10 @@ dpll_wrapper dpll_wrapper_inst (
 
   .osc_output(osc_output),
   //.clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
+
+  // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
+  .counter_new_data        (counter_new_data),
+  .counter_reg_to_dpll     (counter_reg_to_dpll),
 
   // Data logger port:
   .LoggerData              (  LoggerData                 ),

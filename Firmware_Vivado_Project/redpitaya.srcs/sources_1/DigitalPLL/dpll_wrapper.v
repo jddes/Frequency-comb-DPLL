@@ -20,6 +20,10 @@ module dpll_wrapper(
     output wire osc_output,
     output wire clk_ext_or_int, // clock select register. 1 = internal, 0 = external
 
+    // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
+    input wire          counter_new_data,
+    input wire [64-1:0] counter_reg_to_dpll,
+
     // Data logger port:
     output wire [16-1:0]      LoggerData,
     output wire               LoggerData_clk_enable,
@@ -1649,6 +1653,10 @@ registers_read registers_read_inst
     .DAC0_out({  {16{DACout0[15]}} , DACout0}),   // manual sign extension from 16 to 32 bits
     .DAC1_out({  {16{DACout1[15]}} , DACout1}),
     .DAC2_out({  {16{DACout2[15]}} , DACout2}),
+
+    // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
+    .counter_new_data   (counter_new_data),
+    .counter_reg_to_dpll(counter_reg_to_dpll),
 
 
     // internal configuration bus
