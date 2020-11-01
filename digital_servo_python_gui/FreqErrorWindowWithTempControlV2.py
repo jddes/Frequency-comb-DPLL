@@ -30,6 +30,7 @@ import pyqtgraph as pg
 import logging
 
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
+import common
 
 class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
@@ -219,7 +220,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         
         # Create the subdirectory if it doesn't exist:
-        self.make_sure_path_exists('data_logging')
+        common.make_sure_path_exists('data_logging')
 
         # Open file for output
         strCurrentName1 = self.strNameTemplate + 'freq_counter0.bin'
@@ -860,12 +861,3 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             DAC2_output = 0
             
             raise
-
-    # From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
-    def make_sure_path_exists(self, path):
-        try:
-            os.makedirs(path)
-        except OSError as exception:
-            if exception.errno != errno.EEXIST:
-                raise
-                

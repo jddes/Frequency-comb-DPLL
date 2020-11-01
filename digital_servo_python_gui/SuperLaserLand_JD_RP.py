@@ -24,6 +24,7 @@ from SuperLaserLand2_JD2_PLL import PLL0_module, PLL1_module, PLL2_module
 import RP_PLL
 
 import logging
+import common
 
 class SuperLaserLand_JD_RP:
 	# Data members:
@@ -316,7 +317,7 @@ class SuperLaserLand_JD_RP:
 
 		strNameTemplate = time.strftime("data_logging\\%m_%d_%Y_%H_%M_%S_")
 		# Create the subdirectory if it doesn't exist:
-		self.make_sure_path_exists('data_logging')
+		common.make_sure_path_exists('data_logging')
 		
 		if self.bCommunicationLogging == True:
 			strCurrentName = strNameTemplate + 'SuperLaserLand_log.txt'
@@ -362,19 +363,6 @@ class SuperLaserLand_JD_RP:
 		
 		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET)
 
-
-
-	# From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
-	def make_sure_path_exists(self, path):
-		if self.bVerbose == True:
-			print('make_sure_path_exists')
-			
-		try:
-			os.makedirs(path)
-		except OSError as exception:
-			if exception.errno != errno.EEXIST:
-				raise
-		
 	def initSubModules(self):
 		if self.bVerbose == True:
 			print('initSubModules')

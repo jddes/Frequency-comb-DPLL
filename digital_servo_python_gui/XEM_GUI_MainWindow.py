@@ -13,7 +13,7 @@ from scipy.signal import lfilter
 from scipy.signal import decimate
 from scipy.signal import detrend
 
-# For make_sure_path_exists() and os.rename()
+# For os.rename()
 import os
 import errno
 
@@ -41,6 +41,8 @@ import RP_PLL # for CommsError
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 
 import logging
+# For make_sure_path_exists()
+import common
 
 def round_to_N_sig_figs(x, Nsigfigs):
     leading_pos = np.floor(np.log10(np.abs(x)))
@@ -153,7 +155,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Only one window takes care of reading both the CEO and optical residuals
 		if self.selected_ADC == 0:
 			strFolder = 'c:\\SuperLaserLandLogs\\ResidualsStreaming'
-			self.make_sure_path_exists(strFolder)
+			common.make_sure_path_exists(strFolder)
 			self.word_counter = 0
 			self.foutput_residuals      = open('%s\\residuals_ceo_%s.bin'       % (strFolder, self.strFGPASerialNumber), 'wb')
 			self.foutput_residuals2     = open('%s\\residuals_optical_%s.bin'   % (strFolder, self.strFGPASerialNumber), 'wb')
@@ -402,7 +404,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #        self.raw_adc_samples
 		
 		# Create the subdirectory if it doesn't exist:
-		self.make_sure_path_exists('data_export')
+		common.make_sure_path_exists('data_export')
 		
 		# Open files for output, write raw data
 #        if True:
@@ -512,7 +514,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Write the data to disk:
 		strNameTemplate = time.strftime("data_export\\%m_%d_%Y_%H_%M_%S_")
 
-		self.make_sure_path_exists('data_export')
+		common.make_sure_path_exists('data_export')
 
 		# Open files for output, write raw data
 		try:
@@ -1751,19 +1753,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			self.sl.setup_write(self.sl.LOGGER_MUX[input_select], N_samples)
 			self.sl.trigger_write()
 			self.sl.wait_for_write()
-			if bReadAsDDC == False:
-				# read from ADC:
-				(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
-			else:
+			if bReadAsDDC:
 				# read from DDC:
 				samples_out = self.sl.read_ddc_samples_from_DDR2()
 				return samples_out
 
-			max_abs = np.max(np.abs(samples_out))
-
+			# read from ADC:
+			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 			samples_out = samples_out.astype(dtype=np.float)
 			self.raw_adc_samples = samples_out
-				
 
 		except RP_PLL.CommsLoggeableError as e:
 			# log exception
@@ -1789,14 +1787,3 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		else:
 			ref_exp0 = 1.0
 		return (samples_out, ref_exp0)
-
-
-
-
-	# From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
-	def make_sure_path_exists(self, path):
-		try:
-			os.makedirs(path)
-		except OSError as exception:
-			if exception.errno != errno.EEXIST:
-				raise

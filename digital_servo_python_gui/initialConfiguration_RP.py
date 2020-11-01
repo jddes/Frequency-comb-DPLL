@@ -334,7 +334,6 @@ class initialConfiguration(QtWidgets.QDialog):
 
 		elif self.qradio_existingRP.isChecked():
 			# Reconnect to the selected RedPitaya.
-			print("2")
 			self.readSelectedFPGA()
 			print("initialConfiguration.py::okClicked():after readSelectedFPGA")
 			if not self.strSelectedIP:

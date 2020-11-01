@@ -15,12 +15,13 @@ from scipy.signal import lfilter
 from scipy.signal import decimate
 import copy
 
-# For make_sure_path_exists()
 import os
 import errno
 
 # stuff for Python 3 port
 import pyqtgraph as pg
+
+import common # For make_sure_path_exists()
 
 class DisplayTransferFunctionWindow(QtGui.QWidget):
 
@@ -138,7 +139,7 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         
         # Create the subdirectory if it doesn't exist:
         #print('DisplayTransferFunctionWindow:writeOutputFile(): 1')
-        self.make_sure_path_exists('transfer_functions')
+        common.make_sure_path_exists('transfer_functions')
         #print('DisplayTransferFunctionWindow:writeOutputFile(): 2')
 
         # Open file for output
@@ -503,11 +504,3 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
         #self.qplt_mag.replot()
         #self.qplt_phase.replot()
         
-    # From: http://stackoverflow.com/questions/273192/create-directory-if-it-doesnt-exist-for-file-write
-    def make_sure_path_exists(self, path):
-        try:
-            os.makedirs(path)
-        except OSError as exception:
-            if exception.errno != errno.EEXIST:
-                raise
-                
