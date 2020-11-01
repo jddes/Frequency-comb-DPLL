@@ -409,6 +409,21 @@ class SuperLaserLand_JD_RP:
 
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, data_lsbs)
 		
+	def getADCorDACdata(self, input_select, N_samples):
+		""" Convenience function for accessing ADC or DAC data. 
+		Return the data as a numpy array, scaled in TBD.
+		See the LOGGER_MUX dictionary for possible values of input_select """
+
+		self.setup_write(self.LOGGER_MUX[input_select], N_samples)
+		self.trigger_write()
+		self.wait_for_write()
+		(samples_out, _) = self.read_adc_samples_from_DDR2()
+		print("type(samples_out)=", type(samples_out))
+		print("samples_out.dtype before =", samples_out.dtype)
+		samples_out = samples_out.astype(dtype=np.float)
+		print("samples_out.dtype after =", samples_out.dtype)
+		print("mean(samples_out) = %f", np.mean(samples_out))
+		return samples_out
 		
 	def setup_write(self, selector, Num_samples):
 		if self.bVerbose == True:
