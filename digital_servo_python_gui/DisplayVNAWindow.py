@@ -34,9 +34,9 @@ class DisplayVNAWindow(QtGui.QWidget):
         #return (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         
     def getDitherSettings(self):
-        # Read the dither settings from the Red Pitaya the set the correct states when opening the VNA window
+        # Read the synth settings from the Red Pitaya the set the correct states when opening the VNA window
         print("TO DO")
-        #return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither)
+        #return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bUseAsSynthesizer)
 
 
     def runSytemIdentification(self):
@@ -50,8 +50,8 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         # Reset the bStop flag (which is set when the user presses the stop button)
         self.bStop = False
-        # The dither will be stopped by sl.setup_system_identification()
-        self.qbtn_dither.setChecked(False)
+        # The synth will be stopped by sl.setup_system_identification()
+        self.qbtn_use_as_synth.setChecked(False)
         
         # Reset the progress bar
         self.qprogress_ident.setValue(0)
@@ -223,12 +223,10 @@ class DisplayVNAWindow(QtGui.QWidget):
             pass
         
         try:
-            output_amplitude = self.sl.denormalizeVNAamplitude(float(self.qedit_output_amplitude.text()))
+            output_amplitude = float(self.qedit_output_amplitude.text())
         except:
             output_amplitude = 1
             pass
-#        if output_amplitude == 0:
-#            output_amplitude = 1
             
         return (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         
@@ -238,56 +236,39 @@ class DisplayVNAWindow(QtGui.QWidget):
         # Frequency
         # Sine or square wave
         try:
-            output_select = self.qcombo_dither_output.currentIndex()
+            output_select = self.qcombo_synth_output.currentIndex()
         except:
             output_select = 0
             pass
         
         try:
-            modulation_frequency_in_hz = float(self.qedit_dither_freq.text())
+            modulation_frequency_in_hz = float(self.qedit_synth_freq.text())
         except:
             modulation_frequency_in_hz = 1e3
             pass
         
         try:
-            output_amplitude = self.sl.denormalizeVNAamplitude(float(self.qedit_dither_amplitude.text()))
+            output_amplitude = float(self.qedit_synth_amplitude.text())
         except:
             output_amplitude = 0
             pass
             
-        bSquareWave   = int(self.qradio_squarewave.isChecked())
-        bEnableDither = int(      self.qbtn_dither.isChecked())
-        return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither)
+        bSquareWave       = int(self.qradio_squarewave.isChecked())
+        bUseAsSynthesizer = int(self.qbtn_use_as_synth.isChecked())
+        return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bUseAsSynthesizer)
         
     def stopClicked(self):
         self.bStop = True   # This signals the waiting loop to cancel the operation
         return
         
-    def ditherClicked(self):
-        # Check if dither is set, then call 
-#        setVNA_mode_register(self, trigger_dither, stop_flag, bSquareWave):
-        (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither) = self.readDitherSettings()
-        # This is only really to set the dither
-        # we don't care about these values:
-        input_select = 0
-        number_of_frequencies = 8
-        System_settling_time = 1e-3
-        print("before syst ident")
-        self.sl.setup_system_identification(input_select, output_select, modulation_frequency_in_hz, modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
-        
-        print('(output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither) = %d, %f, %f, %d, %d' % (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither))
-        
-        trigger_dither = bEnableDither
-        if bEnableDither == False:
-            stop_flag = 1
-            self.qbtn_dither.setText("Activate dither")
+    def synthClicked(self):
+        (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bUseAsSynthesizer) = self.readDitherSettings()
+        self.sl.setup_VNA_as_synthesizer(modulation_frequency_in_hz, output_select, output_amplitude, bUseAsSynthesizer, bSquareWave)
+
+        if bUseAsSynthesizer == False:
+            self.qbtn_use_as_synth.setText("Activate synth")
         else:
-            stop_flag = 0
-            self.qbtn_dither.setText("Stop dither")
-        bSquareWave = bSquareWave
-        self.sl.setVNA_mode_register(trigger_dither, stop_flag, bSquareWave)
-        print('(trigger_dither, stop_flag, bSquareWave) = %d, %d, %d' % (trigger_dither, stop_flag, bSquareWave))
-        return
+            self.qbtn_use_as_synth.setText("Stop synth")
         
     def updateIntegrationTime(self):
         (_, _, first_modulation_frequency_in_hz, _, _, System_settling_time, _) = self.readSystemIdentificationSettings()
@@ -364,31 +345,30 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qprogress_ident.setValue(0)
 #        self.qprogress_ident.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
         
-        # Controls for the dither mode:        
-        # Needs: output select, frequency, amplitude, Square/Sine select, dither on/off
+        # Controls for the synth mode:        
+        # Needs: output select, frequency, amplitude, Square/Sine select, synth on/off
         ######################################################################
         # Settings
         ######################################################################
-        self.qgroupbox_dither = Qt.QGroupBox('Continuous output', self)
+        self.qgroupbox_synth = Qt.QGroupBox('Synthesizer mode', self)
         
-        
-        self.dither_output_label = Qt.QLabel('Output:')
-        self.qcombo_dither_output = Qt.QComboBox()
-        self.qcombo_dither_output.addItems(['DAC 0', 'DAC 1', 'DAC 2'])
-        self.qcombo_dither_output.setCurrentIndex(0)
-        self.qcombo_dither_output.currentIndexChanged.connect(self.ditherClicked)
+        self.synth_output_label = Qt.QLabel('Output:')
+        self.qcombo_synth_output = Qt.QComboBox()
+        self.qcombo_synth_output.addItems(['DAC 0', 'DAC 1', 'DAC 2'])
+        self.qcombo_synth_output.setCurrentIndex(0)
+        self.qcombo_synth_output.currentIndexChanged.connect(self.synthClicked)
         
         # Modulation frequency:
         self.qedit_freq_label = Qt.QLabel('Frequency [Hz]:')
-        self.qedit_dither_freq = Qt.QLineEdit('1e6')
-        self.qedit_dither_freq.textChanged.connect(self.ditherClicked)
-        self.qedit_dither_freq.setMaximumWidth(60)
+        self.qedit_synth_freq = Qt.QLineEdit('1e6')
+        self.qedit_synth_freq.textChanged.connect(self.synthClicked)
+        self.qedit_synth_freq.setMaximumWidth(60)
         
         # Amplitude:
-        self.qlabel_dither_amplitude = Qt.QLabel('Amplitude [0-1]:')
-        self.qedit_dither_amplitude = Qt.QLineEdit('0.01')
-        self.qedit_dither_amplitude.textChanged.connect(self.ditherClicked)
-        self.qedit_dither_amplitude.setMaximumWidth(60)
+        self.qlabel_synth_amplitude = Qt.QLabel('Amplitude [0-1]:')
+        self.qedit_synth_amplitude = Qt.QLineEdit('0.01')
+        self.qedit_synth_amplitude.textChanged.connect(self.synthClicked)
+        self.qedit_synth_amplitude.setMaximumWidth(60)
         
         # Sine/Square wave
         self.qradio_sinewave = Qt.QRadioButton('Sine wave')
@@ -399,29 +379,29 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         self.qradio_sinewave.setChecked(True)
         self.qradio_squarewave.setChecked(False)
-        self.qradio_sinewave.clicked.connect(self.ditherClicked)
-        self.qradio_squarewave.clicked.connect(self.ditherClicked)
+        self.qradio_sinewave.clicked.connect(self.synthClicked)
+        self.qradio_squarewave.clicked.connect(self.synthClicked)
         
         # On/Off button
-        self.qbtn_dither = QtGui.QPushButton('Activate dither')
-        self.qbtn_dither.clicked.connect(self.ditherClicked)
-        self.qbtn_dither.setCheckable(True)
+        self.qbtn_use_as_synth = QtGui.QPushButton('Activate synth')
+        self.qbtn_use_as_synth.clicked.connect(self.synthClicked)
+        self.qbtn_use_as_synth.setCheckable(True)
         
         
         # Put all the widgets into a grid layout
         grid = QtGui.QGridLayout()
         
-        grid.addWidget(self.dither_output_label,            0, 0)
-        grid.addWidget(self.qcombo_dither_output,           0, 1)
+        grid.addWidget(self.synth_output_label,            0, 0)
+        grid.addWidget(self.qcombo_synth_output,           0, 1)
         grid.addWidget(self.qedit_freq_label,               1, 0)
-        grid.addWidget(self.qedit_dither_freq,              1, 1)
-        grid.addWidget(self.qlabel_dither_amplitude,        2, 0)
-        grid.addWidget(self.qedit_dither_amplitude,         2, 1)
+        grid.addWidget(self.qedit_synth_freq,              1, 1)
+        grid.addWidget(self.qlabel_synth_amplitude,        2, 0)
+        grid.addWidget(self.qedit_synth_amplitude,         2, 1)
         grid.addWidget(self.qradio_sinewave,                3, 0)
         grid.addWidget(self.qradio_squarewave,              3, 1)
         
-        grid.addWidget(self.qbtn_dither,                    4, 0, 1, 2)
-        self.qgroupbox_dither.setLayout(grid)    
+        grid.addWidget(self.qbtn_use_as_synth,                    4, 0, 1, 2)
+        self.qgroupbox_synth.setLayout(grid)    
 
 
         ######################################################################
@@ -490,7 +470,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         vbox = Qt.QVBoxLayout()
         vbox.addWidget(self.qgroupbox_vna)
-        vbox.addWidget(self.qgroupbox_dither)
+        vbox.addWidget(self.qgroupbox_synth)
         # vbox.addWidget(self.qgroupbox_test_osc)
 
         # Spacer which takes up the rest of the space:

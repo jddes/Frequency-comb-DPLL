@@ -505,8 +505,31 @@ class SuperLaserLand_JD_RP:
 		# the fourth is the overall SNR, which depends on the modulation amplitude and how much noise there is already on the system output
 		# This last one is easy to handle; the measured transfer function will be very noisy if we don't integrate long enough
 		return int((max((20, System_settling_time*self.fs, 1/(first_modulation_frequency_in_hz)*self.fs))))
+
+	def setup_VNA_as_synthesizer(self, frequency_in_hz, output_select, output_amplitude, bEnable=True, bSquareWave=False):
+		# This is only really to set the VNA in synthesizer mode
+		# so we don't care about these values:
+		input_select = 0
+		number_of_frequencies = 8
+		System_settling_time = 1e-3
+		print("before syst ident, frequency_in_hz=%f" % (frequency_in_hz))
+		self.setup_system_identification(input_select, output_select, frequency_in_hz,
+			frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bUseAsSynthesizer=True)
+
+		bUseAsSynthesizer = bEnable
+		if bUseAsSynthesizer == False:
+			stop_flag = 1
+		else:
+			stop_flag = 0
+		# this forces the VNA to exit synthesizer mode if it was in it already:
+		self.setVNA_mode_register(0, 1, 0)
+		# then we enter synthesizer mode if that is what is requested:
+		if bUseAsSynthesizer:
+			self.setVNA_mode_register(1, 0, bSquareWave)
+		print('(bUseAsSynthesizer, stop_flag, bSquareWave) = %d, %d, %d' % (bUseAsSynthesizer, stop_flag, bSquareWave))
 		
-	def setup_system_identification(self, input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bDither=False):    
+	def setup_system_identification(self, input_select, output_select, first_modulation_frequency_in_hz,
+		last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bUseAsSynthesizer=False):    
 		if self.bVerbose == True:
 			print('setup_system_identification')
 			
@@ -538,7 +561,7 @@ class SuperLaserLand_JD_RP:
 		self.number_of_cycles_integration = self.compute_integration_time_for_syst_ident(self.System_settling_time, self.first_modulation_frequency_in_hz)
 		
 		
-		self.output_gain = output_amplitude
+		self.output_gain = self.denormalizeVNAamplitude(output_amplitude, output_select)
 		# Bit 1 and 0 select between one of the four inputs, in that order:
 		# ADCraw0
 		# ADCraw1
@@ -552,6 +575,9 @@ class SuperLaserLand_JD_RP:
 		self.input_and_output_mux_selector = 1*2**2+ (1)   # LSB = '0' selects ADC 0, LSB = '1' selects ADC 1, bit 2 = '0' selects DAC0, bit 2 = '1' selects DAC1
 		self.input_and_output_mux_selector = output_select * 2**2 + input_select
 
+		print("self.output_gain=", self.output_gain)
+		print("self.first_modulation_frequency=", self.first_modulation_frequency)
+
 		self.send_bus_cmd(self.BUS_ADDR_number_of_cycles_integration, int((self.number_of_cycles_integration & 0xFFFF)), int((self.number_of_cycles_integration & 0xFFFF0000) >> 16))
 		self.send_bus_cmd(self.BUS_ADDR_first_modulation_frequency_lsbs, int((self.first_modulation_frequency & 0xFFFF)), int((self.first_modulation_frequency & 0xFFFF0000) >> 16))
 		self.send_bus_cmd(self.BUS_ADDR_first_modulation_frequency_msbs, int((self.first_modulation_frequency & 0xFFFF00000000) >> 32), 0)
@@ -560,11 +586,11 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd(self.BUS_ADDR_number_of_frequencies, self.number_of_frequencies, 0)
 		self.send_bus_cmd(self.BUS_ADDR_output_gain, int((self.output_gain & 0xFFFF)), int((self.output_gain & 0xFFFF0000) >> 16))
 		self.send_bus_cmd(self.BUS_ADDR_input_and_output_mux_selector, self.input_and_output_mux_selector, 0)
-		# If we are setting up settings for a system identification, we need to stop the dither:
-		if bDither == False:
-			self.setVNA_mode_register(0, 1, 0)   # Set no dither, stop any dither, and sine wave output
+		# If we are setting up settings for a system identification, we need to stop the synthesizer mode:
+		if bUseAsSynthesizer == False:
+			self.setVNA_mode_register(0, 1, 0)   # Set no synthesizer mode, stop any synthesizer mode, and sine wave output
 		# This makes sure that the output mode is 'sine wave' rather than 'square wave'
-		self.setVNA_mode_register(0, 0, 0)   # Set no dither, no stop, and sine wave output
+		self.setVNA_mode_register(0, 0, 0)   # Set no synthesizer mode, no stop, and sine wave output
 		
 		# Need to also setup the write for enough samples that the VNA will put out:
 		# This needs to be done last, so that the next call to trigger_write(self) works correctly.
@@ -574,11 +600,11 @@ class SuperLaserLand_JD_RP:
 #        print('self.number_of_frequencies = %d' % self.number_of_frequencies)
 		self.setup_write(self.LOGGER_MUX['VNA'], Num_samples)
 		
-	def setVNA_mode_register(self, trigger_dither, stop_flag, bSquareWave):
+	def setVNA_mode_register(self, trigger_synthesizer_mode, stop_flag, bSquareWave):
 		if self.bVerbose == True:
 			print('setVNA_mode_register')
 			
-		register_value = stop_flag + 2*trigger_dither + 4*bSquareWave
+		register_value = stop_flag + 2*trigger_synthesizer_mode + 4*bSquareWave
 		self.send_bus_cmd(self.BUS_ADDR_VNA_mode_control, register_value, 0)
 		
 	def trigger_write(self):
@@ -1107,8 +1133,8 @@ class SuperLaserLand_JD_RP:
 		limits_signed = lambda n_bits: (-2**(n_bits-1), 2**(n_bits-1)-1)
 		limits_unsigned = lambda n_bits: (0, 2**(n_bits)-1)
 		limits_from_dac =  {0: limits_signed(16),
-		                    1: limits_signed(16),
-		                    2: limits_unsigned(16)}
+							1: limits_signed(16),
+							2: limits_unsigned(16)}
 		# clamp to extremum values:
 		if limit_low < limits_from_dac[dac_number][0]:
 			limit_low = limits_from_dac[dac_number][0]
@@ -1662,8 +1688,8 @@ class SuperLaserLand_JD_RP:
 		return int(float(self.DACs_limit_high[output_select] - self.DACs_limit_low[output_select])*float(normalized_amplitude)/2)
 
 	def new_freq_setting(self):
-		# Check if dither is set, then call 
-#        setVNA_mode_register(self, trigger_dither, stop_flag, bSquareWave):
+		# Check if synthesizer mode is set, then call 
+#        setVNA_mode_register(self, trigger_synthesizer_mode, stop_flag, bSquareWave):
 		self.new_freq_setting_number = self.new_freq_setting_number + 1
 		modulation_frequency_in_hz = ((self.new_freq_setting_number-1)/2) * 0.05 + 0.025
 
@@ -1671,27 +1697,28 @@ class SuperLaserLand_JD_RP:
 		bSquareWave = False
 		# half the time we turn the modulation on, half the time we turn it off
 		if self.new_freq_setting_number % 2 == 0:
-			bEnableDither = True
+			bUseAsSynthesizer = True
 		else:
-			bEnableDither = False
-		output_amplitude = self.denormalizeVNAamplitude(0.01)
+			bUseAsSynthesizer = False
+		output_amplitude = 0.01
 
-		# This is only really to set the dither
+		# This is only really to set the synthesizer mode
 		# we don't care about these values:
 		input_select = 0
 		number_of_frequencies = 8
 		System_settling_time = 1e-3
-		self.setup_system_identification(input_select, output_select, modulation_frequency_in_hz, modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, 0)
+		self.setup_system_identification(input_select, output_select, modulation_frequency_in_hz,
+			modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, 0)
 		
-		print('new_freq_setting: (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither) = %d, %f, %f, %d, %d' % (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither))
+		print('new_freq_setting: (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bUseAsSynthesizer) = %d, %f, %f, %d, %d' % (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bUseAsSynthesizer))
 		
-		trigger_dither = bEnableDither
-		if bEnableDither == False:
+		trigger_synthesizer_mode = bUseAsSynthesizer
+		if bUseAsSynthesizer == False:
 			stop_flag = 1
 		else:
 			stop_flag = 0
-		self.setVNA_mode_register(trigger_dither, stop_flag, bSquareWave)
-		print('(trigger_dither, stop_flag, bSquareWave) = %d, %d, %d' % (trigger_dither, stop_flag, bSquareWave))
+		self.setVNA_mode_register(trigger_synthesizer_mode, stop_flag, bSquareWave)
+		print('(trigger_synthesizer_mode, stop_flag, bSquareWave) = %d, %d, %d' % (trigger_synthesizer_mode, stop_flag, bSquareWave))
 
 	def read_dual_mode_counter(self, output_number):
 		# fetch data
@@ -2056,8 +2083,8 @@ class SuperLaserLand_JD_RP:
 	def getExtClockFreq(self):
 		# see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
 		read_all_regs = lambda : (self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg1),
-		                          self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg2),
-		                          self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg3))
+								  self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg2),
+								  self.dev.read_Zynq_AXI_register_uint32(self.clk_freq_reg3))
 		data_index = lambda x: (x >> 24)
 		iAttempts = 0;
 		bSuccess = False
@@ -2068,13 +2095,13 @@ class SuperLaserLand_JD_RP:
 			if data_index(reg1) == data_index(reg2) == data_index(reg3):
 				bSuccess = True
 				break
-		    
+			
 			iAttempts += 1
 		if not bSuccess:
 			return np.nan
 		freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
-		               ((reg2 & 0x00FFFFFF) << 24) + 
-		               ((reg3 & 0x0000FFFF) << 48))
+					   ((reg2 & 0x00FFFFFF) << 24) + 
+					   ((reg3 & 0x0000FFFF) << 48))
 		# print("getExtClockFreq(): reg1=0x%08x, reg2=0x%08x, reg3=0x%08x" % (reg1, reg2, reg3))
 		# print("getExtClockFreq(): freq_64bits=0x%08x" % (freq_64bits))
 		freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, f_ref=200e6, N_cycles_gate_time=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
@@ -2088,19 +2115,19 @@ class SuperLaserLand_JD_RP:
 		Returns None if there is no new data since last read,
 		or the frequency in Hz """
 		have_new_data = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DIN1_COUNTER_HAS_DATA*4)
-		print("getDin1Freq(): have_new_data=%d" % have_new_data)
+		# print("getDin1Freq(): have_new_data=%d" % have_new_data)
 		if not have_new_data:
 			return None
 
 		freq_64bits =  self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DIN1_COUNTER_LSBS*4)
 		freq_64bits += self.dev.read_Zynq_register_uint32(self.BUS_ADDR_DIN1_COUNTER_MSBS*4) << 32
-		print("freq_64bits = %d" % freq_64bits)
+		# print("freq_64bits = %d" % freq_64bits)
 
 		freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, f_ref=self.fs, N_cycles_gate_time=125e6) # reference frequency in this case is the ADC clock itself
 		freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
-		print("freq_Hz = %f Hz" % freq_Hz)
-		with open("freq_out.bin", "ab") as f:
-			f.write(struct.pack("d", freq_Hz))
+		# print("freq_Hz = %f Hz" % freq_Hz)
+		# with open("freq_out.bin", "ab") as f:
+		# 	f.write(struct.pack("d", freq_Hz))
 		return freq_Hz
 
 # end class definition

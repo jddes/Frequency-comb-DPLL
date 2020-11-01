@@ -72,12 +72,12 @@ class controller(object):
 		# Start Qt:
 		self.app = QtCore.QCoreApplication.instance()
 		if self.app is None:
-			print("QCoreApplication not running yet. creating.")
+			# print("QCoreApplication not running yet. creating.")
 			self.bEventLoopWasRunningAlready = False
 			self.app = QtWidgets.QApplication(sys.argv)
 		else:
 			self.bEventLoopWasRunningAlready = True
-			print("QCoreApplication already running.")
+			# print("QCoreApplication already running.")
 
 		self.initUI()
 
@@ -518,7 +518,6 @@ class controller(object):
 
 if __name__ == '__main__':
 	# pbd.run('controller()')
-	print("main: about to create controller instance")
 	controller_obj = controller()
 	# This code here is to handle weird interaction between IPython's event handler:
 	# Depending on the setting for the graphical backend in Spyder (Tools/Preferences/IPython Console/Graphics/Backend = (Automatic or Inline),
