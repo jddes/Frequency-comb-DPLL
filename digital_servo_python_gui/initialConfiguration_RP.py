@@ -22,8 +22,6 @@ import pdb
 import logging
 
 class initialConfiguration(QtWidgets.QDialog):
-	
-
 		
 	def __init__(self, dev, controller, devices_data={}, strBroadcastAddress="192.168.2.255", strFPGAFirmware='', strCPUFirmware=''):
 		super(initialConfiguration, self).__init__()

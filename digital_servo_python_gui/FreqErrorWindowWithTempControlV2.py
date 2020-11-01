@@ -12,11 +12,7 @@ from PyQt5 import QtGui, Qt, QtCore
 import numpy as np
 import math
 
-
-import os
-import errno
 import sys
-
 
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 

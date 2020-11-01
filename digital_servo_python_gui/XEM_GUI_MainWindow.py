@@ -15,7 +15,6 @@ from scipy.signal import detrend
 
 # For os.rename()
 import os
-import errno
 
 #from SuperLaserLand_JD2 import SuperLaserLand_JD2
 from LoopFiltersUI import LoopFiltersUI

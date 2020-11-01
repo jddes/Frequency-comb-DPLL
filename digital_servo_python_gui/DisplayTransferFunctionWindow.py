@@ -15,9 +15,6 @@ from scipy.signal import lfilter
 from scipy.signal import decimate
 import copy
 
-import os
-import errno
-
 # stuff for Python 3 port
 import pyqtgraph as pg
 
