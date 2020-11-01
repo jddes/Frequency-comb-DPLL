@@ -17,7 +17,7 @@ comp_name = os.environ['COMPUTERNAME']
 # These paths must be specified per PC
 strCombLocksFolder = {
     'JDBUREAU':    'D:\\Repo\\dpll\\digital_servo_python_gui\\',
-    '686maunaloa': 'C:\\comb_control\\digital_servo_python_gui\\'
+    # '686MAUNALOA': 'C:\\comb_control\\digital_servo_python_gui\\' # placeholder, this is not the correct path!
     }
 
 # this can be just 'python' if the correct version is on the PATH, otherwise specify the correct interpreter using an absolute path

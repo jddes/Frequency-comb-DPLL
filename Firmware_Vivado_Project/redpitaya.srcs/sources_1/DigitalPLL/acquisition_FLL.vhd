@@ -32,25 +32,25 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity acquisition_FLL is
 	GENERIC (
-		FREQUENCY_WIDTH : positive := 16;
-		OUTPUT_WIDTH : positive := 16;
+		FREQUENCY_WIDTH  : positive := 16;
+		OUTPUT_WIDTH     : positive := 16;
 		MAX_GAIN_IN_BITS : positive := 31
-	
 	);
-    Port ( rst : in  STD_LOGIC;
-           clk : in  STD_LOGIC;
-			  
-			  -- Inputs
-			  hold : in std_logic;
-           lock : in  STD_LOGIC;
-           frequency_input : in  STD_LOGIC_VECTOR (FREQUENCY_WIDTH-1 downto 0);
-           gain_right_shift_in_bits : in  STD_LOGIC_VECTOR (4 downto 0);
-			  gain_left_shift_in_bits : in  STD_LOGIC_VECTOR (4 downto 0);
-			  
-			  -- Outputs
-           data_output : out  STD_LOGIC_VECTOR (OUTPUT_WIDTH-1 downto 0);
-           output_railed : out  STD_LOGIC
-			  );
+    Port (
+		rst                      : in  std_logic;
+		clk                      : in  std_logic;
+		
+		-- Inputs
+		hold                     : in  std_logic;
+		lock                     : in  std_logic;
+		frequency_input          : in  std_logic_vector (FREQUENCY_WIDTH-1 downto 0);
+		gain_right_shift_in_bits : in  std_logic_vector (4 downto 0);
+		gain_left_shift_in_bits  : in  std_logic_vector (4 downto 0);
+		
+		-- Outputs
+		data_output              : out  std_logic_vector (OUTPUT_WIDTH-1 downto 0);
+		output_railed            : out  std_logic
+	);
 end acquisition_FLL;
 
 architecture Behavioral of acquisition_FLL is
@@ -119,7 +119,7 @@ begin
 					else
 						railed_negative := '0';
 					end if;
-					railed_both := railed_positive & railed_negative;
+					railed_both   := railed_positive & railed_negative;
 					output_railed <= railed_positive or railed_negative;
 					
 					-- Implement the accumulator with limits
@@ -138,20 +138,20 @@ begin
 					if railed_positive = '0' and railed_negative = '0' then
 						-- Within bounds
 						-- Implement the left or right shift of the accumulator value
-						left_shift_temp := shift_left(accumulator, to_integer(unsigned(gain_left_shift_in_bits)));
+						left_shift_temp  := shift_left(accumulator, to_integer(unsigned(gain_left_shift_in_bits)));
 						right_shift_temp := shift_right(accumulator, to_integer(unsigned(gain_right_shift_in_bits)));
 						
 						-- Truncate the value
-						output_left_shift_register <= left_shift_temp(output_left_shift_register'range);
+						output_left_shift_register  <= left_shift_temp(output_left_shift_register'range);
 						output_right_shift_register <= right_shift_temp(output_left_shift_register'range);
 						
 					elsif railed_positive = '1' then
 						-- Railed positive
-						output_left_shift_register <= to_signed(2**(OUTPUT_WIDTH-1)-1, OUTPUT_WIDTH);
+						output_left_shift_register  <= to_signed(2**(OUTPUT_WIDTH-1)-1, OUTPUT_WIDTH);
 						output_right_shift_register <= to_signed(2**(OUTPUT_WIDTH-1)-1, OUTPUT_WIDTH);
 					else
 						-- Railed negative
-						output_left_shift_register <= to_signed(-2**(OUTPUT_WIDTH-1), OUTPUT_WIDTH);
+						output_left_shift_register  <= to_signed(-2**(OUTPUT_WIDTH-1), OUTPUT_WIDTH);
 						output_right_shift_register <= to_signed(-2**(OUTPUT_WIDTH-1), OUTPUT_WIDTH);
 					end if;
 					
