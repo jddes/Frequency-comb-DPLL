@@ -1,5 +1,6 @@
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import sys
+import os
 
 import numpy as np
 
@@ -8,6 +9,8 @@ import text_report
 import SuperLaserLand_JD_RP
 import initialConfiguration_RP
 import SLLSystemParameters
+
+import rigol_scope_tools
 
 class TestController():
     def __init__(self, sl):
@@ -43,6 +46,9 @@ class TestController():
         self.sp.loadFromFile('system_parameters_RP_Default.xml')
         self.sp.sendToFPGA(self.sl, bSendToFPGA=True)
 
+def save_data_trace(data, file_name, folder):
+    with open(os.path.join(folder, file_name), 'wb') as f:
+        f.write(data.tobytes())
 
 def main():
 # -sequence of operations:
@@ -53,11 +59,23 @@ def main():
 
 
     report = text_report.TextReport(mac_address=controller.mac_address)
+    folder = report.reportFolder
     save = lambda x: report.saveTestResult(x, temperature=sl.readZynqTemperature())
     save({"test_name": "Test start information",
           "mac_address": controller.mac_address,
           "operator name": "JDD"})
 
+
+    s = rigol_scope_tools.RigolScope(iVerbosity = 0)
+    s.progress_update_callback = rigol_scope_tools.progress_update_callback
+    s.connect()
+    s.setup_ac_triggering()
+    (mean, std, w) = s.get_current_dc_value()
+    print("%e pts at fs=%e Hz: %e s, avg=%.2f V, stddev=%.2fV" % (len(w.data), w.fs, len(w.data)/w.fs, mean, std))
+    s.disconnect()
+    # w.save_to_disk()
+
+    save_data_trace(w.data, "first test", folder)
 
     save({"test_name": "Test stop information"})
 

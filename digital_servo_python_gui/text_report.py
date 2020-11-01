@@ -11,10 +11,10 @@ class TextReport():
         self.items = list()
 
         baseFolder        = 'I:\\Data\\RP_test_reports'
-        reportFolder      = os.path.join(baseFolder, mac_address + "__" + self._getDateTimeString())
-        self.reportFile   = os.path.join(reportFolder, "report.txt")
+        self.reportFolder = os.path.join(baseFolder, mac_address + "__" + self._getDateTimeString())
+        self.reportFile   = os.path.join(self.reportFolder, "report.txt")
         common.make_sure_path_exists(baseFolder)
-        common.make_sure_path_exists(reportFolder)
+        common.make_sure_path_exists(self.reportFolder)
 
     def _getDateTimeString(self):
         now = datetime.datetime.now()
