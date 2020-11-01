@@ -14,8 +14,6 @@ from scipy.signal import lfilter
 
 import sys
 
-import os, errno    # for makesurepathexists()
-
 import traceback
 import weakref
 import struct

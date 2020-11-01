@@ -21,16 +21,6 @@ def findMostLikelyLANBroadcastIPAddress():
     listAddr = socket.getaddrinfo(socket.gethostname(), None)
     min_third_byte = 255
 
-    for addr_tuple in listAddr:
-        (family, _, _, _, sockaddr) = addr_tuple
-        if family == socket.AF_INET:
-            # this is IPv4
-            print('IP candidate: %s' % sockaddr[0])
-            third_byte = int(sockaddr[0].split('.')[2])
-            if third_byte <= min_third_byte:
-                min_third_byte = third_byte
-                addrCandidate = sockaddr[0]
-    print('Chosen local IP: %s' % addrCandidate)
     try:
         listAddr = socket.getaddrinfo(socket.gethostname(), None)
         min_third_byte = 255
