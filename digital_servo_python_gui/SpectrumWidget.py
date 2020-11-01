@@ -435,8 +435,7 @@ class SpectrumWidget(QtGui.QWidget):
             self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
 
     def plotADCorDACtimeDomain(self, samples_out, input_select):
-        samples_out = self.scaleDataToVolts(samples_out, input_select)
-
+        samples_out = self.sl.scaleADCorDACDataToVolts(samples_out, input_select)
 
         self.updateNEBdisplay(self.sl.fs/len(samples_out)) # NEB doesn't make that much sense here, but we still plot 1/Total time
         
@@ -508,16 +507,6 @@ class SpectrumWidget(QtGui.QWidget):
 
         self.qthermo_baseband_snr.setValue(baseband_snr)
         self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
-        
-
-    def scaleDataToVolts(self, samples_out, input_select):
-        if input_select.startswith('ADC'):
-            # Convert ADC counts to voltage
-            return self.sl.convertADCCountsToVolts(input_select, samples_out)
-        else:
-            # Convert DAC counts to voltage
-            DAC_number = int(input_select[3])
-            return self.sl.convertDACCountsToVolts(DAC_number, samples_out)
 
     def plotPhaseData(self, complex_baseband):
         phi = np.unwrap(np.angle(complex_baseband))

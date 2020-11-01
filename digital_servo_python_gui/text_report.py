@@ -10,9 +10,11 @@ class TextReport():
         self.dateTimeFormat = "%Y-%m-%d__%H_%M_%S"
         self.items = list()
 
-        baseFolder = 'I:\\Data\\RP_test_reports'
+        baseFolder        = 'I:\\Data\\RP_test_reports'
+        reportFolder      = os.path.join(baseFolder, mac_address + "__" + self._getDateTimeString())
+        self.reportFile   = os.path.join(reportFolder, "report.txt")
         common.make_sure_path_exists(baseFolder)
-        common.make_sure_path_exists(os.path.join(baseFolder, mac_address+self._getDateTimeString()))
+        common.make_sure_path_exists(reportFolder)
 
     def _getDateTimeString(self):
         now = datetime.datetime.now()
@@ -22,7 +24,7 @@ class TextReport():
         """ augments the result_dict with the current time & temperature,
         then writes the new result to the report file """
         augmented_dict = result_dict.copy()
-        augmented_dict["Zynq temperature"] = temperature
+        augmented_dict["Zynq temperature [degC]"] = round(temperature*100.)/100.
         augmented_dict["datetime"] = self._getDateTimeString()
 
         self._saveTestResult(augmented_dict)
@@ -30,5 +32,5 @@ class TextReport():
     def _saveTestResult(self, result_dict):
         """ Implements the actual write to the file """
         self.items.append(result_dict)
-        with open("report.txt", "w") as f:
-            json.dump(self.items, f)
+        with open(self.reportFile, "w") as f:
+            json.dump(self.items, f, indent=4)

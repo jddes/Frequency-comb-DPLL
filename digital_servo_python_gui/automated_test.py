@@ -1,6 +1,8 @@
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import sys
 
+import numpy as np
+
 import common
 import text_report
 import SuperLaserLand_JD_RP
@@ -33,6 +35,8 @@ class TestController():
     def deviceSelected(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
         QtCore.QCoreApplication.instance().quit() # stop the event loop
 
+        self.mac_address = strSelectedSerial
+
         self.sl.dev.OpenTCPConnection(ip_addr, port)
         self.sl.resetFrontend()
         # commit the default values, ex for limits etc
@@ -44,34 +48,29 @@ def main():
 # -sequence of operations:
 #     -create all 3 required objects (SL, Scope, mux_board)
     sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
-    print("before TestController's constructor")
     controller = TestController(sl)
-    print("after TestController's constructor")
+    # print("avg (volts) = ", np.mean(sl.getADCorDACdata('ADC0', 8e3)))
+
+
+    report = text_report.TextReport(mac_address=controller.mac_address)
+    save = lambda x: report.saveTestResult(x, temperature=sl.readZynqTemperature())
+    save({"test_name": "Test start information",
+          "mac_address": controller.mac_address,
+          "operator name": "JDD"})
+
+
+    save({"test_name": "Test stop information"})
+
     # sl.openDevice
 #     -connect to all 3 devices
-#         -SL needs to create the list, connect to the first one.
-#         -this _might_ require quite a bit of refactoring, so maybe we could make this manual for now?
-#         -the user could find the IP and MAC addresses using the normal GUI, then enter them as command line arguments for example.
-#         -look at the code, I could maybe re-use the normal initialConfiguration_RP.py dialog for the connection.
-#         -this would be the only GUI element, then everything would happen in the console.
-#         -I just have to reimplement the same interface as the "controller" object, at least the shared portion with initialConfiguration_RP
-#         -then I stop the Qt event loop and the program continues in the console.
-#         -Let's do that!
-#         -(This also gives me the buttons to program the FPGA and firmware for free!)
-
-#     -create a unique folder for the report (use device MAC address & date-time string down to seconds)
-#     -create the object that will write the text report
-#     -first entry in the test report is "Test start information":
-#         -contains operator name ("JDD"). this will time-tag the start of the test.
-#         -could save starting temperature at this point too.
-
+#       -sl: done
+#       -scope: TODO
+#       -mux board: TODO, also need to write the object that will control it
 #     -run each test one after the other
 
 #     -at the end: write to report: "Test start information". this will time-tag and save the last temperature.
 
     
-    report = text_report.TextReport(mac_address = "00000000")
-
 
 if __name__ == '__main__':
     main()
