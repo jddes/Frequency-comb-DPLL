@@ -1,0 +1,155 @@
+# test plan
+
+
+TO BE DONE ON THE CODE:
+-Integrate scope code in automated_test.py
+    -write and test one first pass at testing the DAC range:
+    -no mux board involved, just set a dac value, read it, then log to report
+
+-Need to test the GPIO code/firmware!
+
+-Write the object for handling the mux board
+    -serial comms
+    -interface must be very simple: be able to select the correct inputs, and have scaling functions for each in/out
+    -Need to write inverse scaling code to account for attenuation on the tester board.
+-sequence of operations:
+
+
+    -run each test one after the other
+
+    -at the end: write to report: "Test stop information". this will time-tag and save the last temperature.
+
+# example report (this should be a table, maybe do it with HTML?):
+# first step is to save all the values to a json file, and all raw traces for plots, etc to 
+
+Temperature     
+Zynq Temperature**              60 degC after 5 mins        52.1 degC
+Clock input:        
+200 MHz clock in                DAC output phase locked?    PASS
+Analog inputs:      
+AI0                             100 mVpp at 25 MHz          84.0 mVpp
+AI1                             100 mVpp at 25 MHz          83.2 mVpp
+Analog outputs:     
+AO0, output range*              0-2V                        0.00-2.07V
+AO1, output range*              0-2V                        0.00-2.06V
+AO1, amplified output range*    0-30V                       1.4-28.2V
+AO2, amplified output range*    0-100V                      7.99-109V
+
+
+TODO: DECIDE ON AN ORDER THAT MAKES SENSE FOR THESE!
+
+0. 30V amp offset adjustment:
+    -put out a tone on DAC1 at 1 kHz, 99% of fullscale, DC offset = middle
+    -tell the user he needs to adjust the DC offset based on scope display.
+
+
+1. Analog outputs:
+    -This should be done as one of the first tests, since the other tests rely on some of those output to work
+    -The test is to be repeated for: AO0 and AO1, AO1 amplified, AO2 amplified
+    -set AO0 to minimum,
+    -set MUX to OFF (disconnect all paths on tester board)
+    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder
+    -set MUX to AO0
+    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
+    -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)
+    -set AO0 to max, wait a bit
+    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
+    -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)
+
+2. DIN: set DAC1 to output a sine wave at say 10 MHz, 90% of full scale call getExtClockFreq()
+3. DOUT: This would require a small change in the fpga: need to be able to use those as GPIOs from Python.
+    Not really a big deal, I should do it since I am about to test 11 of them...
+
+3. Analog inputs:
+    freq = 25e6
+    channel = 0 or 1:
+    output_selects = {'DAC%d'%k : k for k in range(2)}
+    -sl.setup_VNA_as_synthesizer(output_selects['DAC%d'%channel], freq, 0.03) # adjust the amplitude value to give 100 mVpp at the ADC. careful about the weird impedance mismatch that I created with that board...
+    -grab ADC data: sl.getADCorDACdata('ADC%d'%channel, N_pts)
+    -save to report folder: raw data trace
+    -save to report text file: rms and peak-peak value (machine-readable, ie json maybe?)  we can always write a converter that outputs a human-friendly format later on
+
+
+
+4. External clock mode test:
+    -Turn ext osc on.
+    -Measure and log freq wrt to internal clock
+    -set scope to 1 GS/s & correct trace length. this could simply be a stopping point where we ask the user to do it manually.
+        -correct trace length should be to have maybe ~100 cycles of the 10 MHz wave at least? maybe more if possible
+    -quantifyPhaseLock(expected=No)
+    -switch to ext clock mode:
+            # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+            f_ext          = 200e6
+            CLKFBOUT_MULT  = 5
+            CLKOUT0_DIVIDE = 8
+            self.sl.setADCclockPLL(f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+    -set DAC0 to output 10 MHz sine
+    -sl.setup_VNA_as_synthesizer(output_selects['DAC%d'%channel], freq, 0.03) # adjust the amplitude value to give 100 mVpp at the ADC. careful about the weird impedance mismatch that I created with that board...
+    -quantifyPhaseLock(expected=Yes)
+    -We could ask the user to enter "PASS" or not, depending on what he sees on the scope. Then the data saving/processing is just icing on the cake.
+
+    -quantifyPhaseLock(expected): Quantifying whether the 10 MHz and 200 MHz tones are phase-locked or not:
+        expected is only used to name output files/plots
+        -repeat this 10 times:
+            -grab a scope trace.
+            -save raw scope trace to report folder.
+            -Processing described below could be added later! The user could just visually inspect the scope traces, then enter PASS or FAIL depending on what he sees!
+
+            
+5. Manual checks with a multimeter:
+# Assemble the 30V supply, check correct polarity: positive on center pin. actual voltage?
+# For test program: ask these values from user, save in test report
+
+30V power supply        
+Correct polarity    Positive on center pin  PASS
+Actual voltage  30V 30.0V
+
+
+# ideas to save for later:
+-Processing on the scope trace: decision should be finalized later, but rough outline could be:
+    -complex BPF around the 10 MHz and 200 MHz tones separately
+        -1 MHz BW on each, use same LPF prototype so delay is matched
+        -Make sure phase is 0 in the filter's center
+    -crop out startup transient
+    -pick the index of any phase zero crossing on the 10 MHz channel, plot that as t=0.
+    -what do we do with the plot? show in a matplotlib window?
+    -save processed data traces to report folder
+
+
+
+
+
+DONE
+------------------
+
+-report file generation:
+    -this will be json,
+    -use nested dicts as the data structure:
+    -scratch that, let's do a list of dicts.
+    each entry in the list is a test with a unique name (ex: "AI0 DC range", "Clk phase lock", etc)
+    -each entry in the list gets timestamped by the report-writing code.
+    -the dict in each entry has common fields:
+    test_name, test_date, test_time
+    -all the other fields are whatever each particular test decides to save.
+
+    -pretty simple, I like it!
+
+-sequence of operations:
+    -create all 3 required objects (SL, Scope, mux_board)
+    -connect to all 3 devices
+        -connecting to RP device/SL object:
+            -SL needs to create the list, connect to the first one.
+            -this _might_ require quite a bit of refactoring, so maybe we could make this manual for now?
+            -the user could find the IP and MAC addresses using the normal GUI, then enter them as command line arguments for example.
+            -look at the code, I could maybe re-use the normal initialConfiguration_RP.py dialog for the connection.
+            -this would be the only GUI element, then everything would happen in the console.
+            -I just have to reimplement the same interface as the "controller" object, at least the shared portion with initialConfiguration_RP
+            -then I stop the Qt event loop and the program continues in the console.
+            -Let's do that!
+            -(This also gives me the buttons to program the FPGA and firmware for free!)
+
+    -create a unique folder for the report (use device MAC address & date-time string down to seconds)
+    -create the object that will write the text report
+    -first entry in the test report is "Test start information":
+        -contains operator name ("JDD"). this will time-tag the start of the test.
+        -could save starting temperature at this point too.

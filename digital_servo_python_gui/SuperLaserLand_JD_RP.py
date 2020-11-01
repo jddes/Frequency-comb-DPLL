@@ -416,12 +416,11 @@ class SuperLaserLand_JD_RP:
 		self.trigger_write()
 		self.wait_for_write()
 		(samples_out, _) = self.read_adc_samples_from_DDR2()
-		print("type(samples_out)=", type(samples_out))
-		print("samples_out.dtype before =", samples_out.dtype)
 		samples_out = samples_out.astype(dtype=np.float)
-		print("samples_out.dtype after =", samples_out.dtype)
-		print("mean(samples_out) = %f", np.mean(samples_out))
+		samples_out = self.scaleADCorDACDataToVolts(samples_out, input_select)
 		return samples_out
+
+
 		
 	def setup_write(self, selector, Num_samples):
 		if self.bVerbose == True:
@@ -513,21 +512,14 @@ class SuperLaserLand_JD_RP:
 		input_select = 0
 		number_of_frequencies = 8
 		System_settling_time = 1e-3
-		print("before syst ident, frequency_in_hz=%f" % (frequency_in_hz))
 		self.setup_system_identification(input_select, output_select, frequency_in_hz,
-			frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bUseAsSynthesizer=True)
+			frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bUseAsSynthesizer=bEnable)
 
-		bUseAsSynthesizer = bEnable
-		if bUseAsSynthesizer == False:
-			stop_flag = 1
-		else:
-			stop_flag = 0
 		# this forces the VNA to exit synthesizer mode if it was in it already:
 		self.setVNA_mode_register(0, 1, 0)
 		# then we enter synthesizer mode if that is what is requested:
-		if bUseAsSynthesizer:
+		if bEnable:
 			self.setVNA_mode_register(1, 0, bSquareWave)
-		print('(bUseAsSynthesizer, stop_flag, bSquareWave) = %d, %d, %d' % (bUseAsSynthesizer, stop_flag, bSquareWave))
 		
 	def setup_system_identification(self, input_select, output_select, first_modulation_frequency_in_hz,
 		last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude, bUseAsSynthesizer=False):    
@@ -1076,6 +1068,19 @@ class SuperLaserLand_JD_RP:
 
 
 		return (transfer_function_complex, frequency_axis)
+
+	def set_dac_to_extremum(self, dac_number, min_or_max="min"):
+		if min_or_max == "min":
+			value = self.DACs_limit_low[dac_number]
+		elif min_or_max == "max":
+			value = self.DACs_limit_high[dac_number]
+		elif min_or_max == "mid":
+			value = (self.DACs_limit_high[dac_number] + self.DACs_limit_low[dac_number])/2
+		else:
+			print("set_dac_to_extremum(): invalid parameter '%s'" % (min_or_max))
+			return
+
+		self.set_dac_offset(dac_number, value)
 	
 	def set_dac_offset(self, dac_number, offset):
 		if self.bVerbose == True:
@@ -1340,6 +1345,15 @@ class SuperLaserLand_JD_RP:
 			return_value = (self.Vref_DAC2) / (2**16-1)
 
 		return return_value
+
+	def scaleADCorDACDataToVolts(self, samples, input_select):
+		if input_select.startswith('ADC'):
+			# Convert ADC counts to voltage
+			return self.convertADCCountsToVolts(input_select, samples)
+		else:
+			# Convert DAC counts to voltage
+			DAC_number = int(input_select[3])
+			return self.convertDACCountsToVolts(DAC_number, samples)
 		
 	def convertADCCountsToVolts(self, ADC_number, counts):
 		if self.bVerbose == True:

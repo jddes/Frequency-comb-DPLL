@@ -11,6 +11,11 @@ import sys
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import numpy as np
 
+import time
+import pdb
+import traceback
+import logging, logging.handlers
+
 import ctypes # for the icons
 
 
@@ -27,15 +32,10 @@ from DisplayDividerAndResidualsStreamingSettingsWindow import DisplayDividerAndR
 from ConfigurationRPSettingsUI import ConfigRPSettingsUI
 
 from devicesData import devicesData
-
-import time
-
-import pdb
-import traceback
+import common
 
 from RP_PLL import CommsLoggeableError
 
-import logging, logging.handlers
 SYSLOG_IP = '127.0.0.1' #To log on this computer
 # SYSLOG_IP = '10.248.174.184'
 SYSLOG_PORT = 514
