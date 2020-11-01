@@ -56,9 +56,11 @@ class DisplayVNAWindow(QtGui.QWidget):
         # Reset the progress bar
         self.qprogress_ident.setValue(0)
         
-        (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude) = self.readSystemIdentificationSettings()
+        (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz,
+            number_of_frequencies, System_settling_time, output_amplitude) = self.readSystemIdentificationSettings()
         
-        self.sl.setup_system_identification(input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
+        self.sl.setup_system_identification(input_select, output_select, first_modulation_frequency_in_hz,
+                last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         total_wait_time = 0.1+1.3*self.sl.get_system_identification_wait_time()
         print('Waiting for %f sec...\n' % total_wait_time)
         
@@ -221,10 +223,7 @@ class DisplayVNAWindow(QtGui.QWidget):
             pass
         
         try:
-            output_amplitude = int(float(self.sl.DACs_limit_high[output_select] - self.sl.DACs_limit_low[output_select])*float(self.qedit_output_amplitude.text())/2)
-            # if output_select == 2:
-            #     # The DAC2 has a particularity in that the VNA outputs only a 16-bit number, and it is multiplied by 4 to fit the 20-bit range of DAC2.
-            #     output_amplitude = output_amplitude/4
+            output_amplitude = self.sl.denormalizeVNAamplitude(float(self.qedit_output_amplitude.text()))
         except:
             output_amplitude = 1
             pass
@@ -233,9 +232,7 @@ class DisplayVNAWindow(QtGui.QWidget):
             
         return (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude)
         
-        
     def readDitherSettings(self):
-
         # Output select
         # Amplitude
         # Frequency
@@ -252,35 +249,14 @@ class DisplayVNAWindow(QtGui.QWidget):
             modulation_frequency_in_hz = 1e3
             pass
         
-        
         try:
-            output_amplitude = int(float(self.sl.DACs_limit_high[output_select] - self.sl.DACs_limit_low[output_select])*float(self.qedit_dither_amplitude.text())/2)
-            # if output_select == 2:
-            #     # The DAC2 has a particularity in that the VNA outputs only a 16-bit number, and it is multiplied by 4 to fit the 20-bit range of DAC2.
-            #     output_amplitude = output_amplitude/4
+            output_amplitude = self.sl.denormalizeVNAamplitude(float(self.qedit_dither_amplitude.text()))
         except:
             output_amplitude = 0
             pass
-#        if output_amplitude == 0:
-#            output_amplitude = 1
             
-        try:
-            if self.qradio_squarewave.isChecked():
-                bSquareWave = 1
-            else:
-                bSquareWave = 0
-        except:
-            bSquareWave = 0
-            pass
-        
-        try:
-            if self.qbtn_dither.isChecked():
-                bEnableDither = 1
-            else:
-                bEnableDither = 0
-        except:
-            bEnableDither = 0
-            pass
+        bSquareWave   = int(self.qradio_squarewave.isChecked())
+        bEnableDither = int(      self.qbtn_dither.isChecked())
         return (output_select, modulation_frequency_in_hz, output_amplitude, bSquareWave, bEnableDither)
         
     def stopClicked(self):
@@ -314,7 +290,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         return
         
     def updateIntegrationTime(self):
-        (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz, number_of_frequencies, System_settling_time, output_amplitude) = self.readSystemIdentificationSettings()
+        (_, _, first_modulation_frequency_in_hz, _, _, System_settling_time, _) = self.readSystemIdentificationSettings()
         integration_time_in_samples = self.sl.compute_integration_time_for_syst_ident(System_settling_time, first_modulation_frequency_in_hz)
         self.qlbl_integration_time.setText('Integration time per freq [s]: %.1e' % (float(integration_time_in_samples)/self.sl.fs))
         

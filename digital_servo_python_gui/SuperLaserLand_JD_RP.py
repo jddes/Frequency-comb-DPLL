@@ -1650,6 +1650,16 @@ class SuperLaserLand_JD_RP:
 		freq_counter_samples = freq_counter_samples * f_ref / 2**(N_INPUT_BITS) / conversion_gain
 		return freq_counter_samples
 
+	def denormalizeVNAamplitude(self, normalized_amplitude, output_select=0):
+		""" Receives a normalized output amplitude (0-1),
+		and returns the associated amplitude value in counts to set in the VNA register.
+		output_select can be either 0, 1, and 2 """
+		assert output_select in (0, 1, 2)
+		if normalized_amplitude < 0:
+			normalized_amplitude = 0
+		if normalized_amplitude > 1:
+			normalized_amplitude = 1
+		return int(float(self.DACs_limit_high[output_select] - self.DACs_limit_low[output_select])*float(normalized_amplitude)/2)
 
 	def new_freq_setting(self):
 		# Check if dither is set, then call 
@@ -1664,8 +1674,7 @@ class SuperLaserLand_JD_RP:
 			bEnableDither = True
 		else:
 			bEnableDither = False
-		output_amplitude = int(float(self.DACs_limit_high[output_select] - self.DACs_limit_low[output_select])*float(0.01)/2)
-		
+		output_amplitude = self.denormalizeVNAamplitude(0.01)
 
 		# This is only really to set the dither
 		# we don't care about these values:
