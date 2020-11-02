@@ -2,22 +2,21 @@
 
 
 TO BE DONE ON THE CODE:
--Integrate scope code in automated_test.py
-    -write and test one first pass at testing the DAC range:
-    -no mux board involved, just set a dac value, read it, then log to report
-
--Need to test the GPIO code/firmware!
 
 -Write the object for handling the mux board
     -serial comms
     -interface must be very simple: be able to select the correct inputs, and have scaling functions for each in/out
     -Need to write inverse scaling code to account for attenuation on the tester board.
--sequence of operations:
 
+-write each test
+
+-Need to test the GPIO code/firmware!
 
     -run each test one after the other
 
-    -at the end: write to report: "Test stop information". this will time-tag and save the last temperature.
+-Need to decide on how to set scope for all tests to work without saturation
+-Test should be inspected to indicate PASS/FAIL (bonus points for color in the console)
+-Add plots to the tests? the pass/fails are probably sufficient. so I vote no for now.
 
 # example report (this should be a table, maybe do it with HTML?):
 # first step is to save all the values to a json file, and all raw traces for plots, etc to 
@@ -153,3 +152,9 @@ DONE
     -first entry in the test report is "Test start information":
         -contains operator name ("JDD"). this will time-tag the start of the test.
         -could save starting temperature at this point too.
+
+    -at the end: write to report: "Test stop information". this will time-tag and save the last temperature.
+
+-Integrate scope code in automated_test.py
+    -write and test one first pass at testing the DAC range:
+    -no mux board involved, just set a dac value, read it, then log to report

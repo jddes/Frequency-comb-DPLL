@@ -173,8 +173,7 @@ class SuperLaserLand_JD_RP:
 	
 	BUS_ADDR_TEST_OSC                                   = 0x0046
 	BUS_ADDR_TEST_OSC_DUTY                              = 0x0048
-	# clock select register. 0 = internal, 1 = external
-	BUS_ADDR_CLK_SEL                                    = 0x0049
+	BUS_ADDR_DOUT                                       = 0x0050 # two general-purpose IOs, currently set as outputs only
 
 	# Addresses for the system identification VNA:
 	BUS_ADDR_number_of_cycles_integration               = 0x5000
@@ -538,13 +537,11 @@ class SuperLaserLand_JD_RP:
 		self.number_of_frequencies = number_of_frequencies
 		
 		# Num_samples computed below has to be a multiple of 64.  We back out how many frequencies we need to ask from this.
-		print('number of frequencies before = %d' % self.number_of_frequencies)
 		num_samples_desired = self.number_of_frequencies*(2*64+32)/16
 #        num_samples_desired = int(round(num_samples_desired/64)*64) # enforces a multiple of 64. this was only necessary with the Opal Kelly interface
 		self.number_of_frequencies = int(num_samples_desired*16/(2*64+32))
 		if self.number_of_frequencies == 0:
 			self.number_of_frequencies = 1
-		print('number of frequencies after = %d' % self.number_of_frequencies)
 #        self.number_of_frequencies = int(np.floor(self.number_of_frequencies/8)*8)    # Must be a multiple of eight to keep the data on DDR2 burst boundaries
 		
 		self.modulation_frequency_step_in_hz = (self.last_modulation_frequency_in_hz-self.first_modulation_frequency_in_hz)/self.number_of_frequencies;
@@ -568,8 +565,8 @@ class SuperLaserLand_JD_RP:
 		self.input_and_output_mux_selector = 1*2**2+ (1)   # LSB = '0' selects ADC 0, LSB = '1' selects ADC 1, bit 2 = '0' selects DAC0, bit 2 = '1' selects DAC1
 		self.input_and_output_mux_selector = output_select * 2**2 + input_select
 
-		print("self.output_gain=", self.output_gain)
-		print("self.first_modulation_frequency=", self.first_modulation_frequency)
+		# print("self.output_gain=", self.output_gain)
+		# print("self.first_modulation_frequency=", self.first_modulation_frequency)
 
 		self.send_bus_cmd(self.BUS_ADDR_number_of_cycles_integration, int((self.number_of_cycles_integration & 0xFFFF)), int((self.number_of_cycles_integration & 0xFFFF0000) >> 16))
 		self.send_bus_cmd(self.BUS_ADDR_first_modulation_frequency_lsbs, int((self.first_modulation_frequency & 0xFFFF)), int((self.first_modulation_frequency & 0xFFFF0000) >> 16))
@@ -588,8 +585,8 @@ class SuperLaserLand_JD_RP:
 		# Need to also setup the write for enough samples that the VNA will put out:
 		# This needs to be done last, so that the next call to trigger_write(self) works correctly.
 		Num_samples = self.number_of_frequencies*(2*64+32)/16
-		print('setup_system_identification(): Num_samples = %d' % Num_samples)
-		print('Num_samples = %d' % Num_samples)
+		# print('setup_system_identification(): Num_samples = %d' % Num_samples)
+		# print('Num_samples = %d' % Num_samples)
 #        print('self.number_of_frequencies = %d' % self.number_of_frequencies)
 		self.setup_write(self.LOGGER_MUX['VNA'], Num_samples)
 		
@@ -2144,5 +2141,9 @@ class SuperLaserLand_JD_RP:
 		# with open("freq_out.bin", "ab") as f:
 		# 	f.write(struct.pack("d", freq_Hz))
 		return freq_Hz
+
+	def setDout(self, Dout0, Dout1):
+		self.send_bus_cmd(self.BUS_ADDR_DOUT, (Dout0&0x1) + ((Dout1&0x1)<<1))
+
 
 # end class definition
