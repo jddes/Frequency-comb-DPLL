@@ -3,19 +3,13 @@
 
 TO BE DONE ON THE CODE:
 
--Write the object for handling the mux board
-    -serial comms
-    -interface must be very simple: be able to select the correct inputs, and have scaling functions for each in/out
-    -Need to write inverse scaling code to account for attenuation on the tester board.
-
 -write each test
 
 -Need to test the GPIO code/firmware!
+    -wait for next iteration of bitfile that fixes the mistake that I found
 
-    -run each test one after the other
+-Test should be pretty-printed, inspected to indicate PASS/FAIL (bonus points for color in the console)
 
--Need to decide on how to set scope for all tests to work without saturation
--Test should be inspected to indicate PASS/FAIL (bonus points for color in the console)
 -Add plots to the tests? the pass/fails are probably sufficient. so I vote no for now.
 
 # example report (this should be a table, maybe do it with HTML?):
@@ -35,27 +29,11 @@ AO1, amplified output range*    0-30V                       1.4-28.2V
 AO2, amplified output range*    0-100V                      7.99-109V
 
 
-TODO: DECIDE ON AN ORDER THAT MAKES SENSE FOR THESE!
-
-0. 30V amp offset adjustment:
-    -put out a tone on DAC1 at 1 kHz, 99% of fullscale, DC offset = middle
-    -tell the user he needs to adjust the DC offset based on scope display.
 
 
-1. Analog outputs:
-    -This should be done as one of the first tests, since the other tests rely on some of those output to work
-    -The test is to be repeated for: AO0 and AO1, AO1 amplified, AO2 amplified
-    -set AO0 to minimum,
-    -set MUX to OFF (disconnect all paths on tester board)
-    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder
-    -set MUX to AO0
-    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
-    -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)
-    -set AO0 to max, wait a bit
-    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
-    -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)
 
 2. DIN: set DAC1 to output a sine wave at say 10 MHz, 90% of full scale call getExtClockFreq()
+
 3. DOUT: This would require a small change in the fpga: need to be able to use those as GPIOs from Python.
     Not really a big deal, I should do it since I am about to test 11 of them...
 
@@ -120,6 +98,8 @@ Actual voltage  30V 30.0V
 
 DONE
 ------------------
+TODO: DECIDE ON AN ORDER THAT MAKES SENSE FOR THESE!
+
 
 -report file generation:
     -this will be json,
@@ -152,9 +132,35 @@ DONE
     -first entry in the test report is "Test start information":
         -contains operator name ("JDD"). this will time-tag the start of the test.
         -could save starting temperature at this point too.
-
+    -run each test one after the other
     -at the end: write to report: "Test stop information". this will time-tag and save the last temperature.
 
 -Integrate scope code in automated_test.py
     -write and test one first pass at testing the DAC range:
     -no mux board involved, just set a dac value, read it, then log to report
+
+
+-Write the object for handling the mux board
+    -serial comms
+    -interface must be very simple: be able to select the correct inputs, and have scaling functions for each in/out
+    -Need to write inverse scaling code to account for attenuation on the tester board.
+
+-Need to decide on how to set scope for all tests to work without saturation
+
+
+Each test:
+0. 30V amp offset adjustment:
+    -put out a tone on DAC1 at 1 kHz, 99% of fullscale, DC offset = middle
+    -tell the user he needs to adjust the DC offset based on scope display.
+1. Analog outputs:
+    -This should be done as one of the first tests, since the other tests rely on some of those output to work
+    -The test is to be repeated for: AO0 and AO1, AO1 amplified, AO2 amplified
+    -set AO0 to minimum,
+    -set MUX to OFF (disconnect all paths on tester board)
+    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder
+    -set MUX to AO0
+    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
+    -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)
+    -set AO0 to max, wait a bit
+    -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
+    -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)

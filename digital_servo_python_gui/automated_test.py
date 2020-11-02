@@ -33,6 +33,7 @@ class TestGUIController():
         strCPUFirmware=u'monitor-tcp'
         self.initial_config = initialConfiguration_RP.initialConfiguration(self.sl.dev, self, {},
             strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
+        self.initial_config.qgroupbox_connection.setVisible(False) # hide this, since it's just clutter in this context, the choice is completely ignored
 
     def deviceSelected(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
         QtCore.QCoreApplication.instance().quit() # stop the event loop
@@ -51,6 +52,7 @@ class TestController():
         # contains the sleep() duration after various operations
         self.delays = {}
         self.delays['dac_settling'] = 0.1
+        self.delays['freq_counter_settling'] = 3
 
     # -sequence of operations:
     #     -create all 3 required objects (SL, Scope, mux_board)
@@ -92,8 +94,11 @@ class TestController():
                               "operator name": "JDD"})
 
         self.setupRP()
-        self.setup30Vamp()
-        self.testAnalogOutputs()
+        # self.setup30Vamp()
+        # self.testDinInput()
+        # self.testClkInputs()
+        # self.testDigitalOutputs()
+        self.testOutputs()
         self.write_to_report({"test_name": "Test stop information"})
 
     def createInterfaceObjects(self):
@@ -154,12 +159,68 @@ class TestController():
 
         self.scope.setup_ac_triggering()
 
-    def testAnalogOutputs(self):
-        # TODO: select the correct input on the mux_board
-        # TODO: do a measurement with the scope with no input selected
+    def testDigitalOutputs(self):
+        self.sl.setDout(0, 0)
+        input("outputs should be 0, 0")
+        self.sl.setDout(0, 1)
+        input("outputs should be 0, 1")
+        self.sl.setDout(1, 0)
+        input("outputs should be 1, 0")
+        self.sl.setDout(1, 1)
+        input("outputs should be 1, 1")
+
+
+        #         self.sl.set_dac_to_extremum(dac_number, dac_setting)
+        #         time.sleep(self.delays['dac_settling'])
+        #         scope_result = self.scope.get_current_dc_value()
+        #         scope_result = self.undoScalingFromMuxBoard(scope_result)
+        #         incremental_results = self.handleDCtestResults(dac_name, mode, scope_result)
+        #         results.update(incremental_results)
+        #         if bPrint:
+        #             print(incremental_results)
+
+        #         # input("Press enter to continue...")
+        #     # set the DAC back to min to avoid biasing the next results:
+
+        #     self.sl.set_dac_to_extremum(dac_number, dac_final_setting[dac_number])
+
+        # self.write_to_report(results)
+
+
+    def testDinInput(self):
         print("\n")
         self.print_line()
-        print("testAnalogOutputs started...")
+        print("testClkInputs started...")
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=1,
+            output_amplitude=0.99, bEnable=True, bSquareWave=False)
+
+        # time.sleep(self.delays['freq_counter_settling'])
+        results = dict()
+        results["test_name"] = "testDinInput"
+        count = 0
+        while count < 5:
+            freq = self.sl.getDin1Freq()
+            if freq is None:
+                continue
+            count += 1
+            results["DIN1_freq_%02d [Hz]" % count] = freq
+
+        print(results)
+        self.write_to_report(results)
+
+    def testClkInputs(self):
+        print("\n")
+        self.print_line()
+        print("testClkInputs started...")
+        # self.testDinInput()
+        print("testClkInputs Complete!")
+        self.print_line()
+
+
+    def testOutputs(self):
+        print("\n")
+        self.print_line()
+        print("testOutputs started...")
         self.setupScopeTimebase(5e-3)
         results = dict()
         results['test_name'] = 'analog outputs DC test'
@@ -170,24 +231,34 @@ class TestController():
             2: "min"
         }
 
-        for dac_name in ['DAC0', 'DAC1', 'DAC1_30V', 'DAC2_100V']:
-            dac_number = int(dac_name[len('DAC')])
+        for output_name in ['DAC0', 'DAC1', 'DAC1_30V', 'DAC2_100V', 'DOUT0', 'DOUT1']:
+            
             for mode, mux_mode, dac_setting, bPrint in [
                         ('no_connect', 'no_connect', 'min', False),
                         ('min',        'connect',    'min', True),
                         ('max',        'connect',    'max', True),]:
-                # print("%s to %s, mux = %s" % (dac_name, dac_setting, mux_mode))
-                # TODO: set the mux according to mux_mode
+                # print("%s to %s, mux = %s" % (output_name, dac_setting, mux_mode))
+                # set the mux according to mux_mode
                 if mux_mode == 'connect':
-                    self.mux.selectInput(dac_name)
+                    self.mux.selectInput(output_name)
                 else:
                     self.mux.selectInput('none')
 
-                self.sl.set_dac_to_extremum(dac_number, dac_setting)
+                if output_name.startswith('DAC'):
+                    dac_number = int(output_name[len('DAC')])
+                    self.sl.set_dac_to_extremum(dac_number, dac_setting)
+                else:
+                    # this is a digital output
+                    current_value = 1 if dac_setting=='max' else 0
+                    if output_name == 'DOUT0':
+                        self.sl.setDout(current_value, 0)
+                    else:
+                        self.sl.setDout(0, current_value)
+
                 time.sleep(self.delays['dac_settling'])
                 scope_result = self.scope.get_current_dc_value()
                 scope_result = self.undoScalingFromMuxBoard(scope_result)
-                incremental_results = self.handleDCtestResults(dac_name, mode, scope_result)
+                incremental_results = self.handleDCtestResults(output_name, mode, scope_result)
                 results.update(incremental_results)
                 if bPrint:
                     print(incremental_results)
@@ -199,7 +270,7 @@ class TestController():
 
         self.write_to_report(results)
 
-        print("testAnalogOutputs done")
+        print("testOutputs done")
         print("-----------------------------------------------------------")
 
     def undoScalingFromMuxBoard(self, scope_result):
@@ -209,17 +280,17 @@ class TestController():
         w.data = w.data/tf
         return (mean/tf, std/tf, w)
 
-    def handleDCtestResults(self, dac_name, mode, scope_result):
+    def handleDCtestResults(self, output_name, mode, scope_result):
         """ Receives the scope's results, and converts them to the format desired in the report dict
         and saves the raw trace to the report folder """
         (mean, std, w) = scope_result
-        filename = "%s_%s.bin" % (dac_name, mode)
+        filename = "%s_%s.bin" % (output_name, mode)
         self.save_data_trace(w.data, filename)
-        return self.formatDCtestResults(dac_name, mode, w.data, std, filename)
+        return self.formatDCtestResults(output_name, mode, w.data, std, filename)
 
-    def formatDCtestResults(self, dac_name, mode, data, std, filename=""):
+    def formatDCtestResults(self, output_name, mode, data, std, filename=""):
         result = dict()
-        prefix = "%s_%s_" % (dac_name, mode)
+        prefix = "%s_%s_" % (output_name, mode)
         result[prefix + "mean [V]"] = "%.3f" % (self.weighted_mean(data))
         result[prefix + "std [V]"]  = "%.3f" % (std)
         result[prefix + "filename"] = filename

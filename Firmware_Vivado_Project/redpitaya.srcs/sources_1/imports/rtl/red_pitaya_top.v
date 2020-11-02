@@ -366,7 +366,7 @@ wire                  digital_loop;
 ////////////////////////////////////////////////////////////////////////////////
 wire clk_to_adc;
 //wire clk_ext_or_int;
-
+wire [2-1:0] gpios_out;
 
 // diferential clock input
 IBUFDS i_clk (.I (adc_clk_p_i), .IB (adc_clk_n_i), .O (adc_clk_in));  // differential clock input
@@ -534,7 +534,7 @@ dpll_wrapper dpll_wrapper_inst (
   .DACout2                 (  DACout2                    ),
 
   .osc_output(osc_output),
-  //.clk_ext_or_int(clk_ext_or_int), // clock select register. 1 = internal, 0 = external
+  .gpios_out(gpios_out),
 
   // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
   .counter_new_data        (counter_new_data),
@@ -819,13 +819,14 @@ assign exp_n_dir[8-1:0] = {8'b00111111};  // pins 0-5 set as outputs, the rest a
 assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest as inputs
 
 assign exp_n_out[2] = osc_output;
-assign exp_n_out[5] = 1'b0;   // unused GPIO set as output with 0V for the moment
-assign exp_n_out[3] = 1'b0;   // unused GPIO set as output with 0V for the moment
+assign exp_n_out[5] = gpios_out[0];   // GPIO set as output for the moment, controlled via a PC-accessible register
+//assign exp_n_out[3] = gpios_out[1];   // GPIO set as output for the moment, controlled via a PC-accessible register
+assign exp_p_out[3] = gpios_out[1];   // GPIO set as output for the moment, controlled via a PC-accessible register
 // assign exp_n_out[5] = exp_p_in[5];  // loopback from buffered input to output
 //assign exp_p_out[3] = exp_p_in[2];  // loopback from buffered input to output
 
 // // 125 MHz generated from 200 MHz, either internal or external clocks
-ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
+// ODDR oddr_exp_p_out3 ( .Q(exp_p_out[3]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // Use this to map the digital IO to the house keeping module:
 // IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out_hk), .T(~exp_p_dir) );

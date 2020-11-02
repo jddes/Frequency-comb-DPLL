@@ -2143,7 +2143,7 @@ class SuperLaserLand_JD_RP:
 		return freq_Hz
 
 	def setDout(self, Dout0, Dout1):
-		self.send_bus_cmd(self.BUS_ADDR_DOUT, (Dout0&0x1) + ((Dout1&0x1)<<1))
+		self.send_bus_cmd(self.BUS_ADDR_DOUT, (Dout0&0x1) + ((Dout1&0x1)<<1), 0)
 
 
 # end class definition

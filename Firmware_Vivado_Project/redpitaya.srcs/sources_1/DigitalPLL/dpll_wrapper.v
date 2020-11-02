@@ -18,7 +18,7 @@ module dpll_wrapper(
     output wire signed [15:0] DACout2,
 
     output wire osc_output,
-    output wire clk_ext_or_int, // clock select register. 1 = internal, 0 = external
+    output wire [2-1:0] gpios_out,
 
     // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
     input wire          counter_new_data,
@@ -160,19 +160,19 @@ parallel_bus_register_oscillator_duty (
      );
 
 ///////////////////////////////////////////////////////////////////////////////
-// clock select register. 1 = internal, 0 = external
+// Directly connected to 2 GPIOs on the Zynq, set as outputs for now
 
 parallel_bus_register_32bits_or_less # (
-    .REGISTER_SIZE(1),
-    .REGISTER_DEFAULT_VALUE(1'b1), // internal clock mode by default
-    .ADDRESS(16'h0049)
+    .REGISTER_SIZE(2),
+    .REGISTER_DEFAULT_VALUE(2'b00), // internal clock mode by default
+    .ADDRESS(16'h0050)
 )
 parallel_bus_register_clk_select (
      .clk(clk1), 
      .bus_strobe(cmd_trig), 
      .bus_address(cmd_addr), 
      .bus_data({cmd_data2in, cmd_data1in}), 
-     .register_output(clk_ext_or_int), 
+     .register_output(gpios_out), 
      .update_flag()
      );
 
