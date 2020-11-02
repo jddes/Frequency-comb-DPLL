@@ -77,7 +77,7 @@ class RigolScope:
         # set socket options
         self.s = socket_tools.EasySocket(socket.AF_INET, socket.SOCK_STREAM)
         self.updateSocketVerbosity()
-        self.s.settimeout(1)
+        self.s.settimeout(2)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, int(10e6))
         self.s.connect((self.strIPAddress, self.port_number))
 

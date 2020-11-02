@@ -370,7 +370,6 @@ class SuperLaserLand_JD_RP:
 		#self.pll = (PLL0_module(self), PLL1_module(self), PLL2_module(self))
 		self.pll = (PLL0_module(self), PLL1_module(self))
 		
-		
 		# Stop the residuals fifo from filling up
 		# self.setResidualsStreamingResetMode(1) #Not implemented in the Red Pitaya anymore
 		
@@ -1670,7 +1669,7 @@ class SuperLaserLand_JD_RP:
 			f_ref = self.fs
 		if N_cycles_gate_time is None:
 			N_cycles_gate_time = self.N_CYCLES_GATE_TIME
-			
+
 		# Scale the counter values into Hz units:
 		# f = data_out * fs / 2^N_INPUT_BITS / conversion_gain
 		N_INPUT_BITS = 10
@@ -1981,6 +1980,33 @@ class SuperLaserLand_JD_RP:
 
 		self.dev.write_Zynq_register_uint32(bus_address, data)
 
+	def slowStart100VSwitchingSupply(self):
+		# need to set the switching supply to its default values:
+		# do a slow start over ~ 100 ms.
+		f_switching = 200e3
+		Vtarget = 100.
+		Vsupply = 30.
+		T_slow_start = 100e-3
+
+		target_duty_cycle = (Vtarget-Vsupply)/Vtarget
+		oscillator_modulus = int(round(  self.fs/f_switching ))
+
+		print("slowStart100VSwitchingSupply(): starting")
+		N_steps = 10
+		for k in range(int(N_steps)+1):
+			# print("slowStart100VSwitchingSupply(): here")
+			current_duty_cycle = float(k)/N_steps * target_duty_cycle
+			# print("slowStart100VSwitchingSupply(): here2")
+			oscillator_modulus_active = int(round(  oscillator_modulus * current_duty_cycle ))
+			# print("slowStart100VSwitchingSupply(): here3")
+			self.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
+			# try:
+			# 	self.sl.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
+			# except RP_PLL.CommsError:
+			# 	break
+			time.sleep(T_slow_start/N_steps)
+
+		print("slowStart100VSwitchingSupply(): finished")
 
 	def setTestOscillator(self, bEnable=1, bPolarity=1, oscillator_modulus=625, oscillator_modulus_active=62):
 

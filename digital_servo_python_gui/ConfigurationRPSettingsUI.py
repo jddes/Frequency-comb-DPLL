@@ -445,7 +445,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			CLKFBOUT_MULT  = 5
 			CLKOUT0_DIVIDE = 8
 
-			self.sl.setADCclockPLL(f_int, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE) # calling this crashes the thing...
+			self.sl.setADCclockPLL(f_int, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
 
 		# make sure to update the lockpoint frequencies, in case the ADC clock frequency changed:

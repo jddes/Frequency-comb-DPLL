@@ -196,41 +196,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.startTimers()
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
-		# print("XEM_GUI_MainWindow::pushDefaultValues(): after displayDAC")
-		if self.output_controls[0] == True:
-			self.slowStart100VSwitchingSupply()
-
-
-	@logCommsErrorsAndBreakoutOfFunction()
-	def slowStart100VSwitchingSupply(self):
-		# need to set the switching supply to its default values:
-		# do a slow start over ~ 100 ms.
-		f_switching = 200e3
-		Vtarget = 100.
-		Vsupply = 30.
-		T_slow_start = 100e-3
-
-
-		target_duty_cycle = (Vtarget-Vsupply)/Vtarget
-		oscillator_modulus = int(round(  self.sl.fs/f_switching ))
-
-		print("slowStart100VSwitchingSupply(): starting")
-		N_steps = 10
-		for k in range(int(N_steps)+1):
-			# print("slowStart100VSwitchingSupply(): here")
-			current_duty_cycle = float(k)/N_steps * target_duty_cycle
-			# print("slowStart100VSwitchingSupply(): here2")
-			oscillator_modulus_active = int(round(  oscillator_modulus * current_duty_cycle ))
-			# print("slowStart100VSwitchingSupply(): here3")
-			self.sl.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
-			# try:
-			# 	self.sl.setTestOscillator(bEnable=1, bPolarity=1, oscillator_modulus=oscillator_modulus, oscillator_modulus_active=oscillator_modulus_active)
-			# except RP_PLL.CommsError:
-			# 	break
-			time.sleep(T_slow_start/N_steps)
-
-		print("slowStart100VSwitchingSupply(): finished")
-
 	def killTimers(self):
 		# print("XEM_GUI_MainWindow::killTimers(): %s" % self.strTitle)
 		#traceback.print_stack()

@@ -116,7 +116,8 @@ class SLLSystemParameters():
         # Send to FPGA
         sl.set_pwm_settings(PWM0_levels, value_in_counts, bSendToFPGA)
         
-        
+        sl.slowStart100VSwitchingSupply()
+
 def main():
     # Create a system parameters object, just for testing:
     sp = SLLSystemParameters()

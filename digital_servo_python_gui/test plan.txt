@@ -3,10 +3,6 @@
 
 TO BE DONE ON THE CODE:
 
--write each test
-
--Need to test the GPIO code/firmware!
-    -wait for next iteration of bitfile that fixes the mistake that I found
 
 -Test should be pretty-printed, inspected to indicate PASS/FAIL (bonus points for color in the console)
 
@@ -31,49 +27,8 @@ AO2, amplified output range*    0-100V                      7.99-109V
 
 
 
-
-2. DIN: set DAC1 to output a sine wave at say 10 MHz, 90% of full scale call getExtClockFreq()
-
-3. DOUT: This would require a small change in the fpga: need to be able to use those as GPIOs from Python.
-    Not really a big deal, I should do it since I am about to test 11 of them...
-
-3. Analog inputs:
-    freq = 25e6
-    channel = 0 or 1:
-    output_selects = {'DAC%d'%k : k for k in range(2)}
-    -sl.setup_VNA_as_synthesizer(output_selects['DAC%d'%channel], freq, 0.03) # adjust the amplitude value to give 100 mVpp at the ADC. careful about the weird impedance mismatch that I created with that board...
-    -grab ADC data: sl.getADCorDACdata('ADC%d'%channel, N_pts)
-    -save to report folder: raw data trace
-    -save to report text file: rms and peak-peak value (machine-readable, ie json maybe?)  we can always write a converter that outputs a human-friendly format later on
-
-
-
-4. External clock mode test:
-    -Turn ext osc on.
-    -Measure and log freq wrt to internal clock
-    -set scope to 1 GS/s & correct trace length. this could simply be a stopping point where we ask the user to do it manually.
-        -correct trace length should be to have maybe ~100 cycles of the 10 MHz wave at least? maybe more if possible
-    -quantifyPhaseLock(expected=No)
-    -switch to ext clock mode:
-            # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-            f_ext          = 200e6
-            CLKFBOUT_MULT  = 5
-            CLKOUT0_DIVIDE = 8
-            self.sl.setADCclockPLL(f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
-    -set DAC0 to output 10 MHz sine
-    -sl.setup_VNA_as_synthesizer(output_selects['DAC%d'%channel], freq, 0.03) # adjust the amplitude value to give 100 mVpp at the ADC. careful about the weird impedance mismatch that I created with that board...
-    -quantifyPhaseLock(expected=Yes)
-    -We could ask the user to enter "PASS" or not, depending on what he sees on the scope. Then the data saving/processing is just icing on the cake.
-
-    -quantifyPhaseLock(expected): Quantifying whether the 10 MHz and 200 MHz tones are phase-locked or not:
-        expected is only used to name output files/plots
-        -repeat this 10 times:
-            -grab a scope trace.
-            -save raw scope trace to report folder.
-            -Processing described below could be added later! The user could just visually inspect the scope traces, then enter PASS or FAIL depending on what he sees!
-
             
-5. Manual checks with a multimeter:
+6. Manual checks with a multimeter:
 # Assemble the 30V supply, check correct polarity: positive on center pin. actual voltage?
 # For test program: ask these values from user, save in test report
 
@@ -147,6 +102,10 @@ TODO: DECIDE ON AN ORDER THAT MAKES SENSE FOR THESE!
 
 -Need to decide on how to set scope for all tests to work without saturation
 
+-Need to test the GPIO code/firmware!
+    -wait for next iteration of bitfile that fixes the mistake that I found
+
+
 
 Each test:
 0. 30V amp offset adjustment:
@@ -164,3 +123,52 @@ Each test:
     -set AO0 to max, wait a bit
     -grab a scope trace, apply inverse scaling to compensate for test board, save to report folder,
     -save to text report: average, rms and pk-pk value of scope trace (this is a pattern that repeats many times, we should factor this out: measuring DC parameters & saving to text report with a name or something)
+
+
+
+2. DIN: set DAC1 to output a sine wave at say 10 MHz, 90% of full scale call getExtClockFreq()
+
+3. DOUT: This would require a small change in the fpga: need to be able to use those as GPIOs from Python.
+    Not really a big deal, I should do it since I am about to test 11 of them...
+
+
+
+
+
+4. Analog inputs:
+    freq = 25e6
+    channel = 0 or 1:
+    output_selects = {'DAC%d'%k : k for k in range(2)}
+    -sl.setup_VNA_as_synthesizer(output_selects['DAC%d'%channel], freq, 0.03) # adjust the amplitude value to give 100 mVpp at the ADC. careful about the weird impedance mismatch that I created with that board...
+    -grab ADC data: sl.getADCorDACdata('ADC%d'%channel, N_pts)
+    -save to report folder: raw data trace
+    -save to report text file: rms and peak-peak value (machine-readable, ie json maybe?)  we can always write a converter that outputs a human-friendly format later on
+
+
+
+5. External clock mode test:
+    -Turn ext osc on.
+    -Measure and log freq wrt to internal clock
+    -set scope to 1 GS/s & correct trace length. this could simply be a stopping point where we ask the user to do it manually.
+        -correct trace length should be to have maybe ~100 cycles of the 10 MHz wave at least? maybe more if possible
+    -quantifyPhaseLock(expected=No)
+    -switch to ext clock mode:
+            # For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+            f_ext          = 200e6
+            CLKFBOUT_MULT  = 5
+            CLKOUT0_DIVIDE = 8
+            self.sl.setADCclockPLL(f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+    -set DAC0 to output 10 MHz sine
+    -sl.setup_VNA_as_synthesizer(output_selects['DAC%d'%channel], freq, 0.03) # adjust the amplitude value to give 100 mVpp at the ADC. careful about the weird impedance mismatch that I created with that board...
+    -quantifyPhaseLock(expected=Yes)
+    -We could ask the user to enter "PASS" or not, depending on what he sees on the scope. Then the data saving/processing is just icing on the cake.
+
+    -quantifyPhaseLock(expected): Quantifying whether the 10 MHz and 200 MHz tones are phase-locked or not:
+        expected is only used to name output files/plots
+        -repeat this 10 times:
+            -grab a scope trace.
+            -save raw scope trace to report folder.
+            -Processing described below could be added later! The user could just visually inspect the scope traces, then enter PASS or FAIL depending on what he sees!
+
+
+-write each test

@@ -54,8 +54,6 @@ class TestController():
         self.delays['dac_settling'] = 0.1
         self.delays['freq_counter_settling'] = 3
 
-    # -sequence of operations:
-    #     -create all 3 required objects (SL, Scope, mux_board)
         self.createInterfaceObjects()
         self.setupScopeForDC()
         self.printStartupMessage()
@@ -82,6 +80,10 @@ class TestController():
 
         # self.scope.send_cmd(":ACQ:MDEP 120000\n") # 120 kPoints, THIS DOES NOT SEEM TO WORK, NEEDS TO BE SET MANUALLY!
 
+    def setupScopeForHighFreq(self):
+        self.scope.send_cmd(":CHAN1:OFFSET 0\n")
+        self.scope.send_cmd(":CHAN1:RANGE 4\n") # this is 4 V of range, or 500 mV/div
+
     def setupScopeTimebase(self, time_per_div):
         """ sets the scope's timebase in seconds/division """
         self.scope.send_cmd(":TIM:OFFSET 0\n")
@@ -96,9 +98,14 @@ class TestController():
         self.setupRP()
         # self.setup30Vamp()
         # self.testDinInput()
-        # self.testClkInputs()
+        # self.testExtClkInput()
+        # self.testOutputs()
+        # self.testAnalogInputs()
+
+        self.testExtClkInput()
+
+        # unused tests:
         # self.testDigitalOutputs()
-        self.testOutputs()
         self.write_to_report({"test_name": "Test stop information"})
 
     def createInterfaceObjects(self):
@@ -157,7 +164,37 @@ class TestController():
         self.sl.setup_VNA_as_synthesizer(frequency_in_hz=1e3, output_select=dac_number,
             output_amplitude=0.99, bEnable=False, bSquareWave=False)
 
+
+        input("Please check that synth is off now (DAC1)...")
         self.scope.setup_ac_triggering()
+
+    def testAnalogInputs(self):
+        results = dict()
+        results["test_name"] = "testAnalogInputs"
+        print("\n")
+        self.print_line()
+        print("testAnalogInputs started...")
+        self.setupScopeTimebase(120e-6) # should yield 1 GS/s
+
+        for k in range(2):
+            input_select = 'ADC%d' % k
+            self.sl.set_dac_to_extremum(k, 'mid')
+            self.sl.setup_VNA_as_synthesizer(frequency_in_hz=25e6, output_select=k,
+                output_amplitude=0.06, bEnable=True, bSquareWave=False)
+            time.sleep(self.delays["dac_settling"])
+            data = self.sl.getADCorDACdata(input_select, 8e3)
+            incremental_results = self.handleDCtestResults(input_select, "25MHz_100mVpp", data)
+            print(incremental_results)
+            results.update(incremental_results)
+
+            # input("Press enter to continue...")
+
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=25e6, output_select=k,
+            output_amplitude=0.06, bEnable=False, bSquareWave=False)
+
+        self.write_to_report(results)
+        print("testAnalogInputs done")
+        self.print_line()
 
     def testDigitalOutputs(self):
         self.sl.setDout(0, 0)
@@ -168,30 +205,15 @@ class TestController():
         input("outputs should be 1, 0")
         self.sl.setDout(1, 1)
         input("outputs should be 1, 1")
-
-
-        #         self.sl.set_dac_to_extremum(dac_number, dac_setting)
-        #         time.sleep(self.delays['dac_settling'])
-        #         scope_result = self.scope.get_current_dc_value()
-        #         scope_result = self.undoScalingFromMuxBoard(scope_result)
-        #         incremental_results = self.handleDCtestResults(dac_name, mode, scope_result)
-        #         results.update(incremental_results)
-        #         if bPrint:
-        #             print(incremental_results)
-
-        #         # input("Press enter to continue...")
-        #     # set the DAC back to min to avoid biasing the next results:
-
-        #     self.sl.set_dac_to_extremum(dac_number, dac_final_setting[dac_number])
-
-        # self.write_to_report(results)
-
+        self.sl.setDout(0, 0)
 
     def testDinInput(self):
         print("\n")
         self.print_line()
-        print("testClkInputs started...")
-        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=1,
+        print("testDinInput started...")
+        dac_number = 1
+        self.sl.set_dac_to_extremum(dac_number, 'mid')
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=dac_number,
             output_amplitude=0.99, bEnable=True, bSquareWave=False)
 
         # time.sleep(self.delays['freq_counter_settling'])
@@ -208,12 +230,63 @@ class TestController():
         print(results)
         self.write_to_report(results)
 
-    def testClkInputs(self):
+        self.sl.set_dac_to_extremum(dac_number, 'min')
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=dac_number,
+            output_amplitude=0.99, bEnable=False, bSquareWave=False)
+
+        self.print_line()
+        print("testDinInput complete!")
+
+    def setExtClkMode(self, ext_clk):
+        # For 200 MHz clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+        f_ref          = 200e6
+        CLKFBOUT_MULT  = 5
+        CLKOUT0_DIVIDE = 8
+        self.sl.setADCclockPLL(f_ref, ext_clk, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+
+    def quantifyPhaseLock(self, expected_phase_lock):
+        """ scope should contain the sum of a 10 MHz and 200 MHz, which are expected to be phase-locked or not depending on expected_phase_lock """
+        N_traces = 10
+        onoff_string = "on" if expected_phase_lock else "off"
+        for k in range(N_traces):
+            scope_result = self.scope.get_current_dc_value()
+            (mean, std, w) = scope_result
+            self.save_data_trace(w.data, "extclk_%s_%02d.bin" % (onoff_string, k))
+            # print("quantifyPhaseLock(): %d/%d" % (k, N_traces))
+
+
+    def testExtClkInput(self):
         print("\n")
         self.print_line()
-        print("testClkInputs started...")
-        # self.testDinInput()
-        print("testClkInputs Complete!")
+        print("testExtClkInput started...")
+        self.scope.setup_ac_triggering()
+        self.setupScopeForHighFreq()
+
+        dac_number = 0
+        self.sl.set_dac_to_extremum(dac_number, 'mid')
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=50e6, output_select=dac_number,
+            output_amplitude=0.99, bEnable=True, bSquareWave=False)
+
+        self.mux.selectInput("DAC0")
+        self.mux.setOscillator(True)
+        self.setupScopeTimebase(120e-6) # should yield 1 GS/s. DOES NOT WORK, SO MUST DO IT MANUALLY
+        print("Please setup scope to validate phase lock state or not (10 MHz + 200 MHz superposed)")
+        print("Horizontal scale needs to be manually adjusted to hit 1 GS/s")
+        input("Current state should be non phase-locked. Hit enter to continue")
+        self.quantifyPhaseLock(expected_phase_lock=False)
+        self.setExtClkMode(True)
+        self.quantifyPhaseLock(expected_phase_lock=True)
+
+        results = dict()
+        results["test_name"] = "testExtClkInput"
+        response = input("Current state should be phase-locked. Enter 'PASS' to confirm, or 'FAIL' to indicate failure: ")
+        results["phase-locked?"] = response
+
+        self.write_to_report(results)
+
+        print("testExtClkInput Complete!")
+        self.setExtClkMode(False)
+        self.mux.setOscillator(False)
         self.print_line()
 
 
@@ -258,7 +331,8 @@ class TestController():
                 time.sleep(self.delays['dac_settling'])
                 scope_result = self.scope.get_current_dc_value()
                 scope_result = self.undoScalingFromMuxBoard(scope_result)
-                incremental_results = self.handleDCtestResults(output_name, mode, scope_result)
+                (mean, std, w) = scope_result
+                incremental_results = self.handleDCtestResults(output_name, mode, w.data)
                 results.update(incremental_results)
                 if bPrint:
                     print(incremental_results)
@@ -271,7 +345,7 @@ class TestController():
         self.write_to_report(results)
 
         print("testOutputs done")
-        print("-----------------------------------------------------------")
+        self.print_line()
 
     def undoScalingFromMuxBoard(self, scope_result):
         """ Applies the inverse scaling ratio done by the mux board """
@@ -280,20 +354,20 @@ class TestController():
         w.data = w.data/tf
         return (mean/tf, std/tf, w)
 
-    def handleDCtestResults(self, output_name, mode, scope_result):
+    def handleDCtestResults(self, output_name, mode, data):
         """ Receives the scope's results, and converts them to the format desired in the report dict
         and saves the raw trace to the report folder """
-        (mean, std, w) = scope_result
         filename = "%s_%s.bin" % (output_name, mode)
-        self.save_data_trace(w.data, filename)
-        return self.formatDCtestResults(output_name, mode, w.data, std, filename)
+        self.save_data_trace(data, filename)
+        return self.formatDCtestResults(output_name, mode, data, filename)
 
-    def formatDCtestResults(self, output_name, mode, data, std, filename=""):
+    def formatDCtestResults(self, output_name, mode, data, filename=""):
         result = dict()
         prefix = "%s_%s_" % (output_name, mode)
-        result[prefix + "mean [V]"] = "%.3f" % (self.weighted_mean(data))
-        result[prefix + "std [V]"]  = "%.3f" % (std)
-        result[prefix + "filename"] = filename
+        result[prefix + "mean [V]"]  = "%.3f" % (self.weighted_mean(data))
+        result[prefix + "std [V]"]   = "%.3f" % (np.std(data))
+        result[prefix + "pk-pk [V]"] = "%.3f" % (np.max(data)-np.min(data))
+        result[prefix + "filename"]  = filename
         return result
 
     def weighted_mean(self, data):
