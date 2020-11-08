@@ -451,7 +451,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.plt_spc.setXRange(time_axis[0], time_axis[-1])
         
         self.plt_spc.setTitle('Time-domain signal, std = %.2f mV' % (1e3*np.std(samples_out)))
-        self.plt_spc.setTitle('Time, std = %.2f mV, ampl = %.2f mVpp' % (1e3*np.std(samples_out), 1e3*np.std(samples_out)*2*np.sqrt(2)))
+        self.plt_spc.setTitle('Time, std = %.2f mV, ampl = %.2f mVpp' % (1e3*np.std(samples_out), 1e3*(np.max(samples_out)-np.min(samples_out))))
         
 
 

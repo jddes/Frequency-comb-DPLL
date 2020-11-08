@@ -165,7 +165,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.qradio_internal_clk.clicked.connect(self.setClkSelect)
 		self.qradio_external_clk.clicked.connect(self.setClkSelect)
 		self.lblExtClkFreq = Qt.QLabel('Ext clk freq = %.6f MHz' % 0.0)
-		self.lblDinFreq    = Qt.QLabel('Din freq = %.6f MHz' % 0.0)
+		self.lblDinFreq    = Qt.QLabel('Din freq     = %.6f MHz' % 0.0)
 
 		grid.addWidget(self.qradio_internal_clk, 0, 0)
 		grid.addWidget(self.qradio_external_clk, 1, 0)
@@ -378,7 +378,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
 		freq = self.sl.getDin1Freq()
 		if freq is not None:
-			self.lblDinFreq.setText('Ext clk freq = %.8f MHz' % (freq/1e6))
+			self.lblDinFreq.setText('Din freq     = %.8f MHz' % (freq/1e6))
 
 	#Function to read the value in the RAM Block (channel 2) to an address
 	#The data we should read are the data sent to dpll_wrapper module (channel 0)

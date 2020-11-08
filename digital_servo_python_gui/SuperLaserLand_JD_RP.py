@@ -38,8 +38,8 @@ class SuperLaserLand_JD_RP:
 	ddc1_frequency_in_hz = 25e6
 	ddc0_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
 	ddc1_frequency_in_int = int(round(25e6/100e6 * 2**48)) # Default DDC 0 reference frequency, has to match the current firmware value to be correct, otherwise we simply have to set it explicitely using set_ddc0_ref_freq()    
-	ADC0_gain = 1. #  * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
-	ADC1_gain = 1. #  * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2019-04-26.
+	ADC0_gain = 1. #  * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2020-11-07
+	ADC1_gain = 1. #  * 31.65/25.35  # calibrated one particular RP unit against a scope, not sure if it will improve cal of others or not. JDD 2020-11-07
 	DAC0_gain = 1
 	DAC1_gain = 1
 	DAC2_gain = 2
@@ -354,7 +354,7 @@ class SuperLaserLand_JD_RP:
 		if self.bVerbose == True:
 			print('resetFrontend')
 			
-		print('Resetting FPGA (resetFrontend)...')
+		# print('Resetting FPGA (resetFrontend)...')
 		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET_FRONTEND)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_RESET_FRONTEND*4, 0)
 		
@@ -1345,7 +1345,7 @@ class SuperLaserLand_JD_RP:
 	def scaleADCorDACDataToVolts(self, samples, input_select):
 		if input_select.startswith('ADC'):
 			# Convert ADC counts to voltage
-			return self.convertADCCountsToVolts(input_select, samples)
+			return self.convertADCCountsToVolts(int(input_select[3]), samples)
 		else:
 			# Convert DAC counts to voltage
 			DAC_number = int(input_select[3])
@@ -1357,20 +1357,20 @@ class SuperLaserLand_JD_RP:
 			
 		ADC_gain = 1.
 		ADC_bits = 16.
-		Volts_max_for_unit_gain = 1. # Nominal value is 1 Volts peak-to-peak (+/- 1 Volts input range)
-		
+		Volts_max_for_unit_gain = 1. # Nominal value is +/- 1 Volts input range, or 2 Volts peak-to-peak 
 		if ADC_number == 0:
 #            print('counts = %d, volts = %f, gain = %f' % (counts, np.float(counts)/2.**15. * 1 * self.DAC0_gain, self.DAC0_gain))
 			ADC_gain = float(self.ADC0_gain)
 		elif ADC_number == 1:
 			ADC_gain = float(self.ADC1_gain)
-		
+
 		if type(counts) is np.ndarray:
 			# Numpy array:
-			return counts.astype(np.float)  /  (2. **(ADC_bits-1)) * Volts_max_for_unit_gain / ADC_gain
+			counts = counts.astype(np.float)
 		else:
 			# Scalar case:
-			return np.float(counts)  /  (2. **(ADC_bits-1)) * Volts_max_for_unit_gain / ADC_gain
+			counts = np.float(counts)
+		return counts  /  (2. **(ADC_bits-1)) * Volts_max_for_unit_gain / ADC_gain
 		
 	def convertDDCCountsToHz(self, counts):
 		if self.bVerbose == True:
@@ -2036,7 +2036,7 @@ class SuperLaserLand_JD_RP:
 	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
 		DIVCLK_DIVIDE = 1
 		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
-		print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
+		# print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
 
 		# From PG065:
 		# "You should first write all the required clock configuration registers and then check for the

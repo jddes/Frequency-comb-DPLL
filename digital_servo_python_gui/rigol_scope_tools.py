@@ -274,6 +274,13 @@ class RigolScope:
         self.send_cmd(':trig:edge:source ac\n')
         self.send_cmd(':trig:sweep single\n')
 
+    def setup_edge_triggering(self, channel_number, trigger_mode="auto"):
+        """ trigger_mode can be 'auto', 'normal' or 'single' """
+        self.send_cmd(':trig:mode edge\n')
+        self.send_cmd(':trig:edge:source chan%d\n' % channel_number)
+        self.send_cmd(':trig:sweep %s\n'% trigger_mode)
+        self.send_cmd(':run\n')
+
     def get_current_dc_value(self, channel_number=1):
         """ scope must be set in ac triggering mode first """
         self.send_cmd(':single\n:tforce\n')

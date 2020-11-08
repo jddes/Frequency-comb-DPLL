@@ -22,8 +22,6 @@ class MuxBoard():
             self.s = None
         self.selectInput('none') # so that we start in a known state
 
-        print("MuxBoard TODO: write voltage scaling functions")
-
     def getTransferRatio(self):
         """ Returns the voltage transfer ratio at DC from the currently-selected input to the scope. """
         RshuntPerChannel = 1e3
@@ -111,4 +109,7 @@ if __name__ == '__main__':
         mux.selectInput(input_select)
         print("%s: transfer ratio = %e, atten=1/tf=%.1f"  % (input_select, mux.getTransferRatio(), 1/mux.getTransferRatio()))
 
+
+    mux = MuxBoard()
+    mux.setOscillator(True)
 
