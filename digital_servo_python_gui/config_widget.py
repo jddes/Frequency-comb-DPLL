@@ -44,7 +44,7 @@ class ConfigWidget(QtWidgets.QWidget):
             adv_per_channel = self.adv_per_channel[channel_id]
 
             cw.editModulatorNominalFreq.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
-            cw.editModulatorGain.editingFinished.connect(partial(self.updateExpectedFreq, channel_id))
+            cw.editModulatorGain.editingFinished.connect(       partial(self.updateExpectedFreq, channel_id))
 
             # widgets in advanced settings, per channel
             for w in [adv_per_channel.chkEnableLO,
@@ -53,6 +53,7 @@ class ConfigWidget(QtWidgets.QWidget):
                       adv_per_channel.radioLower,
                       adv_per_channel.comboLOpower,
                       adv_per_channel.spinDDSpower,
+                      adv_per_channel.chkEnableDDS,
                       self.editRefFreq,
                       self.editExpectedFreq_dict[channel_id]] + cw.openloop_widgets + cw.closedloop_widgets:
                 if isinstance(w, QtWidgets.QAbstractButton):

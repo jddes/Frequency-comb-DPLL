@@ -252,8 +252,8 @@ class SuperLaserLand_JD_RP:
             self.amplitude_cal_output_amplitude = np.copy(np.frombuffer(f.read(), np.float))
 
         # fix a few glitchy data points:
-        self.amplitude_cal_output_amplitude[924] = self.amplitude_cal_output_amplitude[924+1]
-        self.amplitude_cal_output_amplitude[366] = self.amplitude_cal_output_amplitude[366+1]
+        self.amplitude_cal_output_amplitude[670-1] = self.amplitude_cal_output_amplitude[670-1+1]
+        self.amplitude_cal_output_amplitude[584-1] = self.amplitude_cal_output_amplitude[584-1+1]
 
         self.amplitude_ratio_adc_to_input_dB = self.amplitude_cal_output_amplitude - self.amplitude_cal_input_amplitude
 
@@ -428,7 +428,6 @@ class SuperLaserLand_JD_RP:
     def setADCclockPLL(self, f_ref, bExternalClock):
         """ Computes and commits closest integer-N solution for the ADC clock.
         In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
-        print("setADCclockPLL(): f_ref=", f_ref)
         self.user_inputs["bExternalClock"] = bExternalClock
         if bExternalClock:
             (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
@@ -442,10 +441,12 @@ class SuperLaserLand_JD_RP:
             self.user_inputs["CLKFBOUT_MULT"]  = 1
             self.user_inputs["CLKOUT0_DIVIDE"] = 1
             self._setClkSelectAndReset(False, bExternalClock)
+        self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
 
     def _setADCclockPLL(self):
         """ f_ref is the frequency of the clock connected to GPIO_P[5] in external clock mode """
 
+        self._setClkSelectAndReset(False, False) # Switch to internal clock while we reset the external clock's MMCM
         # From PG065:
         # "You should first write all the required clock configuration registers and then check for the
         # status register. If status register value is 0x1, start the reconfiguration by writing Clock
@@ -467,13 +468,14 @@ class SuperLaserLand_JD_RP:
             print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
             return
 
-        self._setClkSelectAndReset(True, self.user_inputs["bExternalClock"]) # assert reset on the incoming ADC clock
+        self._setClkSelectAndReset(True, False) # assert reset on the incoming ADC clock
         self.write("clkw_reg23", 0x7)
         self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
-        self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
+        # time.sleep(0.1)
+        self._setClkSelectAndReset(False, False) # de-assert reset on the incoming ADC clock
         time.sleep(0.1)
-        self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # de-assert reset on the incoming ADC clock
+        self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # Switch to external clock now that the MMCM should be stable
 
     def _waitForReg(self, reg_name, desired_value, timeout=1.):
         """ Read a register in a loop, until it either becomes a desired value or we hit a timeout.
@@ -1002,7 +1004,7 @@ class phaseReadoutDriver():
 
     def peakLatestPhases(self):
         """ Returns a dict with the latest phase offset value for each channel.
-        Units are radians, dict keys are the channel IDs 1 through 4 """
+        Units are cycles, dict keys are the channel IDs 1 through 4 """
         result = dict()
         data = self._peakLatestChunk()
         for channel_id in self.sl.channels_list:

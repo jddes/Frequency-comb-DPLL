@@ -23,6 +23,7 @@ class ChannelGUI(QtWidgets.QWidget):
     # these signals will be connected to the summary tab:
     sig_new_Amplitude     = QtCore.pyqtSignal(int, float, float)
     sig_new_SNR           = QtCore.pyqtSignal(int, float)
+    sig_new_phi_std_dev   = QtCore.pyqtSignal(int, float)
 
     def __init__(self, channel_id=1, parent=None):
         super().__init__(parent)
@@ -67,8 +68,8 @@ class ChannelGUI(QtWidgets.QWidget):
 
         self.chkAutorefresh.clicked.connect(self.probingSettingsChanged)
         self.comboRBW.currentTextChanged.connect(self.probingSettingsChanged)
-        self.comboPlotType.currentTextChanged.connect(self.probingSettingsChanged)
         self.comboPlotType.currentTextChanged.connect(self.populateRBWcombo)
+        self.comboPlotType.currentTextChanged.connect(self.probingSettingsChanged)
 
         self.chkLock.clicked.connect(self.chkLock_clicked)
 
@@ -86,6 +87,7 @@ class ChannelGUI(QtWidgets.QWidget):
             
         if d["type"] == "system":
             self.system_settings = dict(d)
+            self.fs = self.system_settings["fs"]
 
         if d["type"] == "lock" and d["channel_id"] == self.channel_id:
             if "mode" in d:
@@ -95,9 +97,6 @@ class ChannelGUI(QtWidgets.QWidget):
                     self.chkLock.setVisible(False)
             if "bLock" in d:
                 self.chkLock.setChecked(d["bLock"])
-
-    def systemSettingsUpdated(self, fs):
-        self.fs = fs
 
     def probingSettingsChanged(self):
         d = dict()
@@ -166,9 +165,9 @@ class ChannelGUI(QtWidgets.QWidget):
             # scale to input-refered amplitudes
             self.plotSpectrum(data/scale_factor_adc_to_input, self.plot_fs(), plot_type)
         elif plot_type == "Baseband spectrum":
-            self.plotSpectrum(data, self.plot_fs(), plot_type)
+            self.plotSpectrum(data/scale_factor_adc_to_input, self.plot_fs(), plot_type)
         elif plot_type == "Baseband timeseries":
-            self.plotADCTimeseries(data, self.plot_fs(), plot_type)
+            self.plotADCTimeseries(data/scale_factor_adc_to_input, self.plot_fs(), plot_type)
         elif plot_type == "IQ timeseries":
             # in this case, we don't do anything with the ADC data
             pass
@@ -189,9 +188,9 @@ class ChannelGUI(QtWidgets.QWidget):
 
         plot_type = self.comboPlotType.currentText()
         if plot_type == "IQ timeseries":
-            self.plotIQTimeseries(complex_baseband*scale_factor_adc_to_input, self.plot_fs(), plot_type) # this is adc-referred
+            self.plotIQTimeseries(complex_baseband, self.plot_fs(), plot_type) # this is adc-referred
         if plot_type == "IQ spectrum":
-            self.plotSpectrum(complex_baseband*scale_factor_adc_to_input, self.plot_fs(), plot_type)
+            self.plotSpectrum(complex_baseband, self.plot_fs(), plot_type)
 
     def newPhasePoint(self, phase_data):
         if phase_data is None:
@@ -229,13 +228,16 @@ class ChannelGUI(QtWidgets.QWidget):
 
     def plotIQTimeseries(self, data, fs, plot_type):
         time_axis = np.linspace(0, len(data)-1, len(data)) / fs
-        self.curve_spc.setData(time_axis, data.real)
+        self.curve_spc.setData(   time_axis, data.real)
         self.curve_filter.setData(time_axis, data.imag)
         self.plot_spc.setTitle('Time series')
         self.curve_filter.setVisible(True)
 
         self.plot_spc.setLabel('left', 'Baseband data [V]')
         self.plot_spc.setLabel('bottom', 'Time [s]')
+
+        phi = np.arctan2(data.imag, data.real)
+        self.sig_new_phi_std_dev.emit(self.channel_id, np.std(phi))
 
     def plotSpectrum(self, data, fs, plot_type):
         """ Data must contain ADC sample values scaled in volts """
@@ -254,22 +256,29 @@ class ChannelGUI(QtWidgets.QWidget):
         spc = np.fft.fft(data_windowed, N_fft)
         tictoc(self, "FFT")
 
-        spc = np.real(spc * np.conj(spc))/(np.sum(self.window_function)**2) # Scale from the modulus square of the FFT to the (double-sided) power spectra in Volts squared
+        # Scale from the modulus square of the FFT to the (single-sided) power spectra in mean Volts squared
+        spc = 2.*np.real(spc * np.conj(spc))/(np.sum(self.window_function)**2)
         impedance = 50 # ohms
-        spc = spc / impedance # now in double-sided PSD in Watts
-        spc = spc*2. # scale to single-sided power spectrum
+        spc = spc / impedance # now in power spectrum in Watts
         spc = 10*np.log10(spc + 1e-16) + 30 # now in dBm
         tictoc(self, "10log10 abs(FFT)**2")
         
         # Update the graph data:
-        frequency_axis_baseband = self.fftFrequencyAxis(N_fft, fs)
+        
         if plot_type in ["RF spectrum", "Baseband spectrum"]:
+            # Display 0 freq on the left, stop at Fs/2
+            frequency_axis_baseband = self.fftFrequencyAxis(N_fft, fs)
             last_index_shown = int(np.round(N_fft/2))
             frequency_axis_baseband = frequency_axis_baseband[:last_index_shown]
         else:
+            # Display -fs/2 to fs/2
+            frequency_axis_baseband = np.fft.fftfreq(N_fft, 1/fs)
+            frequency_axis_baseband = np.fft.fftshift(frequency_axis_baseband)
+            spc = np.fft.fftshift(spc)
             last_index_shown = len(spc)
         beat_sign = 1 if self.settings["upper_sideband"] else -1
         frequency_axis_rf = beat_sign * frequency_axis_baseband + self.settings["chosen_LO"]
+
         if plot_type == "RF spectrum":
             self.curve_spc.setData(frequency_axis_rf/1e6, spc[:last_index_shown])
             self.plot_spc.setLabel('bottom', 'RF Frequency [MHz]')
@@ -277,6 +286,7 @@ class ChannelGUI(QtWidgets.QWidget):
             self.curve_spc.setData(frequency_axis_baseband/1e6, spc[:last_index_shown])
             self.plot_spc.setLabel('bottom', 'Baseband Frequency [MHz]')
         elif plot_type == "IQ spectrum":
+
             self.curve_spc.setData(frequency_axis_baseband/1e6, spc[:last_index_shown])
             self.plot_spc.setLabel('bottom', 'Baseband Frequency [MHz]')
         tictoc(self, "setData")
@@ -287,24 +297,31 @@ class ChannelGUI(QtWidgets.QWidget):
         tictoc(self, "setTitle")
 
         f_ddc = self.settings["chosen_IF"]/fs
-        # self.updateFilterSpcDisplay(f_ddc, N_fft, frequency_axis_baseband, frequency_axis_rf, plot_type)
+        self.updateFilterSpcDisplay(f_ddc, N_fft, frequency_axis_baseband, frequency_axis_rf, plot_type)
 
     def updateFilterSpcDisplay(self, f_ddc, N_fft, f_axis_baseband, f_axis_rf, plot_type):
         lpf = self.settings["lpf"]
-        k_axis = np.linspace(0, len(lpf)-1, len(lpf))
-        lpf_shifted = np.multiply(lpf, np.exp(1j*2*np.pi*f_ddc*k_axis)) # inverse of the shift down in ddc_mixer.vhd
+        if plot_type == "IQ spectrum":
+            lpf_shifted = lpf
+        else:
+            k_axis = np.linspace(0, len(lpf)-1, len(lpf))
+            lpf_shifted = np.multiply(lpf, np.exp(1j*2*np.pi*f_ddc*k_axis)) # inverse of the shift down in ddc_mixer.vhd
+        
         spc = np.fft.fft(lpf_shifted, N_fft)
+        if plot_type == "IQ spectrum":
+            spc = np.fft.fftshift(spc)
         spc = spc[:len(f_axis_baseband)]
         spc = np.real(spc * np.conj(spc))
         spc = spc / np.max(spc)
         spc = 10*np.log10(spc + 1e-12)
+        valid_indices_logical = spc >= -70
 
         if plot_type == "RF spectrum":
-            self.curve_filter.setData(f_axis_rf/1e6, spc) # TODO: decide on the amplitude scaling!
+            self.curve_filter.setData(f_axis_rf[valid_indices_logical]/1e6, spc[valid_indices_logical]) # TODO: decide on the amplitude scaling!
         elif plot_type == "Baseband spectrum":
-            self.curve_filter.setData(f_axis_baseband/1e6, spc) # TODO: decide on the amplitude scaling!
+            self.curve_filter.setData(f_axis_baseband[valid_indices_logical]/1e6, spc[valid_indices_logical]) # TODO: decide on the amplitude scaling!
         elif plot_type == "IQ spectrum":
-            self.curve_filter.setData(f_axis_baseband/1e6, spc) # TODO: decide on the amplitude scaling!
+            self.curve_filter.setData(f_axis_baseband[valid_indices_logical]/1e6, spc[valid_indices_logical]) # TODO: decide on the amplitude scaling!
         self.curve_filter.setVisible(True)
 
     def fftFrequencyAxis(self, N_fft, fs):
@@ -343,14 +360,14 @@ class ChannelGUI(QtWidgets.QWidget):
 
     def updateAmplitudeDisplay(self, mean_amplitude):
         # input signal is A*cos(), baseband signal is A*exp(),
-        # mean_amplitude = A
-        # average power in input signal is thus A**2/2/Z
+        # mean_amplitude is measured from baseband signal, so mean_amplitude = A
+        # average power in input signal is thus A**2/2/Z = mean_amplitude**2/2/Z
         impedance = 50
         mean_power_W = mean_amplitude**2/2/impedance
         mean_power_dBm = 10*np.log10(mean_power_W * 1e3)
         if time.perf_counter() - self.last_amplitude_update >= 0.3: # limit updates so that the text is actually readable
             self.last_amplitude_update = time.perf_counter()
-            self.lblAmplitude_value.setText('% 05.1f dBm, %.0f mV'% (mean_power_dBm, 1e3*mean_amplitude))
+            self.lblAmplitude_value.setText('% 05.1f dBm, %.0f mVpp'% (mean_power_dBm, 1e3*mean_amplitude*2))
             self.sig_new_Amplitude.emit(self.channel_id, mean_power_dBm, mean_amplitude)
 
             color_name = getPowerColorName(mean_power_dBm)

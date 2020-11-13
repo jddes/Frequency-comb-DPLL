@@ -94,6 +94,8 @@ class MainWidget(QtWidgets.QMainWindow):
         # Connect signals to slots:
         self.connection_widget.btnConnect.clicked.connect(self.connect_clicked)
         self.config_widget.btnCommit.clicked.connect(self.commit)
+        self.config_widget.btnRunSelfTest.clicked.connect(self.runSelfTest)
+        self.config_widget.btnRunAmplitudeCal.clicked.connect(self.runAmplitudeCal)
         self.config_widget.sig_set_status.connect(self.setStatus)
         self.summary_tab_gui.sig_reset_phase.connect(self.reset_channel_phase)
 
@@ -142,13 +144,19 @@ class MainWidget(QtWidgets.QMainWindow):
         self.fasterTimer.start(5)
         self.fastTimer.start(20)
         self.slowTimer.start(100)
-        # self.debugTimer.start(3000)
+        # self.debugTimer.start(1000)
 
         self.show()
 
     def debugTimerEvent(self):
-        if self.config_widget.isEnabled():
-            self.config_widget.btnCommit.clicked.emit()
+        if not self.sl.dev.valid_socket:
+            return
+        # print("debugTimerEvent")
+        # (system_settings, channels_settings) = self.config_widget.readConfigFromGUI()
+        # self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
+        #                        bExternalClock=system_settings["adc_use_external_clock"])
+        # if self.config_widget.isEnabled():
+        #     self.config_widget.btnCommit.clicked.emit()
 
     def populateClosedLoopBW(self):
         (gain_combined, gain_fine, gain_coarse) = self.sl.getAllPossiblePgains()
@@ -161,6 +169,7 @@ class MainWidget(QtWidgets.QMainWindow):
         self.status_bar_fields["commit"]     = QtWidgets.QLabel('No config committed')
         self.status_bar_fields["clock"]      = QtWidgets.QLabel('')
         self.status_bar_fields["clock_loss"] = QtWidgets.QLabel('')
+        self.status_bar_fields["other"]      = QtWidgets.QLabel('')
         self.status_bar_fields["spacer"]     = QtWidgets.QLabel('')
         self.status_bar_fields["temp"]       = QtWidgets.QLabel('')
         self.status_bar_fields["config"]     = QtWidgets.QLabel('No config file selected')
@@ -278,6 +287,7 @@ class MainWidget(QtWidgets.QMainWindow):
 
     def pushSettingsToDevice(self, system_settings, channels_settings):
         """ Push settings to an already-connected device """
+        print("FIXME: don't send the clock settings again if they are not about to change?")
         self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
                                bExternalClock=system_settings["adc_use_external_clock"])
         self.sl.setDDSclockPLL(system_settings["ref_freq"])
@@ -291,35 +301,6 @@ class MainWidget(QtWidgets.QMainWindow):
 
             self.setup_controller(system_settings, channel_settings) # needs to happen after setDDSclockPLL()
         self.sl.commit_controller_settings()
-
-        # for testing only:
-        # self.sl.setAD9912enable((False, False, False, False))
-        # self.sl.setAD9912enable((True, True, True, True))
-        # self.sl.set_dds_limits(1, 0, 0)
-        # self.sl.set_dds_limits(2, 0, 0)
-        # self.sl.set_dds_limits(3, 0, 0)
-        # self.sl.set_dds_limits(4, 0, 0)
-
-        # SPI_wire_names = ["freq_updates",
-        #                   "DIO0_P_SDIO2",
-        #                   "DIO0_N_SDIO1",
-        #                   "DIO1_P_CSB",
-        #                   "DIO1_N_SCLK_P",
-        #                   "DIO2_P_SCLK_P",
-        #                   "DIO2_N_SCLK_N",
-        #                   "DIO4_P_SDIO3",
-        #                   "DIO4_N_CSB",
-        #                   "DIO6_P_SCLK_P",
-        #                   "DIO6_N_SCLK_N",
-        #                   "DIO7_P_SDIO4",
-        #                   "DIO7_N_CSB"]
-        # self.spi_debug_widget = checkboxes_collection_widget.CheckboxesCollectionWidget(SPI_wire_names)
-        # self.spi_debug_widget.sig_new_state.connect(self.sl.setAD9912enable)
-        # self.spi_debug_widget.setWindowTitle('SPI debug')
-        # self.spi_debug_widget.show()
-
-        # pprint.pprint(self.sl.user_inputs)
-        # pprint.pprint(self.sl.reg_values)
 
     def setup_controller(self, system_settings, channel_settings):
         if channel_settings["mode"] == "PLL":
@@ -336,6 +317,25 @@ class MainWidget(QtWidgets.QMainWindow):
                                      False)
 
         self.emit_lock_settings(channel_settings)
+
+    def runAmplitudeCal(self):
+        try:
+            (system_settings, channels_settings) = self.config_widget.readConfigFromGUI()
+        except (ValueError, SyntaxError):
+            return # don't commit anything since there is an invalid value somewhere
+        self.setStatus("other", "Running amplitude calibration routine...", 'warning')
+        amplitude_calibration(self, system_settings, channels_settings)
+        self.setStatus("other", "Amplitude calibration complete!", 'ok')
+
+
+    def runSelfTest(self):
+        self.self_test = HardwareSelfTest(self)
+        self.sig_phase_point.connect(self.self_test.newPhasePoint)
+        for GUI in self.channel_GUIs.values():
+            GUI.sig_new_Amplitude.connect(self.self_test.newAmplitude)
+            GUI.sig_new_SNR.connect(self.self_test.newSNR)
+            GUI.sig_new_phi_std_dev.connect(self.self_test.newPhaseStdDev)
+        self.self_test.start()
 
     def emit_system_settings(self):
         """ This is used to notify the channel GUIs of the system settings,
@@ -394,7 +394,7 @@ class MainWidget(QtWidgets.QMainWindow):
 
         # TODO: input validation vs actual range accessible?
         self.sl.set_expected_freq(k, c["expected_freq_MHz_str"], s["ref_freq_MHz_str"], c["mode"])
-        print("setup_LO: FIXME: Refactor where we handle setup_LO")
+        # print("setup_LO: FIXME: Refactor where we handle setup_LO")
         a = self.sl.set_adf4351_freq(out_freq_target, s["ref_freq"], s["pfd_target_freq"], k, c["LO_pwr"], c["LO_enable"])
         D = 2**a.reg["RF_DIVIDER_SEL"]
         INT = a.reg["INT"]
@@ -631,6 +631,194 @@ class MainWidget(QtWidgets.QMainWindow):
         for iq_channel_id in self.iq_channels_list:
             self.perChannelEmitters[iq_channel_id].sig_set_visible.emit(self.isChannelVisible(iq_channel_id))
 
+
+class HardwareSelfTest(QtCore.QObject):
+    """ Takes control of many GUI element to test phase-locking
+    at various different frequencies without user intervention. """
+    def __init__(self, main):
+        super().__init__()
+        self.main = main
+        self.state = "IDLE"
+        self.channel = 1
+        self.min_freq = 25e6
+        self.freq_step = 5e6
+        self.max_freq = 450e6
+        self.freq = self.min_freq-self.freq_step
+        self.pt_number = 0
+        self.results = list()
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.timerEvent)
+        self.start_time = time.perf_counter()
+
+        self.channels_list = self.main.iq_channels_list
+        # self.channels_list = [1] # for quicker testing
+
+    def start(self):
+        self.displayChannelTab()
+        self.timer.start(0.1)
+
+    def displayChannelTab(self):
+        """ Activates the correct display tab for the current channel under test """
+        self.main.tab_widget.setCurrentIndex(2 + self.channel)
+
+    def save_results(self):
+        header_str = "channel, freq [Hz], amplitude [dBm], phase_std_dev [rad], phase_mean [cycles], SNR [dB]\n"
+        # print([key for key in self.results[0]])
+        mac_address = self.main.sl.getHardwareDescription().get("mac", "").replace(":", "")
+
+        with open("selftest_results_%s.txt"% mac_address, "w") as f:
+            f.write(header_str)
+            for index, results in enumerate(self.results):
+                try:
+                    f.write('%d, %.3f, %.2f, %f, %f, %.2f\n' % tuple([results[key] for key in results]))
+                except TypeError:
+                    pass
+
+        print("Self-test took %.0f sec\n" % (time.perf_counter()-self.start_time))
+
+    def nextFreq(self):
+        """ Returns False if the test is over """
+        self.freq += self.freq_step
+        if self.freq >= self.max_freq:
+            self.freq = self.min_freq
+            self.channel += 1
+            if self.channel not in self.channels_list:
+                return False
+            else:
+                self.displayChannelTab()
+
+        self.setupLock(self.freq)
+
+        self.results.append(OrderedDict())
+        self.pt_number = len(self.results)-1
+        self.results[self.pt_number]["channel"]       = self.channel
+        self.results[self.pt_number]["freq"]          = self.freq
+        self.results[self.pt_number]["amplitude"]     = None
+        self.results[self.pt_number]["phase_std_dev"] = None
+        self.results[self.pt_number]["phase_mean"]    = None
+        self.results[self.pt_number]["SNR"]           = None
+
+        # if self.channel == 2:
+        #     return False
+
+        return True
+
+    def setupLock(self, freq):
+        # turn off all the other channels' DDSes
+        for channel in self.main.iq_channels_list:
+            adv_settings = self.main.config_widget.adv_per_channel[channel]
+            adv_settings.chkEnableDDS.setChecked(channel == self.channel)
+            adv_settings.spinDDSpower.setValue(0)
+
+        w = self.main.channel_GUIs[self.channel]
+        w.comboPlotType.setCurrentText("IQ timeseries")
+        w.comboRBW.setCurrentIndex(0) # grab as many pts as possible
+
+        w = self.main.config_widget.controller_widgets[self.channel]
+        w.editModulatorGain.setText('1')
+        w.comboModulatorSign.setCurrentText("Upshift")
+        w.editModulatorNominalFreq.setText('%.3f' % (freq/1e6))
+        w.editModulatorNominalFreq.editingFinished.emit()
+        w.chkLock.setChecked(False)
+
+        self.main.config_widget.btnCommit.clicked.emit()
+        time.sleep(0.1)
+        # if self.channel < 4:
+        # else:
+        #     # hack: channel 4 takes longer to get programmed since it is last. so we wait more before turning on the lock. avoids locking at non-zero phase offset
+        #     time.sleep(1)
+        # w.chkLock.setChecked(True)
+
+        # self.main.config_widget.btnCommit.clicked.emit()
+        self.main.updateLockState(self.channel, bLock=True)
+        time.sleep(0.1)
+        self.main.updateLockState(self.channel, bLock=False)
+        time.sleep(0.1)
+        self.main.updateLockState(self.channel, bLock=True)
+
+    def newAmplitude(self, channel_id, mean_power_dBm, mean_amplitude):
+        if self.state != "MEASURING":
+            return
+        if channel_id != self.channel:
+            return
+        if len(self.results) > self.pt_number:
+            self.results[self.pt_number]["amplitude"] = mean_power_dBm
+
+    def newSNR(self, channel_id, filtered_baseband_snr):
+        if self.state != "MEASURING":
+            return
+        if channel_id != self.channel:
+            return
+        if len(self.results) > self.pt_number:
+            self.results[self.pt_number]["SNR"] = filtered_baseband_snr
+
+    def newPhasePoint(self, phase_data):
+        if self.state != "MEASURING":
+            return
+        if len(self.results) > self.pt_number:
+            self.results[self.pt_number]["phase_mean"] = 2*np.pi*phase_data[self.channel]
+
+    def newPhaseStdDev(self, channel_id, phase_std_dev):
+        if self.state != "MEASURING":
+            return
+        if channel_id != self.channel:
+            return
+        if len(self.results) > self.pt_number:
+            self.results[self.pt_number]["phase_std_dev"] = phase_std_dev
+        else:
+            print("recvd phase std dev but len(self.results) > self.pt_number == False")
+
+    def have_all_results(self):
+        """ Returns True if all results have been collected for the current test frequency """
+        if len(self.results) <= self.pt_number:
+            return False
+        have_all_results = None not in self.results[self.pt_number].values()
+        # print("waiting for results: %s" % str([key for key, value in self.results[self.pt_number].items() if value is None]))
+        # if have_all_results:
+        #     print(self.results[self.pt_number])
+        return have_all_results
+
+    def timerEvent(self):
+        # print("timerEvent(): state = %s" % self.state)
+        next_state = self.state
+
+        if self.state == "IDLE":
+            next_state = "GOTO_NEXT_FREQ"
+
+        elif self.state == "GOTO_NEXT_FREQ":
+            if self.nextFreq() == False:
+                next_state = "DONE"
+            else:
+                next_state = "WAIT_FOR_SETTLING"
+                self.wait_until = time.perf_counter() + 1
+
+        elif self.state == "WAIT_FOR_SETTLING":
+            if time.perf_counter() >= self.wait_until:
+                next_state = "MEASURING"
+
+        elif self.state == "MEASURING":
+            if self.have_all_results():
+                next_state = "GOTO_NEXT_FREQ"
+
+        elif self.state == "DONE":
+            print("Test over")
+            self.save_results()
+            next_state = "DONE_IDLE"
+
+        elif self.state == "DONE_IDLE":
+            pass # stay forever
+
+        # print("timerEvent(): state = %s, next state = %s" % (self.state, next_state))
+        if self.state != "DONE_IDLE":
+            self.main.setStatus("other", "%s, ch%d, freq=%.1fMHz" % (self.state, self.channel, self.freq/1e6), "ok")
+        else:
+            self.main.setStatus("other", "SELF-TEST COMPLETE!", "ok")
+
+        if next_state != self.state:
+            # print("timerEvent(): next state = %s" % next_state)
+            self.state = next_state
+            self.timerEvent()
+
 class MyScrollArea(QtWidgets.QScrollArea):
     """ Just a normal scrollarea,
     except that we re-implement viewportSizeHint()
@@ -641,13 +829,19 @@ class MyScrollArea(QtWidgets.QScrollArea):
     def viewportSizeHint(self):
         return QtCore.QSize(1500, 600)
 
-def amplitude_calibration(main_widget):
+def amplitude_calibration(main_widget, system_settings, channels_settings):
     """ Measures received amplitude at various frequencies.
     Requires a Siglent SSA-3021X with tracking generator option,
     and prior calibration of said generator using amplitude_calibration.py """
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(1.0)
     s.connect(("192.168.2.17", 5025))
+
+    channel_id = 1
+    # turn off all the DDSes for this test:
+    for k in main_widget.iq_channels_list:
+        # main_widget.sl.setAD9912powerState(k, False)
+        channels_settings[k]["DDS_output_enable"] = False
 
     freq_axis = np.linspace(40e6, 2e9, 1000)
     # freq_axis = np.tile(freq_axis, 3)
@@ -658,15 +852,26 @@ def amplitude_calibration(main_widget):
         print("Setting freq = %f MHz" % (freq/1e6))
         s.sendall((':FREQ:CENT %.3f MHz\n' % (freq/1e6)).encode('ascii'))
 
-        d = dict()
-        d["channel_id"] = 1
-        d["expected_freq"] = freq
-        d["target_if"] = 20e6
-        d["upper_sideband"] = False
-        main_widget.setup_LO(d)
+        channels_settings[channel_id]["expected_freq_MHz_str"] = str(freq)
+        channels_settings[channel_id]["expected_freq"] = freq
+        main_widget.pushSettingsToDevice(system_settings, channels_settings)
+
+        # system_settings = {}
+        # system_settings["ref_freq"] = 10e6
+        # system_settings["ref_freq_MHz_str"] = "10e6"
+        # system_settings["pfd_target_freq"] = "10e6"
+        # channel_settings = {}
+        # channel_settings["channel_id"] = 1
+
+        # channel_settings["target_if"] = 20e6
+        # channel_settings["upper_sideband"] = False
+        # channel_settings["LO_pwr"] = '-4dBm'
+        # channel_settings["LO_enable"] = True
+        # channel_settings["mode"] = "PLL"
+        # main_widget.setup_LO(system_settings, channel_settings)
 
         time.sleep(200e-3)
-        (timestamp, complex_baseband) = main_widget.sl.getIQdata(d["channel_id"], int(1e3))
+        (timestamp, complex_baseband) = main_widget.sl.getIQdata(channel_id, int(1e3))
         mean_amplitude = np.mean(np.abs(complex_baseband))
         # input signal is A*cos(), baseband signal is A*exp(),
         # average power in input signal is thus A**2/2/Z
@@ -687,11 +892,6 @@ def main():
     # for testing when ran without a parent GUI
     app = QtWidgets.QApplication(sys.argv)
     main_widget = MainWidget()
-
-    if len(sys.argv) > 1 and sys.argv[1] == '-amplitude_calibration':
-        print("Running amplitude calibration...")
-        amplitude_calibration(main_widget)
-        print("Amplitude calibration complete! Data saved to disk.")
     
     app.exec_()
 

@@ -7,6 +7,10 @@ import numpy as np
 # with a coax doing the loopback between the TG Source and RF input ports,
 # then the user moves the coax from the spectrum analyzer's RF input to the frequency counter's input
 # and we redo the sweep, measuring the amplitude through the ADC data
+#
+# Manual settings that need to be entered in the device/set up:
+# TG on, 0 dBm output, add 3 dB of padding on each end of the cable,
+# BW auto, zero span, cont peak, sweep time auto, sweep single
 
 def getline(s):
     result = s.recv(1)
@@ -32,7 +36,7 @@ amplitude = 0*freq_axis
 for index, freq in enumerate(freq_axis):
     print("Setting freq = %f MHz" % (freq/1e6))
     send(s, ':FREQ:CENT %.3f MHz\n' % (freq/1e6))
-    time.sleep(100e-3)
+    time.sleep(200e-3)
     send(s, ':INIT:IMM\n')
     send(s, ':CALC:MARK:Y?\n')
     try:

@@ -230,8 +230,8 @@ class RP_PLL_device():
 
     def read_Zynq_buffer_int16(self, number_of_points):
         if number_of_points > self.MAX_SAMPLES_READ_BUFFER:
+            print("number of points clamped to %d. (was %d)" % (self.MAX_SAMPLES_READ_BUFFER, number_of_points))
             number_of_points = self.MAX_SAMPLES_READ_BUFFER
-            print("number of points clamped to %d." % number_of_points)
 
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points) # address is ignored by monitor-tcp.c
         self.send(packet_to_send)

@@ -23,6 +23,9 @@ class ControllerSettingsWidget(QtWidgets.QWidget):
     def setupUi(self):
         uic.loadUi("controller_settings_widget.ui", self)
         self.comboMode.currentIndexChanged.connect(self.comboMode_currentIndexChanged)
+        # unimplemented features:
+        self.lblDetectedModulatorGain.setVisible(False)
+        self.label_4.setVisible(False)
 
     def populateClosedLoopBW(self, list_of_BW):
         self.comboTargetBW.clear()
