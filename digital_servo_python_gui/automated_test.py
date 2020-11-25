@@ -65,9 +65,9 @@ class TestController():
         self.scope.disconnect()
 
     def printStartupMessage(self):
-        print("Welcome. Please set the scope to 120 kPoints, 500 usecs/div")
+        print("Welcome. Please make sure the scope is set to 120 kPoints, 500 usecs/div")
         print("Channel 1: Scale: 50 mV/div, DC offset: -150mV")
-        input("Press enter to continue...")
+        # input("Press enter to continue...")
 
     def setupScopeForDC(self):
         for k in [2, 3, 4]:
@@ -278,10 +278,12 @@ class TestController():
         # input("before setupScopeTimebase(10e-9): hit enter to continue")
         self.setupScopeTimebase(10e-9) # should yield 1 GS/s. DOES NOT WORK, SO MUST DO IT MANUALLY
         # input("before setupScopeTimebase(10e-9): hit enter to continue")
-        print("Please setup scope to validate phase lock state or not (20 MHz + 200 MHz superposed)")
-        print("Horizontal scale needs to be manually adjusted to hit 1 GS/s")
-        input("Current state should be non phase-locked. Hit enter to continue")
+        print("Scope should now be set up to validate phase lock state or not (10 MHz + 200 MHz superposed)")
+        print("Sampling rate should be 1 GS/s")
+        print("Current state should be NON-PHASE-LOCKED.")
+        # input("Current state should be non phase-locked.")
         self.quantifyPhaseLock(expected_phase_lock=False)
+        print("Current state should be now be PHASE-LOCKED.")
         self.setExtClkMode(True)
         self.quantifyPhaseLock(expected_phase_lock=True)
 
