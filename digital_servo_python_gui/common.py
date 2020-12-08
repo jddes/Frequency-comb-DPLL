@@ -75,7 +75,7 @@ def getSNRcolorName(SNR):
 def getPowerColorName(mean_power_dBm):
     if mean_power_dBm <= -40:
         return 'bad'
-    elif mean_power_dBm <= -20:
+    elif mean_power_dBm <= -30:
         return 'warning'
     else:
         return 'ok'

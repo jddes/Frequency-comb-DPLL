@@ -55,7 +55,7 @@ class SummaryTab(QtWidgets.QWidget):
         w.setText('% 05.1f dBm' % mean_power_dBm)
         colorCoding(w, getPowerColorName(mean_power_dBm))
 
-    def newSNR(self, channel_id, filtered_baseband_snr):
+    def newSNR(self, channel_id, filtered_baseband_snr, unfiltered_snr):
         w = self.channel_widgets["lblSNR"][channel_id]
         w.setText('%.1f dB' % filtered_baseband_snr)
         colorCoding(w, getSNRcolorName(filtered_baseband_snr))

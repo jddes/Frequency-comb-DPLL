@@ -50,6 +50,7 @@ class MainWidget(QtWidgets.QMainWindow):
         self.tictoc_last = time.perf_counter()
         self.config = dict()
         self.current_tab = 0
+        self.have_printed_once = dict()
 
         self.iq_channels_list = list(range(1, 1+4)) # number of channels is set by the hardware, we label everything starting from 1 to avoid confusion wrt to the GUI
         self.adc_channels_list = list(range(1, 1+2)) # number of channels is set by the hardware, we label everything starting from 1 to avoid confusion wrt to the GUI
@@ -287,7 +288,9 @@ class MainWidget(QtWidgets.QMainWindow):
 
     def pushSettingsToDevice(self, system_settings, channels_settings):
         """ Push settings to an already-connected device """
-        print("FIXME: don't send the clock settings again if they are not about to change?")
+        if self.have_printed_once.get("changing settings", False):
+            print("FIXME: make sure that changing settings for one channel doesn't upset the other ones, for example by updating the ADC's PLL even if the settings didn't actually change")
+            self.have_printed_once["changing settings"] = True
         self.sl.setADCclockPLL(         f_ref=system_settings["ref_freq"],
                                bExternalClock=system_settings["adc_use_external_clock"])
         self.sl.setDDSclockPLL(system_settings["ref_freq"])
@@ -642,6 +645,7 @@ class HardwareSelfTest(QtCore.QObject):
         self.channel = 1
         self.min_freq = 25e6
         self.freq_step = 5e6
+        # self.max_freq = 100e6
         self.max_freq = 450e6
         self.freq = self.min_freq-self.freq_step
         self.pt_number = 0
@@ -744,19 +748,19 @@ class HardwareSelfTest(QtCore.QObject):
         if len(self.results) > self.pt_number:
             self.results[self.pt_number]["amplitude"] = mean_power_dBm
 
-    def newSNR(self, channel_id, filtered_baseband_snr):
+    def newSNR(self, channel_id, filtered_baseband_snr, unfiltered_snr):
         if self.state != "MEASURING":
             return
         if channel_id != self.channel:
             return
         if len(self.results) > self.pt_number:
-            self.results[self.pt_number]["SNR"] = filtered_baseband_snr
+            self.results[self.pt_number]["SNR"] = unfiltered_snr
 
     def newPhasePoint(self, phase_data):
         if self.state != "MEASURING":
             return
         if len(self.results) > self.pt_number:
-            self.results[self.pt_number]["phase_mean"] = 2*np.pi*phase_data[self.channel]
+            self.results[self.pt_number]["phase_mean"] = phase_data[self.channel]
 
     def newPhaseStdDev(self, channel_id, phase_std_dev):
         if self.state != "MEASURING":
@@ -776,6 +780,11 @@ class HardwareSelfTest(QtCore.QObject):
         # print("waiting for results: %s" % str([key for key, value in self.results[self.pt_number].items() if value is None]))
         # if have_all_results:
         #     print(self.results[self.pt_number])
+        phase_threshold = 0.2 # [rad]
+        if have_all_results and self.results[self.pt_number]["phase_std_dev"] > phase_threshold:
+            # pause the test if we have a huge spike in phase noise
+            print("Pausing test because phase std dev is higher than threshold (%f rad>%f rad)" % (self.results[self.pt_number]["phase_std_dev"], phase_threshold))
+            have_all_results = False
         return have_all_results
 
     def timerEvent(self):

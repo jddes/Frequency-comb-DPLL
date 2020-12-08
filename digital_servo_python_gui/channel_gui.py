@@ -22,7 +22,7 @@ class ChannelGUI(QtWidgets.QWidget):
     sig_update_lock_state = QtCore.pyqtSignal(int, bool)
     # these signals will be connected to the summary tab:
     sig_new_Amplitude     = QtCore.pyqtSignal(int, float, float)
-    sig_new_SNR           = QtCore.pyqtSignal(int, float)
+    sig_new_SNR           = QtCore.pyqtSignal(int, float, float)
     sig_new_phi_std_dev   = QtCore.pyqtSignal(int, float)
 
     def __init__(self, channel_id=1, parent=None):
@@ -395,7 +395,7 @@ class ChannelGUI(QtWidgets.QWidget):
             print("Error 'nan' in filtered_baseband_snr")
 
         self.lblSNR_value.setText('%.2f dB in %.0f MHz' % (self.filtered_baseband_snr, self.getFrontendFilterBW()/1e6))
-        self.sig_new_SNR.emit(self.channel_id, self.filtered_baseband_snr)
+        self.sig_new_SNR.emit(self.channel_id, self.filtered_baseband_snr, baseband_snr)
 
         color_name = getSNRcolorName(self.filtered_baseband_snr)
         colorCoding(self.lblSNR_value, color_name)
