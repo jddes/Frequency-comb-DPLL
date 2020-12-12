@@ -13,8 +13,8 @@ Getting started
 
 Software versions
 ---------------------------
-Required Python distribution is WinPython-64bit-2.7.10.3.
-The FPGA Vivado project was compiled in Vivado 2015.4.
+Required Python distribution is WinPython-64bit-3.7.2 (https://sourceforge.net/projects/winpython/files/WinPython_3.7/3.7.2.0/).
+The FPGA Vivado project was compiled in Vivado 2015.4, but simply using the software doesn't require installing Vivado.
 
 
 Additional information
