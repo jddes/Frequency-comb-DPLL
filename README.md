@@ -25,6 +25,6 @@ Some other information is included in the slides for the CLEO 2017 presentation 
 
 Disclaimer
 ---------------------------
-This is not a commercial product, this is a research tool so there are some “rough edges” and limited documentation, if you need support you can contact me at (jean-daniel.deschenes@gel.ulaval.ca) – although I cannot guarantee that I will answer quickly all the questions, but I will do my best to do so.
+This is not a commercial product, this is a research tool so there are some “rough edges” and limited documentation, if you need support you can contact me at (octosigconsulting at gmail.com) – although I cannot guarantee that I will answer quickly all the questions, but I will do my best to do so.
 This software was built starting from two existing code bases: the NIST digital control box software for most of the FPGA firmware and all the Python code, and a part of the Red Pitaya software for the Zynq embedded software and FPGA firmware.  Both the NIST and the Red Pitaya code were released in the public domain with a specific license, both placed in the subfolder "Licenses".
 
