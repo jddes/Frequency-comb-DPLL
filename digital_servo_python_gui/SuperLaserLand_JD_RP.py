@@ -2018,20 +2018,6 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC, reg1)
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC_DUTY, reg2)
 
-
-	# clock select register. 0 = internal, 1 = external
-	def setClockSelector(self, bExternalClock=0):
-		# in the actual register, 1 means internal clock, 0 means external
-		reg = int(not bExternalClock)
-		print("setClockSelector: bExternalClock=%d. writing 0x%x (decimal %d) to 0x%x" % (bExternalClock, reg, reg, self.clk_sel_base_addr))
-		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg)
-
-	def read_clk_select(self):
-		# in the actual register, 1 means internal clock, 0 means external
-		reg = self.dev.read_Zynq_register_32bits(self.clk_sel_base_addr)		
-		self.clk_select = (not reg)
-		return self.clk_select
-
 	# f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode)
 	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
 		DIVCLK_DIVIDE = 1
@@ -2069,11 +2055,41 @@ class SuperLaserLand_JD_RP:
 		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
 		self.fs = f_source * CLKFBOUT_MULT/CLKOUT0_DIVIDE
+		self.bExternalClock = bExternalClock
+		# print("setADCclockPLL():\nDIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock = ", DIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock)
+		# print("setADCclockPLL():\nself.fs = ", self.fs)
 		time.sleep(0.1)
 		reg_clk_sel_and_reset = int(not bExternalClock) | (0<<1) # de-assert reset on the incoming ADC clock
 		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
 		
 		self.resetFrontend() # all clocks should now be stable, reset everything else
+
+	def readADCclockSettings(self, f_external):
+		""" Reads the current frequency ratio set by the PLL and updates self.fs accordingly """
+		# Clock configuration register 0 (table 4-2 in PG065)
+		# reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
+		# reg |= (CLKFBOUT_MULT & ((1<<8)-1)) << 8
+		reg = self.dev.read_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x200)
+		DIVCLK_DIVIDE = (reg>>0) & ((1<<8)-1)
+		CLKFBOUT_MULT = (reg>>8) & ((1<<8)-1)
+		# Clock configuration register 2 (table 4-2 in PG065)
+		reg = self.dev.read_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x208)
+		# reg = (CLKOUT0_DIVIDE & ((1<<8)-1)) << 0
+		CLKOUT0_DIVIDE = reg & ((1<<8)-1)
+
+		# reg_clk_sel_and_reset = int(not bExternalClock) | (0<<1) # de-assert reset on the incoming ADC clock
+		reg_clk_sel_and_reset = self.dev.read_Zynq_AXI_register_uint32(self.clk_sel_base_addr)
+		self.bExternalClock = not (reg_clk_sel_and_reset & 0x1)
+
+		if self.bExternalClock:
+			f_source = f_external
+		else:
+			f_source = 200e6
+
+		self.fs = f_source * CLKFBOUT_MULT/CLKOUT0_DIVIDE
+		# print("readADCclockRate():\nDIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock = ", DIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, self.bExternalClock)
+		# print("readADCclockRate():\nself.fs = ", self.fs)
+
 
 	# xadc_channel can be [0, 15]
 	def readZynqXADC(self, xadc_channel=0):
