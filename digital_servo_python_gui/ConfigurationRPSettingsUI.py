@@ -32,6 +32,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 		self.setObjectName('MainWindow')
 		self.setStyleSheet(custom_style_sheet)
 		self.custom_shorthand = custom_shorthand
+		self.f_ext = 10e6 # TODO: make this configurable from the gui and xml file
 
 		self.controller = weakref.proxy(controller) #link to the top class
 
@@ -133,11 +134,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			self.qradio_pll1_to_pll2.setChecked(True)
 		
 		# clock source
-		clk_select = self.sl.read_clk_select()
-		if clk_select > 0:
-			self.qradio_internal_clk.setChecked(True)
-		else:
+		self.sl.readADCclockSettings(f_external=self.f_ext)
+		if self.sl.bExternalClock:
 			self.qradio_external_clk.setChecked(True)
+		else:
+			self.qradio_internal_clk.setChecked(True)
 
 
 		self.startTimers()
@@ -423,21 +424,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
 			# Valid VCO range is 600 MHz-1600 MHz according to DS181
 
 			# For 200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-			f_ext          = 200e6
 			CLKFBOUT_MULT  = 5
 			CLKOUT0_DIVIDE = 8
 
 			# # For 10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
-			# f_ext          = 10e6
 			# CLKFBOUT_MULT  = 62
 			# CLKOUT0_DIVIDE = 5
+			# For self.f_ext=10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
 
-			# # For 25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-			# f_ext          = 25e6
 			# CLKFBOUT_MULT  = 40
 			# CLKOUT0_DIVIDE = 8
 
-			self.sl.setADCclockPLL(f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+			self.sl.setADCclockPLL(self.f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
 		else:
 			# For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
