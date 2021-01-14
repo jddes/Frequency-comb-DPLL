@@ -104,7 +104,6 @@ class SpectrumWidget(QtGui.QWidget):
                 self.qlabel_dac_current[k] = Qt.QLabel('Output\nDAC %d [V]' % k)
                 self.qlabel_dac_current[k].setAlignment(Qt.Qt.AlignHCenter)
                 
-                self.qthermo_dac_current[k] = ThermometerWidget()#Qwt.QwtThermo()
                 #self.qthermo_dac_current[k].setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
                 self.qthermo_dac_current[k].setValue(0)
                 #self.qthermo_dac_current[k].setFillBrush(Qt.QBrush(Qt.QColor(0, 186, 52)))
