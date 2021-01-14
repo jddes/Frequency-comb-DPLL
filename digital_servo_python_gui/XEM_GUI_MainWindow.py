@@ -165,6 +165,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def getValues(self):
 		self.bFirstTimeLockCheckBoxClicked = False
 		self.getVCOGain()
+		self.spectrum.update_dac_thermo_scales()
 		self.spectrum.getDACoffset()
 		self.getVCOFreq()
 
@@ -194,6 +195,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.timerIDDither = Qt.QTimer(self)
 		self.timerIDDither.timeout.connect(self.timerDitherEvent)
 		self.startTimers()
+		self.spectrum.update_dac_thermo_scales()
 		self.displayDAC()   # This populates the current DAC values with the actual value
 
 	def killTimers(self):

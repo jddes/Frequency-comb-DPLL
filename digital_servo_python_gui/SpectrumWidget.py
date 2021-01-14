@@ -96,16 +96,16 @@ class SpectrumWidget(QtGui.QWidget):
         self.q_dac_offset             = {}
         self.qlabel_dac_offset_value  = {}
         
-        
-        for k in range(3):
+        self.N_dacs = 3
+        self.qthermo_dac_current = [ThermometerWidget() for k in range(self.N_dacs)]
+        self.update_dac_thermo_scales()
+        for k in range(self.N_dacs):
             if self.output_controls[k] == True:
                 self.qlabel_dac_current[k] = Qt.QLabel('Output\nDAC %d [V]' % k)
                 self.qlabel_dac_current[k].setAlignment(Qt.Qt.AlignHCenter)
                 
                 self.qthermo_dac_current[k] = ThermometerWidget()#Qwt.QwtThermo()
                 #self.qthermo_dac_current[k].setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
-                self.qthermo_dac_current[k].setRange(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
-                self.qthermo_dac_current[k].setScale(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
                 self.qthermo_dac_current[k].setValue(0)
                 #self.qthermo_dac_current[k].setFillBrush(Qt.QBrush(Qt.QColor(0, 186, 52)))
                 self.qthermo_dac_current[k].setFillColor(Qt.QColor(0, 186, 52))
@@ -281,6 +281,12 @@ class SpectrumWidget(QtGui.QWidget):
         vbox.addWidget(self.qgroupbox_diagnostics)
         self.setLayout(vbox)
 
+    def update_dac_thermo_scales(self):
+        print("SpectrumWidget:: setting thermometer widget range")
+        for k in range(self.N_dacs):
+            if self.output_controls[k]:
+                self.qthermo_dac_current[k].setRange(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
+                self.qthermo_dac_current[k].setScale(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
 
     def setDacOffset(self, k, slider_units):
         self.q_dac_offset[k].blockSignals(True)

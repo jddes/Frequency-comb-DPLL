@@ -1122,7 +1122,7 @@ class SuperLaserLand_JD_RP:
 	
 	def set_dac_limits(self, dac_number, limit_low, limit_high, bSendToFPGA = True):
 		if self.bVerbose == True:
-			print('set_dac_limits')
+			print('set_dac_limits: %d, %d, %d' % (dac_number, limit_low, limit_high))
 			
 		if self.bCommunicationLogging == True:
 			self.log_file.write('set_dac_limits()\n')

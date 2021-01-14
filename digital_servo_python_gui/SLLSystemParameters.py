@@ -100,7 +100,6 @@ class SLLSystemParameters():
         limit_low = float(self.getValue('Output_limits_low', 'DAC1'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC1'))    # the limit is in volts
         sl.set_dac_limits(1, sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high))
-        # print('low = %d, high = %d' % (sl.convertDACVoltsToCounts(1, limit_low), sl.convertDACVoltsToCounts(1, limit_high)))
         limit_low = float(self.getValue('Output_limits_low', 'DAC2'))    # the limit is in volts
         limit_high = float(self.getValue('Output_limits_high', 'DAC2'))    # the limit is in volts
         sl.set_dac_limits(2, sl.convertDACVoltsToCounts(2, limit_low), sl.convertDACVoltsToCounts(2, limit_high))
