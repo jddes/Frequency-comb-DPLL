@@ -10,35 +10,38 @@ def make_sure_path_exists(path):
         if exception.errno != errno.EEXIST:
             raise
 
+def test_findMostLikelyLANBroadcastIPAddress():
+    ipv4Addresses = ["192.168.2.10", "192.168.1.10", "10.1.1.25"]
+    assert(findMostLikelyLANBroadcastIPAddress_inner(ipv4Addresses) == "192.168.1.255")
+
 def findMostLikelyLANBroadcastIPAddress():
     """ list all possible IPv4 addresses and choose the most likely candidate for the subnet on which the red pitaya is
     heuristics used:
        -choose the subnet that has the lowest third byte: eg if there are both 192.168.1.10 and 192.168.2.10, chooose 129.168.1.10 as the correct one
        -prefer if the address starts with 192.168 (not actually implemented yet)
     """
-    addrCandidate = '192.168.0.255'
-
     listAddr = socket.getaddrinfo(socket.gethostname(), None)
-    min_third_byte = 255
+    ipv4Addresses = [sockaddr[0] for (family, _, _, _, sockaddr) in listAddr if family == socket.AF_INET]
+    findMostLikelyLANBroadcastIPAddress_inner(listAddr)
 
-    try:
-        listAddr = socket.getaddrinfo(socket.gethostname(), None)
-        min_third_byte = 255
+def findMostLikelyLANBroadcastIPAddress_inner(ipv4Addresses):
 
-        for addr_tuple in listAddr:
-            (family, _, _, _, sockaddr) = addr_tuple
-            if family == socket.AF_INET:
-                # this is IPv4
-                print('IP candidate: %s' % sockaddr[0])
-                third_byte = int(sockaddr[0].split('.')[2])
-                if third_byte <= min_third_byte:
-                    min_third_byte = third_byte
-                    addrCandidate = sockaddr[0]
-        print('Chosen local IP: %s' % addrCandidate)
+    # move addresses that start with 192.168.x.y at the top of the list:
+    priorityList    = [ip for ip in ipv4Addresses if ip.startswith('192.168')]
+    nonPriorityList = [ip for ip in ipv4Addresses if not ip.startswith('192.168')]
 
-    except:
-        print("findMostLikelyLANBroadcastIPAddress():Exception trying to find correct broadcast automatically.")
-        #pass
+    # sort according to third byte's value:
+    third_bytes_value = lambda x: int(x.split('.')[2])
+    priorityList.sort(   key = third_bytes_value)
+    nonPriorityList.sort(key = third_bytes_value)
+    fullList = priorityList + nonPriorityList
+
+    for ip in fullList:
+        print('IP candidate: %s' % ip)
+
+    addrCandidate = fullList[0]
+    print('Chosen local IP: %s' % addrCandidate)
+
 
     # Take this machine's IP address and transform into broadcast address for the whole subnet (change last byte to 255)
     addrSplit = addrCandidate.split('.')
@@ -48,3 +51,6 @@ def findMostLikelyLANBroadcastIPAddress():
     print('Chosen broadcast IP: %s' % strBroadCastAddress)
 
     return strBroadCastAddress
+
+if __name__ == '__main__':
+    test_findMostLikelyLANBroadcastIPAddress()
