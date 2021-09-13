@@ -104,7 +104,8 @@ class TestController():
         self.testOutputs()
         self.testAnalogInputs()
         self.testDinInput()
-        self.testExtClkInput()
+        # self.testExtClkInput()
+        print("FIXME: SKIPPING EXT CLK INPUT. MUST BE DONE MANUALLY.")
         self.testManualReadings()
         # self.testDigitalOutputs() # this is now included in the testOutputs()
         self.write_to_report({"test_name": "Test stop information"})
@@ -219,18 +220,29 @@ class TestController():
         self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=dac_number,
             output_amplitude=0.99, bEnable=True, bSquareWave=False)
 
+        print("vna as synth setup done")
+
         time.sleep(self.delays['freq_counter_settling'])
+
+        start_time = time.perf_counter()
 
         results = dict()
         results["test_name"] = "testDinInput"
         count = 0
-        while count < 5:
+        elapsed = lambda: time.perf_counter()-start_time
+        timeout = 30
+        expected_counts = 5
+        while count < expected_counts and elapsed() < timeout:
+            print("about to call getDin1Freq()")
             freq = self.sl.getDin1Freq()
+            print("freq = ", freq)
             if freq is None:
                 continue
             count += 1
             results["DIN1_freq_%02d [Hz]" % count] = freq
 
+        if count < expected_counts:
+            print("ERROR: expected %d valid counts, but only received %d after %f sec timeout." % (expected_counts, count, timeout))
         print(results)
         self.write_to_report(results)
 
@@ -305,6 +317,13 @@ class TestController():
 
         self.print_line()
 
+    # def skipExtClkInput(self):
+    #     results = dict()
+    #     results["test_name"] = "testExtClkInput"
+    #     response = 'SKIP'
+    #     results["phase-locked?"] = response
+
+    #     self.write_to_report(results)
 
     def testOutputs(self):
         print("\n")
@@ -424,7 +443,7 @@ def main():
         html_report.print_html_report(header, r, html_report_file)
         html_report.generate_plot_images(t.report.reportFolder)
 
-        # print(html_report_file)
+        print(html_report_file)
         # os.system('start "' + html_report_file + '"')
         # subprocess.run(['start', html_report_file])
 

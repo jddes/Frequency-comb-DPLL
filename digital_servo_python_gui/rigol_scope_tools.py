@@ -70,7 +70,7 @@ class RigolScope:
     #    -router's DHCP table
     #    -from instrument (Utility menu)
     # MAC address is 00-19-AF-35-59-68 (shows up as "Appareil inconnu" in Bell's router's DHCP table)
-    def connect(self, strIPAddress = '192.168.2.22', port_number = 5555):
+    def connect(self, strIPAddress = '192.168.2.29', port_number = 5555):
         self.strIPAddress = strIPAddress
         self.port_number = port_number
 
