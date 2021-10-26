@@ -1836,8 +1836,8 @@ class SuperLaserLand_JD_RP:
 	# This mux selects the source of the error signal to the loop filter of channel 2.
 	# This makes it possible to select:
 	# register_value = 0: the output of DDC2 (the normal, 2 independent channels operation)
-	# register_value = 1: the output of DDC1 (allows two different loop filter settings being applied to the same error signal)
-	# register_value = 2: the output of the channel 1's loop filter, to allow locking the same beat note with two actuators
+	# register_value = 1: phase/frequency output of (DDC2-DDC1) (allows locking the phase difference between the channels)
+	# register_value = 2: phase/frequency output of (DDC2+DDC1) (allows locking the sum of the phase of both channels)
 	def set_mux_pll2(self, register_value):
 		if self.bVerbose == True:
 			print('set_mux_pll2')

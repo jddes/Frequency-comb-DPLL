@@ -249,18 +249,15 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.qgroupbox_MUX_pll2.setAutoFillBackground(True)
         MUX_pll2 = Qt.QGridLayout()
 
-        self.qradio_ddc1_to_pll2 = Qt.QRadioButton('DDC_a output to PLL_b input')
-        self.qradio_pll1_to_pll2 = Qt.QRadioButton('DAC_a output to PLL_b input (cascade lock)')
-        self.qradio_ddc2_to_pll2 = Qt.QRadioButton('DDC_b output to PLL_b input')
-        self.qradio_ddc2_to_pll2.setChecked(True)
-        self.qradio_pll1_to_pll2.clicked.connect(self.mux_pll2_Action)
-        self.qradio_ddc1_to_pll2.clicked.connect(self.mux_pll2_Action)
-        self.qradio_ddc2_to_pll2.clicked.connect(self.mux_pll2_Action)
+        self.qradio_pll2_mux = [Qt.QRadioButton('DDC_b output to PLL_b input (two independent locks)'),
+                                Qt.QRadioButton('DDC_b-DDC_a to PLL_b input (locks the phase difference)'),
+                                Qt.QRadioButton('DDC_b+DDC_a to PLL_b input (locks the sum of the phases)')]
+        self.qradio_pll2_mux[0].setChecked(True)
+        for row, widget in enumerate(self.qradio_pll2_mux):
+            widget.clicked.connect(self.mux_pll2_Action)
+            MUX_pll2.addWidget(widget, row, 0)
 
-        MUX_pll2.addWidget(self.qradio_ddc1_to_pll2,     0, 0)
-        MUX_pll2.addWidget(self.qradio_pll1_to_pll2,     1, 0)
-        MUX_pll2.addWidget(self.qradio_ddc2_to_pll2,     2, 0)
-        MUX_pll2.setRowStretch(2, 0)
+        MUX_pll2.setRowStretch(len(self.qradio_pll2_mux), 1)
 
         self.qgroupbox_MUX_pll2.setLayout(MUX_pll2)
 
@@ -487,13 +484,18 @@ class ConfigRPSettingsUI(Qt.QWidget):
       
     @logCommsErrorsAndBreakoutOfFunction()
     def mux_pll2_Action(self, checked=False):
-        if self.qradio_ddc1_to_pll2.isChecked():
-            data = 1
-        elif self.qradio_pll1_to_pll2.isChecked():
-            data = 2
-        else: #self.qradio_ddc2_to_pll2.isChecked()
-            data = 0
-        self.sl.set_mux_pll2(data)
+        """ This mux selects the source of the error signal to the loop filter of channel 2.
+        This makes it possible to select:
+        register_value = 0: the output of DDC2 (the normal, 2 independent channels operation)
+        register_value = 1: phase/frequency output of (DDC2-DDC1) (allows locking the phase difference between the channels)
+        register_value = 2: phase/frequency output of (DDC2+DDC1) (allows locking the sum of the phase of both channels) """
+        num_checked = 0
+        for row, widget in enumerate(self.qradio_pll2_mux):
+            if widget.isChecked():
+                self.sl.set_mux_pll2(row)
+                num_checked = num_checked + 1
+
+        assert(num_checked == 1, 'Error in code that converts the GUI settings to mux value')
 
 
     

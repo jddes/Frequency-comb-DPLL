@@ -765,12 +765,17 @@ parallel_bus_register_mux_pll1  (
  .update_flag                   (                           )
 );
 
+reg [9:0] inst_frequency_difference;
+reg [9:0] inst_frequency_sum;
+always @(posedge clk1) inst_frequency_difference <= DDC1_output - inst_frequency0;
+always @(posedge clk1) inst_frequency_sum        <= DDC1_output + inst_frequency0;
+
 multiplexer_3to1_async loop_filters_1_mux (
  .clk                               (clk1                       ),
  .selector_mux                      (loop_filter_1_mux_selector ),
  .in0_mux                           (DDC1_output                ), 
- .in1_mux                           (inst_frequency0            ),
- .in2_mux                           (pll0_output >> 5           ), //pll0_output is 15 bits and in2_mux is 10 bits
+ .in1_mux                           (inst_frequency_difference  ),
+ .in2_mux                           (inst_frequency_sum         ),
  .out_mux                           (inst_frequency1            )
 );
 
