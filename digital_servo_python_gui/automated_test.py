@@ -112,7 +112,7 @@ class TestController():
         self.sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
         self.gui = TestGUIController(self.sl)
         self.scope = self.initScope()
-        self.mux = mux_board.MuxBoard('COM8')
+        self.mux = mux_board.MuxBoard('COM4')
         self.report = text_report.TextReport(mac_address=self.gui.mac_address)
 
     def setupRP(self):
@@ -403,7 +403,7 @@ class TestController():
 
 def main():
     if len(sys.argv) > 1:
-        # testing only, without running any actual test:
+        # testing the test code only, without running any actual test:
         class t():
             pass
         obj = t()
@@ -417,15 +417,17 @@ def main():
         html_report.print_html_report(header, r, r"I:\Data\RP_test_reports\002632f087c6__2020-11-05__01_55_54\report.html")
 
     else:
+        # run the actual tests:
         t = TestController()
         header, r = html_report.generate_simple_report(t.report.items)
         html_report_file = os.path.join(t.report.reportFolder, "report.html")
         html_report.print_html_report(header, r, html_report_file)
         html_report.generate_plot_images(t.report.reportFolder)
 
-        # print(html_report_file)
+        print(html_report_file)
         # os.system('start "' + html_report_file + '"')
         # subprocess.run(['start', html_report_file])
+        os.startfile(html_report_file)
 
 if __name__ == '__main__':
     main()

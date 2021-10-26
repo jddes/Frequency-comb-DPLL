@@ -278,7 +278,11 @@ def extclk_plots(folder):
 
         lpf = np.ones(N_filter)
         data_smallf = signal.filtfilt(lpf, 1, data_small)
-        index_zerocrossing = np.where(np.diff(data_smallf >= 0)==1)[0][0]
+        try:
+            index_zerocrossing = np.where(np.diff(data_smallf >= 0)==1)[0][0]
+        except:
+            index_zerocrossing = int(round(len(data_small)/2))
+            print("Exception while finding zero crossing. will use middle")
         plt.plot(1e9*(time[ind_middle+index_zerocrossing-N:ind_middle+index_zerocrossing+N]-time[ind_middle-int(N_trigger/2)+index_zerocrossing]),
                       data[ind_middle+index_zerocrossing-N:ind_middle+index_zerocrossing+N], linewidth=0.5)
 

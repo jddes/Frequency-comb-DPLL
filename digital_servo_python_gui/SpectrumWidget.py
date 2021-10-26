@@ -281,7 +281,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.setLayout(vbox)
 
     def update_dac_thermo_scales(self):
-        print("SpectrumWidget:: setting thermometer widget range")
+        # print("SpectrumWidget:: setting thermometer widget range")
         for k in range(self.N_dacs):
             if self.output_controls[k]:
                 self.qthermo_dac_current[k].setRange(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))

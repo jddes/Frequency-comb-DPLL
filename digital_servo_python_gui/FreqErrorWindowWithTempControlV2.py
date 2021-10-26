@@ -5,6 +5,7 @@ by JD Deschenes, October 2013
 """
 from __future__ import print_function
 
+import os
 import sys
 import time
 from PyQt5 import QtGui, Qt, QtCore
@@ -66,14 +67,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         self.recovery_history = np.array([])
 
-
-#    def __del__(self):
-#        # Close data files:
-#        if hasattr(self, 'file_output1'):
-#            self.file_output1.close()
-#        if hasattr(self, 'file_output2'):
-#            self.file_output2.close()
-
     def loadParameters(self):
         strDAC = 'DAC{:01d}'.format(self.output_number)
         chk = int(self.sp.getValue('Triangular_averaging', strDAC))
@@ -99,7 +92,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             tempControl_step_size           = float(self.sp.getValue('Temperature_control', 'step_size'))
             tempControl_step_delay          = int(  self.sp.getValue('Temperature_control', 'step_delay'))
             try:
-                self.bIncrementalOnly       = bool( self.sp.getValue('Temperature_control', 'bIncrementalOnly'))
+                self.bIncrementalOnly       = bool( self.sp.getValue('Temperature_control', 'bIncrementalOnly').lower() == 'true')
             except KeyError:
                 bIncrementalOnly = False
 
@@ -117,8 +110,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.qchk_temp_control.setStyleSheet('background-color: green')
             else:
                 self.qchk_temp_control.setStyleSheet('background-color: red')
-            
-
 
     def pushDefaultValues(self):
         self.loadParameters()
@@ -146,13 +137,9 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.timerID = self.startTimer(500)
 
     def killTimers(self):
-        
         # print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
-        
-        #if self.timerID.isActive():
         if self.timerID is not None:
             self.killTimer(self.timerID)
-        
 
     def openTCPConnection(self):
         start_time = time.perf_counter()
@@ -183,7 +170,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             except Exception as e:
                 print('Error while closing the client: {}'.format(e))
             self.client = None
-            self.logger.info('Red_Pitaya_GUI{}: Closing temperature control'.format(self.logger_name, self.port_number))
+            self.logger.info('Red_Pitaya_GUI{}: Closing temperature control, port {}'.format(self.logger_name, self.port_number))
 
     def initBuffer(self):
 #        print('initBuffer')
@@ -213,32 +200,20 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         self.bVeryFirst = True
             
     def openOutputFiles(self):
-        
-        
-        # Create the subdirectory if it doesn't exist:
         common.make_sure_path_exists('data_logging')
 
-        # Open file for output
-        strCurrentName1 = self.strNameTemplate + 'freq_counter0.bin'
-        strCurrentName2 = self.strNameTemplate + 'freq_counter1.bin'
-        strCurrentName3 = self.strNameTemplate + 'freq_counter0_time_axis.bin'
-        strCurrentName4 = self.strNameTemplate + 'DAC0.bin'
-        strCurrentName5 = self.strNameTemplate + 'DAC1.bin'
-        strCurrentName6 = self.strNameTemplate + 'DAC2.bin'
-        self.file_output_counter0 = open(strCurrentName1, 'wb')
-        self.file_output_counter1 = open(strCurrentName2, 'wb')
-        self.file_output_time = open(strCurrentName3, 'wb')
-        self.file_output_dac0 = open(strCurrentName4, 'wb')
-        self.file_output_dac1 = open(strCurrentName5, 'wb')
-        self.file_output_dac2 = open(strCurrentName6, 'wb')
-        
+        extension = '.bin'
+        self.output_files = dict()
+        for field in ['freq_counter0', 'freq_counter1', 'freq_counter0_time_axis', 'DAC0', 'DAC1', 'DAC2']:
+            filename = self.strNameTemplate + field + extension
+            self.output_files[field] = open(filename, 'wb')
+
     @logCommsErrorsAndBreakoutOfFunction()
     def chkTriangular_checked(self, checked=False):
         if self.qchk_triangular.isChecked():
             self.sl.setCounterMode(True)
         else:
             self.sl.setCounterMode(False)
-        # self.addTempControlWidget()
         # print('Updating counter mode')
 
     @logCommsErrorsAndBreakoutOfFunction()
@@ -435,34 +410,8 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         vbox2.addWidget(self.qgroupbox_freq)
         self.setLayout(vbox2)
 
-#        self.setLayout(vbox)
-
-        # Adjust the size and position of the window
-        # self.resize(800, 480)
-        self.center()
         self.setWindowTitle(self.strTitle)    
-        # self.show()
         
-    def addTempControlWidget(self):
-        # self.client = True
-        # self.showUI()
-        self.qlabel_threshold_step = None
-        self.qedit_threshold_step = None
-
-
-    def center(self):
-        
-        qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
-#        print()
-#        5435sdfsf
-#        qr.moveCenter(cp)
-#        self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800+100, 50))
-        if self.output_number == 0:
-            self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(985, 10))
-        else:
-            self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(985, 10+450+80))
-            
     def timerEvent(self, e):
         
 #        print('timerEvent, timerID = %d' % self.timerID)
@@ -696,7 +645,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 # scale to seconds:
                 time_axis = time_axis.astype(float) * self.gate_time
                 # Write data to disk:
-                self.file_output_time.write(time_axis)
+                self.output_files['freq_counter0_time_axis'].write(time_axis)
                 
             if DAC0_output is not None:
                 if self.output_number == 0:
@@ -710,7 +659,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                 # Write data to disk:
-                self.file_output_dac0.write(DAC0_output)
+                self.output_files['DAC0'].write(DAC0_output)
 
                 if self.output_number == 0:
                     self.checkAutoUnlock(self.output_number, DAC0_output)                
@@ -727,14 +676,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
                 # self.checkAutoUnlock(self.output_number, DAC1_output)
                 # Write data to disk:
-                self.file_output_dac1.write(DAC1_output)
+                self.output_files['DAC1'].write(DAC1_output)
                 
             if DAC2_output is not None:
                 DAC2_output_voltage = DAC2_output/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
                 DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(np.float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
                 # Write data to disk:
-                self.file_output_dac2.write(DAC2_output)
+                self.output_files['DAC2'].write(DAC2_output)
                 
                 if self.output_number == 1:
                     self.checkAutoUnlock(self.output_number, DAC2_output)
@@ -755,11 +704,9 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                     return
                     
                 # Write data to disk:
-                if self.output_number == 0:
-                    self.file_output_counter0.write(freq_counter_samples)
-                elif self.output_number == 1:
-                    self.file_output_counter1.write(freq_counter_samples)
-                            
+                fieldname = 'freq_counter%d' % self.output_number
+                self.output_files[fieldname].write(freq_counter_samples)
+
                 # Record the new chunk of data in the buffer:
 
 #                print('len = %d' % len(freq_counter_samples))

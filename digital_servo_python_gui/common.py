@@ -22,7 +22,6 @@ def findMostLikelyLANBroadcastIPAddress():
     """
     listAddr = socket.getaddrinfo(socket.gethostname(), None)
     ipv4Addresses = [sockaddr[0] for (family, _, _, _, sockaddr) in listAddr if family == socket.AF_INET]
-    print(locals())
     return findMostLikelyLANBroadcastIPAddress_inner(ipv4Addresses)
 
 def findMostLikelyLANBroadcastIPAddress_inner(ipv4Addresses):
