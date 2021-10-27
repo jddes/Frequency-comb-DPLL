@@ -137,7 +137,7 @@ begin
             if sys_wen = '1' then
                 case sys_addr(20-1 downto 0) is
                     when x"00000" => amplitude   <= sys_wdata(amplitude'range);
-                    when x"00001" => freq_offset <= sys_wdata(freq_offset'range);
+                    when x"00004" => freq_offset <= sys_wdata(freq_offset'range);
                     when others => 
                 end case;
             end if;
@@ -146,7 +146,7 @@ begin
             if sys_ren = '1' then
                 case sys_addr(20-1 downto 0) is
                     when x"00000" => sys_rdata <= std_logic_vector(resize(  signed(amplitude), 32));
-                    when x"00001" => sys_rdata <= std_logic_vector(resize(  signed(freq_offset), 32));
+                    when x"00004" => sys_rdata <= std_logic_vector(resize(  signed(freq_offset), 32));
                     when others => sys_rdata <=  (others => '0');
                 end case;
             end if;
