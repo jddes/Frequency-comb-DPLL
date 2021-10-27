@@ -17,6 +17,8 @@ module dpll_wrapper(
     output wire signed [15:0] DACout1,
     output wire signed [15:0] DACout2,
 
+    output wire signed [48-1:0] to_vco0_frequency, // this will drive a VCO frequency, then get output to DAC_b
+
     output wire osc_output,
     output wire [2-1:0] gpios_out,
 
@@ -779,8 +781,12 @@ multiplexer_3to1_async loop_filters_1_mux (
  .out_mux                           (inst_frequency1            )
 );
 
+vco_freq_scaling vco_freq_scaling_inst (
+    .clk     (clk1),
+    .data_in (inst_frequency1),
+    .data_out(to_vco0_frequency)
+);
 
-     
 ///////////////////////////////////////////////////////////////////////////////
 // Counts the frequency with no dead-time using a short bandlimiting filter  + an integrate and dump.
 // Output rate will be fs/2^LOG2_N_CYCLES_INTEGRATION ~ 12.5 Hz

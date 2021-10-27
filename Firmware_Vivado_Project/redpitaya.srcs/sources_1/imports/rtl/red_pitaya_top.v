@@ -536,6 +536,8 @@ dpll_wrapper dpll_wrapper_inst (
   .osc_output(osc_output),
   .gpios_out(gpios_out),
 
+  .to_vco0_frequency       (  to_vco0_frequency          ),
+
   // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
   .counter_new_data        (counter_new_data),
   .counter_reg_to_dpll     (counter_reg_to_dpll),
@@ -666,9 +668,9 @@ ram_data_logger ram_data_logger_i (
 
 //---------------------------------------------------------------------------------
 // //  Internal VCO channel a
-// wire signed [16-1:0] vco0_cosine_out;
-// wire signed [16-1:0] vco0_sine_out;
-// reg  signed [48-1:0] vco0_frequency;
+wire signed [16-1:0] vco0_cosine_out;
+wire signed [16-1:0] vco0_sine_out;
+wire signed [48-1:0] to_vco0_frequency;
 
 // always @(posedge adc_clk)
 // begin
@@ -685,29 +687,28 @@ ram_data_logger ram_data_logger_i (
 //     //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
 // end
 
-// internal_vco internal_vco_0 (
+internal_vco internal_vco_0 (
+ .clk             (  adc_clk                    ),
 
-//  .clk             (  adc_clk                    ),
+ // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
+ .frequency       (  to_vco0_frequency          ),
 
-//  // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
-//  .frequency       (  vco0_frequency              ),
-
-//   // System bus, address starts at 0x4X20_0000
-//  .sys_addr        (  sys_addr                   ),  // address
-//  .sys_wdata       (  sys_wdata                  ),  // write data
-//  .sys_sel         (  sys_sel                    ),  // write byte select
-//  .sys_wen         (  sys_wen[2]                 ),  // write enable
-//  .sys_ren         (  sys_ren[2]                 ),  // read enable
-//  .sys_rdata       (  sys_rdata[ 2*32+31: 2*32]  ),  // read data
-//  .sys_err         (  sys_err[2]                 ),  // error indicator
-//  .sys_ack         (  sys_ack[2]                 ),  // acknowledge signal
+  // System bus, address starts at 0x4X20_0000
+ .sys_addr        (  sys_addr                   ),  // address
+ .sys_wdata       (  sys_wdata                  ),  // write data
+ .sys_sel         (  sys_sel                    ),  // write byte select
+ .sys_wen         (  sys_wen[5]                 ),  // write enable
+ .sys_ren         (  sys_ren[5]                 ),  // read enable
+ .sys_rdata       (  sys_rdata[ 5*32+31: 5*32]  ),  // read data
+ .sys_err         (  sys_err[5]                 ),  // error indicator
+ .sys_ack         (  sys_ack[5]                 ),  // acknowledge signal
 
 
-//  .cosine_out      (  vco0_cosine_out             ),
-//  .sine_out        (  vco0_sine_out               )
+ .cosine_out      (  vco0_cosine_out             ),
+ .sine_out        (  vco0_sine_out               )
 
-//  );
-// //assign dac_b = vco0_cosine_out[16-1:2];
+ );
+assign dac_b = vco0_cosine_out[16-1:2];
 
 // //---------------------------------------------------------------------------------
 // //  Internal VCO channel b
@@ -729,30 +730,6 @@ ram_data_logger ram_data_logger_i (
 //     // this value is equal to dec2bin(31.25e6/125e6 * 2^48, 48) (MATLAB)
 //     //vco_frequency <= $signed(48'b000101101000011100101011000000100000110001001001);
 // end
-
-// internal_vco internal_vco_1 (
-
-//  .clk             (  adc_clk                    ),
-
-//  // frequency in counts: analog frequency is equal to: frequency/2^48*clock frequency (currently 125 MHz)
-//  .frequency       (  vco1_frequency              ),
-
-//   // System bus, address starts at 0x4X20_0000
-//  .sys_addr        (  sys_addr                   ),  // address
-//  .sys_wdata       (  sys_wdata                  ),  // write data
-//  .sys_sel         (  sys_sel                    ),  // write byte select
-//  .sys_wen         (  sys_wen[4]                 ),  // write enable
-//  .sys_ren         (  sys_ren[4]                 ),  // read enable
-//  .sys_rdata       (  sys_rdata[ 4*32+31: 4*32]  ),  // read data
-//  .sys_err         (  sys_err[4]                 ),  // error indicator
-//  .sys_ack         (  sys_ack[4]                 ),  // acknowledge signal
-
-
-//  .cosine_out      (  vco1_cosine_out             ),
-//  .sine_out        (  vco1_sine_out               )
-
-//  );
-// //assign dac_b = vco0_cosine_out[16-1:2];
 
 //---------------------------------------------------------------------------------
 //  House Keeping
@@ -843,33 +820,33 @@ IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_di
 wire signed [14-1 : 0] to_DAC0;
 wire signed [14-1 : 0] to_DAC1;
 
-mux_internal_vco mux_vco (
-  .clk            ( adc_clk                   ), // clock
-  .DACin0         ( DACout0                   ), // output of the DPLL channel a
-  .DACin1         ( DACout1                   ), // output of the DPLL channel b
-  // internal configuration bus
-  .sys_addr       ( sys_addr                  ), // address
-  .sys_wdata      ( sys_wdata                 ), // write data
-  .sys_sel        ( sys_sel                   ), // write byte select
-  // communication bus for the vco
-  .sys_wen_vco    (sys_wen[6]                 ), // write enable for the vco
-  .sys_ren_vco    (sys_ren[6]                 ), // read enable for the vco
-  .sys_rdata_vco  (sys_rdata[ 6*32+31: 6*32]  ), // read data for the vco
-  .sys_err_vco    (sys_err[6]                 ), // error indicator for the vco
-  .sys_ack_vco    (sys_ack[6]                 ), // acknowledge signal for the vco
-  // communication bus for the mux
-  .sys_wen_mux    (sys_wen[5]                 ), // write enable for the mux
-  .sys_ren_mux    (sys_ren[5]                 ), // read enable for the mux
-  .sys_rdata_mux  (sys_rdata[ 5*32+31: 5*32]  ), // read data for the mux
-  .sys_err_mux    (sys_err[5]                 ), // error indicator for the mux
-  .sys_ack_mux    (sys_ack[5]                 ), // acknowledge signal for the mux
-  // output
-  .DACa_out       ( to_DAC0                  ), // output to the dac (from vco or directly from dpll)
-  .DACb_out       ( to_DAC1                  )  // output to the dac (from vco or directly from dpll)
-  );
+// mux_internal_vco mux_vco (
+//   .clk            ( adc_clk                   ), // clock
+//   .DACin0         ( DACout0                   ), // output of the DPLL channel a
+//   .DACin1         ( DACout1                   ), // output of the DPLL channel b
+//   // internal configuration bus
+//   .sys_addr       ( sys_addr                  ), // address
+//   .sys_wdata      ( sys_wdata                 ), // write data
+//   .sys_sel        ( sys_sel                   ), // write byte select
+//   // communication bus for the vco
+//   .sys_wen_vco    (sys_wen[6]                 ), // write enable for the vco
+//   .sys_ren_vco    (sys_ren[6]                 ), // read enable for the vco
+//   .sys_rdata_vco  (sys_rdata[ 6*32+31: 6*32]  ), // read data for the vco
+//   .sys_err_vco    (sys_err[6]                 ), // error indicator for the vco
+//   .sys_ack_vco    (sys_ack[6]                 ), // acknowledge signal for the vco
+//   // communication bus for the mux
+//   .sys_wen_mux    (sys_wen[5]                 ), // write enable for the mux
+//   .sys_ren_mux    (sys_ren[5]                 ), // read enable for the mux
+//   .sys_rdata_mux  (sys_rdata[ 5*32+31: 5*32]  ), // read data for the mux
+//   .sys_err_mux    (sys_err[5]                 ), // error indicator for the mux
+//   .sys_ack_mux    (sys_ack[5]                 ), // acknowledge signal for the mux
+//   // output
+//   .DACa_out       ( to_DAC0                  ), // output to the dac (from vco or directly from dpll)
+//   .DACb_out       ( to_DAC1                  )  // output to the dac (from vco or directly from dpll)
+//   );
 
-assign dac_a = to_DAC0;
-assign dac_b = to_DAC1;
+assign dac_a = DACout0;
+//assign dac_b = DACout1;
 
 
 // ---------------------------------------------------------------------------------

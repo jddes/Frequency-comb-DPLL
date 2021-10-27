@@ -68,13 +68,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
         else:
             self.qradio_ddc2_to_pll2.setChecked(True)
 
-        if mux_vco == 1:
-            self.qradio_VCO_to_DAC0.setChecked(True)
-        elif mux_vco == 2:
-            self.qradio_VCO_to_DAC1.setChecked(True)
-        else:
-            self.qradio_no_VCO.setChecked(True)
-
         self.qedit_int_vco_amplitude.blockSignals(True)
         self.qedit_int_vco_amplitude.setText('{:.3f}'.format(vco_amplitude))
         self.qedit_int_vco_amplitude.blockSignals(False)
@@ -93,7 +86,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
     def pushValues(self):
         # Send the values in the different fields to the RP
-        self.mux_vco_Action()
         self.mux_pll2_Action()
         self.setInternalVCO_amplitude()
         self.setFan()
@@ -101,16 +93,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
     @logCommsErrorsAndBreakoutOfFunction()
     def getValues(self):
-        #get value from the memory of the red pitaya 
-
-        #get value for the VCO connection
-        mux_vco = self.sl.get_mux_vco()
-        if mux_vco == 1:
-            self.qradio_VCO_to_DAC0.setChecked(True)
-        elif mux_vco == 2:
-            self.qradio_VCO_to_DAC1.setChecked(True)
-        else:
-            self.qradio_no_VCO.setChecked(True)
+        """ Read values from the red pitaya's memory """
 
         #get value for the VCO amplitude
         amplitude = self.sl.get_internal_VCO_amplitude()
@@ -210,39 +193,28 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         ###################################################################################
 
-        self.qgroupbox_MUX_vco = Qt.QGroupBox('Select VCO connection')
-        self.qgroupbox_MUX_vco.setAutoFillBackground(True)
-        MUX_vco = Qt.QGridLayout()
+        self.qgroupbox_vco = Qt.QGroupBox('Internal VCO settings (on DAC B)')
+        self.qgroupbox_vco.setAutoFillBackground(True)
 
-        self.qradio_VCO_to_DAC0 = Qt.QRadioButton('PLL A -> VCO -> DAC A')
-        self.qradio_VCO_to_DAC1 = Qt.QRadioButton('PLL B -> VCO -> DAC B')
-        self.qradio_no_VCO = Qt.QRadioButton('VCO not used')
-        self.qradio_no_VCO.setChecked(True)
-        self.qradio_VCO_to_DAC0.clicked.connect(self.mux_vco_Action)
-        self.qradio_VCO_to_DAC1.clicked.connect(self.mux_vco_Action)
-        self.qradio_no_VCO.clicked.connect(self.mux_vco_Action)
-
-        self.qlabel_int_vco_amplitude = Qt.QLabel('Internal VCO Amplitude [0-1]')
+        self.qlabel_int_vco_amplitude = Qt.QLabel('Amplitude [0-1]')
         self.qedit_int_vco_amplitude = user_friendly_QLineEdit('0.5')
         self.qedit_int_vco_amplitude.returnPressed.connect(self.setInternalVCO_amplitude)
         self.qedit_int_vco_amplitude.setMaximumWidth(100)
 
-        self.qlabel_int_vco_offset = Qt.QLabel('Internal VCO offset [0-1]')
+        self.qlabel_int_vco_offset = Qt.QLabel('Freq offset [0-62.5 MHz]')
         self.qedit_int_vco_offset = user_friendly_QLineEdit('0.0')
         self.qedit_int_vco_offset.returnPressed.connect(self.setInternalVCO_offset)
         self.qedit_int_vco_offset.setMaximumWidth(60)
 
-        MUX_vco.addWidget(self.qradio_VCO_to_DAC0,     0, 0)    
-        MUX_vco.addWidget(self.qradio_VCO_to_DAC1,     1, 0)
-        MUX_vco.addWidget(self.qradio_no_VCO,          2, 0)
-        MUX_vco.addWidget(self.qlabel_int_vco_offset, 1,1)
-        MUX_vco.addWidget(self.qedit_int_vco_offset, 1,2)
-        MUX_vco.addWidget(self.qlabel_int_vco_amplitude, 2,1)
-        MUX_vco.addWidget(self.qedit_int_vco_amplitude, 2,2)
-        MUX_vco.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
-        MUX_vco.setRowStretch(2, 2)
+        VCO_layout = Qt.QGridLayout()
+        VCO_layout.addWidget(self.qlabel_int_vco_offset, 1,1)
+        VCO_layout.addWidget(self.qedit_int_vco_offset, 1,2)
+        VCO_layout.addWidget(self.qlabel_int_vco_amplitude, 0,1)
+        VCO_layout.addWidget(self.qedit_int_vco_amplitude, 0,2)
+        VCO_layout.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
+        VCO_layout.setRowStretch(2, 1)
 
-        self.qgroupbox_MUX_vco.setLayout(MUX_vco)
+        self.qgroupbox_vco.setLayout(VCO_layout)
 
         ###################################################################################
         self.qgroupbox_MUX_pll2 = Qt.QGroupBox('Select connection to PLL 2')
@@ -322,7 +294,6 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         group.addWidget(self.qgroupbox_clkselect, 0, 0, 1, 1)
         group.addWidget(self.qgroupbox_xadc,      0, 1, 1, 2)
-        group.addWidget(self.qgroupbox_MUX_vco,   1, 0, 1, 3)
         group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 3)
         group.addWidget(self.qgroupbox_read_data, 3, 0, 1, 3)
         group.addWidget(self.qgroupbox_fanUI,     4, 0, 1, 1)
@@ -448,25 +419,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.controller.xem_gui_mainwindow2.setVCOFreq_event()
 
     @logCommsErrorsAndBreakoutOfFunction()
-    def mux_vco_Action(self, checked=False):
-        if self.qradio_VCO_to_DAC0.isChecked():
-            data = 1
-        elif self.qradio_VCO_to_DAC1.isChecked():
-            data = 2
-        else:  # no VCO is checked
-            data = 0
-        self.sl.set_mux_vco(data)
-
-    @logCommsErrorsAndBreakoutOfFunction()
     def setInternalVCO_offset(self):
         try:
             int_vco_offset = float(self.qedit_int_vco_offset.text())
+            self.sl.set_internal_VCO_offset(int_vco_offset)
         except:
-            int_vco_offset = 0.0
-        if int_vco_offset < -1.0 or int_vco_offset > 1.0:
-            int_vco_offset = 0.0
-        
-        self.sl.set_internal_VCO_offset(int_vco_offset)
+            pass
 
     @logCommsErrorsAndBreakoutOfFunction()
     def setInternalVCO_amplitude(self):

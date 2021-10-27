@@ -136,13 +136,8 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_DIN1_COUNTER_MSBS                          = 0x00043
 	
 	# Address to change the amplitude and the offset of the VCO
-	BUS_ADDR_vco_amplitude                              = (6 << 20) + 0x00000
-	BUS_ADDR_vco_offset                            		= (5 << 20) + 0x00004
-
-	# This mux connect the VCO to the selected DAC 
-	BUS_ADDR_vco_mux                                    = (5 << 20) + 0x00000
-	
-	
+	BUS_ADDR_vco_amplitude                              = (5 << 20) + 0x00000
+	BUS_ADDR_vco_offset                                 = (5 << 20) + 0x00001
 	
 	PIPE_ADDRESS_DDR2_LOGGER                            = 0xA1
 	PIPE_ADDRESS_ZERO_DEADTIME_COUNTER0                 = 0xA2
@@ -1831,7 +1826,6 @@ class SuperLaserLand_JD_RP:
 		self.ddc1_angle_select = int((data - self.ddc0_angle_select)/(2**4))
 
 		return (self.ddc1_angle_select, self.ddc0_angle_select)
-		
 
 	# This mux selects the source of the error signal to the loop filter of channel 2.
 	# This makes it possible to select:
@@ -1844,28 +1838,22 @@ class SuperLaserLand_JD_RP:
 		self.mux_pll2 = register_value
 		self.send_bus_cmd_16bits(self.BUS_ADDR_mux_pll2, register_value)
 		
-	
-
-		
-	# scales the offset of the output tone produced by the VCO right before the ADC.
-	# offset = [-1 to 1]
-	def set_internal_VCO_offset(self, offset):
+	def set_internal_VCO_offset(self, freq_offset):
+		""" VCO output frequency when to_vco0_frequency = 0 in dpll_wrapper.v.
+		Freq_offset must be in Hz """
 		if self.bVerbose == True:
 			print('set_internal_VCO_offset')
-		self.vco_offset_in_volt = offset
-		vco_offset = round(offset*(2**13-1)) #13 bits, because offset is signed
+		vco_offset = round(freq_offset/self.fs*(2**16-1))
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_offset, vco_offset)
 
 	def get_internal_VCO_offset(self):
+		""" Returns the VCO frequency when to_vco0_frequency = 0 in dpll_wrapper.v.
+		Units are Hz and assume that self.fs is correct """
 		if self.bVerbose == True:
 			print('get_internal_VCO_offset')
 		raw = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_vco_offset)   
-		if raw > ((1<<13)-1):
-			raw = -(0b11111111111111-raw+1) 	#Because the value is consider as an signed integer
-		offset = raw/(2**13-1)
-		self.vco_offset_in_volt = offset
-		return offset
-
+		offset = float(raw)/(2**16-1)
+		return offset * self.fs
 
 
 	# scales the output tone produced by the VCO right before the ADC.
@@ -1887,35 +1875,6 @@ class SuperLaserLand_JD_RP:
 		amplitude = raw/(2**15-1)
 		self.vco_amplitude_in_volt = amplitude
 		return amplitude
-
-	#This mux selects the source of the VCO frequency and the output DAC to which the VCO is connected
-	# register_value = 0 : the VCO is not connected (normal operation)
-	# register_value = 1 : the VCO is connected to the DACa
-	# register_value = 2 : the VCO is connected to the DACb
-	def set_mux_vco(self, data):
-		if self.bVerbose == True:
-			print('set_mux_vco')
-
-		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_mux, data)
-		if data == 0 :
-			self.output_vco = [0, 0, 0]
-		elif data == 1:
-			self.output_vco = [1, 0, 0]
-		elif data == 2:
-			self.output_vco = [0, 1, 0]
-
-	   
-	def get_mux_vco(self):
-		if self.bVerbose == True:
-			print('get_mux_vco')
-		mux_value = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_vco_mux)
-		if mux_value == 0 :
-			self.output_vco = [0, 0, 0]
-		elif mux_value == 1:
-			self.output_vco = [1, 0, 0]
-		elif mux_value == 2:
-			self.output_vco = [0, 1, 0]
-		return mux_value
 
 	def read_RAM_dpll_wrapper(self,addr):
 		bus_address = (2 << 20) + addr*4

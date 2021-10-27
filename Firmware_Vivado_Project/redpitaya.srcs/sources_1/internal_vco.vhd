@@ -51,6 +51,7 @@ architecture Behavioral of internal_vco is
     
     
     -- internal signals
+    signal frequency_with_offset : std_logic_vector(frequency'length-1 downto 0) := (others => '0');
     signal DDS_cosine_tmp                         : std_logic_vector(DATA_WIDTH-1 downto 0)        := (others => '0');
     signal DDS_sine_tmp                           : std_logic_vector(DATA_WIDTH-1 downto 0)        := (others => '0');
     
@@ -64,11 +65,21 @@ architecture Behavioral of internal_vco is
     
     
     -- registers
-    --signal frequency                              :  std_logic_vector (48-1 downto 0)              := b"001101011100001010001111010111000010100011110110"; -- dec2bin(round(2^48*21e6/100e6), 48)
-    signal amplitude                              :  std_logic_vector (AMPLITUDE_WIDTH-1 downto 0) := std_logic_vector(to_signed(1638, AMPLITUDE_WIDTH)); -- round(0.05*(2**15-1))
-    --
+    signal amplitude             : std_logic_vector( AMPLITUDE_WIDTH-1 downto 0) := std_logic_vector(to_signed(1638, AMPLITUDE_WIDTH)); -- round(0.05*(2**15-1))
+    signal freq_offset           : std_logic_vector(16-1 downto 0) := (others => '0');
 
 begin
+
+    process( clk )
+    begin
+        if rising_edge(clk) then
+            -- add our offset to the frequency
+            frequency_with_offset <= std_logic_vector(signed(frequency)
+                             + shift_left(
+                                    resize(signed(freq_offset), frequency'length),
+                                            frequency'length-freq_offset'length));
+        end if;
+    end process;
 
 -- Compute cos() and sin(), or more precisely, round((2^15-1)*cos()) and round((2^15-1)*sin())
     LO_DDS_inst : LO_DDS
@@ -76,7 +87,7 @@ begin
     
         aclk                    => clk,
         s_axis_phase_tvalid     => s_axis_phase_tvalid,
-        s_axis_phase_tdata      => frequency,
+        s_axis_phase_tdata      => frequency_with_offset,
         m_axis_data_tvalid      => open,
         m_axis_data_tdata       => lo_dds_m_axis_data_tdata,
         m_axis_phase_tvalid     => open,
@@ -125,7 +136,8 @@ begin
             -- Write
             if sys_wen = '1' then
                 case sys_addr(20-1 downto 0) is
-                    when x"00000" => amplitude <= sys_wdata(amplitude'range);
+                    when x"00000" => amplitude   <= sys_wdata(amplitude'range);
+                    when x"00001" => freq_offset <= sys_wdata(freq_offset'range);
                     when others => 
                 end case;
             end if;
@@ -134,6 +146,7 @@ begin
             if sys_ren = '1' then
                 case sys_addr(20-1 downto 0) is
                     when x"00000" => sys_rdata <= std_logic_vector(resize(  signed(amplitude), 32));
+                    when x"00001" => sys_rdata <= std_logic_vector(resize(  signed(freq_offset), 32));
                     when others => sys_rdata <=  (others => '0');
                 end case;
             end if;

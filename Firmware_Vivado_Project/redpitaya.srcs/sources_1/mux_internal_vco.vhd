@@ -37,7 +37,7 @@ end entity;
 
 architecture Behavioral of mux_internal_vco is
 	
-	-- instanciation of the internal VCO
+	-- instantiation of the internal VCO
 	component internal_vco 
 		Generic (
 			DATA_WIDTH      : integer := 16;	-- this cannot be changed without recompiling the DDS core
