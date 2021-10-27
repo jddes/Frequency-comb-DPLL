@@ -137,7 +137,7 @@ class SuperLaserLand_JD_RP:
 	
 	# Address to change the amplitude and the offset of the VCO
 	BUS_ADDR_vco_amplitude                              = (5 << 20) + 0x00000
-	BUS_ADDR_vco_offset                                 = (5 << 20) + 0x00001
+	BUS_ADDR_vco_offset                                 = (5 << 20) + 0x00004
 	
 	PIPE_ADDRESS_DDR2_LOGGER                            = 0xA1
 	PIPE_ADDRESS_ZERO_DEADTIME_COUNTER0                 = 0xA2
@@ -1843,7 +1843,7 @@ class SuperLaserLand_JD_RP:
 		Freq_offset must be in Hz """
 		if self.bVerbose == True:
 			print('set_internal_VCO_offset')
-		vco_offset = round(freq_offset/self.fs*(2**16-1))
+		vco_offset = int(round(freq_offset/self.fs*(2**16-1)))
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_vco_offset, vco_offset)
 
 	def get_internal_VCO_offset(self):
@@ -1852,7 +1852,9 @@ class SuperLaserLand_JD_RP:
 		if self.bVerbose == True:
 			print('get_internal_VCO_offset')
 		raw = self.dev.read_Zynq_register_uint32(self.BUS_ADDR_vco_offset)   
+		print('get_internal_VCO_offset: %s (raw register)' % raw)
 		offset = float(raw)/(2**16-1)
+		print('get_internal_VCO_offset: %s (Hz)' % (offset*self.fs))
 		return offset * self.fs
 
 

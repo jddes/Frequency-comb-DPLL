@@ -61,12 +61,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
         else:
             self.qradio_fan_off.setChecked(True)
 
-        if mux_pll2 == 1:
-            self.qradio_ddc1_to_pll2.setChecked(True)
-        elif mux_pll2 == 2:
-            self.qradio_pll1_to_pll2.setChecked(True)
+        if mux_pll2 in range(len(self.qradio_pll2_mux)):
+            self.qradio_pll2_mux[mux_pll2].setChecked(True)
         else:
-            self.qradio_ddc2_to_pll2.setChecked(True)
+            print("invalid mux_pll2 value loaded. ignoring")
 
         self.qedit_int_vco_amplitude.blockSignals(True)
         self.qedit_int_vco_amplitude.setText('{:.3f}'.format(vco_amplitude))
@@ -88,6 +86,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
         # Send the values in the different fields to the RP
         self.mux_pll2_Action()
         self.setInternalVCO_amplitude()
+        self.setInternalVCO_offset()
         self.setFan()
         self.setClkSelect()
 
@@ -109,12 +108,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         #get value for the pll2 connection
         mux_pll2 = self.sl.read_pll2_mux()
-        if mux_pll2 == 0:
-            self.qradio_ddc2_to_pll2.setChecked(True)
-        elif mux_pll2 == 1:
-            self.qradio_ddc1_to_pll2.setChecked(True)
-        elif mux_pll2 == 2:
-            self.qradio_pll1_to_pll2.setChecked(True)
+        if mux_pll2 in range(len(self.qradio_pll2_mux)):
+            self.qradio_pll2_mux[mux_pll2].setChecked(True)
+        else:
+            print("invalid mux_pll2 value received. ignoring")
         
         # clock source
         self.sl.readADCclockSettings(f_external=self.f_ext)
@@ -207,10 +204,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.qedit_int_vco_offset.setMaximumWidth(60)
 
         VCO_layout = Qt.QGridLayout()
-        VCO_layout.addWidget(self.qlabel_int_vco_offset, 1,1)
-        VCO_layout.addWidget(self.qedit_int_vco_offset, 1,2)
-        VCO_layout.addWidget(self.qlabel_int_vco_amplitude, 0,1)
-        VCO_layout.addWidget(self.qedit_int_vco_amplitude, 0,2)
+        VCO_layout.addWidget(self.qlabel_int_vco_offset, 1,0)
+        VCO_layout.addWidget(self.qedit_int_vco_offset, 1,1)
+        VCO_layout.addWidget(self.qlabel_int_vco_amplitude, 0,0)
+        VCO_layout.addWidget(self.qedit_int_vco_amplitude, 0,1)
         VCO_layout.addItem(Qt.QSpacerItem(0, 0, Qt.QSizePolicy.MinimumExpanding, Qt.QSizePolicy.Minimum), 2, 0)
         VCO_layout.setRowStretch(2, 1)
 
@@ -294,6 +291,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         group.addWidget(self.qgroupbox_clkselect, 0, 0, 1, 1)
         group.addWidget(self.qgroupbox_xadc,      0, 1, 1, 2)
+        group.addWidget(self.qgroupbox_vco,       0, 1, 1, 2)
         group.addWidget(self.qgroupbox_MUX_pll2,  2, 0, 1, 3)
         group.addWidget(self.qgroupbox_read_data, 3, 0, 1, 3)
         group.addWidget(self.qgroupbox_fanUI,     4, 0, 1, 1)
@@ -422,9 +420,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
     def setInternalVCO_offset(self):
         try:
             int_vco_offset = float(self.qedit_int_vco_offset.text())
-            self.sl.set_internal_VCO_offset(int_vco_offset)
+            print("setInternalVCO_offset: %f Hz" % int_vco_offset)
         except:
-            pass
+            return
+        self.sl.set_internal_VCO_offset(int_vco_offset)
 
     @logCommsErrorsAndBreakoutOfFunction()
     def setInternalVCO_amplitude(self):
@@ -453,7 +452,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
                 self.sl.set_mux_pll2(row)
                 num_checked = num_checked + 1
 
-        assert(num_checked == 1, 'Error in code that converts the GUI settings to mux value')
+        assert num_checked == 1, 'Error in code that converts the GUI settings to mux value'
 
 
     
