@@ -1392,19 +1392,19 @@ output_summing_dac2 (
     .in0(     {modulation_output_to_dac1[15], modulation_output_to_dac1}), // Note that the VNA output has been multiplied by 2**4 to enable the highest output amplitude to use the full DAC range.  This multiplication is implemented by bit shifting at the summing block which generates this signal
     .in1(),
     .in2(                   {pll1_output[15], pll1_output}),
-    .in3(            {manual_offset_dac1[15], manual_offset_dac1}),
+    .in3(            {manual_offset_dac2[15], manual_offset_dac2}),
     .data_output(DACout2_17bitssigned), // 17 bits signed
-    .positive_limit({positive_limit_dac1[15], positive_limit_dac1}),
-    .negative_limit({negative_limit_dac1[15], negative_limit_dac1}),
-    .railed_positive(dac1_railed_positive),
-    .railed_negative(dac1_railed_negative)
+    .positive_limit({positive_limit_dac2[15], positive_limit_dac2}),
+    .negative_limit({negative_limit_dac2[15], negative_limit_dac2}),
+    .railed_positive(dac2_railed_positive),
+    .railed_negative(dac2_railed_negative)
     );
 
     // convert from 17-bits signed to 16-bits unsigned.
     // the 17-bits values only use the positive range
     assign DACout2 = DACout2_17bitssigned[15:0];
     //assign DACout2 = positive_limit_dac2;//manual_offset_dac2;
-   
+
 ///////////////////////////////////////////////////////////////////////////////
 // Vector Network Analyzer (VNA) which performs transfer function measurements
 // Also includes its own input and output multiplexers
