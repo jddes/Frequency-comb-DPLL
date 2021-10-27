@@ -1338,30 +1338,50 @@ output_summing_dac0
 
 
 // Output summing and limiting, DAC1
-wire [16-1:0] data_to_dac1_notch_filter;
 
-output_summing # (
-    .INPUT_SIZE       (16),
-    .OUTPUT_SIZE      (16)
-)
-output_summing_dac1
-(  
-    .clk              (  clk1                       ), 
-    .in0              (  modulation_output_to_dac1  ), 
-    .in1              (                             ), 
-    .in2              (  pll1_output                ), 
-    .in3              (  manual_offset_dac1         ), 
-    .data_output      (  DACout1                    ), 
-    .positive_limit   (  positive_limit_dac1        ),
-    .negative_limit   (  negative_limit_dac1        ),
-    .railed_positive  (  dac1_railed_positive       ),
-    .railed_negative  (  dac1_railed_negative       )
-    );
+// output_summing # (
+//     .INPUT_SIZE       (16),
+//     .OUTPUT_SIZE      (16)
+// )
+// output_summing_dac1
+// (  
+//     .clk              (  clk1                       ), 
+//     .in0              (  modulation_output_to_dac1  ), 
+//     .in1              (                             ), 
+//     .in2              (  pll1_output                ), 
+//     .in3              (  manual_offset_dac1         ), 
+//     .data_output      (  DACout1                    ), 
+//     .positive_limit   (  positive_limit_dac1        ),
+//     .negative_limit   (  negative_limit_dac1        ),
+//     .railed_positive  (  dac1_railed_positive       ),
+//     .railed_negative  (  dac1_railed_negative       )
+//     );
 
 // this is a bit weird since the output_summing module does signed arithmetic, while DAC2 is 16-bits _unsigned_
 // thus we do the calculations at 17 bits in this module, then do the signed->unsigned conversion afterwards.
 wire [17-1:0] DACout2_17bitssigned;
 
+// output_summing # (
+//     .INPUT_SIZE(17),
+//     .OUTPUT_SIZE(17)
+// )
+// output_summing_dac2 (
+//     .clk(clk1), 
+//     // note the sign-extension from 16 bits to 17 bits
+//     .in0({modulation_output_to_dac2[15], modulation_output_to_dac2}), // Note that the VNA output has been multiplied by 2**4 to enable the highest output amplitude to use the full DAC range.  This multiplication is implemented by bit shifting at the summing block which generates this signal
+//     .in1({dac2_output1[15], dac2_output1}),     // Integrator from the instantenous frequency to the DAC 2 output
+//     .in2({dac2_output2[15], dac2_output2}),     // Integrator from the DAC 1 output to the DAC 2 output
+//     .in3({1'd0, manual_offset_dac2}), // this is already in 16-bits unsigned, so no sign-extension is necessary
+//     .data_output(DACout2_17bitssigned), // 17 bits signed
+//     .positive_limit({1'd0, positive_limit_dac2}),  // this is already in 16-bits unsigned, so no sign-extension is necessary
+//     .negative_limit({1'd0, negative_limit_dac2}),  // this is already in 16-bits unsigned, so no sign-extension is necessary
+//     .railed_positive(dac2_railed_positive),
+//     .railed_negative(dac2_railed_negative)
+//     );
+
+// Changed by JDD 2021-10-26 for difference phase locking modification:
+// what used to go to DAC1 now goes to DAC2, but we still need to do the little dance
+// of converting from 16 bits signed to 16 bits unsigned (since DAC2 expects offset binary format)
 output_summing # (
     .INPUT_SIZE(17),
     .OUTPUT_SIZE(17)
@@ -1369,22 +1389,22 @@ output_summing # (
 output_summing_dac2 (
     .clk(clk1), 
     // note the sign-extension from 16 bits to 17 bits
-    .in0({modulation_output_to_dac2[15], modulation_output_to_dac2}), // Note that the VNA output has been multiplied by 2**4 to enable the highest output amplitude to use the full DAC range.  This multiplication is implemented by bit shifting at the summing block which generates this signal
-    .in1({dac2_output1[15], dac2_output1}),     // Integrator from the instantenous frequency to the DAC 2 output
-    .in2({dac2_output2[15], dac2_output2}),     // Integrator from the DAC 1 output to the DAC 2 output
-    .in3({1'd0, manual_offset_dac2}), // this is already in 16-bits unsigned, so no sign-extension is necessary
+    .in0(     {modulation_output_to_dac1[15], modulation_output_to_dac1}), // Note that the VNA output has been multiplied by 2**4 to enable the highest output amplitude to use the full DAC range.  This multiplication is implemented by bit shifting at the summing block which generates this signal
+    .in1(),
+    .in2(                   {pll1_output[15], pll1_output}),
+    .in3(            {manual_offset_dac1[15], manual_offset_dac1}),
     .data_output(DACout2_17bitssigned), // 17 bits signed
-    .positive_limit({1'd0, positive_limit_dac2}),  // this is already in 16-bits unsigned, so no sign-extension is necessary
-    .negative_limit({1'd0, negative_limit_dac2}),  // this is already in 16-bits unsigned, so no sign-extension is necessary
-    .railed_positive(dac2_railed_positive),
-    .railed_negative(dac2_railed_negative)
+    .positive_limit({positive_limit_dac1[15], positive_limit_dac1}),
+    .negative_limit({negative_limit_dac1[15], negative_limit_dac1}),
+    .railed_positive(dac1_railed_positive),
+    .railed_negative(dac1_railed_negative)
     );
-     
+
     // convert from 17-bits signed to 16-bits unsigned.
     // the 17-bits values only use the positive range
     assign DACout2 = DACout2_17bitssigned[15:0];
     //assign DACout2 = positive_limit_dac2;//manual_offset_dac2;
-
+   
 ///////////////////////////////////////////////////////////////////////////////
 // Vector Network Analyzer (VNA) which performs transfer function measurements
 // Also includes its own input and output multiplexers
