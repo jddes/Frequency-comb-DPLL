@@ -845,7 +845,7 @@ wire signed [14-1 : 0] to_DAC1;
 //   .DACb_out       ( to_DAC1                  )  // output to the dac (from vco or directly from dpll)
 //   );
 
-assign dac_a = DACout0;
+assign dac_a = DACout0[16-1:2];
 //assign dac_b = DACout1;
 
 
