@@ -5,13 +5,15 @@ import common
 
 class TextReport():
     """ This will take care of all the writing to the text report file """
-    def __init__(self, mac_address="00000000", loadFromFolder=None):
+    def __init__(self, mac_address="00000000", loadFromFolder=None, baseFolder=None):
         assert ':' not in mac_address, "mac_address must be a string, and contain only alphanumeric chars (no ':')"
         self.dateTimeFormat = "%Y-%m-%d__%H_%M_%S"
         self.items = list()
 
+        if baseFolder is None:
+            baseFolder        = 'C:\\Data\\RP_test_reports'
+
         if loadFromFolder is None:
-            baseFolder        = 'I:\\Data\\RP_test_reports'
             self.reportFolder = os.path.join(baseFolder, mac_address + "__" + self._getDateTimeString())
             common.make_sure_path_exists(baseFolder)
             common.make_sure_path_exists(self.reportFolder)

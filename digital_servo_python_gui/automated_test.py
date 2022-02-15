@@ -13,6 +13,7 @@ import SLLSystemParameters
 import mux_board
 import rigol_scope_tools
 import html_report
+import site_settings
 
 class TestGUIController():
     def __init__(self, sl):
@@ -112,8 +113,8 @@ class TestController():
         self.sl = SuperLaserLand_JD_RP.SuperLaserLand_JD_RP()
         self.gui = TestGUIController(self.sl)
         self.scope = self.initScope()
-        self.mux = mux_board.MuxBoard('COM4')
-        self.report = text_report.TextReport(mac_address=self.gui.mac_address)
+        self.mux = mux_board.MuxBoard(site_settings.com_port)
+        self.report = text_report.TextReport(mac_address=self.gui.mac_address, baseFolder=site_settings.baseFolder)
 
     def setupRP(self):
         """ Makes sure that the RP device is in a known state for the test that we will run """
@@ -137,7 +138,7 @@ class TestController():
     def initScope(self):
         s = rigol_scope_tools.RigolScope(iVerbosity = 0)
         # s.progress_update_callback = rigol_scope_tools.progress_update_callback
-        s.connect()
+        s.connect(site_settings.ip_address)
         s.setup_ac_triggering()
         return s
 
