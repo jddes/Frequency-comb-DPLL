@@ -51,7 +51,7 @@ class TestGUIController():
         self.sp.sendToFPGA(self.sl, bSendToFPGA=True)
 
 class TestController():
-    def __init__(self):
+    def __init__(self, run_tests=True):
 
         # contains the sleep() duration after various operations
         self.delays = {}
@@ -59,11 +59,33 @@ class TestController():
         self.delays['freq_counter_settling'] = 3
 
         self.createInterfaceObjects()
-        self.setupScopeForDC()
-        self.printStartupMessage()
-        self.runTests()
-        print("TODO: give the user the change to re-visit some tests? eg if a cable was disconnected or something")
-        self.scope.disconnect()
+        if run_tests:
+            self.setupScopeForDC()
+            self.printStartupMessage()
+            self.runTests()
+            print("TODO: give the user the change to re-visit some tests? eg if a cable was disconnected or something")
+            self.scope.disconnect()
+
+    def extClockManualTest(self):
+        dac_number = 0
+        self.sl.set_dac_to_extremum(dac_number, 'mid')
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=20e6, output_select=dac_number,
+            output_amplitude=0.5, bEnable=True, bSquareWave=False)
+        print("Connect DAC0 to scope CH3")
+        print("Connect 180 MHz to scope CH2 & ext clk input")
+        print("output should contain a 20 MHz tone, unlocked with respect to ext clk")
+        self.setupScopeTimebase(10e-9) # should yield 1 GS/s
+        self.scope.setup_edge_triggering(channel_number=3, trigger_mode="auto")
+        input("Press enter to continue...")
+        for k in range(5):
+            print(f"ext clk = {self.sl.getExtClockFreq()/1e6} MHz")
+            time.sleep(0.5)
+
+        self.setExtClkMode(ext_clk=True)
+        print("output should contain a 20 MHz tone, LOCKED with respect to ext clk")
+        input("Press enter to continue...")
+
+
 
     def printStartupMessage(self):
         print("Welcome. Please make sure the scope is set to 120 kPoints, 500 usecs/div")
@@ -422,7 +444,7 @@ class TestController():
         return np.sum(np.multiply(data, window))/np.sum(window)
 
 def main():
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1]=='-test':
         # testing only, without running any actual test:
         class t():
             pass
@@ -436,8 +458,13 @@ def main():
         header, r = html_report.generate_simple_report(report)
         html_report.print_html_report(header, r, r"I:\Data\RP_test_reports\002632f087c6__2020-11-05__01_55_54\report.html")
 
+    elif len(sys.argv) > 1 and sys.argv[1]=='-clk':
+        print("whatever")
+        t = TestController(run_tests=False)
+        t.extClockManualTest()
+
     else:
-        t = TestController()
+        t = TestController(run_tests=True)
         header, r = html_report.generate_simple_report(t.report.items)
         html_report_file = os.path.join(t.report.reportFolder, "report.html")
         html_report.print_html_report(header, r, html_report_file)
