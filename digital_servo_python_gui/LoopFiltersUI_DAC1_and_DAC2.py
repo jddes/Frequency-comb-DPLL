@@ -44,6 +44,7 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
     
     def updateFilterSettings(self):
         self.dac1_ui.updateFilterSettings()
+        self.updatePredictedClosedLoopBW()
 
     def getValues(self):
         self.dac1_ui.kc = self.kc
@@ -148,12 +149,15 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
 
         self.updateSettings() #to makes sure the GUI contains all the infos relative to the previous parameters
 
+    def get_gain1_in_bits(self):
+        return int(self.qcombo_int1_gain.currentIndex()) - 32
 
+    def get_gain2_in_bits(self):
+        return int(self.qcombo_int2_gain.currentIndex()) - 32
 
     def setIntegratorGainEvent(self):
 #        print('LoopFiltersUI_DAC1_and_DAC2::setIntegratorGainEvent(): TODO!')
         
-        gain1_in_bits = int(self.qcombo_int1_gain.currentIndex()) - 32
         
         
 #        print(gain1_in_bits)
@@ -185,7 +189,6 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
             hold2 = 0
         
 
-        gain2_in_bits = int(self.qcombo_int2_gain.currentIndex()) - 32
         
         flipsign1 = int(self.qchk_flip1.isChecked())
         flipsign2 = int(self.qchk_flip2.isChecked())
@@ -193,10 +196,10 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         if self.qchk_hold.isChecked():
             hold1 = 1
             hold2 = 1
-#        print('integrator 1, flipsign = %d, lock = %d, gain1 = %d' % (flipsign1, lock_integrator1, gain1_in_bits))
-#        print('integrator 2, flipsign = %d, lock = %d, gain1 = %d' % (flipsign2, lock_integrator2, gain2_in_bits))
-        self.sl.set_integrator_settings(1, hold1, flipsign1, lock_integrator1, gain1_in_bits)
-        self.sl.set_integrator_settings(2, hold2, flipsign2, lock_integrator2, gain2_in_bits)
+#        print('integrator 1, flipsign = %d, lock = %d, gain1 = %d' % (flipsign1, lock_integrator1, self.get_gain1_in_bits()))
+#        print('integrator 2, flipsign = %d, lock = %d, gain1 = %d' % (flipsign2, lock_integrator2, self.get_gain2_in_bits()))
+        self.sl.set_integrator_settings(1, hold1, flipsign1, lock_integrator1, self.get_gain1_in_bits())
+        self.sl.set_integrator_settings(2, hold2, flipsign2, lock_integrator2, self.get_gain2_in_bits())
         
     
         if lock_integrator1 and hold1:
@@ -214,7 +217,10 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         else:
             self.qlabel_int2_state.setText('Integrator 2 state: Off')
             
-        closedloop_BW = self.kc_dac2*2**gain1_in_bits * self.sl.fs /(2*np.pi)
+        self.updatePredictedClosedLoopBW()
+
+    def updatePredictedClosedLoopBW(self):
+        closedloop_BW = self.kc_dac2*2**self.get_gain1_in_bits() * self.sl.fs /(2*np.pi)
         
         if closedloop_BW > 1e6:
             self.qlabel_int1_gain.setText('Acquisition BW: %.1f MHz' % (round(closedloop_BW*1e5)/1e5/1e6))
@@ -229,10 +235,10 @@ class LoopFiltersUI_DAC1_and_DAC2(Qt.QWidget):
         # Second case: integrator 2, which integrates the DAC 1 output and outputs a signal on DAC2 HV.
         # The plant model in this case has a DC gain equal to the ratio of the VCO gain seen at DAC2 HV / VCO gain seen at DAC 1 HV:
         
-        # Gain of the integrator as a function of frequency is 2^gain1_in_bits * self.sl.fs /(2*pi*f)
-        # We want the unity gain frequency where G_integrator*Kc = 1 = Kc*2^gain1_in_bits * self.sl.fs /(2*pi*f)
-        # so that f = Kc*2^gain1_in_bits * self.sl.fs /(2*pi)
-        closedloop_BW = self.kc_dac2/self.kc *2**gain2_in_bits * self.sl.fs /(2*np.pi)
+        # Gain of the integrator as a function of frequency is 2^self.get_gain1_in_bits() * self.sl.fs /(2*pi*f)
+        # We want the unity gain frequency where G_integrator*Kc = 1 = Kc*2^self.get_gain1_in_bits() * self.sl.fs /(2*pi*f)
+        # so that f = Kc*2^self.get_gain1_in_bits() * self.sl.fs /(2*pi)
+        closedloop_BW = self.kc_dac2/self.kc *2**self.get_gain2_in_bits() * self.sl.fs /(2*np.pi)
         
         if closedloop_BW > 1e6:
             self.qlabel_int2_gain.setText('Lock BW: %.1f MHz' % (round(closedloop_BW*1e5)/1e5/1e6))

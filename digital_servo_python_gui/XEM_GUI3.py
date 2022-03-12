@@ -92,7 +92,7 @@ class controller(object):
 	def connectionGUI(self):
 		strBroadcastAddress = common.findMostLikelyLANBroadcastIPAddress()
 		#strBroadcastAddress = "192.168.0.255"
-		strFPGAFirmware=r'red_pitaya_top_extint_clk.bit'
+		strFPGAFirmware=r'red_pitaya_top_dac1_contains_inputs.bit'
 		strCPUFirmware=u'monitor-tcp'
 		self.initial_config = initialConfiguration(self.sl.dev, self, self.devices_data, strBroadcastAddress, strFPGAFirmware, strCPUFirmware)
 
@@ -166,7 +166,7 @@ class controller(object):
 		self.settings_window.setStyleSheet(custom_style_sheet)
 		vbox1 = Qt.QVBoxLayout()
 		vbox1.addWidget(self.dither_widget0)
-		vbox1.addWidget(self.dither_widget1)
+		# vbox1.addWidget(self.dither_widget1) # no dither on 2nd channel in this branch
 		#vbox1.addWidget(dither_widget2)
 		vbox1.addStretch(1)
 		vbox2 = Qt.QVBoxLayout()

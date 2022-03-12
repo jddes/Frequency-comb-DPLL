@@ -582,15 +582,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.qloop_filters[1].qradio_mode_both.setChecked(False)
 				self.qloop_filters[1].updateSettings()
 				
-				# Wait for the integrator to grab on to the beat
-				time.sleep(0.2)
+				# # Wait for the integrator to grab on to the beat
+				# time.sleep(0.2)
 				
-				# Turn on the full-blown PLL
-				self.qloop_filters[1].qradio_mode_off.setChecked(False)
-				self.qloop_filters[1].qradio_mode_slow.setChecked(False)
-				self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-				self.qloop_filters[1].qradio_mode_both.setChecked(True)
-				self.qloop_filters[1].updateSettings()
+				# # Turn on the full-blown PLL
+				# self.qloop_filters[1].qradio_mode_off.setChecked(False)
+				# self.qloop_filters[1].qradio_mode_slow.setChecked(False)
+				# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+				# self.qloop_filters[1].qradio_mode_both.setChecked(True)
+				# self.qloop_filters[1].updateSettings()
 				
 		
 		else:   # bLock = False
@@ -633,12 +633,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					desired_ramp = np.linspace(current_manual_offset_in_slider_units, current_dac_offset_in_slider_units, 20)
 					# print('ramping from %d to %d in slider units' % (current_manual_offset_in_slider_units, current_dac_offset_in_slider_units))
 					
-					Total_ramp_time = 0.1
-					for k2 in range(len(desired_ramp)):
-	#                    print('set slider to %d' % desired_ramp[k2])
-						self.spectrum.q_dac_offset[kDAC].setValue(desired_ramp[k2])
-						self.spectrum.setDACOffset_event()
-						time.sleep(float(Total_ramp_time)/len(desired_ramp))
+					if self.selected_ADC == 0:
+						Total_ramp_time = 0.1
+						for k2 in range(len(desired_ramp)):
+		#                    print('set slider to %d' % desired_ramp[k2])
+							self.spectrum.q_dac_offset[kDAC].setValue(desired_ramp[k2])
+							self.spectrum.setDACOffset_event()
+							time.sleep(float(Total_ramp_time)/len(desired_ramp))
 				
 					# 2. turn the lock off
 					if self.selected_ADC == 0:
