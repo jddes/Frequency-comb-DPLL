@@ -227,3 +227,18 @@ set_max_delay 3.00 -from [get_clocks clk_fpga_3] -to [get_clocks ext_clk] -datap
 
 
 #set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets adc_clk_in]
+
+# This is necessary to meet all the constraints on MMCM->BUFG, BUFG->BUFG, and PS7 clk->BUFG relative position in the FPGA (must all be in the same device half (top or bottom)
+# However, we can do BUFG->MMCM with the BUFG in a different region.
+set_property BEL MMCME2_ADV [get_cells i_ps/system_i/system_i/clk_wiz_0/inst/CLK_CORE_DRP_I/clk_inst/mmcm_adv_inst]
+set_property LOC MMCME2_ADV_X0Y0 [get_cells i_ps/system_i/system_i/clk_wiz_0/inst/CLK_CORE_DRP_I/clk_inst/mmcm_adv_inst]
+
+set_property LOC BUFGCTRL_X0Y6 [get_cells BUFGCTRL_inst]
+set_property LOC BUFGCTRL_X0Y7 [get_cells i_ps/system_i/system_i/processing_system7/inst/buffer_fclk_clk_0.FCLK_CLK_0_BUFG]
+set_property LOC BUFGCTRL_X0Y5 [get_cells i_ps/system_i/system_i/clk_wiz_0/inst/CLK_CORE_DRP_I/clk_inst/clkout1_buf]
+
+set_false_path -from [get_clocks ext_clk] -to [get_clocks clk_fpga_3]
+
+set_clock_groups -asynchronous -group [get_clocks clk_fpga_3] -group [get_clocks clk_fpga_0]
+set_clock_groups -asynchronous -group [get_clocks ext_clk] -group [get_clocks clk_fpga_0]
+set_clock_groups -asynchronous -group [get_clocks clk_fpga_3] -group [get_clocks pll_adc_clk]

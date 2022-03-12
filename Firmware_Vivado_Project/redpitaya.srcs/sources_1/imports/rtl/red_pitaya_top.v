@@ -155,7 +155,9 @@ wire ack_combine_t;
 
 wire [1:0] gpio_io_o;
 wire ps_gpio_rst;
-wire clk_int_or_ext;
+
+wire clk_int_or_ext_desired;
+wire clk_int_or_ext_actual;
 
 // frequency counter on the external clock input
 wire clk_ext_bufg;
@@ -163,8 +165,13 @@ wire [32-1:0] reg_to_axi1;
 wire [32-1:0] reg_to_axi2;
 wire [32-1:0] reg_to_axi3;
 
-assign clk_int_or_ext = gpio_io_o[0];
+assign clk_int_or_ext_desired = gpio_io_o[0];
 assign ps_gpio_rst    = gpio_io_o[1];
+
+// these settings should be good enough to detect presence of a 10 MHz clock, at 125 MHz stable clk rate
+wire [16-1:0] minimum_cycles_of_clk_under_test = 16'd1;
+wire [16-1:0] cycles_of_clk_stable = 16'd80;
+wire clk_ext_good;
 
 red_pitaya_ps i_ps (
   .FIXED_IO_mio       (  FIXED_IO_mio                ),
@@ -266,6 +273,46 @@ digital_clock_freq_counter # (
     .out_reg_to_axi3  ()
 );
 
+// Handles the decision for switching between internal and external clock according to both the user request AND the presence or not of the external clock
+////////////////////////////////////////////////////////////////////////////////
+clk_manager clk_manager_inst (
+    .clk_stable                      (fclk[0]),
+    .clk_ext                         (clk_ext_bufg),
+    .clk_int_or_ext_desired          (clk_int_or_ext_desired),
+    .minimum_cycles_of_clk_under_test(minimum_cycles_of_clk_under_test),
+    .cycles_of_clk_stable            (cycles_of_clk_stable),
+    .clk_ext_good                    (clk_ext_good),
+    .clk_int_or_ext_actual           (clk_int_or_ext_actual)
+);
+
+
+  // implements the actual switching between the two clock sources
+   BUFGCTRL #(
+      .INIT_OUT(0),           // Initial value of BUFGCTRL output ($VALUES;)
+      .PRESELECT_I0("TRUE"), // BUFGCTRL output uses I0 input ($VALUES;)
+      .PRESELECT_I1("FALSE")  // BUFGCTRL output uses I1 input ($VALUES;)
+   )
+   BUFGCTRL_inst (
+      .O(clk_to_adc_muxed),             // 1-bit output: Clock output
+      .CE0(1'b1),         // 1-bit input: Clock enable input for I0
+      .CE1(1'b1),         // 1-bit input: Clock enable input for I1
+      .I0(fclk[0]),      // 1-bit input: Primary clock
+      .I1(clk_to_adc),   // 1-bit input: Secondary clock
+      .IGNORE0(1'b1), // 1-bit input: Clock ignore input for I0
+      .IGNORE1(1'b1), // 1-bit input: Clock ignore input for I1
+      .S0(clk_int_or_ext_actual),           // 1-bit input: Clock select for I0
+      .S1(~clk_int_or_ext_actual)           // 1-bit input: Clock select for I1
+   );
+
+   // clock-domain crossing synchronizers for S1:
+   (* ASYNC_REG = "TRUE" *) reg clk_int_or_ext_actual_reg1;
+   (* ASYNC_REG = "TRUE" *) reg clk_int_or_ext_actual_reg2;
+   always @(posedge adc_clk)
+   begin
+      clk_int_or_ext_actual_reg1 <= clk_int_or_ext_actual;
+      clk_int_or_ext_actual_reg2 <= clk_int_or_ext_actual_reg1;
+   end
+
 ////////////////////////////////////////////////////////////////////////////////
 // system bus decoder & multiplexer (it breaks memory addresses into 8 regions)
 ////////////////////////////////////////////////////////////////////////////////
@@ -365,6 +412,7 @@ wire                  digital_loop;
 // PLL (clock and reaset)
 ////////////////////////////////////////////////////////////////////////////////
 wire clk_to_adc;
+wire clk_to_adc_muxed;
 //wire clk_ext_or_int;
 wire [2-1:0] gpios_out;
 
@@ -392,7 +440,7 @@ red_pitaya_pll pll (
 );
 
 BUFG bufg_adc_clk    (.O (adc_clk   ), .I (pll_adc_clk   ));
-BUFG bufg_dac_clk_1x (.O (dac_clk_1x), .I (pll_dac_clk_1x));
+//BUFG bufg_dac_clk_1x (.O (dac_clk_1x), .I (pll_dac_clk_1x)); // don't need this, since this is exactly the same as the adc_clk..
 BUFG bufg_dac_clk_2x (.O (dac_clk_2x), .I (pll_dac_clk_2x));
 BUFG bufg_dac_clk_2p (.O (dac_clk_2p), .I (pll_dac_clk_2p));
 BUFG bufg_ser_clk    (.O (adc_clk_2x), .I (pll_clk_adc_2x));
@@ -404,7 +452,7 @@ always @(posedge adc_clk)
 adc_rstn <=  frstn[0] &  pll_locked;
 
 // DAC reset (active high)
-always @(posedge dac_clk_1x)
+always @(posedge adc_clk)
 dac_rst  <= ~frstn[0] | ~pll_locked;
 
 // PWM reset (active low)
@@ -422,8 +470,8 @@ pwm_rstn <=  frstn[0] &  pll_locked;
 
 // JDD 2019-01-09: Enabling generating ADC clock from the FPGA (so that we can switch between internal and external clock modes)
 // assign adc_clk_o = 2'b10;
-ODDR i_adc_clk_p ( .Q(adc_clk_o[0]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
-ODDR i_adc_clk_n ( .Q(adc_clk_o[1]), .D1(1'b0), .D2(1'b1), .C(clk_to_adc), .CE(1'b1), .R(1'b0), .S(1'b0));
+ODDR i_adc_clk_p ( .Q(adc_clk_o[0]), .D1(1'b1), .D2(1'b0), .C(clk_to_adc_muxed), .CE(1'b1), .R(1'b0), .S(1'b0));
+ODDR i_adc_clk_n ( .Q(adc_clk_o[1]), .D1(1'b0), .D2(1'b1), .C(clk_to_adc_muxed), .CE(1'b1), .R(1'b0), .S(1'b0));
 
 // ADC clock duty cycle stabilizer is enabled
 assign adc_cdcs_o = 1'b1 ;
@@ -466,18 +514,18 @@ assign adc_b = digital_loop ? dac_b : {adc_dat_b[14-1], ~adc_dat_b[14-2:0]};
 
 
 // output registers + signed to unsigned (also to negative slope)
-always @(posedge dac_clk_1x)
+always @(posedge adc_clk)
 begin
   dac_dat_a <= {dac_a[14-1], ~dac_a[14-2:0]};
   dac_dat_b <= {dac_b[14-1], ~dac_b[14-2:0]};
 end
 
-// DDR outputs
-ODDR oddr_dac_clk          (.Q(dac_clk_o), .D1(1'b0     ), .D2(1'b1     ), .C(dac_clk_2p), .CE(1'b1), .R(1'b0   ), .S(1'b0));
-ODDR oddr_dac_wrt          (.Q(dac_wrt_o), .D1(1'b0     ), .D2(1'b1     ), .C(dac_clk_2x), .CE(1'b1), .R(1'b0   ), .S(1'b0));
-ODDR oddr_dac_sel          (.Q(dac_sel_o), .D1(1'b1     ), .D2(1'b0     ), .C(dac_clk_1x), .CE(1'b1), .R(dac_rst), .S(1'b0));
-ODDR oddr_dac_rst          (.Q(dac_rst_o), .D1(dac_rst  ), .D2(dac_rst  ), .C(dac_clk_1x), .CE(1'b1), .R(1'b0   ), .S(1'b0));
-ODDR oddr_dac_dat [14-1:0] (.Q(dac_dat_o), .D1(dac_dat_b), .D2(dac_dat_a), .C(dac_clk_1x), .CE(1'b1), .R(dac_rst), .S(1'b0));
+// // DDR outputs
+// ODDR oddr_dac_clk          (.Q(dac_clk_o), .D1(1'b0     ), .D2(1'b1     ), .C(dac_clk_2p), .CE(1'b1), .R(1'b0   ), .S(1'b0));
+// ODDR oddr_dac_wrt          (.Q(dac_wrt_o), .D1(1'b0     ), .D2(1'b1     ), .C(dac_clk_2x), .CE(1'b1), .R(1'b0   ), .S(1'b0));
+// ODDR oddr_dac_sel          (.Q(dac_sel_o), .D1(1'b1     ), .D2(1'b0     ), .C(adc_clk   ), .CE(1'b1), .R(dac_rst), .S(1'b0));
+// ODDR oddr_dac_rst          (.Q(dac_rst_o), .D1(dac_rst  ), .D2(dac_rst  ), .C(adc_clk   ), .CE(1'b1), .R(1'b0   ), .S(1'b0));
+// ODDR oddr_dac_dat [14-1:0] (.Q(dac_dat_o), .D1(dac_dat_b), .D2(dac_dat_a), .C(adc_clk   ), .CE(1'b1), .R(dac_rst), .S(1'b0));
 
 
 
@@ -554,6 +602,7 @@ dpll_wrapper dpll_wrapper_inst (
   .sys_rdata               (  sys_rdata[ 0*32+31: 0*32]  ),  // read data                     -- sys_rdata[ 0*32+31: 0*32]
   .sys_err                 (  sys_err[0]                 ),  // error indicator
   .sys_ack                 (  sys_ack[0]                 )   // acknowledge signal            -- sys_ack[0]
+
 );
 
 addr_packed addr_packed_inst (
@@ -607,7 +656,7 @@ always @(posedge adc_clk) begin
   end
 end
 
-assign led_o = {fifo_empty, fifo_full, led_counter[25], clk_int_or_ext, 4'b0};
+assign led_o = {5'b0, led_counter[25], clk_ext_good, clk_int_or_ext_actual};
 
 // // ---------------------------------------------------------------------------------
 // // For testing the N-times clk FIR filter:
@@ -1094,6 +1143,5 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
   assign exp_n_out[1] = max5541_sda; 
   assign exp_p_out[1] = 0; // before 2018-06-29: max5541_csb, now is just an input (unused, but wired in parallel with an output on one of the boards
 
-  assign exp_n_out[3] = opamp_30V_enable; // this turns ON Q1 in the schematic, which turns on Q2, which activates 15 mA of bias current into the non-inverting pin in order to put the opamp inside it's common-mode input range
 endmodule
 

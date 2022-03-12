@@ -33,6 +33,13 @@ class SuperLaserLand_JD_RP:
 	bCommunicationLogging = False   # Turn On/Off logging of the USB communication with the FPGA box
 	bVerbose = False
 	
+    # input channels ids start from 1
+    num_channels = 4
+    channels_list = list(range(1, num_channels+1))
+
+    # dac ids start from 1
+    num_dacs = 3
+    dacs_list = list(range(1, num_dacs+1))
 	
 	ddc0_frequency_in_hz = 25e6
 	ddc1_frequency_in_hz = 25e6
@@ -95,13 +102,7 @@ class SuperLaserLand_JD_RP:
 	############################################################
 	# CONSTANTS for endpoint numbers:
 	# Inputs to the FPGA:
-	ENDPOINT_CMD_ADDR                                   = 0x0
-	ENDPOINT_CMD_DATA1IN                                = 0x1
-	ENDPOINT_CMD_DATA2IN                                = 0x2
 	BUS_ADDR_MUX_SELECTORS                              = 0x3
-	ENDPOINT_MUX_CLOCK_SOURCE                           = 0x4
-	ENDPOINT_EXTERNAL_FIFO_RESET                        = 0x5
-	ENDPOINT_CMD_TRIG                                   = 0x40
 	
 	# # LEGACY, Opal-Kelly-style "endpoints":
 	# ENDPOINT_STATUS_FLAGS_OUT = 0x25
@@ -219,39 +220,16 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_integrator1_settings                       = 0x7020
 	BUS_ADDR_integrator2_settings                       = 0x7021
 	
-	BUS_ADDR_dac2_setpoint                              = 0x7024
-	
 	# DDC 0 settings
 	BUS_ADDR_ref_freq0_lsbs                             = 0x8000
 	BUS_ADDR_ref_freq0_msbs                             = 0x8001
 	BUS_ADDR_ddc_filter_select                          = 0x8002
 	BUS_ADDR_ddc_angle_select                           = 0x8004
 	
-	# DDC 1 settings. This one is more complicated since we have included dfr phase generation and synchronized frequency changes.
+	# DDC 1 settings.
 	BUS_ADDR_nominal_ref_freq1_lsbs                     = 0x8010
 	BUS_ADDR_nominal_ref_freq1_msbs                     = 0x8011
-	BUS_ADDR_new_ref_freq1_lsbs                         = 0x8012
-	BUS_ADDR_new_ref_freq1_msbs                         = 0x8013
-	# This is an 80 bits register
-	BUS_ADDR_dfr_phase_modulus1                         = 0x8014
-	BUS_ADDR_dfr_phase_modulus2                         = 0x8015
-	BUS_ADDR_dfr_phase_modulus3                         = 0x8016
-	BUS_ADDR_dfr_phase_modulus4                         = 0x8017
-	# This is an 80 bits register
-	BUS_ADDR_dfr_phase_adjust1                          = 0x8018
-	BUS_ADDR_dfr_phase_adjust2                          = 0x8019
-	BUS_ADDR_dfr_phase_adjust3                          = 0x801A
-	BUS_ADDR_dfr_phase_adjust4                          = 0x801B
 
-	# This is an 80 bits register
-	BUS_ADDR_delta_fr1                                  = 0x8022
-	BUS_ADDR_delta_fr2                                  = 0x8023
-	BUS_ADDR_delta_fr3                                  = 0x8024
-	BUS_ADDR_delta_fr4                                  = 0x8025
-	BUS_ADDR_ref1_state_control                         = 0x8026
-	
-	
-	
 	# DAC0 Dither and Lock-in settings:
 	BUS_ADDR_dither_enable                             = [0x8100, 0x8200, 0x8300]
 	BUS_ADDR_dither_period_divided_by_4_minus_one      = [0x8101, 0x8201, 0x8301]
@@ -278,21 +256,49 @@ class SuperLaserLand_JD_RP:
 
 
 
+    ############################################################
+    # Functions to map addresses below to the correct absolute addresses
+    # There are three separate address spaces
+    datalogger2absolute = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR + (1<<20) # the value 1 is taken from red_pitaya_top.v, from this line: .sys_wen(sys_wen[1]),  used by trigger_write below
+    dpll2absolute       = lambda x: x*4 + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR # Addresses that are multiplied by four are part of the multichannel_freq_counter_top address space. this is done to avoid any chance of doing a read at a non-four-bytes-aligned address, which crashes the Zynq CPU
+    bd2absolute         = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR_XADC
+    # 
+    addr = {
+        "trigger_write":  datalogger2absolute(0x1004),    # writing anything to this address triggers the write mode in ram_data_logger.vhd; part of a different address space than most other registers
+
+        "ext_clk_status": dpll2absolute(0x0046),
+
+        # addresses implemented in the "Board design" 
+        # XADC-related
+        "xadc_base":   bd2absolute(0x0001_0000),
+        "xadc_Vccint": bd2absolute(0x0001_0000 + 0x204),
+        "xadc_Vccaux": bd2absolute(0x0001_0000 + 0x208),
+        "xadc_Vbram":  bd2absolute(0x0001_0000 + 0x218),
+        "xadc_Temp":   bd2absolute(0x0001_0000 + 0x200),
+
+        # Clock configuration registers (table 4-2 in PG065)
+        "clkw_reg0":          bd2absolute(0x0002_0000 + 0x200),
+        "clkw_reg2":          bd2absolute(0x0002_0000 + 0x208),
+        "clkw_status":        bd2absolute(0x0002_0000 + 0x04),
+        "clkw_reg23":         bd2absolute(0x0002_0000 + 0x25C),
+        # External-clock-related
+        "clk_sel_and_reset":  bd2absolute(0x0003_0000),
+        "clk_freq_reg1":      bd2absolute(0x0004_0000),
+        "clk_freq_reg2":      bd2absolute(0x0004_0008),
+        "clk_freq_reg3":      bd2absolute(0x0005_0000),
+
+        "uart_to_spi_bridge": bd2absolute(0x0005_0008),
+    }
+    for xadc_channel in range(15+1):
+        addr["xadc_channel%d" % xadc_channel] = addr["xadc_base"]+0x240+4*xadc_channel
+
 	############################################################
+
+    reg_values     = dict() # this will get populated every time we write a value to the device
+    derived_values = dict() # these values get populated as a function of the register values, and are mostly for convenience
 	
 	############################################################
 	# Constants for the input multiplex going to the DDR2Logger
-	SELECT_ADC0          = 0
-	SELECT_ADC1          = 1
-	SELECT_DDC0          = 2
-	SELECT_DDC1          = 3
-	SELECT_VNA           = 4
-	SELECT_COUNTER       = 5
-	SELECT_DAC0          = 6
-	SELECT_DAC1          = 7
-	SELECT_DAC2          = 8
-	SELECT_CRASH_MONITOR = 2**4
-	SELECT_IN10          = 2**4 + 2**3
 	LOGGER_MUX = {
 		'ADC0':          0,
 		'ADC1':          1,
@@ -315,6 +321,8 @@ class SuperLaserLand_JD_RP:
 		strNameTemplate = time.strftime("data_logging\\%m_%d_%Y_%H_%M_%S_")
 		# Create the subdirectory if it doesn't exist:
 		common.make_sure_path_exists('data_logging')
+
+		self.user_inputs = dict()
 		
 		if self.bCommunicationLogging == True:
 			strCurrentName = strNameTemplate + 'SuperLaserLand_log.txt'
@@ -333,8 +341,35 @@ class SuperLaserLand_JD_RP:
 
 		self.dev = RP_PLL.RP_PLL_device(self.controller)
 
-	
-		
+    def write(self, reg_name, data_32bits):
+        """ Default register writes are 32 bits """
+        self.dev.write_uint32(self.addr[reg_name], int(data_32bits))
+        self.reg_values[reg_name] = int(data_32bits)
+
+    def write_repeat(self, reg_name, values_32bits, iSleepUs=0):
+        """ Write multiple consecutive values to a single address.
+        values_32bits must be an iterable """
+        self.dev.write_repeat_uint32(self.addr[reg_name], values_32bits, iSleepUs)
+        self.reg_values[reg_name] = int(values_32bits[-1])
+
+    def write_64bits(self, reg_name, data_64bits):
+        """ This is broken up into two consecutive 32-bits writes,
+        with the MSBs written last """
+        data_32bits_lower =  data_64bits      & 0xFFFFFFFF
+        data_32bits_upper = (data_64bits>>32) & 0xFFFFFFFF
+        self.dev.write_uint32(self.addr[reg_name],   int(data_32bits_lower))
+        self.dev.write_uint32(self.addr[reg_name]+4, int(data_32bits_upper))
+        self.reg_values[reg_name] = int(data_64bits)
+
+    def write_2x_16bits(self, reg_name, data_lsbs, data_msbs):
+        reg_value = (int(data_msbs)<<16) + int(data_lsbs)
+        self.write(reg_name, reg_value)
+
+    def read(self, reg_name):
+        reg_value = self.dev.read_uint32(self.addr[reg_name])
+        self.reg_values[reg_name] = reg_value
+        return reg_value
+
 	def openDevice(self, bConfigure=True, strSerial='', strFirmware='superlaserland.bit'):
 		if self.bVerbose == True:
 			print('OpenDevice')
@@ -355,10 +390,8 @@ class SuperLaserLand_JD_RP:
 			print('resetFrontend')
 			
 		# print('Resetting FPGA (resetFrontend)...')
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET_FRONTEND)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_RESET_FRONTEND*4, 0)
 		
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_RESET)
 
 	def initSubModules(self):
 		if self.bVerbose == True:
@@ -390,11 +423,6 @@ class SuperLaserLand_JD_RP:
 			print('send_bus_cmd_32bits')
 		#print(sys._getframe().f_back.f_code.co_name)
 		self.dev.write_Zynq_register_uint32(int(bus_address)*4, int(data_32bits))
-			
-		# data_lsbs = int(data_32bits) & 0xFFFF
-		# data_msbs = (int(data_32bits) & 0xFFFF0000) >> 16
-#        print('lsbs = %d, msbs = %d' % (data_lsbs, data_msbs))
-		# self.send_bus_cmd(bus_address, data_lsbs, data_msbs)
 		
 	def send_bus_cmd_16bits(self, bus_address, data_16bits):
 		if self.bVerbose == True:
@@ -417,8 +445,6 @@ class SuperLaserLand_JD_RP:
 		samples_out = samples_out.astype(dtype=np.float)
 		samples_out = self.scaleADCorDACDataToVolts(samples_out, input_select)
 		return samples_out
-
-
 		
 	def setup_write(self, selector, Num_samples):
 		if self.bVerbose == True:
@@ -437,64 +463,13 @@ class SuperLaserLand_JD_RP:
 #            print('Warning: Number of samples changed from %d to %d.' % (Num_samples, self.Num_samples_write))
 		self.Num_samples_read = self.Num_samples_write
 		
-		# Set the clock divider (never used)
-		# self.send_bus_cmd(self.BUS_ADDR_CLK_DIVIDER, self.clk_divider, 0)
-		
-		# Set the number of samples, actual number will be 1024*data_in1 value
-		# self.dev.SetWireInValue(self.ENDPOINT_CMD_DATA1IN, int(self.Num_samples_write/1024) + 1)
-		#self.dev.SetWireInValue(self.ENDPOINT_CMD_ADDR, self.BUS_ADDR_WRITE_ENABLE)
-		self.dev.UpdateWireIns()    # Write wires values to FPGA
-
 		# Select which data bus to put in the RAM:
 		self.last_selector = selector
-		self.dev.SetWireInValue(self.BUS_ADDR_MUX_SELECTORS, self.last_selector)
-		self.dev.UpdateWireIns()    # Write wires values to FPGA
+		self.send_bus_cmd_32bits(self.BUS_ADDR_MUX_SELECTORS, self.last_selector)
 
 		# We don't strobe the trigger line because we want to give the user the
 		# chance to setup more stuff (system identification module for example) before launching the read
 
-	def setup_ADC0_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_ADC0_write')
-			
-		self.setup_write(self.LOGGER_MUX['ADC0'], Num_samples)
-	def setup_ADC1_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_ADC1_write')
-			
-		self.setup_write(self.LOGGER_MUX['ADC1'], Num_samples)
-	def setup_DDC0_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DDC0_write')
-			
-		self.setup_write(self.LOGGER_MUX['DDC0'], Num_samples)
-	def setup_DDC1_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DDC1_write')
-			
-		self.setup_write(self.LOGGER_MUX['DDC1'], Num_samples)
-	def setup_counter_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_counter_write')
-			
-		self.setup_write(self.LOGGER_MUX['COUNTER'], Num_samples)
-	def setup_DAC0_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DAC0_write')
-			
-		self.setup_write(self.LOGGER_MUX['DAC0'], Num_samples)
-	def setup_DAC1_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DAC1_write')
-			
-		self.setup_write(self.LOGGER_MUX['DAC1'], Num_samples)
-		
-	def setup_DAC2_write(self, Num_samples):
-		if self.bVerbose == True:
-			print('setup_DAC2_write')
-			
-		self.setup_write(self.LOGGER_MUX['DAC2'], Num_samples)
-		
 	def compute_integration_time_for_syst_ident(self, System_settling_time, first_modulation_frequency_in_hz):
 		# There are four constraints on this value:
 		# First of all, the output rate of the block depends on this value so it has to be kept under some limit (one block of data every ~20 clock cycles)
@@ -604,7 +579,6 @@ class SuperLaserLand_JD_RP:
 			self.log_file.write('trigger_write()\n')
 		# Start writing data to the BRAM:
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_WRITE, 0)
-		#self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CMD_STROBE)
 		
 	def trigger_system_identification(self):
 		if self.bVerbose == True:
@@ -613,10 +587,8 @@ class SuperLaserLand_JD_RP:
 		if self.bCommunicationLogging == True:
 			self.log_file.write('trigger_system_identification()\n')
 		# Start writing data to the DDR2 RAM:
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_CMD_STROBE)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_WRITE, 0)
 		# Start the system identification process:
-		# self.dev.ActivateTriggerIn(self.ENDPOINT_CMD_TRIG, self.TRIG_SYSTEM_IDENTIFICATION)
 		self.dev.write_Zynq_register_uint32(self.BUS_ADDR_TRIG_SYSTEM_IDENTIFICATION*4, 0)
 				
 	def wait_for_write(self):
@@ -1077,7 +1049,7 @@ class SuperLaserLand_JD_RP:
 			return
 
 		self.set_dac_offset(dac_number, value)
-	
+
 	def set_dac_offset(self, dac_number, offset):
 		if self.bVerbose == True:
 			print('set_dac_offset')
@@ -1087,7 +1059,7 @@ class SuperLaserLand_JD_RP:
 		#print('set_dac_offset(): dac #%d, offset = %d' % (dac_number, offset))
 		self.DACs_offset[dac_number] = offset
 		self.send_bus_cmd_32bits(self.BUS_ADDR_DAC_offset[dac_number], offset)
-
+	
 	def get_dac_offset(self, dac_number):
 		if self.bVerbose == True:
 			print('get_dac_offset')
@@ -1102,7 +1074,6 @@ class SuperLaserLand_JD_RP:
 		self.DACs_offset[dac_number] = offset
 
 		return offset
-
 
 	##
 	## HB, 4/27/2015, Added PWM support on DOUT0
@@ -1190,7 +1161,20 @@ class SuperLaserLand_JD_RP:
 		# This only gives the correct answer if either: this object has explicitely ran its set_ddc0_ref_freq() function.
 		# or: the default value in the FPGA firmware matches the one in self.frequency_in_int defined as a data member.
 		frequency_in_hz = float(self.ddc0_frequency_in_int) / 2**48 * self.fs
-		return frequency_in_hz
+		return frequency_in_hz 
+
+    def set_ddc_ref_freq(self, channel_id, frequency_in_hz):
+        """ channel_id can be either 1, 2, 3 or 4 """
+        assert channel_id in self.channels_list
+        self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
+        dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs)
+        # print("dds_freq_word=",dds_freq_word)
+        self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
+
+    def dds_freq_to_word(self, frequency_in_hz, ref_freq):
+        dds_freq_word = int(round(2**(48) * frequency_in_hz/ref_freq))
+        dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
+        return dds_freq_word
 
 	def set_ddc0_ref_freq(self, frequency_in_hz):
 		if self.bVerbose == True:
@@ -2018,11 +2002,27 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC, reg1)
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC_DUTY, reg2)
 
-	# f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode)
-	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
-		DIVCLK_DIVIDE = 1
-		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
-		# print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
+
+	def setADCclockPLL(self, f_ref, bExternalClock):
+		""" Computes and commits closest integer-N solution for the ADC clock.
+		In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
+		print("setADCclockPLL(): f_ref=", f_ref)
+		self.user_inputs["bExternalClock"] = bExternalClock
+		if bExternalClock:
+			(M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
+			self.user_inputs["adc_f_ref_hz"]   = f_ref
+			self.user_inputs["CLKFBOUT_MULT"]  = M
+			self.user_inputs["CLKOUT0_DIVIDE"] = N
+			self._setADCclockPLL()
+		else:
+			# we are not even using the MMCM
+			self.user_inputs["adc_f_ref_hz"]   = 125e6
+			self.user_inputs["CLKFBOUT_MULT"]  = 1
+			self.user_inputs["CLKOUT0_DIVIDE"] = 1
+			self._setClkSelectAndReset(False, bExternalClock)
+
+	def _setADCclockPLL(self):
+		""" f_ref is the frequency of the clock connected to GPIO_P[5] in external clock mode """
 
 		# From PG065:
 		# "You should first write all the required clock configuration registers and then check for the
@@ -2032,43 +2032,167 @@ class SuperLaserLand_JD_RP:
 		# 0x4 and then 0x0 restores the original settings."
 
 		# Clock configuration register 0 (table 4-2 in PG065)
+		DIVCLK_DIVIDE = 1
 		reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
-		reg |= (CLKFBOUT_MULT & ((1<<8)-1)) << 8
-		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x200, reg)
+		reg |= (self.user_inputs["CLKFBOUT_MULT"] & ((1<<8)-1)) << 8
+		self.write("clkw_reg0", reg)
 		# Clock configuration register 2 (table 4-2 in PG065)
-		reg = (CLKOUT0_DIVIDE & ((1<<8)-1)) << 0
-		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x208, reg)
+		reg = (self.user_inputs["CLKOUT0_DIVIDE"] & ((1<<8)-1)) << 0
+		self.write("clkw_reg2", reg)
 
 		# check status register:
-		time_start = time.perf_counter()
-		status_reg = 0x0
-		while status_reg != 0x1 and time.perf_counter()-time_start < 1.: # 1 sec timeout
-			status_reg = self.dev.read_Zynq_AXI_register_uint32(self.clkw_base_addr+0x04)
-
-		if status_reg != 0x1:
+		if not self._waitForReg("clkw_status", 0x1, timeout=1.0):
 			print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
 			return
 
-		reg_clk_sel_and_reset = int(not bExternalClock) | (1<<1)
-		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
-		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x7)
-		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
+		self._setClkSelectAndReset(True, self.user_inputs["bExternalClock"]) # assert reset on the incoming ADC clock
+		self.write("clkw_reg23", 0x7)
+		self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
-		self.fs = f_source * CLKFBOUT_MULT/CLKOUT0_DIVIDE
-		self.bExternalClock = bExternalClock
-		# print("setADCclockPLL():\nDIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock = ", DIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock)
-		# print("setADCclockPLL():\nself.fs = ", self.fs)
+		self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
 		time.sleep(0.1)
-		reg_clk_sel_and_reset = int(not bExternalClock) | (0<<1) # de-assert reset on the incoming ADC clock
-		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
-		
-		self.resetFrontend() # all clocks should now be stable, reset everything else
+		self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # de-assert reset on the incoming ADC clock
 
-	def readADCclockSettings(self, f_external):
+	def _waitForReg(self, reg_name, desired_value, timeout=1.):
+		""" Read a register in a loop, until it either becomes a desired value or we hit a timeout.
+		Returns True if the register reached the desired value, False if we timed out """
+		time_start = time.perf_counter()
+		reg_value = self.read(reg_name)
+		while reg_value != desired_value and time.perf_counter()-time_start < timeout: # read in a loop until we timeout
+			reg_value = self.read(reg_name)
+			time.sleep(1e-3)
+		return reg_value == desired_value
+
+	def _setClkSelectAndReset(self, bReset, bExternalClock):
+		""" Select external or internal clock source, and also sets the reset """
+		reg_clk_sel_and_reset = int(not bExternalClock) | (int(bReset)<<1)
+		self.write("clk_sel_and_reset", reg_clk_sel_and_reset)
+
+
+	def getClkStatus(self):
+		""" Returns four boolean flags:
+		(loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
+		loss_of_clk_detected is True if the user set external clock mode, but the system fell back to internal clock mode
+		at any point since the last reading of this flag.
+		clk_int_or_ext_desired = True means internal clock
+		clk_int_or_ext_actual = True means internal clock
+		"""
+		reg_value = self.read("ext_clk_status")
+		loss_of_clk_detected   = bool((reg_value>>3) & 0x1)
+		clk_ext_good           = bool((reg_value>>2) & 0x1)
+		clk_int_or_ext_actual  = bool((reg_value>>1) & 0x1)
+		clk_int_or_ext_desired = bool((reg_value>>0) & 0x1)
+		return (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
+
+
+    # xadc_channel can be [0, 15]
+    def readZynqXADC(self, xadc_channel=0):
+        ###########################################################################
+        # Reading the XADC values:
+        # See Xilinx document UG480 chapter 2 for conversion factors
+        # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+        xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
+        return xadc_unipolar_code_to_voltage(self.read("xadc_channel%d" % xadc_channel))
+
+    # read various power supply voltages on the Zynq using the XADC:
+    def readZynqXADCsupply(self):
+        ###########################################################################
+        # Reading the XADC values:
+        # See Xilinx document UG480 chapter 2 for conversion factors
+        # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+        xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
+        Vccint = xadc_powersupply_code_to_voltage(self.read("xadc_Vccint"))
+        Vccaux = xadc_powersupply_code_to_voltage(self.read("xadc_Vccaux"))
+        Vbram  = xadc_powersupply_code_to_voltage(self.read("xadc_Vbram"))
+        return (Vccint, Vccaux, Vbram)
+
+    # read the Zynq's current temperature:
+    def readZynqTemperature(self):
+        ###########################################################################
+        # Reading the XADC values:
+        # See Xilinx document UG480 chapter 2 for conversion factors
+        # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+        xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
+        time_start = time.clock()
+        # average 10 readings because otherwise they are quite noisy:
+        # this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
+        N_average = 10.
+        reg_avg = 0.
+        for k in range(int(N_average)):
+            reg = self.read("xadc_Temp")
+            reg_avg += float(reg)
+            
+        reg_avg = float(reg_avg)/N_average
+        # print("elapsed = %f" % (time.clock()-time_start))
+        ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
+        return ZynqTempInDegC
+        
+    def getExtClockFreq(self):
+        # see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
+        data_index = lambda x: (x >> 24)
+        bSuccess = False
+        for iAttempts in range(2):
+            reg1 = self.read("clk_freq_reg1")
+            reg2 = self.read("clk_freq_reg2")
+            reg3 = self.read("clk_freq_reg3")
+            # these three need to match.  If they don't, this means that the data changed in between our three reads.
+            # try another time to read all three registers.  It should succeed, since the counter updates only at 1 Hz
+            if data_index(reg1) == data_index(reg2) == data_index(reg3):
+                bSuccess = True
+                break
+        if not bSuccess:
+            return np.nan
+        freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
+                       ((reg2 & 0x00FFFFFF) << 24) + 
+                       ((reg3 & 0x0000FFFF) << 48))
+        freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, N_cycles_gate_time=200e6, f_ref=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
+        freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
+        return freq_Hz
+
+
+	def getHardwareDescription(self):
+		""" Returns a dictionary with various flags describing the hardware on the connected device """
+		d = dict()
+		f = self.dev.read_file_from_remote("/opt/hardware.txt")
+		f = f.decode('ascii')
+		# f = "has_dds=1\nhas_mixer_board=1\n" # for testing
+		for line in f.split('\n'):
+			if line == '':
+				continue
+			key, value = line.split('=')
+			d[key] = bool(int(value))
+
+		f = self.dev.read_file_from_remote("/opt/macaddress.txt")
+		f = f.decode('ascii')
+		if f == '':
+			self.dev.send_shell_command('ifconfig | grep eth0 > /opt/macaddress.txt')
+			time.sleep(0.1)
+			f = self.dev.read_file_from_remote("/opt/macaddress.txt")
+			f = f.decode('ascii')
+
+		mac_token = 'HWaddr '
+		ind = f.find(mac_token)
+		if ind != -1:
+			d["mac"] = f[ind+len(mac_token):].strip()
+		return d
+
+	def sendHardwareDescription(self, bHasMixerBoard=False, bHasDDS=False):
+		""" Creates a file that describes various add-ons to the RP,
+		and sends it to the currently-connected device.
+		To be used only once when upgrading a given RP """
+		description = "has_mixer_board=%d\n" % int(bool(bHasMixerBoard))
+		description += "has_dds=%d\n" % int(bool(bHasDDS))
+		file_data = description.encode('ascii')
+		self.dev.write_file_on_remote("", strFilenameRemote="/opt/hardware.txt", file_data=file_data)
+
+
+	def deprecated_readADCclockSettings(self, f_external):
 		""" Reads the current frequency ratio set by the PLL and updates self.fs accordingly """
 		# Clock configuration register 0 (table 4-2 in PG065)
 		# reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
 		# reg |= (CLKFBOUT_MULT & ((1<<8)-1)) << 8
+		print("FIXME: deprecated_readADCclockSettings doesn't work with the new clocking scheme from the FNC-100")
+		return
 		reg = self.dev.read_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x200)
 		DIVCLK_DIVIDE = (reg>>0) & ((1<<8)-1)
 		CLKFBOUT_MULT = (reg>>8) & ((1<<8)-1)

@@ -11,6 +11,11 @@ port (
 	
     clk                                    : in  std_logic;
     
+    -- status registers inputs:
+    -- monitors actual clock mode:
+    clk_int_or_ext_actual   : in  std_logic;
+    clk_int_or_ext_desired  : in  std_logic;
+    clk_ext_good            : in  std_logic;
 
     -- Registers inputs (to be read)
     status_flags                           : in  std_logic_vector(32-1 downto 0);
@@ -65,6 +70,20 @@ architecture Behavioral of registers_read is
     signal counter_read : std_logic := '0';
     signal counter_reg : std_logic_vector(64-1 downto 0) := (others => '0');
 
+    signal loss_of_clk_detected : std_logic := '0';
+
+    -- clock-domain crossing registers:
+    signal clk_int_or_ext_actual_reg1, clk_int_or_ext_actual_reg2    : std_logic := '0';
+    signal clk_int_or_ext_desired_reg1, clk_int_or_ext_desired_reg2  : std_logic := '0';
+    signal clk_ext_good_reg1, clk_ext_good_reg2                      : std_logic := '0';
+
+    attribute ASYNC_REG : string;
+    attribute ASYNC_REG of clk_int_or_ext_actual_reg1  : signal is "TRUE";
+    attribute ASYNC_REG of clk_int_or_ext_actual_reg2  : signal is "TRUE";
+    attribute ASYNC_REG of clk_int_or_ext_desired_reg1 : signal is "TRUE";
+    attribute ASYNC_REG of clk_int_or_ext_desired_reg2 : signal is "TRUE";
+    attribute ASYNC_REG of clk_ext_good_reg1           : signal is "TRUE";
+    attribute ASYNC_REG of clk_ext_good_reg2           : signal is "TRUE";
 begin
 
     -- handle counter data,
@@ -86,6 +105,19 @@ begin
         end if;
     end process;
 
+    process( clk )
+    begin
+        if rising_edge(clk) then
+            -- clock domain crossing:
+            clk_int_or_ext_actual_reg1 <= clk_int_or_ext_actual;
+            clk_int_or_ext_actual_reg2 <= clk_int_or_ext_actual_reg1;
+            clk_int_or_ext_desired_reg1 <= clk_int_or_ext_desired;
+            clk_int_or_ext_desired_reg2 <= clk_int_or_ext_desired_reg1;
+            clk_ext_good_reg1 <= clk_ext_good;
+            clk_ext_good_reg2 <= clk_ext_good_reg1;
+        end if;
+    end process;
+
     -----------------------------------------
     -- registers
 
@@ -95,8 +127,18 @@ begin
         if rising_edge(clk) then
             sys_err <= '0';
             sys_en := sys_wen or sys_ren;
+
             -- defaults:
             counter_read <= '0';
+
+            -- latch loss of ext clock events:
+            if clk_int_or_ext_desired_reg2 = '0' and clk_int_or_ext_actual_reg2 = '1' then
+                loss_of_clk_detected <= '1';
+            end if;
+
+            -- default
+            sys_rdata <=  (others => '0');
+            
 
             -- Write
             if sys_wen = '1' then
@@ -165,6 +207,7 @@ begin
                     when x"00041" => sys_ack <= sys_en; sys_rdata <= (others => '0'); sys_rdata(0) <= have_counter;
                     when x"00042" => sys_ack <= sys_en; sys_rdata <= counter_reg(32-1    downto  0);
                     when x"00043" => sys_ack <= sys_en; sys_rdata <= counter_reg(32+32-1 downto 32); counter_read <= '1';
+                    when x"00046" => sys_ack <= sys_en; sys_rdata(4-1 downto 0) <= (loss_of_clk_detected & clk_ext_good_reg2 & clk_int_or_ext_actual_reg2 & clk_int_or_ext_desired_reg2); loss_of_clk_detected <= '0';
 
                     when others   => sys_ack <= sys_en; sys_rdata <=  (others => '0');
                 end case;

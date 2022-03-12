@@ -133,12 +133,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
         elif mux_pll2 == 2:
             self.qradio_pll1_to_pll2.setChecked(True)
         
-        # clock source
-        self.sl.readADCclockSettings(f_external=self.f_ext)
-        if self.sl.bExternalClock:
-            self.qradio_external_clk.setChecked(True)
-        else:
-            self.qradio_internal_clk.setChecked(True)
+        # # clock source
+        print("FIXME: read out current clock settings!")
+        # self.sl.deprecated_readADCclockSettings(f_external=self.f_ext)
+        # if self.sl.bExternalClock:
+        #     self.qradio_external_clk.setChecked(True)
+        # else:
+        #     self.qradio_internal_clk.setChecked(True)
 
 
         self.startTimers()

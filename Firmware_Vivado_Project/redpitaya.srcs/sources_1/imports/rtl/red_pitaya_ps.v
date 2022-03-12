@@ -363,10 +363,15 @@ gp0_maxi_arstn <= fclk_rstn[0];
 
 assign fclk_rstn_o = fclk_rstn;
 
-BUFG i_fclk0_buf  (.O(fclk_clk_o[0]), .I(fclk_clk[0]));
-BUFG i_fclk1_buf  (.O(fclk_clk_o[1]), .I(fclk_clk[1]));
-BUFG i_fclk2_buf  (.O(fclk_clk_o[2]), .I(fclk_clk[2]));
-BUFG i_fclk3_buf  (.O(fclk_clk_o[3]), .I(fclk_clk[3]));
+// JDD edit 2020-09-13: removing these BUFG since I think the clocks were already being sourced by a BUFG,
+// and I am running into issues with BUFG-BUFG cascading rules
+// Also removing clocks 1 and 2 since they were simply not used
+assign fclk_clk_o[0] = fclk_clk[0];
+assign fclk_clk_o[3] = fclk_clk[3];
+//BUFG i_fclk0_buf  (.O(fclk_clk_o[0]), .I(fclk_clk[0]));
+// BUFG i_fclk1_buf  (.O(fclk_clk_o[1]), .I(fclk_clk[1]));
+// BUFG i_fclk2_buf  (.O(fclk_clk_o[2]), .I(fclk_clk[2]));
+//BUFG i_fclk3_buf  (.O(fclk_clk_o[3]), .I(fclk_clk[3]));
 
 system_wrapper system_i (
   // MIO
@@ -394,8 +399,8 @@ system_wrapper system_i (
   .DDR_we_n          (DDR_we_n         ),
   // FCLKs
   .FCLK_CLK0         (fclk_clk[0]      ),
-  .FCLK_CLK1         (fclk_clk[1]      ),
-  .FCLK_CLK2         (fclk_clk[2]      ),
+  //.FCLK_CLK1         (fclk_clk[1]      ),
+  //.FCLK_CLK2         (fclk_clk[2]      ),
   .FCLK_CLK3         (fclk_clk[3]      ),
   .FCLK_RESET0_N     (fclk_rstn[0]     ),
   .FCLK_RESET1_N     (fclk_rstn[1]     ),

@@ -2,9 +2,9 @@
 <Root MajorVersion="0" MinorVersion="33">
   <CompositeFile CompositeFileTopName="system" CanBeSetAsTop="true" CanDisplayChildGraph="true">
     <Description>Composite Fileset</Description>
-    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1596848547"/>
-    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1596848547"/>
-    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1596848547"/>
+    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1600043031"/>
+    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1600043031"/>
+    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1600043031"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
       <File Name="ip\system_axi_protocol_converter_0_0\system_axi_protocol_converter_0_0.xci" Type="IP">
         <Instance HierarchyPath="axi_protocol_converter_0"/>
@@ -56,22 +56,6 @@
       </File>
       <File Name="ip\system_axi_gpio_0_0\system_axi_gpio_0_0.xci" Type="IP">
         <Instance HierarchyPath="axi_gpio_clk_sel"/>
-        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="work"/>
-        <UsedIn Val="SYNTHESIS"/>
-        <UsedIn Val="IMPLEMENTATION"/>
-        <UsedIn Val="SIMULATION"/>
-      </File>
-      <File Name="ip\system_xlslice_0_0\system_xlslice_0_0.xci" Type="IP">
-        <Instance HierarchyPath="xlslice_0"/>
-        <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
-        <Library Name="work"/>
-        <UsedIn Val="SYNTHESIS"/>
-        <UsedIn Val="IMPLEMENTATION"/>
-        <UsedIn Val="SIMULATION"/>
-      </File>
-      <File Name="ip\system_util_ds_buf_0_0\system_util_ds_buf_0_0.xci" Type="IP">
-        <Instance HierarchyPath="util_ds_buf_0"/>
         <Properties IsEditable="false" IsVisible="true" Timestamp="0" IsTrackable="true" IsStatusTracked="true"/>
         <Library Name="work"/>
         <UsedIn Val="SYNTHESIS"/>

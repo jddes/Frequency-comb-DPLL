@@ -68,7 +68,6 @@ class RP_PLL_device():
             raise CommsLoggeableError(e)
 
     def CloseTCPConnection(self):
-        print("RP_PLL_device::CloseTCPConnection()")
         self.sock = None # socket_placeholder()
         self.valid_socket = False
 
@@ -206,6 +205,20 @@ class RP_PLL_device():
     # Functions used to access Zynq registers, but which do not interact directly with the socket,
     # and instead use the lower-level functions above
     #######################################################
+
+    def write_repeat_uint32(self, address_uint32, data_uint32, iSleepUs=0):
+        """ write multiple times to an absolute address """
+        self.write_Zynq_register_32bits_repeat(address_uint32, data_uint32, iSleepUs=iSleepUs, bSigned=False)
+
+    def write_uint32(self, address_uint32, data_uint32):
+        """ write to absolute address """
+        self.write_Zynq_register_32bits(address_uint32, data_uint32, bSigned=False)
+
+    def read_uint32(self, address_uint32):
+        """ read at absolute address """
+        data_buffer = self.read_Zynq_register_32bits(address_uint32)
+        register_value_as_tuple = struct.unpack('I', data_buffer)
+        return register_value_as_tuple[0]
 
     def write_Zynq_register_uint32(self, address_uint32, data_uint32):
         self.write_Zynq_register_32bits(self.FPGA_BASE_ADDR+address_uint32, data_uint32, bSigned=False)
