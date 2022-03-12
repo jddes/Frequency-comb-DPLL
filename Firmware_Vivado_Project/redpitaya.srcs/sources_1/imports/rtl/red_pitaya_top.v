@@ -352,6 +352,9 @@ reg          [14-1:0] dac_dat_a, dac_dat_b;
 wire         [14-1:0] dac_a    , dac_b    ;
 wire  signed [15-1:0] dac_a_sum, dac_b_sum;
 
+wire signed [14-1 : 0] to_DAC0;
+reg signed [14-1 : 0] to_DAC1;
+
 // ASG
 wire  signed [14-1:0] asg_a    , asg_b    ;
 
@@ -572,6 +575,12 @@ addr_packed addr_packed_inst (
 
 
 // assign  = selected_output;
+
+// DAC 1 now contains the sum of adc_a and adc_b:
+always @(posedge adc_clk)
+begin
+    to_DAC1 <= adc_a + adc_b;
+end
 
 // always @(posedge adc_clk)
 // begin
@@ -840,9 +849,6 @@ IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_di
 // VCO and output mux
 // Channel 5
 
-wire signed [14-1 : 0] to_DAC0;
-wire signed [14-1 : 0] to_DAC1;
-
 mux_internal_vco mux_vco (
   .clk            ( adc_clk                   ), // clock
   .DACin0         ( DACout0                   ), // output of the DPLL channel a
@@ -865,7 +871,7 @@ mux_internal_vco mux_vco (
   .sys_ack_mux    (sys_ack[5]                 ), // acknowledge signal for the mux
   // output
   .DACa_out       ( to_DAC0                  ), // output to the dac (from vco or directly from dpll)
-  .DACb_out       ( to_DAC1                  )  // output to the dac (from vco or directly from dpll)
+  .DACb_out       (                          )  // output to the dac (from vco or directly from dpll)
   );
 
 assign dac_a = to_DAC0;
