@@ -229,8 +229,7 @@ red_pitaya_ps i_ps (
   .ack_timout_o  (ack_timout_t ),
   .ack_combine_o (ack_combine_t),
 
-  .clk_ext_in(exp_p_in[5]), // 10 MHz-200 MHz external clock input on DIO5_P
-  .clk_ext_bufg(clk_ext_bufg), // copy of the exp_p_in[5] signal, after a BUFG
+  .clk_ext_in(clk_ext_bufg), // exp_p_in[5]), after a bufg // 10 MHz-200 MHz external clock input on exp_p_in[5]
   .clk_to_adc(clk_to_adc),
   .gpio_io_o(gpio_io_o),
 
@@ -884,6 +883,8 @@ assign exp_p_out[3] = gpios_out[1];   // GPIO set as output for the moment, cont
 // Drive "exp_p_out" and "exp_n_out" and set "exp_n_dir" and "exp_p_dir" accordingly
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
+// explicit bufg for the external clock input
+BUFG (.I(exp_p_in[5]), .O(clk_ext_bufg) );
 
 //---------------------------------------------------------------------------------
 // VCO and output mux

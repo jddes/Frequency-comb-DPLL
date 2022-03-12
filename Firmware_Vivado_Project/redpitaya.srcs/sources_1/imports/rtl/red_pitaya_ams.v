@@ -37,6 +37,7 @@
  * Beside that SW can sets registes which controls logic for PWM DAC (analog module).
  * 
  */
+ `default_nettype wire
 
 module red_pitaya_ams (
    // ADC
@@ -96,3 +97,5 @@ end else begin
 end
 
 endmodule
+
+`default_nettype none

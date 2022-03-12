@@ -5,7 +5,7 @@ preplace port FCLK_CLK3 -pg 1 -y 250 -defaultsOSRD
 preplace port S_AXI_HP1 -pg 1 -y 160 -defaultsOSRD
 preplace port DDR -pg 1 -y 30 -defaultsOSRD
 preplace port Vp_Vn -pg 1 -y 870 -defaultsOSRD
-preplace port clk_ext_in -pg 1 -y 1060 -defaultsOSRD
+preplace port clk_ext_in -pg 1 -y 1560 -defaultsOSRD
 preplace port Vaux0 -pg 1 -y 890 -defaultsOSRD
 preplace port FCLK_RESET0_N -pg 1 -y 270 -defaultsOSRD
 preplace port M_AXI_GP0_ACLK -pg 1 -y 180 -defaultsOSRD
@@ -25,7 +25,7 @@ preplace port S_AXI_HP0 -pg 1 -y 140 -defaultsOSRD
 preplace portBus reg_to_axi1 -pg 1 -y 600 -defaultsOSRD -right
 preplace portBus reg_to_axi2 -pg 1 -y 630 -defaultsOSRD -right
 preplace portBus reg_to_axi3 -pg 1 -y 660 -defaultsOSRD -right
-preplace portBus clk_ext_bufg -pg 1 -y 870 -defaultsOSRD
+preplace portBus to_uart -pg 1 -y 970 -defaultsOSRD
 preplace portBus gpio_io_o -pg 1 -y 740 -defaultsOSRD
 preplace inst axi_crossbar_0 -pg 1 -lvl 4 -y 360 -defaultsOSRD
 preplace inst xlconstant -pg 1 -lvl 1 -y 620 -defaultsOSRD
@@ -34,10 +34,9 @@ preplace inst axi_register_slice_0 -pg 1 -lvl 2 -y 440 -defaultsOSRD
 preplace inst axi_gpio_clk_sel -pg 1 -lvl 4 -y 570 -defaultsOSRD
 preplace inst processing_system7 -pg 1 -lvl 3 -y 160 -defaultsOSRD
 preplace inst axi_gpio_freq1 -pg 1 -lvl 4 -y 1090 -defaultsOSRD
-preplace inst axi_gpio_freq2 -pg 1 -lvl 4 -y 1220 -defaultsOSRD
+preplace inst axi_gpio_freq2 -pg 1 -lvl 4 -y 1230 -defaultsOSRD
 preplace inst xadc -pg 1 -lvl 3 -y 960 -defaultsOSRD
-preplace inst clk_wiz_0 -pg 1 -lvl 5 -y 1250 -defaultsOSRD
-preplace inst util_ds_buf_0 -pg 1 -lvl 2 -y 1110 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 5 -y 1590 -defaultsOSRD
 preplace inst proc_sys_reset -pg 1 -lvl 3 -y 720 -defaultsOSRD
 preplace netloc Vaux0_1 1 0 3 NJ 890 NJ 890 480
 preplace netloc processing_system7_0_ddr 1 3 3 N 30 NJ 30 NJ

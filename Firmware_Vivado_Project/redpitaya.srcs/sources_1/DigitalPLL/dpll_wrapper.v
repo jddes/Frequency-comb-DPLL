@@ -448,10 +448,12 @@ multiplexer_NbitsxMsignals_to_Nbits
     .in7({1'b1, DACout1}), 
     .in8({1'b1, DACout2}),
     //.in9({crash_monitor_output_to_logger_clk_enable, crash_monitor_output_to_logger}),
-    .in9({0'b0, 8'b0}),
+    .in9({inst_frequency0_filtered_ce, inst_frequency0_filtered}), // inst frequencies, integrated-and-dumped over 2^6 samples
+    .in10({inst_frequency1_filtered_ce, inst_frequency1_filtered}),// inst frequencies, integrated-and-dumped over 2^6 samples
     .selector(selector[4:0]), 
     .selected_output({LoggerData_clk_enable, LoggerData})
     );
+
 
     // register which selects the correct multiplexer input
     parallel_bus_register_32bits_or_less # (
@@ -539,8 +541,8 @@ wire        [11:0]  boxcar_filter_size = 12'd20;    // Filter with a notch at 5 
 wire        [47:0]  reference_frequency0;// = 48'b110011001100 11001100110011001100110011001100;    // 5 MHz reference frequency, should be move to a configurable value from the PC eventually
 wire        [9:0]       wrapped_phase0;     // phi/(2*pi) * 2**10
 wire        [9:0]       inst_frequency0;        // diff(phi)/(2*pi) * 2**10
-wire [10-1+12:0]    inst_frequency0_filtered;       // this is the output of a boxcar filter on the inst_frequency signal, before sending to the DDR2 logger
-wire [10-1+2:0] inst_frequency0_filtered_small; // overall filter gain is only equal to its length (4) so we don't really need all the bits
+wire [10-1+6:0]    inst_frequency0_filtered;       // this is the output of a boxcar filter on the inst_frequency signal, before sending to the DDR2 logger
+wire inst_frequency0_filtered_ce;
 wire [1:0] ddc0_filter_select, ddc1_filter_select;
 wire select_phase_or_freq0, select_phase_or_freq1;
 wire [3:0] angleSelect_0, angleSelect_1;
@@ -610,6 +612,17 @@ DDC_wideband_filters DDC0_inst (
     .wrapped_phase(wrapped_phase0), 
     .inst_frequency(inst_frequency0)
     );
+
+integrate_and_dump # (
+    .N_BITS_CYCLES_COUNTER(6),
+    .N_DATA_BITS          (10)
+) integrate_and_dump_finst1 (
+    .rst              (0'b0),
+    .clk              (clk1),
+    .data_in          (inst_frequency0),
+    .data_output      (inst_frequency0_filtered),
+    .output_clk_enable(inst_frequency0_filtered_ce)
+);
      
 ///////////////////////////////////////////////////////////////////////////////
 // Counts the frequency with no dead-time using a short bandlimiting filter  + an integrate and dump.
@@ -700,8 +713,8 @@ wire     [80-1:0]  dfr_phase_modulus, dfr_phase_adjust, delta_fr;
 wire               goto_new_freq_at_next_zerocrossing, force_nominal_freq;
 wire        [9:0]  wrapped_phase1;     // phi/(2*pi) * 2**10
 wire        [9:0]  inst_frequency1;        // diff(phi)/(2*pi) * 2**10 //now output from the mux that select between DDC1_output, inst_frequency0 or pll0_output
-wire  [10-1+12:0]  inst_frequency1_filtered;       // this is the output of a boxcar filter on the inst_frequency signal, before sending to the DDR2 logger
-wire   [10-1+2:0]  inst_frequency1_filtered_small; // overall filter gain is only equal to its length (4) so we don't really need all the bits
+wire  [10-1+6:0]  inst_frequency1_filtered;       // this is the output of a boxcar filter on the inst_frequency signal, before sending to the DDR2 logger
+wire inst_frequency1_filtered_ce;
 
 wire        [10-1:0]    DDC1_output;            // diff(phi)/(2*pi) * 2**10
 
@@ -747,6 +760,16 @@ DDC_wideband_filters DDC1_inst (
     );
 
 
+integrate_and_dump # (
+    .N_BITS_CYCLES_COUNTER(6),
+    .N_DATA_BITS          (10)
+) integrate_and_dump_finst0 (
+    .rst              (0'b0),
+    .clk              (clk1),
+    .data_in          (inst_frequency1),
+    .data_output      (inst_frequency1_filtered),
+    .output_clk_enable(inst_frequency1_filtered_ce)
+);
 
 
 wire [2-1:0] loop_filter_1_mux_selector;
@@ -770,7 +793,7 @@ multiplexer_3to1_async loop_filters_1_mux (
  .selector_mux                      (loop_filter_1_mux_selector ),
  .in0_mux                           (DDC1_output                ), 
  .in1_mux                           (inst_frequency0            ),
- .in2_mux                           (pll0_output >> 5           ), //pll0_output is 15 bits and in2_mux is 10 bits
+ .in2_mux                           ($signed(pll0_output) >> 6           ), //pll0_output is 16 bits and in2_mux is 10 bits
  .out_mux                           (inst_frequency1            )
 );
 
@@ -810,27 +833,6 @@ dual_type_frequency_counter dual_type_frequency_counter_inst1 (
     .data_output(counter1_out), 
     .output_clk_enable(counter1_out_clk_enable)
     );
-     
-     // NOT USED ANYMORE:
-// Short filter applied to the inst_frequency output of the ddc before sending the data to the logger
-// Simply to remove a little bit of noise at higher frequencies before decimation
-// Length is fixed at 4 samples. (first null at 25 MHz)
-adjustable_boxcar_filter 
-    # (
-    .MAXIMUM_SIZE(6),
-    .DATA_WIDTH(10)
-    )
-    adjustable_boxcar_filter_freq1 (
-    .rst(rst_frontend1), 
-    .clk(clk1), 
-    .input_clk_enable(1'b1), 
-    .input_data(inst_frequency1), 
-    .filter_size(12'd4), 
-    .output_clk_enable(), 
-    .output_data(inst_frequency1_filtered)
-    );
-assign inst_frequency1_filtered_small = inst_frequency1_filtered[10-1+2:0];
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -838,7 +840,7 @@ assign inst_frequency1_filtered_small = inst_frequency1_filtered[10-1+2:0];
 wire pll0_lock, pll0_gain_changedp, pll0_gain_changedi, pll0_gain_changedii, pll0_gain_changedd, pll0_coef_changedd;
 wire pll0_gain_changed;
 wire [32-1:0] pll0_gainp, pll0_gaini, pll0_gainii, pll0_gaind, pll0_coefdfilter;
-wire [15:0] pll0_output;
+wire [17-1:0] pll0_output;
 
 // Then the registers which controls the gain and locked/unlocked behavior of the filters:
 parallel_bus_register_32bits_or_less # (
@@ -938,7 +940,7 @@ PLL_loop_filters_with_saturation # (
     .N_DIVIDE_I(24), 
     .N_DIVIDE_II(35),
     .N_DIVIDE_D(0),
-    .N_OUTPUT(16)
+    .N_OUTPUT(16+1)
 )
 PLL0_loop_filters (
     .clk(clk1), 
@@ -961,7 +963,7 @@ PLL0_loop_filters (
 wire pll1_lock, pll1_gain_changedp, pll1_gain_changedi, pll1_gain_changedii, pll1_gain_changedd, pll1_coef_changedd;
 wire pll1_gain_changed;
 wire [32-1:0] pll1_gainp, pll1_gaini, pll1_gainii, pll1_gaind, pll1_coefdfilter;
-wire [15:0] pll1_output;
+wire [17-1:0] pll1_output;
 
 // Then the registers which controls the gain and locked/unlocked behavior of the FLL:
 parallel_bus_register_32bits_or_less # (
@@ -1072,7 +1074,7 @@ PLL_loop_filters_with_saturation # (
     .N_DIVIDE_I(18),
     .N_DIVIDE_II(29),
     .N_DIVIDE_D(0),
-    .N_OUTPUT(16)
+    .N_OUTPUT(16+1)
 )
 PLL1_loop_filters (
     .clk(clk1), 
@@ -1307,16 +1309,16 @@ parallel_bus_register_manual_offset_dac2 (
 
 // Output summing and limiting, DAC0
 output_summing # (
-    .INPUT_SIZE       (16),
+    .INPUT_SIZE       (17),
     .OUTPUT_SIZE      (16)
 )
 output_summing_dac0
 (
     .clk              (  clk1                       ), 
-    .in0              (  modulation_output_to_dac0  ), 
-    .in1              (                             ), 
-    .in2              (  pll0_output                ), 
-    .in3              (  manual_offset_dac0         ), 
+    .in0              (  $signed(modulation_output_to_dac0)  ), 
+    .in1              (                                      ), 
+    .in2              (  $signed(pll0_output              )  ), 
+    .in3              (  $signed(manual_offset_dac0       )  ), 
     .data_output      (  DACout0                    ), 
     .positive_limit   (  positive_limit_dac0        ),
     .negative_limit   (  negative_limit_dac0        ),
@@ -1327,19 +1329,18 @@ output_summing_dac0
 
 
 // Output summing and limiting, DAC1
-wire [16-1:0] data_to_dac1_notch_filter;
 
 output_summing # (
-    .INPUT_SIZE       (16),
+    .INPUT_SIZE       (17),
     .OUTPUT_SIZE      (16)
 )
 output_summing_dac1
 (  
     .clk              (  clk1                       ), 
-    .in0              (  modulation_output_to_dac1  ), 
-    .in1              (                             ), 
-    .in2              (  pll1_output                ), 
-    .in3              (  manual_offset_dac1         ), 
+    .in0              (  $signed(modulation_output_to_dac1)  ), 
+    .in1              (                                      ), 
+    .in2              (  $signed(pll1_output)                ), 
+    .in3              (  $signed(manual_offset_dac1)         ), 
     .data_output      (  DACout1                    ), 
     .positive_limit   (  positive_limit_dac1        ),
     .negative_limit   (  negative_limit_dac1        ),
@@ -1921,3 +1922,5 @@ registers_read registers_read_inst
 //okWireOut   ep37 (.ok1(ok1), .ok2(ok2x[ 27*17 +: 17 ]), .ep_addr(8'h37), .ep_datain(dither2_lockin_output_to_wires[ 5*16 +: 16 ]));
 
 endmodule
+
+`default_nettype wire

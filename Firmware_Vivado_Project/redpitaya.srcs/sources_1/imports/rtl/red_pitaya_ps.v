@@ -496,10 +496,10 @@ system_wrapper system_i (
   .clk_ext_in(clk_ext_in),
   .clk_to_adc(clk_to_adc),
   .gpio_io_o(gpio_io_o),
-  .clk_ext_bufg(clk_ext_bufg),
   .reg_to_axi1(reg_to_axi1),
   .reg_to_axi2(reg_to_axi2),
   .reg_to_axi3(reg_to_axi3)
+
 );
 
 endmodule

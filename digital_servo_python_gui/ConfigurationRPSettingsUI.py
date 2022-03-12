@@ -513,3 +513,123 @@ if __name__ == '__main__':
 
     app.exec_()
 
+
+    #####################################################################
+    # Reference code for interacting with the new ADC PLL settings:
+    #####################################################################
+    # def setADCclockPLL(self, f_ref, bExternalClock):
+    #     """ Computes and commits closest integer-N solution for the ADC clock.
+    #     In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
+    #     print("setADCclockPLL(): f_ref=", f_ref)
+    #     self.user_inputs["bExternalClock"] = bExternalClock
+    #     if bExternalClock:
+    #         (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
+    #         self.user_inputs["adc_f_ref_hz"]   = f_ref
+    #         self.user_inputs["CLKFBOUT_MULT"]  = M
+    #         self.user_inputs["CLKOUT0_DIVIDE"] = N
+    #         self._setADCclockPLL()
+    #     else:
+    #         # we are not even using the MMCM
+    #         self.user_inputs["adc_f_ref_hz"]   = 125e6
+    #         self.user_inputs["CLKFBOUT_MULT"]  = 1
+    #         self.user_inputs["CLKOUT0_DIVIDE"] = 1
+    #         self._setClkSelectAndReset(False, bExternalClock)
+
+    # def _setADCclockPLL(self):
+    #     """ f_ref is the frequency of the clock connected to GPIO_P[5] in external clock mode """
+
+    #     # From PG065:
+    #     # "You should first write all the required clock configuration registers and then check for the
+    #     # status register. If status register value is 0x1, start the reconfiguration by writing Clock
+    #     # Configuration Register 23 with 0x7. The next write should be 0x2 before the Locked goes
+    #     # High. If the original configuration is needed at any time, then writing this register with value
+    #     # 0x4 and then 0x0 restores the original settings."
+
+    #     # Clock configuration register 0 (table 4-2 in PG065)
+    #     DIVCLK_DIVIDE = 1
+    #     reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
+    #     reg |= (self.user_inputs["CLKFBOUT_MULT"] & ((1<<8)-1)) << 8
+    #     self.write("clkw_reg0", reg)
+    #     # Clock configuration register 2 (table 4-2 in PG065)
+    #     reg = (self.user_inputs["CLKOUT0_DIVIDE"] & ((1<<8)-1)) << 0
+    #     self.write("clkw_reg2", reg)
+
+    #     # check status register:
+    #     if not self._waitForReg("clkw_status", 0x1, timeout=1.0):
+    #         print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
+    #         return
+
+    #     self._setClkSelectAndReset(True, self.user_inputs["bExternalClock"]) # assert reset on the incoming ADC clock
+    #     self.write("clkw_reg23", 0x7)
+    #     self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
+
+    #     self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
+    #     time.sleep(0.1)
+    #     self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # de-assert reset on the incoming ADC clock
+
+    # def _waitForReg(self, reg_name, desired_value, timeout=1.):
+    #     """ Read a register in a loop, until it either becomes a desired value or we hit a timeout.
+    #     Returns True if the register reached the desired value, False if we timed out """
+    #     time_start = time.perf_counter()
+    #     reg_value = self.read(reg_name)
+    #     while reg_value != desired_value and time.perf_counter()-time_start < timeout: # read in a loop until we timeout
+    #         reg_value = self.read(reg_name)
+    #         time.sleep(1e-3)
+    #     return reg_value == desired_value
+
+    # def _setClkSelectAndReset(self, bReset, bExternalClock):
+    #     """ Select external or internal clock source, and also sets the reset """
+    #     reg_clk_sel_and_reset = int(not bExternalClock) | (int(bReset)<<1)
+    #     self.write("clk_sel_and_reset", reg_clk_sel_and_reset)
+
+
+    # def getClkStatus(self):
+    #     """ Returns four boolean flags:
+    #     (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
+    #     loss_of_clk_detected is True if the user set external clock mode, but the system fell back to internal clock mode
+    #     at any point since the last reading of this flag.
+    #     clk_int_or_ext_desired = True means internal clock
+    #     clk_int_or_ext_actual = True means internal clock
+    #     """
+    #     reg_value = self.read("ext_clk_status")
+    #     loss_of_clk_detected   = bool((reg_value>>3) & 0x1)
+    #     clk_ext_good           = bool((reg_value>>2) & 0x1)
+    #     clk_int_or_ext_actual  = bool((reg_value>>1) & 0x1)
+    #     clk_int_or_ext_desired = bool((reg_value>>0) & 0x1)
+    #     return (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
+
+    # def getHardwareDescription(self):
+    #     """ Returns a dictionary with various flags describing the hardware on the connected device """
+    #     d = dict()
+    #     f = self.dev.read_file_from_remote("/opt/hardware.txt")
+    #     f = f.decode('ascii')
+    #     # f = "has_dds=1\nhas_mixer_board=1\n" # for testing
+    #     for line in f.split('\n'):
+    #         if line == '':
+    #             continue
+    #         key, value = line.split('=')
+    #         d[key] = bool(int(value))
+
+    #     f = self.dev.read_file_from_remote("/opt/macaddress.txt")
+    #     f = f.decode('ascii')
+    #     if f == '':
+    #         self.dev.send_shell_command('ifconfig | grep eth0 > /opt/macaddress.txt')
+    #         time.sleep(0.1)
+    #         f = self.dev.read_file_from_remote("/opt/macaddress.txt")
+    #         f = f.decode('ascii')
+
+    #     mac_token = 'HWaddr '
+    #     ind = f.find(mac_token)
+    #     if ind != -1:
+    #         d["mac"] = f[ind+len(mac_token):].strip()
+    #     return d
+
+    # def sendHardwareDescription(self, bHasMixerBoard=False, bHasDDS=False):
+    #     """ Creates a file that describes various add-ons to the RP,
+    #     and sends it to the currently-connected device.
+    #     To be used only once when upgrading a given RP """
+    #     description = "has_mixer_board=%d\n" % int(bool(bHasMixerBoard))
+    #     description += "has_dds=%d\n" % int(bool(bHasDDS))
+    #     file_data = description.encode('ascii')
+    #     self.dev.write_file_on_remote("", strFilenameRemote="/opt/hardware.txt", file_data=file_data)
+

@@ -46,6 +46,7 @@
  * pre-trigger data.
  * 
  */
+`default_nettype wire
 
 module red_pitaya_scope #(
   parameter RSZ = 14  // RAM size 2^RSZ
@@ -826,3 +827,5 @@ end else begin
 end
 
 endmodule
+
+`default_nettype none

@@ -1,7 +1,7 @@
 //Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2015.4 (win64) Build 1412921 Wed Nov 18 09:43:45 MST 2015
-//Date        : Sun Sep 13 20:23:32 2020
+//Date        : Sat Dec 18 17:48:18 2021
 //Host        : jdbureau running 64-bit major release  (build 9200)
 //Command     : generate_target system_wrapper.bd
 //Design      : system_wrapper
@@ -164,13 +164,13 @@ module system_wrapper
     Vaux9_v_p,
     Vp_Vn_v_n,
     Vp_Vn_v_p,
-    clk_ext_bufg,
     clk_ext_in,
     clk_to_adc,
     gpio_io_o,
     reg_to_axi1,
     reg_to_axi2,
-    reg_to_axi3);
+    reg_to_axi3,
+    to_uart);
   inout [14:0]DDR_addr;
   inout [2:0]DDR_ba;
   inout DDR_cas_n;
@@ -325,13 +325,13 @@ module system_wrapper
   input Vaux9_v_p;
   input Vp_Vn_v_n;
   input Vp_Vn_v_p;
-  output [0:0]clk_ext_bufg;
   input clk_ext_in;
   output clk_to_adc;
   output [1:0]gpio_io_o;
   input [31:0]reg_to_axi1;
   input [31:0]reg_to_axi2;
   input [31:0]reg_to_axi3;
+  output [9:0]to_uart;
 
   wire [14:0]DDR_addr;
   wire [2:0]DDR_ba;
@@ -487,13 +487,13 @@ module system_wrapper
   wire Vaux9_v_p;
   wire Vp_Vn_v_n;
   wire Vp_Vn_v_p;
-  wire [0:0]clk_ext_bufg;
   wire clk_ext_in;
   wire clk_to_adc;
   wire [1:0]gpio_io_o;
   wire [31:0]reg_to_axi1;
   wire [31:0]reg_to_axi2;
   wire [31:0]reg_to_axi3;
+  wire [9:0]to_uart;
 
   system system_i
        (.DDR_addr(DDR_addr),
@@ -650,11 +650,11 @@ module system_wrapper
         .Vaux9_v_p(Vaux9_v_p),
         .Vp_Vn_v_n(Vp_Vn_v_n),
         .Vp_Vn_v_p(Vp_Vn_v_p),
-        .clk_ext_bufg(clk_ext_bufg),
         .clk_ext_in(clk_ext_in),
         .clk_to_adc(clk_to_adc),
         .gpio_io_o(gpio_io_o),
         .reg_to_axi1(reg_to_axi1),
         .reg_to_axi2(reg_to_axi2),
-        .reg_to_axi3(reg_to_axi3));
+        .reg_to_axi3(reg_to_axi3),
+        .to_uart(to_uart));
 endmodule
