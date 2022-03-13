@@ -24,6 +24,10 @@ module dpll_wrapper(
     input wire          counter_new_data,
     input wire [64-1:0] counter_reg_to_dpll,
 
+    input wire clk_int_or_ext_actual,
+    input wire clk_int_or_ext_desired,
+    input wire clk_ext_good,
+
     // Data logger port:
     output wire [16-1:0]      LoggerData,
     output wire               LoggerData_clk_enable,
@@ -1639,6 +1643,10 @@ registers_read registers_read_inst
 (
     .clk(clk1),
     
+    // monitors actual clock mode:
+    .clk_int_or_ext_actual(clk_int_or_ext_actual),
+    .clk_int_or_ext_desired(clk_int_or_ext_desired),
+    .clk_ext_good(clk_ext_good),
 
     // Registers inputs (to be read)
     .status_flags(status_flags),

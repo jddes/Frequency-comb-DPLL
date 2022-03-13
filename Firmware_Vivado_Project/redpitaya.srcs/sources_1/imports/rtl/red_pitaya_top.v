@@ -583,6 +583,11 @@ dpll_wrapper dpll_wrapper_inst (
   .osc_output(osc_output),
   .gpios_out(gpios_out),
 
+  // monitors actual clock mode:
+  .clk_int_or_ext_actual(clk_int_or_ext_actual),
+  .clk_int_or_ext_desired(clk_int_or_ext_desired),
+  .clk_ext_good(clk_ext_good),
+
   // results of counting the external clock on exp_p_in[2] = DIN1 vs the adc clock:
   .counter_new_data        (counter_new_data),
   .counter_reg_to_dpll     (counter_reg_to_dpll),
