@@ -70,7 +70,9 @@ architecture Behavioral of registers_read is
     signal counter_read : std_logic := '0';
     signal counter_reg : std_logic_vector(64-1 downto 0) := (others => '0');
 
-    signal loss_of_clk_detected : std_logic := '0';
+    signal loss_of_clk_detected      : std_logic := '0';
+    signal loss_of_clk_detected_reg  : std_logic := '0';
+    signal loss_of_clk_detected_last : std_logic := '0';
 
     -- clock-domain crossing registers:
     signal clk_int_or_ext_actual_reg1, clk_int_or_ext_actual_reg2    : std_logic := '0';
@@ -121,6 +123,8 @@ begin
     -----------------------------------------
     -- registers
 
+    loss_of_clk_detected <= '1' when clk_int_or_ext_desired_reg2 = '0' and clk_int_or_ext_actual_reg2 = '1' else '0';
+
     ibus_manager : process (clk) is
         variable sys_en : std_logic := '0';
     begin
@@ -132,8 +136,9 @@ begin
             counter_read <= '0';
 
             -- latch loss of ext clock events:
-            if clk_int_or_ext_desired_reg2 = '0' and clk_int_or_ext_actual_reg2 = '1' then
-                loss_of_clk_detected <= '1';
+            loss_of_clk_detected_last <= loss_of_clk_detected;
+            if loss_of_clk_detected = '1' and loss_of_clk_detected_last = '0' then
+                loss_of_clk_detected_reg <= '1';
             end if;
 
             -- default
@@ -207,7 +212,7 @@ begin
                     when x"00041" => sys_ack <= sys_en; sys_rdata <= (others => '0'); sys_rdata(0) <= have_counter;
                     when x"00042" => sys_ack <= sys_en; sys_rdata <= counter_reg(32-1    downto  0);
                     when x"00043" => sys_ack <= sys_en; sys_rdata <= counter_reg(32+32-1 downto 32); counter_read <= '1';
-                    when x"00046" => sys_ack <= sys_en; sys_rdata(4-1 downto 0) <= (loss_of_clk_detected & clk_ext_good_reg2 & clk_int_or_ext_actual_reg2 & clk_int_or_ext_desired_reg2); loss_of_clk_detected <= '0';
+                    when x"00046" => sys_ack <= sys_en; sys_rdata(4-1 downto 0) <= (loss_of_clk_detected_reg & clk_ext_good_reg2 & clk_int_or_ext_actual_reg2 & clk_int_or_ext_desired_reg2); loss_of_clk_detected_reg <= '0';
 
                     when others   => sys_ack <= sys_en; sys_rdata <=  (others => '0');
                 end case;
