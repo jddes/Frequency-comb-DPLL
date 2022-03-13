@@ -52,9 +52,11 @@ class ConfigRPSettingsUI(Qt.QWidget):
         #print("ConfigurationRPSettingsUI::loadParameters(): after read GUI")
 
         if clk_select > 0:
-            self.qradio_internal_clk.setChecked(True)
+            print("FIXME: change the way the clk interactions work!")
+            # self.qradio_internal_clk.setChecked(True)
         else:
-            self.qradio_external_clk.setChecked(True)
+            print("FIXME: change the way the clk interactions work!")
+            # self.qradio_external_clk.setChecked(True)
 
         if fan_state > 0:
             self.qradio_fan_on.setChecked(True)
@@ -141,6 +143,8 @@ class ConfigRPSettingsUI(Qt.QWidget):
         # else:
         #     self.qradio_internal_clk.setChecked(True)
 
+        self.lblActualClkMode
+
 
         self.startTimers()
 
@@ -161,18 +165,22 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.qgroupbox_clkselect.setAutoFillBackground(True)
         grid = Qt.QGridLayout()
 
+        self.lbl1 = Qt.QLabel('Requested clk mode:')
         self.qradio_internal_clk = Qt.QRadioButton('Internal clock')
         self.qradio_external_clk = Qt.QRadioButton('External clock')
         self.qradio_internal_clk.setChecked(True)
         self.qradio_internal_clk.clicked.connect(self.setClkSelect)
         self.qradio_external_clk.clicked.connect(self.setClkSelect)
+        self.lblActualClkMode = Qt.QLabel('Actual clk mode:')
         self.lblExtClkFreq = Qt.QLabel('Ext clk freq = %.6f MHz' % 0.0)
         self.lblDinFreq    = Qt.QLabel('Din freq     = %.6f MHz' % 0.0)
 
-        grid.addWidget(self.qradio_internal_clk, 0, 0)
-        grid.addWidget(self.qradio_external_clk, 1, 0)
-        grid.addWidget(self.lblExtClkFreq,       2, 0)
-        grid.addWidget(self.lblDinFreq,          3, 0)
+        grid.addWidget(self.lbl1,                0, 0, 1, 2)
+        grid.addWidget(self.qradio_internal_clk, 1, 0)
+        grid.addWidget(self.qradio_external_clk, 2, 0)
+        grid.addWidget(self.lblActualClkMode,    3, 0)
+        grid.addWidget(self.lblExtClkFreq,       4, 0)
+        grid.addWidget(self.lblDinFreq,          5, 0)
 
         #grid.setRowStretch(2, 2)
 
@@ -196,10 +204,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.qbtn_OpenTempGraph = Qt.QPushButton('Open temperature display window')
         self.qbtn_OpenTempGraph.clicked.connect(self.qplots.show)
 
-        grid.addWidget(self.qlbl_Temp, 0, 0, 1, 2)
+        grid.addWidget(self.qlbl_Temp, 0, 0, 1, 1)
         grid.addWidget(self.qlbl_vccint, 1, 0)
         grid.addWidget(self.qlbl_vccaux, 2, 0)
-        grid.addWidget(self.qbtn_OpenTempGraph, 2, 1)
+        grid.addWidget(self.qbtn_OpenTempGraph, 3, 0)
 
         #grid.setRowStretch(2, 2)
 
@@ -359,8 +367,8 @@ class ConfigRPSettingsUI(Qt.QWidget):
         try:
             (Vccint, Vccaux, Vbram) = self.sl.readZynqXADCsupply()
             ZynqTempInDegC          = self.sl.readZynqTemperature()
-            # print('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
-            self.qlbl_Temp.setText('Zynq temperature (max 85 degC operating): %.2f degC' % ZynqTempInDegC)
+            # print('Zynq temperature (max 85 degC): %.2f degC' % ZynqTempInDegC)
+            self.qlbl_Temp.setText('Zynq temp (max 85 degC): %.2f degC' % ZynqTempInDegC)
             self.qlbl_vccint.setText('Vccint = %.2f V' % Vccint)
             self.qlbl_vccaux.setText('Vccaux = %.2f V' % Vccaux)
 
@@ -370,17 +378,49 @@ class ConfigRPSettingsUI(Qt.QWidget):
             self.qlbl_vccint        = Qt.QLabel('Vccint = N/A V')
             self.qlbl_vccaux        = Qt.QLabel('Vccaux = N/A V')
 
-
         # read ext clk frequency:
         try:
             self.lblExtClkFreq.setText('Ext clk freq = %.8f MHz' % (self.sl.getExtClockFreq()/1e6))
-
         except:
             self.lblExtClkFreq.setText('Ext clk freq = N/A MHz')
 
         freq = self.sl.getDin1Freq()
         if freq is not None:
             self.lblDinFreq.setText('Din freq     = %.8f MHz' % (freq/1e6))
+
+        (loss_of_clk_detected,
+            clk_ext_good,
+            clk_int_or_ext_actual,
+            clk_int_or_ext_desired) = self.sl.getClkStatus()
+        if loss_of_clk_detected:
+            timestamp_str = time.strftime("%Y-%m-%d %H:%M:%S")
+            print(f"lost clock at {timestamp_str}")
+            self.controller.lossOfClkEvent(timestamp_str)
+            with open("clock_events.log", "a") as f:
+                f.write(f"Ext clock lost at {timestamp_str}\n")
+
+        if clk_int_or_ext_actual:
+            self.lblActualClkMode.setText('Internal clk')
+        else:
+            self.lblActualClkMode.setText('External clk')
+
+        if clk_int_or_ext_actual != clk_int_or_ext_desired:
+            self.lblActualClkMode.setStyleSheet('background-color: red; color: white')
+        else:
+            self.lblActualClkMode.setStyleSheet('background-color: green; color: white')
+
+        #####################################################################
+        # Reference code for interacting with the new ADC PLL settings:
+        #####################################################################
+
+        # def setADCclockPLL(self, f_ref, bExternalClock):
+        # def _setADCclockPLL(self):
+        # def _waitForReg(self, reg_name, desired_value, timeout=1.):
+        # def _setClkSelectAndReset(self, bReset, bExternalClock):
+        # def getClkStatus(self):
+        # def getHardwareDescription(self):
+        # def sendHardwareDescription(self, bHasMixerBoard=False, bHasDDS=False):
+
 
     #Function to read the value in the RAM Block (channel 2) to an address
     #The data we should read are the data sent to dpll_wrapper module (channel 0)
@@ -422,34 +462,30 @@ class ConfigRPSettingsUI(Qt.QWidget):
     @logCommsErrorsAndBreakoutOfFunction()
     def setClkSelect(self, checked=False):
         if self.qradio_external_clk.isChecked():
-            # Valid VCO range is 600 MHz-1600 MHz according to DS181
-
-            CLKFBOUT_MULT  = 5
-            CLKOUT0_DIVIDE = 8
-            # # For self.f_ext=200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-
-            # CLKFBOUT_MULT  = 62
-            # CLKOUT0_DIVIDE = 5
-            # For self.f_ext=10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
-
-            # # For self.f_ext=25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-            # CLKFBOUT_MULT  = 40
-            # CLKOUT0_DIVIDE = 8
-
-            self.sl.setADCclockPLL(self.f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
-
+            f_ref = self.f_ext
         else:
-            # For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-            f_int          = 200e6
-            CLKFBOUT_MULT  = 5
-            CLKOUT0_DIVIDE = 8
+            f_ref = None  # irrelevant in internal clock mode
 
-            self.sl.setADCclockPLL(f_int, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
-
+        print("FIXME: this needs to be updated to the new code!")
+        f_ref = 180e6
+        ext_clk = bool(self.qradio_external_clk.isChecked())
+        self.sl.setADCclockPLL(f_ref, ext_clk)
+        # this will catch the transient loss of clock that can occur when switching:
+        (loss_of_clk_detected,
+            clk_ext_good,
+            clk_int_or_ext_actual,
+            clk_int_or_ext_desired) = self.sl.getClkStatus()
+        self.controller.clearLossOfClkEvent()
+        # self.sl.setADCclockPLL(f_int, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
         # make sure to update the lockpoint frequencies, in case the ADC clock frequency changed:
         self.controller.xem_gui_mainwindow.setVCOFreq_event()
         self.controller.xem_gui_mainwindow2.setVCOFreq_event()
+
+        timestamp_str = time.strftime("%Y-%m-%d %H:%M:%S")
+        clk_name = "External" if self.qradio_external_clk.isChecked() else "Internal"
+        with open("clock_events.log", "a") as f:
+            f.write(f"{clk_name} clock selected at {timestamp_str}\n")
 
     @logCommsErrorsAndBreakoutOfFunction()
     def mux_vco_Action(self, checked=False):
@@ -512,124 +548,3 @@ if __name__ == '__main__':
 
 
     app.exec_()
-
-
-    #####################################################################
-    # Reference code for interacting with the new ADC PLL settings:
-    #####################################################################
-    # def setADCclockPLL(self, f_ref, bExternalClock):
-    #     """ Computes and commits closest integer-N solution for the ADC clock.
-    #     In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
-    #     print("setADCclockPLL(): f_ref=", f_ref)
-    #     self.user_inputs["bExternalClock"] = bExternalClock
-    #     if bExternalClock:
-    #         (M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
-    #         self.user_inputs["adc_f_ref_hz"]   = f_ref
-    #         self.user_inputs["CLKFBOUT_MULT"]  = M
-    #         self.user_inputs["CLKOUT0_DIVIDE"] = N
-    #         self._setADCclockPLL()
-    #     else:
-    #         # we are not even using the MMCM
-    #         self.user_inputs["adc_f_ref_hz"]   = 125e6
-    #         self.user_inputs["CLKFBOUT_MULT"]  = 1
-    #         self.user_inputs["CLKOUT0_DIVIDE"] = 1
-    #         self._setClkSelectAndReset(False, bExternalClock)
-
-    # def _setADCclockPLL(self):
-    #     """ f_ref is the frequency of the clock connected to GPIO_P[5] in external clock mode """
-
-    #     # From PG065:
-    #     # "You should first write all the required clock configuration registers and then check for the
-    #     # status register. If status register value is 0x1, start the reconfiguration by writing Clock
-    #     # Configuration Register 23 with 0x7. The next write should be 0x2 before the Locked goes
-    #     # High. If the original configuration is needed at any time, then writing this register with value
-    #     # 0x4 and then 0x0 restores the original settings."
-
-    #     # Clock configuration register 0 (table 4-2 in PG065)
-    #     DIVCLK_DIVIDE = 1
-    #     reg  = (DIVCLK_DIVIDE & ((1<<8)-1)) << 0
-    #     reg |= (self.user_inputs["CLKFBOUT_MULT"] & ((1<<8)-1)) << 8
-    #     self.write("clkw_reg0", reg)
-    #     # Clock configuration register 2 (table 4-2 in PG065)
-    #     reg = (self.user_inputs["CLKOUT0_DIVIDE"] & ((1<<8)-1)) << 0
-    #     self.write("clkw_reg2", reg)
-
-    #     # check status register:
-    #     if not self._waitForReg("clkw_status", 0x1, timeout=1.0):
-    #         print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
-    #         return
-
-    #     self._setClkSelectAndReset(True, self.user_inputs["bExternalClock"]) # assert reset on the incoming ADC clock
-    #     self.write("clkw_reg23", 0x7)
-    #     self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
-
-    #     self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
-    #     time.sleep(0.1)
-    #     self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # de-assert reset on the incoming ADC clock
-
-    # def _waitForReg(self, reg_name, desired_value, timeout=1.):
-    #     """ Read a register in a loop, until it either becomes a desired value or we hit a timeout.
-    #     Returns True if the register reached the desired value, False if we timed out """
-    #     time_start = time.perf_counter()
-    #     reg_value = self.read(reg_name)
-    #     while reg_value != desired_value and time.perf_counter()-time_start < timeout: # read in a loop until we timeout
-    #         reg_value = self.read(reg_name)
-    #         time.sleep(1e-3)
-    #     return reg_value == desired_value
-
-    # def _setClkSelectAndReset(self, bReset, bExternalClock):
-    #     """ Select external or internal clock source, and also sets the reset """
-    #     reg_clk_sel_and_reset = int(not bExternalClock) | (int(bReset)<<1)
-    #     self.write("clk_sel_and_reset", reg_clk_sel_and_reset)
-
-
-    # def getClkStatus(self):
-    #     """ Returns four boolean flags:
-    #     (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
-    #     loss_of_clk_detected is True if the user set external clock mode, but the system fell back to internal clock mode
-    #     at any point since the last reading of this flag.
-    #     clk_int_or_ext_desired = True means internal clock
-    #     clk_int_or_ext_actual = True means internal clock
-    #     """
-    #     reg_value = self.read("ext_clk_status")
-    #     loss_of_clk_detected   = bool((reg_value>>3) & 0x1)
-    #     clk_ext_good           = bool((reg_value>>2) & 0x1)
-    #     clk_int_or_ext_actual  = bool((reg_value>>1) & 0x1)
-    #     clk_int_or_ext_desired = bool((reg_value>>0) & 0x1)
-    #     return (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
-
-    # def getHardwareDescription(self):
-    #     """ Returns a dictionary with various flags describing the hardware on the connected device """
-    #     d = dict()
-    #     f = self.dev.read_file_from_remote("/opt/hardware.txt")
-    #     f = f.decode('ascii')
-    #     # f = "has_dds=1\nhas_mixer_board=1\n" # for testing
-    #     for line in f.split('\n'):
-    #         if line == '':
-    #             continue
-    #         key, value = line.split('=')
-    #         d[key] = bool(int(value))
-
-    #     f = self.dev.read_file_from_remote("/opt/macaddress.txt")
-    #     f = f.decode('ascii')
-    #     if f == '':
-    #         self.dev.send_shell_command('ifconfig | grep eth0 > /opt/macaddress.txt')
-    #         time.sleep(0.1)
-    #         f = self.dev.read_file_from_remote("/opt/macaddress.txt")
-    #         f = f.decode('ascii')
-
-    #     mac_token = 'HWaddr '
-    #     ind = f.find(mac_token)
-    #     if ind != -1:
-    #         d["mac"] = f[ind+len(mac_token):].strip()
-    #     return d
-
-    # def sendHardwareDescription(self, bHasMixerBoard=False, bHasDDS=False):
-    #     """ Creates a file that describes various add-ons to the RP,
-    #     and sends it to the currently-connected device.
-    #     To be used only once when upgrading a given RP """
-    #     description = "has_mixer_board=%d\n" % int(bool(bHasMixerBoard))
-    #     description += "has_dds=%d\n" % int(bool(bHasDDS))
-    #     file_data = description.encode('ascii')
-    #     self.dev.write_file_on_remote("", strFilenameRemote="/opt/hardware.txt", file_data=file_data)
-

@@ -49,7 +49,31 @@ logging.basicConfig(level=logging.INFO)
 #	sys.exit(1)
 #sys.excepthook = exception_hook
 
+class WidgetWithWarnings(Qt.QWidget):
+	clearWarningSignal = QtCore.pyqtSignal()
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.lbl = Qt.QLabel('this will be a warning to us all!')
+		# self.lbl.setFlat(True)  # makes QPushButton look like a normal label
+		self.lbl.setStyleSheet('background-color:red; color: white')
+		self.lbl.setAlignment(QtCore.Qt.AlignHCenter)
+		self.lbl.setVisible(False)
+		# self.lbl.clicked.connect(self.lbl_clicked)
+		vbox = Qt.QVBoxLayout()
+		vbox.addWidget(self.lbl)
+		self.setLayout(vbox)
+		self.setContentsMargins(0, 0, 0, 0)
+
+	def mousePressEvent(self, event):
+		self.clearWarningSignal.emit()
+
+	def showWarning(self, text):
+		self.lbl.setText(text)
+		self.lbl.setVisible(True)
+
+	def clearWarning(self):
+		self.lbl.setVisible(False)
 
 class controller(object):
 	"""Main class of the GUI. It contains most of the elements of the GUI, the main_window and the communication class"""
@@ -82,6 +106,17 @@ class controller(object):
 
 		if bManualStartupForTests==False:
 			self.runEventLoop()
+
+	def lossOfClkEvent(self, timestamp_str):
+		""" Signals a loss of clock event to the GUI elements in order
+		to draw user attention to the issue """
+		for name, w in self.tab_windows.items():
+			text = f"Loss of external clock event detected at {timestamp_str} (click to clear)"
+			w.showWarning(text)
+
+	def clearLossOfClkEvent(self):
+		for name, w in self.tab_windows.items():
+			w.clearWarning()
 
 	def updateDeviceData(self):
 		# xml file containing the known Red Pitaya's and their MAC addresses, UI color and shorthand name
@@ -185,13 +220,24 @@ class controller(object):
 		self.main_windows.setObjectName('MainWindow')
 		self.main_windows.setStyleSheet(custom_style_sheet)
 		
-		
-		tabs = QtGui.QTabWidget()
+		self.tab_windows_before_wrap = {
+			"CEO Lock":     self.xem_gui_mainwindow,
+			"Optical Lock": self.xem_gui_mainwindow2,
+			"Counters":     self.counters_window,
+			"Settings":     self.settings_window,
+			}
 
-		tabs.addTab(self.xem_gui_mainwindow, "CEO Lock")
-		tabs.addTab(self.xem_gui_mainwindow2, "Optical Lock")
-		tabs.addTab(self.counters_window, "Counters")
-		tabs.addTab(self.settings_window, "Settings")
+		self.tab_windows = dict()
+		for name, w in self.tab_windows_before_wrap.items():
+			w_wrapper = WidgetWithWarnings()
+			w_wrapper.clearWarningSignal.connect(self.clearLossOfClkEvent)
+			w_wrapper.layout().addWidget(w)
+			self.tab_windows[name] = w_wrapper
+
+		tabs = QtGui.QTabWidget()
+		for name, w in self.tab_windows.items():
+			tabs.addTab(w, name)
+
 		box = QtGui.QHBoxLayout()
 		box.addWidget(tabs)
 		self.main_windows.setLayout(box)

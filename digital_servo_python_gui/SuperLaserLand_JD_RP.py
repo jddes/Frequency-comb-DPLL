@@ -23,6 +23,7 @@ import RP_PLL
 
 import logging
 import common
+import zynq_mmcm
 
 class SuperLaserLand_JD_RP:
 	# Data members:
@@ -33,13 +34,13 @@ class SuperLaserLand_JD_RP:
 	bCommunicationLogging = False   # Turn On/Off logging of the USB communication with the FPGA box
 	bVerbose = False
 	
-    # input channels ids start from 1
-    num_channels = 4
-    channels_list = list(range(1, num_channels+1))
+	# input channels ids start from 1
+	num_channels = 4
+	channels_list = list(range(1, num_channels+1))
 
-    # dac ids start from 1
-    num_dacs = 3
-    dacs_list = list(range(1, num_dacs+1))
+	# dac ids start from 1
+	num_dacs = 3
+	dacs_list = list(range(1, num_dacs+1))
 	
 	ddc0_frequency_in_hz = 25e6
 	ddc1_frequency_in_hz = 25e6
@@ -256,46 +257,46 @@ class SuperLaserLand_JD_RP:
 
 
 
-    ############################################################
-    # Functions to map addresses below to the correct absolute addresses
-    # There are three separate address spaces
-    datalogger2absolute = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR + (1<<20) # the value 1 is taken from red_pitaya_top.v, from this line: .sys_wen(sys_wen[1]),  used by trigger_write below
-    dpll2absolute       = lambda x: x*4 + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR # Addresses that are multiplied by four are part of the multichannel_freq_counter_top address space. this is done to avoid any chance of doing a read at a non-four-bytes-aligned address, which crashes the Zynq CPU
-    bd2absolute         = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR_XADC
-    # 
-    addr = {
-        "trigger_write":  datalogger2absolute(0x1004),    # writing anything to this address triggers the write mode in ram_data_logger.vhd; part of a different address space than most other registers
+	############################################################
+	# Functions to map addresses below to the correct absolute addresses
+	# There are three separate address spaces
+	datalogger2absolute = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR + (1<<20) # the value 1 is taken from red_pitaya_top.v, from this line: .sys_wen(sys_wen[1]),  used by trigger_write below
+	dpll2absolute       = lambda x: x*4 + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR # Addresses that are multiplied by four are part of the multichannel_freq_counter_top address space. this is done to avoid any chance of doing a read at a non-four-bytes-aligned address, which crashes the Zynq CPU
+	bd2absolute         = lambda x: x   + RP_PLL.RP_PLL_device.FPGA_BASE_ADDR_XADC
+	# 
+	addr = {
+		"trigger_write":  datalogger2absolute(0x1004),    # writing anything to this address triggers the write mode in ram_data_logger.vhd; part of a different address space than most other registers
 
-        "ext_clk_status": dpll2absolute(0x0046),
+		"ext_clk_status": dpll2absolute(0x0046),
 
-        # addresses implemented in the "Board design" 
-        # XADC-related
-        "xadc_base":   bd2absolute(0x0001_0000),
-        "xadc_Vccint": bd2absolute(0x0001_0000 + 0x204),
-        "xadc_Vccaux": bd2absolute(0x0001_0000 + 0x208),
-        "xadc_Vbram":  bd2absolute(0x0001_0000 + 0x218),
-        "xadc_Temp":   bd2absolute(0x0001_0000 + 0x200),
+		# addresses implemented in the "Board design" 
+		# XADC-related
+		"xadc_base":   bd2absolute(0x0001_0000),
+		"xadc_Vccint": bd2absolute(0x0001_0000 + 0x204),
+		"xadc_Vccaux": bd2absolute(0x0001_0000 + 0x208),
+		"xadc_Vbram":  bd2absolute(0x0001_0000 + 0x218),
+		"xadc_Temp":   bd2absolute(0x0001_0000 + 0x200),
 
-        # Clock configuration registers (table 4-2 in PG065)
-        "clkw_reg0":          bd2absolute(0x0002_0000 + 0x200),
-        "clkw_reg2":          bd2absolute(0x0002_0000 + 0x208),
-        "clkw_status":        bd2absolute(0x0002_0000 + 0x04),
-        "clkw_reg23":         bd2absolute(0x0002_0000 + 0x25C),
-        # External-clock-related
-        "clk_sel_and_reset":  bd2absolute(0x0003_0000),
-        "clk_freq_reg1":      bd2absolute(0x0004_0000),
-        "clk_freq_reg2":      bd2absolute(0x0004_0008),
-        "clk_freq_reg3":      bd2absolute(0x0005_0000),
+		# Clock configuration registers (table 4-2 in PG065)
+		"clkw_reg0":          bd2absolute(0x0002_0000 + 0x200),
+		"clkw_reg2":          bd2absolute(0x0002_0000 + 0x208),
+		"clkw_status":        bd2absolute(0x0002_0000 + 0x04),
+		"clkw_reg23":         bd2absolute(0x0002_0000 + 0x25C),
+		# External-clock-related
+		"clk_sel_and_reset":  bd2absolute(0x0003_0000),
+		"clk_freq_reg1":      bd2absolute(0x0004_0000),
+		"clk_freq_reg2":      bd2absolute(0x0004_0008),
+		"clk_freq_reg3":      bd2absolute(0x0005_0000),
 
-        "uart_to_spi_bridge": bd2absolute(0x0005_0008),
-    }
-    for xadc_channel in range(15+1):
-        addr["xadc_channel%d" % xadc_channel] = addr["xadc_base"]+0x240+4*xadc_channel
+		"uart_to_spi_bridge": bd2absolute(0x0005_0008),
+	}
+	for xadc_channel in range(15+1):
+		addr["xadc_channel%d" % xadc_channel] = addr["xadc_base"]+0x240+4*xadc_channel
 
 	############################################################
 
-    reg_values     = dict() # this will get populated every time we write a value to the device
-    derived_values = dict() # these values get populated as a function of the register values, and are mostly for convenience
+	reg_values     = dict() # this will get populated every time we write a value to the device
+	derived_values = dict() # these values get populated as a function of the register values, and are mostly for convenience
 	
 	############################################################
 	# Constants for the input multiplex going to the DDR2Logger
@@ -341,34 +342,34 @@ class SuperLaserLand_JD_RP:
 
 		self.dev = RP_PLL.RP_PLL_device(self.controller)
 
-    def write(self, reg_name, data_32bits):
-        """ Default register writes are 32 bits """
-        self.dev.write_uint32(self.addr[reg_name], int(data_32bits))
-        self.reg_values[reg_name] = int(data_32bits)
+	def write(self, reg_name, data_32bits):
+		""" Default register writes are 32 bits """
+		self.dev.write_uint32(self.addr[reg_name], int(data_32bits))
+		self.reg_values[reg_name] = int(data_32bits)
 
-    def write_repeat(self, reg_name, values_32bits, iSleepUs=0):
-        """ Write multiple consecutive values to a single address.
-        values_32bits must be an iterable """
-        self.dev.write_repeat_uint32(self.addr[reg_name], values_32bits, iSleepUs)
-        self.reg_values[reg_name] = int(values_32bits[-1])
+	def write_repeat(self, reg_name, values_32bits, iSleepUs=0):
+		""" Write multiple consecutive values to a single address.
+		values_32bits must be an iterable """
+		self.dev.write_repeat_uint32(self.addr[reg_name], values_32bits, iSleepUs)
+		self.reg_values[reg_name] = int(values_32bits[-1])
 
-    def write_64bits(self, reg_name, data_64bits):
-        """ This is broken up into two consecutive 32-bits writes,
-        with the MSBs written last """
-        data_32bits_lower =  data_64bits      & 0xFFFFFFFF
-        data_32bits_upper = (data_64bits>>32) & 0xFFFFFFFF
-        self.dev.write_uint32(self.addr[reg_name],   int(data_32bits_lower))
-        self.dev.write_uint32(self.addr[reg_name]+4, int(data_32bits_upper))
-        self.reg_values[reg_name] = int(data_64bits)
+	def write_64bits(self, reg_name, data_64bits):
+		""" This is broken up into two consecutive 32-bits writes,
+		with the MSBs written last """
+		data_32bits_lower =  data_64bits      & 0xFFFFFFFF
+		data_32bits_upper = (data_64bits>>32) & 0xFFFFFFFF
+		self.dev.write_uint32(self.addr[reg_name],   int(data_32bits_lower))
+		self.dev.write_uint32(self.addr[reg_name]+4, int(data_32bits_upper))
+		self.reg_values[reg_name] = int(data_64bits)
 
-    def write_2x_16bits(self, reg_name, data_lsbs, data_msbs):
-        reg_value = (int(data_msbs)<<16) + int(data_lsbs)
-        self.write(reg_name, reg_value)
+	def write_2x_16bits(self, reg_name, data_lsbs, data_msbs):
+		reg_value = (int(data_msbs)<<16) + int(data_lsbs)
+		self.write(reg_name, reg_value)
 
-    def read(self, reg_name):
-        reg_value = self.dev.read_uint32(self.addr[reg_name])
-        self.reg_values[reg_name] = reg_value
-        return reg_value
+	def read(self, reg_name):
+		reg_value = self.dev.read_uint32(self.addr[reg_name])
+		self.reg_values[reg_name] = reg_value
+		return reg_value
 
 	def openDevice(self, bConfigure=True, strSerial='', strFirmware='superlaserland.bit'):
 		if self.bVerbose == True:
@@ -1163,18 +1164,18 @@ class SuperLaserLand_JD_RP:
 		frequency_in_hz = float(self.ddc0_frequency_in_int) / 2**48 * self.fs
 		return frequency_in_hz 
 
-    def set_ddc_ref_freq(self, channel_id, frequency_in_hz):
-        """ channel_id can be either 1, 2, 3 or 4 """
-        assert channel_id in self.channels_list
-        self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
-        dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs)
-        # print("dds_freq_word=",dds_freq_word)
-        self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
+	def set_ddc_ref_freq(self, channel_id, frequency_in_hz):
+		""" channel_id can be either 1, 2, 3 or 4 """
+		assert channel_id in self.channels_list
+		self.user_inputs["ddc_ref_freq%d_hz" % channel_id] = frequency_in_hz
+		dds_freq_word = self.dds_freq_to_word(frequency_in_hz, self.fs)
+		# print("dds_freq_word=",dds_freq_word)
+		self.write_64bits("ref_freq%d"%channel_id, dds_freq_word)
 
-    def dds_freq_to_word(self, frequency_in_hz, ref_freq):
-        dds_freq_word = int(round(2**(48) * frequency_in_hz/ref_freq))
-        dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
-        return dds_freq_word
+	def dds_freq_to_word(self, frequency_in_hz, ref_freq):
+		dds_freq_word = int(round(2**(48) * frequency_in_hz/ref_freq))
+		dds_freq_word = dds_freq_word % (1 << 48) # modulo 2**48
+		return dds_freq_word
 
 	def set_ddc0_ref_freq(self, frequency_in_hz):
 		if self.bVerbose == True:
@@ -2006,7 +2007,6 @@ class SuperLaserLand_JD_RP:
 	def setADCclockPLL(self, f_ref, bExternalClock):
 		""" Computes and commits closest integer-N solution for the ADC clock.
 		In internal clock mode, f_ref is ignored (overriden by the 200 MHz internal clock) """
-		print("setADCclockPLL(): f_ref=", f_ref)
 		self.user_inputs["bExternalClock"] = bExternalClock
 		if bExternalClock:
 			(M, N) = zynq_mmcm.get_integer_N_solution(f_ref, f_target_adc=125e6)
@@ -2020,6 +2020,8 @@ class SuperLaserLand_JD_RP:
 			self.user_inputs["CLKFBOUT_MULT"]  = 1
 			self.user_inputs["CLKOUT0_DIVIDE"] = 1
 			self._setClkSelectAndReset(False, bExternalClock)
+
+		self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
 
 	def _setADCclockPLL(self):
 		""" f_ref is the frequency of the clock connected to GPIO_P[5] in external clock mode """
@@ -2049,7 +2051,6 @@ class SuperLaserLand_JD_RP:
 		self.write("clkw_reg23", 0x7)
 		self.write("clkw_reg23", 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
-		self.fs = self.user_inputs["adc_f_ref_hz"] * self.user_inputs["CLKFBOUT_MULT"]/self.user_inputs["CLKOUT0_DIVIDE"]
 		time.sleep(0.1)
 		self._setClkSelectAndReset(False, self.user_inputs["bExternalClock"]) # de-assert reset on the incoming ADC clock
 
@@ -2085,69 +2086,69 @@ class SuperLaserLand_JD_RP:
 		return (loss_of_clk_detected, clk_ext_good, clk_int_or_ext_actual, clk_int_or_ext_desired)
 
 
-    # xadc_channel can be [0, 15]
-    def readZynqXADC(self, xadc_channel=0):
-        ###########################################################################
-        # Reading the XADC values:
-        # See Xilinx document UG480 chapter 2 for conversion factors
-        # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
-        xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
-        return xadc_unipolar_code_to_voltage(self.read("xadc_channel%d" % xadc_channel))
+	# xadc_channel can be [0, 15]
+	def readZynqXADC(self, xadc_channel=0):
+		###########################################################################
+		# Reading the XADC values:
+		# See Xilinx document UG480 chapter 2 for conversion factors
+		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+		xadc_unipolar_code_to_voltage    = lambda x: x*1./2.**16
+		return xadc_unipolar_code_to_voltage(self.read("xadc_channel%d" % xadc_channel))
 
-    # read various power supply voltages on the Zynq using the XADC:
-    def readZynqXADCsupply(self):
-        ###########################################################################
-        # Reading the XADC values:
-        # See Xilinx document UG480 chapter 2 for conversion factors
-        # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
-        xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
-        Vccint = xadc_powersupply_code_to_voltage(self.read("xadc_Vccint"))
-        Vccaux = xadc_powersupply_code_to_voltage(self.read("xadc_Vccaux"))
-        Vbram  = xadc_powersupply_code_to_voltage(self.read("xadc_Vbram"))
-        return (Vccint, Vccaux, Vbram)
+	# read various power supply voltages on the Zynq using the XADC:
+	def readZynqXADCsupply(self):
+		###########################################################################
+		# Reading the XADC values:
+		# See Xilinx document UG480 chapter 2 for conversion factors
+		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+		xadc_powersupply_code_to_voltage = lambda x: x*3./2.**16
+		Vccint = xadc_powersupply_code_to_voltage(self.read("xadc_Vccint"))
+		Vccaux = xadc_powersupply_code_to_voltage(self.read("xadc_Vccaux"))
+		Vbram  = xadc_powersupply_code_to_voltage(self.read("xadc_Vbram"))
+		return (Vccint, Vccaux, Vbram)
 
-    # read the Zynq's current temperature:
-    def readZynqTemperature(self):
-        ###########################################################################
-        # Reading the XADC values:
-        # See Xilinx document UG480 chapter 2 for conversion factors
-        # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
-        xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
-        time_start = time.clock()
-        # average 10 readings because otherwise they are quite noisy:
-        # this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
-        N_average = 10.
-        reg_avg = 0.
-        for k in range(int(N_average)):
-            reg = self.read("xadc_Temp")
-            reg_avg += float(reg)
-            
-        reg_avg = float(reg_avg)/N_average
-        # print("elapsed = %f" % (time.clock()-time_start))
-        ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
-        return ZynqTempInDegC
-        
-    def getExtClockFreq(self):
-        # see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
-        data_index = lambda x: (x >> 24)
-        bSuccess = False
-        for iAttempts in range(2):
-            reg1 = self.read("clk_freq_reg1")
-            reg2 = self.read("clk_freq_reg2")
-            reg3 = self.read("clk_freq_reg3")
-            # these three need to match.  If they don't, this means that the data changed in between our three reads.
-            # try another time to read all three registers.  It should succeed, since the counter updates only at 1 Hz
-            if data_index(reg1) == data_index(reg2) == data_index(reg3):
-                bSuccess = True
-                break
-        if not bSuccess:
-            return np.nan
-        freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
-                       ((reg2 & 0x00FFFFFF) << 24) + 
-                       ((reg3 & 0x0000FFFF) << 48))
-        freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, N_cycles_gate_time=200e6, f_ref=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
-        freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
-        return freq_Hz
+	# read the Zynq's current temperature:
+	def readZynqTemperature(self):
+		###########################################################################
+		# Reading the XADC values:
+		# See Xilinx document UG480 chapter 2 for conversion factors
+		# we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
+		xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
+		time_start = time.clock()
+		# average 10 readings because otherwise they are quite noisy:
+		# this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
+		N_average = 10.
+		reg_avg = 0.
+		for k in range(int(N_average)):
+			reg = self.read("xadc_Temp")
+			reg_avg += float(reg)
+			
+		reg_avg = float(reg_avg)/N_average
+		# print("elapsed = %f" % (time.clock()-time_start))
+		ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
+		return ZynqTempInDegC
+		
+	def getExtClockFreq(self):
+		# see "digital_clock_freq_counter.vhd" for the meaning of each of these registers.
+		data_index = lambda x: (x >> 24)
+		bSuccess = False
+		for iAttempts in range(2):
+			reg1 = self.read("clk_freq_reg1")
+			reg2 = self.read("clk_freq_reg2")
+			reg3 = self.read("clk_freq_reg3")
+			# these three need to match.  If they don't, this means that the data changed in between our three reads.
+			# try another time to read all three registers.  It should succeed, since the counter updates only at 1 Hz
+			if data_index(reg1) == data_index(reg2) == data_index(reg3):
+				bSuccess = True
+				break
+		if not bSuccess:
+			return np.nan
+		freq_64bits = (((reg1 & 0x00FFFFFF) <<  0) + 
+					   ((reg2 & 0x00FFFFFF) << 24) + 
+					   ((reg3 & 0x0000FFFF) << 48))
+		freq_Hz = self.scaleCounterReadingsIntoHz(freq_64bits, N_cycles_gate_time=200e6, f_ref=200e6) # reference frequency in this case is 200 MHz: fclk[3] from the block design
+		freq_Hz = freq_Hz * 2**10 # this is because this counter has no fractional bits on its phase measurement, so the gain is effectively 2**FRACT_BITS lower, with FRACT_BITS=10
+		return freq_Hz
 
 
 	def getHardwareDescription(self):

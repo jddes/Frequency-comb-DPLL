@@ -242,11 +242,8 @@ class TestController():
         print("testDinInput complete!")
 
     def setExtClkMode(self, ext_clk):
-        # For 200 MHz clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-        f_ref          = 200e6
-        CLKFBOUT_MULT  = 5
-        CLKOUT0_DIVIDE = 8
-        self.sl.setADCclockPLL(f_ref, ext_clk, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+        f_ref = 200e6
+        self.sl.setADCclockPLL(f_ref, ext_clk)
 
     def quantifyPhaseLock(self, expected_phase_lock):
         """ scope should contain the sum of a 10 MHz and 200 MHz, which are expected to be phase-locked or not depending on expected_phase_lock """
