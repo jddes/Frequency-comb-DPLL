@@ -419,8 +419,11 @@ class SpectrumWidget(QtGui.QWidget):
         ind_max_psd = index_from_freq(20e6)
         spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
         # reject the biggest outlier (biases the result, but by a very small amount, and avoids the large error if there is a spur in the chosen bandwidth)
-        worst_outlier_index = np.argmax(spc_single_sided_psd)
-        spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+        try:
+            worst_outlier_index = np.argmax(spc_single_sided_psd)
+            spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+        except ValueError:
+            pass
         avg_psd = np.mean(spc_single_sided_psd) # compute the mean
         # 
         spc = spc*4. # scale relative to 0 dBFS sine wave

@@ -576,21 +576,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# There is a different procedure for turning the lock on on the optical loop:
 				# first we grab the beat using the DAC2 frequency-locked loop. then we set this integrator to hold
 				# and switch to the DAC1 PLL + DAC2 second integrator.
-				self.qloop_filters[1].qradio_mode_off.setChecked(False)
-				self.qloop_filters[1].qradio_mode_slow.setChecked(True)
-				self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-				self.qloop_filters[1].qradio_mode_both.setChecked(False)
-				self.qloop_filters[1].updateSettings()
+				# self.qloop_filters[1].qradio_mode_off.setChecked(False)
+				# self.qloop_filters[1].qradio_mode_slow.setChecked(True)
+				# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+				# self.qloop_filters[1].qradio_mode_both.setChecked(False)
+				# self.qloop_filters[1].updateSettings()
 				
 				# # Wait for the integrator to grab on to the beat
 				# time.sleep(0.2)
 				
-				# # Turn on the full-blown PLL
+				# Turn on the full-blown PLL
 				# self.qloop_filters[1].qradio_mode_off.setChecked(False)
 				# self.qloop_filters[1].qradio_mode_slow.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+				self.qloop_filters[1].qradio_mode_fast.setChecked(True)
 				# self.qloop_filters[1].qradio_mode_both.setChecked(True)
-				# self.qloop_filters[1].updateSettings()
+				self.qloop_filters[1].updateSettings()
 				
 		
 		else:   # bLock = False
