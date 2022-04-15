@@ -582,15 +582,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				self.qloop_filters[1].qradio_mode_both.setChecked(False)
 				self.qloop_filters[1].updateSettings()
 				
-				# # Wait for the integrator to grab on to the beat
-				# time.sleep(0.2)
+				# Wait for the integrator to grab on to the beat
+				time.sleep(0.2)
 				
-				# # Turn on the full-blown PLL
-				# self.qloop_filters[1].qradio_mode_off.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_slow.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_fast.setChecked(False)
-				# self.qloop_filters[1].qradio_mode_both.setChecked(True)
-				# self.qloop_filters[1].updateSettings()
+				# Turn on the full-blown PLL
+				self.qloop_filters[1].qradio_mode_off.setChecked(False)
+				self.qloop_filters[1].qradio_mode_slow.setChecked(False)
+				self.qloop_filters[1].qradio_mode_fast.setChecked(False)
+				self.qloop_filters[1].qradio_mode_both.setChecked(True)
+				self.qloop_filters[1].updateSettings()
 				
 		
 		else:   # bLock = False
