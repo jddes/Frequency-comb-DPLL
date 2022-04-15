@@ -1085,10 +1085,15 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
   //   end
   // end
 
+  // DACout1 is 16-bits signed, but the max5541 is 14-bits unsigned (offset binary)
+  // we do the conversion here
+  wire [16-1:0] DACout1_offset;
+  assign DACout1_offset = DACout1[16-1:2] + 14'd8192;
+
   max5541_spi_dac_interface max5541_spi_dac_interface_inst
   (
     .clk(adc_clk),
-    .data_in(DACout1),
+    .data_in(DACout1_offset),
     .data_loaded_clk_enable(data_loaded_clk_enable),
     .scl(max5541_scl),
     .sda(max5541_sda),
