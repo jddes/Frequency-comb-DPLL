@@ -1087,8 +1087,30 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
 
   // DACout1 is 16-bits signed, but the max5541 is 14-bits unsigned (offset binary)
   // we do the conversion here
-  wire [16-1:0] DACout1_offset;
+  wire [14-1:0] DACout1_offset;
   assign DACout1_offset = DACout1[16-1:2] + 14'd8192;
+
+// binary, unsigned, signed
+// b011: 3, 3
+// b010: 2, 2
+// b001: 1, 1
+// b000: 0, 0
+// b111: 7, -1
+// b101: 5, -2
+// b110: 6, -2
+// b100: 4, -4
+
+// I want to map from:
+// signed, unsigned+offset
+// 3=>7
+// 2=>6
+// 1=>5
+// 0=>4
+// -1=>3
+// -2=>2
+// -3=>1
+// -4=>0
+
 
   max5541_spi_dac_interface max5541_spi_dac_interface_inst
   (
