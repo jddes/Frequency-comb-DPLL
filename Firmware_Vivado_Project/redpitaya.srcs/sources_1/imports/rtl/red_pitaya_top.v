@@ -1088,7 +1088,7 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
   max5541_spi_dac_interface max5541_spi_dac_interface_inst
   (
     .clk(adc_clk),
-    .data_in(DACout2),
+    .data_in(DACout1),
     .data_loaded_clk_enable(data_loaded_clk_enable),
     .scl(max5541_scl),
     .sda(max5541_sda),

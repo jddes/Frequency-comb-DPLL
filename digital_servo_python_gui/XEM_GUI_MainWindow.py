@@ -152,7 +152,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		# For the residuals streaming:
 		# Only one window takes care of reading both the CEO and optical residuals
-		if self.selected_ADC == 0:
+		if self.selected_ADC in (0, 1):
 			strFolder = 'c:\\SuperLaserLandLogs\\ResidualsStreaming'
 			common.make_sure_path_exists(strFolder)
 			self.word_counter = 0
