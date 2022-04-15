@@ -1087,8 +1087,8 @@ assign daisy_n_o = {~clk_out_10, 1'bz};   // we built a SATA connector with 2 SM
 
   // DACout1 is 16-bits signed, but the max5541 is 14-bits unsigned (offset binary)
   // we do the conversion here
-  wire [14-1:0] DACout1_offset;
-  assign DACout1_offset = DACout1[16-1:2] + 14'd8192;
+  wire [16-1:0] DACout1_offset;
+  assign DACout1_offset = DACout1 + 16'd32768;
 
 // binary, unsigned, signed
 // b011: 3, 3
