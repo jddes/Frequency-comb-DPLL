@@ -48,15 +48,15 @@ class ConfigRPSettingsUI(Qt.QWidget):
         vco_amplitude = float((self.sp.getValue('VCO_settings', "VCO_amplitude")))
         vco_offset = float((self.sp.getValue('VCO_settings', "VCO_offset")))
         clk_select = int((self.sp.getValue('RP_settings', "Clock_select")))
+        ref_clk = float((self.sp.getValue('RP_settings', "Ref_clk_freq")))
 
         #print("ConfigurationRPSettingsUI::loadParameters(): after read GUI")
 
+        self.editExtFreq.setText(f"{ref_clk}")
         if clk_select > 0:
-            print("FIXME: change the way the clk interactions work!")
-            # self.qradio_internal_clk.setChecked(True)
+            self.qradio_internal_clk.setChecked(True)
         else:
-            print("FIXME: change the way the clk interactions work!")
-            # self.qradio_external_clk.setChecked(True)
+            self.qradio_external_clk.setChecked(True)
 
         if fan_state > 0:
             self.qradio_fan_on.setChecked(True)
@@ -136,15 +136,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
             self.qradio_pll1_to_pll2.setChecked(True)
         
         # # clock source
-        print("FIXME: read out current clock settings!")
+        print("FIXME: read out current clock settings! This is tricky because there is currently some missing information: the ext clk freq, and we also have to make sure we read clock frequencies (actual sl.fs) before setting ddc frequencies, etc")
         # self.sl.deprecated_readADCclockSettings(f_external=self.f_ext)
         # if self.sl.bExternalClock:
         #     self.qradio_external_clk.setChecked(True)
         # else:
         #     self.qradio_internal_clk.setChecked(True)
-
-        self.lblActualClkMode
-
 
         self.startTimers()
 
@@ -172,15 +169,19 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.qradio_internal_clk.clicked.connect(self.setClkSelect)
         self.qradio_external_clk.clicked.connect(self.setClkSelect)
         self.lblActualClkMode = Qt.QLabel('Actual clk mode:')
+        self.lbl2 = Qt.QLabel('Ext clk nominal freq: [Hz]')
+        self.editExtFreq   = Qt.QLineEdit('10e6')
         self.lblExtClkFreq = Qt.QLabel('Ext clk freq = %.6f MHz' % 0.0)
         self.lblDinFreq    = Qt.QLabel('Din freq     = %.6f MHz' % 0.0)
 
         grid.addWidget(self.lbl1,                0, 0, 1, 2)
         grid.addWidget(self.qradio_internal_clk, 1, 0)
         grid.addWidget(self.qradio_external_clk, 2, 0)
-        grid.addWidget(self.lblActualClkMode,    3, 0)
-        grid.addWidget(self.lblExtClkFreq,       4, 0)
-        grid.addWidget(self.lblDinFreq,          5, 0)
+        grid.addWidget(self.lbl2,                3, 0)
+        grid.addWidget(self.editExtFreq,         3, 1)
+        grid.addWidget(self.lblActualClkMode,    4, 0)
+        grid.addWidget(self.lblExtClkFreq,       5, 0)
+        grid.addWidget(self.lblDinFreq,          6, 0)
 
         #grid.setRowStretch(2, 2)
 
@@ -461,14 +462,14 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
     @logCommsErrorsAndBreakoutOfFunction()
     def setClkSelect(self, checked=False):
-        if self.qradio_external_clk.isChecked():
-            f_ref = self.f_ext
-        else:
-            f_ref = None  # irrelevant in internal clock mode
-
-        print("FIXME: this needs to be updated to the new code!")
-        f_ref = 180e6
+        f_ref = None  # irrelevant in internal clock mode
         ext_clk = bool(self.qradio_external_clk.isChecked())
+        if ext_clk:
+            try:
+                f_ref = float(self.editExtFreq.text())
+            except ValueError:
+                ext_clk = False
+
         self.sl.setADCclockPLL(f_ref, ext_clk)
         # this will catch the transient loss of clock that can occur when switching:
         (loss_of_clk_detected,
