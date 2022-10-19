@@ -21,7 +21,7 @@ import ctypes # for the icons
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from XEM_GUI_MainWindow import XEM_GUI_MainWindow
-from FreqErrorWindowWithTempControlV2 import FreqErrorWindowWithTempControlV2
+from FreqErrorWindowWithTempControlV3 import FreqErrorWindowWithTempControlV3
 from initialConfiguration_RP import initialConfiguration
 from SLLSystemParameters import SLLSystemParameters
 
@@ -103,7 +103,6 @@ class controller(object):
 		# Start the init process (this sets the PLL gain/settings registers and the residuals streaming)
 		self.sl.initSubModules()
 
-
 		###########################################################################
 		# Load all our windows:
 		
@@ -137,13 +136,15 @@ class controller(object):
 
 		
 		temp_control_port = 0
+		frep_comm_port = 60000
+		self.RP_Settings = ConfigRPSettingsUI(self.sl, self.sp, self, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand, port_number=frep_comm_port)
 		
 		
 		strNameTemplate = 'data_logging\\%s' % strOfTime
 		# strNameTemplate = '%s_%s_' % (strNameTemplate, self.initial_config.strSelectedSerial)
 		strNameTemplate = '%s_%s_' % (strNameTemplate, self.strSelectedSerial)
-		self.freq_error_window1 = FreqErrorWindowWithTempControlV2(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0, self.xem_gui_mainwindow)
-		self.freq_error_window2 = FreqErrorWindowWithTempControlV2(self.sl, 'Optical beat in-loop counter', self.sp, 1, strNameTemplate, custom_style_sheet, temp_control_port, self.xem_gui_mainwindow2)
+		self.freq_error_window1 = FreqErrorWindowWithTempControlV3(self.sl, 'CEO beat in-loop counter', self.sp, 0, strNameTemplate, custom_style_sheet, 0, self.xem_gui_mainwindow, 0, self.RP_Settings)
+		self.freq_error_window2 = FreqErrorWindowWithTempControlV3(self.sl, 'Optical beat in-loop counter', self.sp, 1, strNameTemplate, custom_style_sheet, temp_control_port, self.xem_gui_mainwindow2, 0, self.RP_Settings)
 
 		self.counters_window = Qt.QWidget()
 		self.counters_window.setObjectName('MainWindow')
@@ -158,8 +159,6 @@ class controller(object):
 		self.dither_widget0 = DisplayDitherSettingsWindow(self.sl, self.sp, 0, modulation_frequency_in_hz='1e3', output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
 		self.dither_widget1 = DisplayDitherSettingsWindow(self.sl, self.sp, 1, modulation_frequency_in_hz='5.1e3' , output_amplitude='1e-3', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
 		#dither_widget2 = DisplayDitherSettingsWindow(self.sl, self.sp, 2, modulation_frequency_in_hz='110' , output_amplitude='1e-4', integration_time_in_seconds='0.1', bEnableDither=True, custom_style_sheet=custom_style_sheet)
-
-		self.RP_Settings = ConfigRPSettingsUI(self.sl, self.sp, self, custom_style_sheet=custom_style_sheet, custom_shorthand=custom_shorthand)
 		
 		self.settings_window = Qt.QWidget()
 		self.settings_window.setObjectName('MainWindow')
@@ -184,8 +183,7 @@ class controller(object):
 		self.main_windows = Qt.QWidget()
 		self.main_windows.setObjectName('MainWindow')
 		self.main_windows.setStyleSheet(custom_style_sheet)
-		
-		
+				
 		tabs = QtGui.QTabWidget()
 
 		tabs.addTab(self.xem_gui_mainwindow, "CEO Lock")
@@ -198,8 +196,7 @@ class controller(object):
 		self.main_windows.setWindowTitle(custom_shorthand)
 		#self.main_windows.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(945-300, 0))
 		self.main_windows.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800-300, 0))
-		
-		
+				
 		APPID = u'TITLE'
 		ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
 
@@ -299,6 +296,29 @@ class controller(object):
 
 		self.freq_error_window2.port_number = int(port_number)
 
+	def setfrepCommPort(self, strSelectedSerial):
+		try:
+			print('setting frep comm port')
+			port_number = self.devices_data[strSelectedSerial]['port_frep']
+		except Exception:
+			port_number = 0
+			print('could not get port number' )
+			self.logger.warning('Red_Pitaya_GUI{}: Could not get frep comm port'.format(self.logger_name))
+
+		print('%i' % int(port_number))
+		self.RP_Settings.port_number = int(port_number)
+
+	def setRioPort(self, strSelectedSerial):
+		try:
+			print('setting rio comm port')
+			port_number = self.devices_data[strSelectedSerial]['port_rio']
+		except Exception:
+			port_number = 0
+			print('could not get rio port number')
+
+		print('%i' % int(port_number))
+		self.freq_error_window2.rio_port = int(port_number)
+
 	def pushDefaultValues(self, strSelectedSerial = "000000000000", ip_addr = "192.168.0.150", port=5000):
 		self.strSelectedSerial = strSelectedSerial
 		self.ip_addr           = ip_addr
@@ -336,6 +356,8 @@ class controller(object):
 		
 
 		self.setTemperatureControlPort(strSelectedSerial)
+		self.setfrepCommPort(strSelectedSerial)
+		self.setRioPort(strSelectedSerial)
 
 	def getActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 
@@ -375,6 +397,8 @@ class controller(object):
 			window.getValues()
 
 		self.setTemperatureControlPort(strSelectedSerial)
+		self.setfrepCommPort(strSelectedSerial)
+		self.setRioPort(strSelectedSerial)
 
 	def pushActualValues(self, strSelectedSerial, ip_addr = "192.168.0.150", port=5000):
 		self.strSelectedSerial = strSelectedSerial
@@ -402,6 +426,8 @@ class controller(object):
 
 
 		self.setTemperatureControlPort(strSelectedSerial)
+		self.setfrepCommPort(strSelectedSerial)
+		self.setRioPort(strSelectedSerial)
 
 	def stopCommunication(self):
 

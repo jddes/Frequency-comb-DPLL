@@ -21,6 +21,8 @@ import pdb
 
 import logging
 
+import traceback
+
 class initialConfiguration(QtWidgets.QDialog):
 		
 	def __init__(self, dev, controller, devices_data={}, strBroadcastAddress="192.168.2.255", strFPGAFirmware='', strCPUFirmware=''):
@@ -328,7 +330,7 @@ class initialConfiguration(QtWidgets.QDialog):
 			#self.dev.OpenTCPConnection(self.strSelectedIP)
 			if self.controller is not None:
 				self.controller.pushDefaultValues(self.strSelectedSerial, self.strSelectedIP, self.strSelectedPort)
-			#print("initialConfiguration.py::okClicked():after pushDefaultValues")
+			# print("initialConfiguration.py::okClicked():after pushDefaultValues")
 
 		elif self.qradio_existingRP.isChecked():
 			# Reconnect to the selected RedPitaya.

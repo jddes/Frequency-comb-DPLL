@@ -22,10 +22,12 @@ from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 import DataLoggingDisplayWidget
 
+import AsyncSocketComms
+
 
 class ConfigRPSettingsUI(Qt.QWidget):
     """docstring for ConfigRP"""
-    def __init__(self, sl, sp, controller, custom_style_sheet='', custom_shorthand=''):
+    def __init__(self, sl, sp, controller, custom_style_sheet='', custom_shorthand='',port_number =0):
         super(ConfigRPSettingsUI, self).__init__()  
         self.sl = weakref.proxy(sl)
         self.sp = sp
@@ -38,6 +40,38 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         self.initUI()
         self.loadParameters()
+
+        self.client = None
+        self.port_number=port_number
+
+    def openTCPConnection(self):
+        start_time = time.perf_counter()
+        if self.port_number != 0:
+            try:
+                time_before = time.perf_counter()
+                self.client = AsyncSocketComms.AsyncSocketClient(self.port_number)
+                print('Starting frep comms on port {}'.format(self.port_number))
+                # self.logger.info('Red_Pitaya_GUI{}: Starting frep comms on port {}'.format(self.logger_name, self.port_number))
+            except Exception as e:
+                print(e)
+                time_after = time.perf_counter()
+                #print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
+                self.client = None
+         
+        else:
+            self.client = None
+        end_time = time.perf_counter()
+        #print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
+    
+    def closeTCPConnection(self):
+        if self.client is not None:
+            try: #in case it was already close
+                self.client.close()
+                print('Closing frep comms on port {}'.format(self.port_number))
+            except Exception as e:
+                print('Error while closing the client: {}'.format(e))
+            self.client = None
+            # self.logger.info('Red_Pitaya_GUI{}: Closing frep comms on port {}'.format(self.logger_name, self.port_number))
 
     def loadParameters(self):
         #print("ConfigurationRPSettingsUI::loadParameters()")
@@ -162,7 +196,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         self.qradio_internal_clk = Qt.QRadioButton('Internal clock')
         self.qradio_external_clk = Qt.QRadioButton('External clock')
-        self.qradio_internal_clk.setChecked(True)
+        self.qradio_external_clk.setChecked(True)
         self.qradio_internal_clk.clicked.connect(self.setClkSelect)
         self.qradio_external_clk.clicked.connect(self.setClkSelect)
         self.lblExtClkFreq = Qt.QLabel('Ext clk freq = %.6f MHz' % 0.0)
@@ -379,7 +413,22 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         freq = self.sl.getDin1Freq()
         if freq is not None:
+            self.frep = freq
             self.lblDinFreq.setText('Din freq     = %.8f MHz' % (freq/1e6))
+            if self.client:
+                try:
+                    self.client.send_text('%f\n' % freq)
+                    #print("sending frep value %f" % freq)
+                except Exception as e:
+                    e = sys.exc_info()[0]
+                    # If we get here, this probably means that the TCP connection to the temperature controller was lost.
+                    self.closeTCPConnection()
+                    print('Exception occurred sending the frep value')
+                    print(str(e))
+            else:   # self.client == None
+                # Try to open TCP connection to the temperature controller code
+                print('Trying to establish frep comm')
+                self.openTCPConnection()
 
     #Function to read the value in the RAM Block (channel 2) to an address
     #The data we should read are the data sent to dpll_wrapper module (channel 0)
@@ -423,13 +472,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
         if self.qradio_external_clk.isChecked():
             # Valid VCO range is 600 MHz-1600 MHz according to DS181
 
-            CLKFBOUT_MULT  = 5
-            CLKOUT0_DIVIDE = 8
             # # For self.f_ext=200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+            # CLKFBOUT_MULT  = 5
+            # CLKOUT0_DIVIDE = 8
 
-            # CLKFBOUT_MULT  = 62
-            # CLKOUT0_DIVIDE = 5
             # For self.f_ext=10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
+            CLKFBOUT_MULT  = 62
+            CLKOUT0_DIVIDE = 5
 
             # # For self.f_ext=25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
             # CLKFBOUT_MULT  = 40

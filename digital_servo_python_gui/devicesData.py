@@ -28,13 +28,23 @@ class devicesData():
 					port_temp	= self.tree.find(device).attrib["port_temp"]
 				except:
 					port_temp = 5000
+				try:
+					port_frep	= self.tree.find(device).attrib["port_frep"]
+				except:
+					port_frep = 60000 + i - 1
+				try:
+					port_rio	= self.tree.find(device).attrib["port_rio"]
+				except:
+					port_rio = 59000 + i - 1
 				config_file = self.tree.find(device).attrib["config_file"]
 
 				devices_dict[strSerial] = {'color': color,
 								'name': name,
 								'shorthand': shorthand,
 								'config file': config_file,
-								'port_temp': port_temp
+								'port_temp': port_temp,
+								'port_frep': port_frep,
+								'port_rio' : port_rio
 								}
 				if i >= 256: # To prevent an infinite loop
 					print("Error, the devices_data dictionnary was not update to prevent an infinite loop.")

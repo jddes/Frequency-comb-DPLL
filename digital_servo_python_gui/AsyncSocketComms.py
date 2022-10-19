@@ -19,7 +19,7 @@ class AsyncSocketServer():
         self.sock_server = None
         self.read_buffer = bytearray()
         
-        self.bVerbose = False
+        self.bVerbose = True
         
         self.logger = logging.getLogger(__name__)
         self.logger_name = 'AsyncSocketServer'

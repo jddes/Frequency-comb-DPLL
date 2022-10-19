@@ -28,13 +28,28 @@ import logging
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 import common
 
-class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
+import PyDAQmx
+from simple_pid import PID
+
+class FreqErrorWindowWithTempControlV3(QtGui.QWidget):
 
     def __init__(self, sl, strTitle, sp, output_number=0, strNameTemplate='', custom_style_sheet='', port_number=0, xem_gui_mainwindow=0,rio_port=0, settings_window = 0):
-        super(FreqErrorWindowWithTempControlV2, self).__init__()
+        super(FreqErrorWindowWithTempControlV3, self).__init__()
 
         self.logger = logging.getLogger(__name__)
-        self.logger_name = ':FreqErrorWindowWithTempControlV2'
+        self.logger_name = ':FreqErrorWindowWithTempControlV3'
+
+        self.NI_AOchannel = "cDAQ3Mod1/ao0" # used to set RIO FM voltage
+        self.rio_voltage_step = 20.0 / 2**16 * 4.0 # NI 9263: +/- 10V, 16 bit; RIO: roughly -61 MHz/V
+        self.rio_voltage_min = -3.5 # RIO Orion planex datasheet lists +- 4V
+        self.rio_voltage_max = 3.5
+        self.rio_voltage_adjust = 0.0
+        self.rio_pid = PID(auto_mode = False)
+        self.rio_pid.reset()
+        self.rio_pid.output_limits = (-3.5, 3.5) 
+
+        print("***** FreqErrorWindowWithTempControlV3 init *****")
+        self.setRioVoltage(self.NI_AOchannel)
 
         self.strTitle = strTitle
         self.strNameTemplate = strNameTemplate
@@ -74,7 +89,6 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
         self.recovery_history = np.array([])
         self.setpoint_change = 0.0
-        self.rio_setpoint_adjust = 0.0
 
 
 #    def __del__(self):
@@ -157,7 +171,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
     def killTimers(self):
         
-        # print("FreqErrorWindowWithTempControlV2::killTimers(): %s" % self.strTitle)
+        # print("FreqErrorWindowWithTempControlV3::killTimers(): %s" % self.strTitle)
         
         #if self.timerID.isActive():
         if self.timerID is not None:
@@ -260,19 +274,29 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         common.make_sure_path_exists('data_logging')
 
         # Open file for output
-        strCurrentName1 = self.strNameTemplate + 'freq_counter0.bin'
-        strCurrentName2 = self.strNameTemplate + 'freq_counter1.bin'
-        strCurrentName3 = self.strNameTemplate + 'freq_counter0_time_axis.bin'
-        strCurrentName4 = self.strNameTemplate + 'DAC0.bin'
-        strCurrentName5 = self.strNameTemplate + 'DAC1.bin'
-        strCurrentName6 = self.strNameTemplate + 'DAC2.bin'
-        self.file_output_counter0 = open(strCurrentName1, 'wb')
-        self.file_output_counter1 = open(strCurrentName2, 'wb')
-        self.file_output_time = open(strCurrentName3, 'wb')
-        self.file_output_dac0 = open(strCurrentName4, 'wb')
-        self.file_output_dac1 = open(strCurrentName5, 'wb')
-        self.file_output_dac2 = open(strCurrentName6, 'wb')
-        
+        strCurrentName1  = self.strNameTemplate + 'freq_counter0.bin'
+        strCurrentName2  = self.strNameTemplate + 'freq_counter1.bin'
+        strCurrentName3  = self.strNameTemplate + 'freq_counter0_time_axis.bin'
+        strCurrentName4  = self.strNameTemplate + 'DAC0.bin'
+        strCurrentName5  = self.strNameTemplate + 'DAC1.bin'
+        strCurrentName6  = self.strNameTemplate + 'DAC2.bin'
+   
+        strCurrentName7  = self.strNameTemplate + 'timeCombfr.bin'
+        strCurrentName8  = self.strNameTemplate + 'combFrep.bin'
+        strCurrentName9  = self.strNameTemplate + 'VRIO.bin'
+        strCurrentName10 = self.strNameTemplate + 'Tcomb.bin'
+  
+        self.file_output_counter0   = open(strCurrentName1, 'wb')
+        self.file_output_counter1   = open(strCurrentName2, 'wb')
+        self.file_output_time       = open(strCurrentName3, 'wb')
+        self.file_output_dac0       = open(strCurrentName4, 'wb')
+        self.file_output_dac1       = open(strCurrentName5, 'wb')
+        self.file_output_dac2       = open(strCurrentName6, 'wb')
+
+        self.file_output_timeCombfr = open(strCurrentName7, 'wb')
+        self.file_output_combfr     = open(strCurrentName8, 'wb')
+        self.file_output_vrio       = open(strCurrentName9, 'wb')
+        self.file_output_Tcomb      = open(strCurrentName10, 'wb')
     @logCommsErrorsAndBreakoutOfFunction()
     def chkTriangular_checked(self, checked=False):
         if self.qchk_triangular.isChecked():
@@ -442,7 +466,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             self.qchk_temp_control.clicked.connect(self.qchk_temp_control_checked)
             
             self.qchk_clear_temp_control = Qt.QCheckBox('Clear Temperature control')
-            self.qedit_frep = Qt.QLineEdit('199993879.0')
+            self.qlabel_frep = Qt.QLabel('Frep setpoint (Hz)')
+            self.qedit_frep  = Qt.QLineEdit('199998000.0')
+            self.qlabel_volt = Qt.QLabel('RIO Voltage: {}'.format(0.0))
+            self.qlabel_frepcount = Qt.QLabel('Frep counted: {} Hz'.format(0.0))
             self.qchk_rep_rate_nudge = Qt.QCheckBox('Frep nudge')
             self.qchk_rio_feedback = Qt.QCheckBox('RIO feedback')
             self.qchk_rio_feedback.clicked.connect(self.qchk_rio_feedback_clicked)
@@ -463,9 +490,12 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             
             grid.addWidget(self.qchk_temp_control,              16, 0, 1, 2)
             grid.addWidget(self.qchk_clear_temp_control,        17, 0, 1, 2)
-            grid.addWidget(self.qedit_frep,                     18, 0, 1, 2)
-            grid.addWidget(self.qchk_rio_feedback,              19, 0, 1, 2)
-            grid.addWidget(self.qchk_clear_rio_control,         19, 2, 1, 2)
+            grid.addWidget(self.qlabel_frep,                    18, 0, 1, 2)
+            grid.addWidget(self.qlabel_volt,                    18, 2, 1, 1)
+            grid.addWidget(self.qedit_frep,                     19, 0, 1, 2)
+            grid.addWidget(self.qlabel_frepcount,               19, 2, 1, 1)
+            grid.addWidget(self.qchk_rio_feedback,              20, 0, 1, 1)
+            grid.addWidget(self.qchk_clear_rio_control,         20, 2, 1, 1)
 
 
             
@@ -537,6 +567,25 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         if self.qchk_rio_feedback.isChecked() == True:
             self.openRioTCPConnection()
     
+    def setRioVoltage(self, channel):
+        #channel is string of form devicename/analog output channel number i.e. "Dev1/ao0"
+        analog_output = PyDAQmx.Task()
+        write = PyDAQmx.int32()
+        #set limits on range of temperature setpoints so that temp is not accidentally set too high or too low
+        voltage = self.rio_voltage_adjust
+        if voltage > self.rio_voltage_max:
+            print("entered voltage out of range, setting voltage to %e V" % (self.rio_voltage_max))
+            voltage = self.rio_voltage_max
+        elif voltage < self.rio_voltage_min:
+            print("entered voltage out of range, setting voltage to %e V" % (self.rio_voltage_min))
+            voltage = self.rio_voltage_min
+        self.rio_voltage_adjust = voltage
+        voltageArray=np.array((voltage),dtype=np.float64)
+        analog_output.CreateAOVoltageChan(channel,"",self.rio_voltage_min,self.rio_voltage_max,PyDAQmx.DAQmx_Val_Volts,None) #create analog output channel
+        analog_output.StartTask() #start task
+        analog_output.WriteAnalogF64(1,True,10,PyDAQmx.DAQmx_Val_GroupByChannel,voltageArray,PyDAQmx.byref(write),None) #write output
+        analog_output.StopTask() #stopTask       
+
     def runTempControlLoop(self, current_time, current_output):
         # Simple algorithm:
         # If the dac2 output crosses a threshold, we send a step to the temperature setpoint to nudge it in the right direction.
@@ -563,8 +612,31 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             step_size = float(self.qedit_step_size.text())
         except:
             step_size = 0.01
-        
 
+        try:
+            frep_counted  = self.settings_window.frep
+        except Exception as e:
+            print(e)
+            print('Can\'t read frep')
+            frep_counted = 0
+        self.qlabel_frepcount.setText('Frep counted: {} Hz'.format(frep_counted))
+
+        try:
+            np.array((current_time),dtype=np.float64).tofile(self.file_output_timeCombfr)
+            np.array((frep_counted),dtype=np.float64).tofile(self.file_output_combfr)
+            np.array((self.rio_voltage_adjust),dtype=np.float64).tofile(self.file_output_vrio)
+            np.array((self.setpoint_change),dtype=np.float64).tofile(self.file_output_Tcomb)
+        except Exception as e:
+            print("voltage, frep write to file failed with exception", e)
+
+
+        frep_setpoint            = float(self.qedit_frep.text())
+        reverse_pid              = -1.0
+        self.rio_pid.sample_time = 1 # seconds
+        self.rio_pid.setpoint    = frep_setpoint
+        self.rio_pid.Kp          = 0.005 * reverse_pid
+        self.rio_pid.Ki          = 0.005 * reverse_pid
+        self.rio_pid.Kd          = 0.005 * reverse_pid
         if self.qchk_rio_feedback.isChecked() == True:
             try:
                 bLock = self.xem_gui_mainwindow.qchk_lock.isChecked()
@@ -575,55 +647,78 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             if bLock == False:
                 print('No RIO feedback if lock off')
                 return
+            self.rio_voltage_adjust = self.rio_pid(frep_counted)
+            self.rio_pid.auto_mode = True
 
-            if self.rio_client:
-                if self.last_rio_update + step_delay <= current_time:
-                    try:
-                        #print(self.settings_window.frep)
-                        frep_error = (self.settings_window.frep - float(self.qedit_frep.text()))
-                        print(frep_error)
-                    except Exception as e:
-                        print(e)
-                        print('Can\'t read frep') 
-                        frep_error = 0
+            if self.qchk_clear_rio_control.isChecked() == True:
+                self.rio_pid.reset()
+                self.qchk_clear_rio_control.setChecked(False)
+            try:
+                self.logger.debug('Red_Pitaya_GUI{}: Sending a new RIO FM voltage : {} '.format(self.logger_name, self.rio_voltage_adjust))
+                self.setRioVoltage(self.NI_AOchannel) # set RIO FM voltage to self.rio_voltage_adjust
+                self.qlabel_volt.setText('RIO Voltage: {:+.5f}'.format(self.rio_voltage_adjust))
 
-                    if abs(frep_error) > 3:
-                        delta_rio_temp = -np.sign(frep_error)*1
-                        print(delta_rio_temp)
-                        self.rio_setpoint_adjust = self.rio_setpoint_adjust + delta_rio_temp
-                        self.last_rio_update = time.perf_counter()
-                        try:                        
-                            print('Sending a RIO setpoint of %f' % self.rio_setpoint_adjust)
-                            self.logger.debug('Red_Pitaya_GUI{}: Sending a new RIO setpoint : {} '.format(self.logger_name, self.rio_setpoint_adjust))
-                            self.rio_client.send_text('%f\n' % self.rio_setpoint_adjust)
+            except:
+                e = sys.exc_info()[0]
+                # If we get here, this probably means that the TCP connection to the temperature controller was lost.
+                self.closeRioTCPConnection()
+                print('Exception occurred sending the new RIO FM voltage.')
+                print(str(e))
+                self.logger.warning('Red_Pitaya_GUI{}: Exception occurred sending the new RIO FM Voltage. CDAQ connection issue?. {}'.format(self.logger_name, str(e)))
 
-                        except:
-                            e = sys.exc_info()[0]
-                            # If we get here, this probably means that the TCP connection to the temperature controller was lost.
-                            self.closeRioTCPConnection()
-                            print('Exception occurred sending the new RIO temperature setpoint.')
-                            print(str(e))
-                            self.logger.warning('Red_Pitaya_GUI{}: Exception occurred sending the new RIO temperature setpoint. Connection probably lost. {}'.format(self.logger_name, str(e)))
+        else:
+            self.rio_pid.auto_mode = False
+            # print(frep_counted, self.rio_voltage_adjust)
+            # if self.rio_client:
+            # if True:
+            #     if self.last_rio_update + step_delay <= current_time:
+            #         try:
+            #             frep_error = (self.settings_window.frep - float(self.qedit_frep.text()))
+            #         except Exception as e:
+            #             print(e)
+            #             print('Can\'t read frep') 
+            #             frep_error = 0
 
-                if self.qchk_clear_rio_control.isChecked() == True:
-                    self.rio_setpoint_adjust = 0.
-                    try:
-                        print('Clearing RIO Control')
-                        self.rio_client.send_text('%f\n' % self.rio_setpoint_change)
-                        self.qchk_clear_rio_control.setChecked(False)
-                    except:
-                        e = sys.exc_info()[0]
-                        # If we get here, this probably means that the TCP connection to the temperature controller was lost.
-                        print('Exception occurred sending the new temperature setpoint.')
-                        print(str(e))
-                        self.client = None
+            #         if abs(frep_error) > 0.001:
+            #             stepV = abs(frep_error) / 60 # fg the 60 Hz / V might be too high
+            #             if stepV > 0.006:
+            #                 stepV = 0.006
+            #             delta_rio_voltage = np.sign(frep_error)*stepV
+            #             self.rio_voltage_adjust = self.rio_voltage_adjust + delta_rio_voltage
+            #             print("frep_error: %+.3e, delta_rio_voltage: %+.3e, self.rio_voltage_adjust: %+.3e" % 
+            #                 (frep_error, delta_rio_voltage, self.rio_voltage_adjust))
+            #             self.last_rio_update = time.perf_counter()
+            #             try:                        
+            #                 self.logger.debug('Red_Pitaya_GUI{}: Sending a new RIO FM voltage : {} '.format(self.logger_name, self.rio_voltage_adjust))
+            #                 self.setRioVoltage(self.NI_AOchannel)
+
+            #             except:
+            #                 e = sys.exc_info()[0]
+            #                 # If we get here, this probably means that the TCP connection to the temperature controller was lost.
+            #                 self.closeRioTCPConnection()
+            #                 print('Exception occurred sending the new RIO FM voltage.')
+            #                 print(str(e))
+            #                 self.logger.warning('Red_Pitaya_GUI{}: Exception occurred sending the new RIO FM Voltage. CDAQ connection issue?. {}'.format(self.logger_name, str(e)))
+
+            #     if self.qchk_clear_rio_control.isChecked() == True:
+            #         self.rio_voltage_adjust = 0.
+            #         try:
+            #             print('Clearing RIO Control')
+            #             self.rio_client.send_text('%f\n' % self.rio_setpoint_change)
+            #             self.qchk_clear_rio_control.setChecked(False)
+            #         except:
+            #             e = sys.exc_info()[0]
+            #             # If we get here, this probably means that the TCP connection to the temperature controller was lost.
+            #             print('Exception occurred sending the new temperature setpoint.')
+            #             print(str(e))
+            #             self.client = None
 
 
-            else:   # self.client == None
-                # Try to open TCP connection to the temperature controller code
-                print('Trying to establish connection to the RIO')
-                self.logger.debug('Red_Pitaya_GUI{}: Trying to establish connection to the RIO controller'.format(self.logger_name))
-                self.openRioTCPConnection()
+            # else:   # self.client == None
+            #     # Try to open TCP connection to the temperature controller code
+            #     print('Trying to establish connection to the RIO')
+            #     self.logger.debug('Red_Pitaya_GUI{}: Trying to establish connection to the RIO controller'.format(self.logger_name))
+            #     self.openRioTCPConnection()
                     
 
         if self.qchk_temp_control.isChecked() == True:
@@ -721,6 +816,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.openTCPConnection()
        # else:
 #            print('Temp control disactivated.')
+
 
     @logCommsErrorsAndBreakoutOfFunction(((np.nan, np.nan)))
     def runAutoRecover(self, output_number, current_dac):

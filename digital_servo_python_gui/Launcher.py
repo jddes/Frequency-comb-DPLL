@@ -17,15 +17,32 @@ comp_name = os.environ['COMPUTERNAME']
 # These paths must be specified per PC
 strCombLocksFolder = {
     'JDBUREAU':    'D:\\Repo\\dpll\\digital_servo_python_gui\\',
-    # '686MAUNALOA': 'C:\\comb_control\\digital_servo_python_gui\\' # placeholder, this is not the correct path!
+    '686MAUNALOA': 'C:\\Git\\Frequency-comb-DPLL\\digital_servo_python_gui\\'
     }
+
+strTempContFolder = {
+    '686MAUNALOA': 'C:\\ControlSoftware\\temperature control\\srs control\\'
+    }
+
+strOrionFolder = {
+    '686MAUNALOA': 'C:\\ControlSoftware\\orion_laser\\'
+    }
+
+strDiodeBayFolder = {
+    '686MAUNALOA': 'C:\\ControlSoftware\\Longpath\\lptpub-master\\'
+}
 
 # this can be just 'python' if the correct version is on the PATH, otherwise specify the correct interpreter using an absolute path
 python_interpreter = 'python'
+python27_interpreter = 'C:\\ControlSoftware\\WinPython-64bit-2.7.10.3\\python-2.7.10.amd64\\python.exe'
 
 subprocesses = collections.OrderedDict()
 subprocesses['Comb lock GUI 1']  = ([python_interpreter, '-u', strCombLocksFolder[comp_name]+'XEM_GUI3.py'], strCombLocksFolder[comp_name])
 subprocesses['Comb lock GUI 2']  = ([python_interpreter, '-u', strCombLocksFolder[comp_name]+'XEM_GUI3.py'], strCombLocksFolder[comp_name])
+subprocesses['Temp Control'] = ([python27_interpreter, '-u', strTempContFolder[comp_name]+'comb_box_temperature_control.pyw'], strTempContFolder[comp_name])
+subprocesses['Orion GUI'] = ([python27_interpreter, '-u', strOrionFolder[comp_name]+'orion_gui.py'], strOrionFolder[comp_name])
+subprocesses['Diode Bay 1'] = ([python_interpreter, '-u', strDiodeBayFolder[comp_name]+'main.py', 'com4'], strCombLocksFolder[comp_name])
+subprocesses['Diode Bay 2'] = ([python_interpreter, '-u', strDiodeBayFolder[comp_name]+'main.py', 'com5'], strCombLocksFolder[comp_name])
 
 # if comp_name == 'JDBUREAU':
 #     # Set a bunch of scripts for testing only:
@@ -83,6 +100,15 @@ class AsyncFileReader(QtCore.QThread):
 
     def run(self):
         '''The body of the thread: read lines and send them out as a signal '''
+        while True:
+            try:
+                self._run()
+            except UnicodeDecodeError:
+                print("Info: AsyncFileReader(): ignoring UnicodeDecodeError.")
+                pass # we really don't care about these, this is best effort anyway
+
+    def _run(self):
+        """ Does the actual reading, but can potentially throw Unicode-related exceptions that we don't care about """
         for line in iter(self._fd.readline, ''):
             line_stripped = line.rstrip()
             self.lineReceived.emit(line_stripped)
@@ -278,7 +304,8 @@ class LauncherGui(QtWidgets.QWidget):
 
     def isSubprocessRunning(self, cmd_text):
         try:
-            return self.threads_stdout[cmd_text].isRunning() or self.threads_stdout[cmd_text].isRunning()
+            return self.processes[cmd_text].poll() == None # fg 20220816 below check didn't work on 686maunaloa - python version?
+            # return self.threads_stdout[cmd_text].isRunning() or self.threads_stdout[cmd_text].isRunning()
         except KeyError:
             return False
 
@@ -329,6 +356,7 @@ class LauncherGui(QtWidgets.QWidget):
 def run_gui():
     app = QtWidgets.QApplication([])
     GUI = LauncherGui(subprocesses)
+    GUI.resize(1000, 400)
     GUI.show()
 
     # Execute application unless we are running in interactive mode (got this trick from PyQtGraph examples)

@@ -1983,7 +1983,7 @@ class SuperLaserLand_JD_RP:
 	def slowStart100VSwitchingSupply(self):
 		# need to set the switching supply to its default values:
 		# do a slow start over ~ 100 ms.
-		f_switching = 200e3
+		f_switching = 450e3
 		Vtarget = 100.
 		Vsupply = 30.
 		T_slow_start = 100e-3

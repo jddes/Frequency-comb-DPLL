@@ -1,0 +1,582 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"rio_vol",
+				"rio_voltage_min"
+			],
+			[
+				"rio",
+				"rio_voltage_step"
+			],
+			[
+				"RIO",
+				"rio_voltage_step"
+			],
+			[
+				"comb_b",
+				"comb_box_name"
+			],
+			[
+				"use",
+				"useAdjust"
+			],
+			[
+				"qchk_clear",
+				"qchk_clear_rio_control"
+			],
+			[
+				"qchk_cle",
+				"qchk_clear_rio_control"
+			],
+			[
+				"add",
+				"addWidget"
+			],
+			[
+				"last",
+				"last_rio_update"
+			],
+			[
+				"set",
+				"setpoint_adjust"
+			],
+			[
+				"ex",
+				"Exception"
+			],
+			[
+				"delta",
+				"delta_rio_temp"
+			],
+			[
+				"np",
+				"numpy"
+			],
+			[
+				"frep",
+				"frep_error"
+			],
+			[
+				"get",
+				"getValue"
+			],
+			[
+				"dev",
+				"devices_data"
+			],
+			[
+				"qchk",
+				"qchk_rio_feedback"
+			],
+			[
+				"qck",
+				"qchk_rio_feedback"
+			],
+			[
+				"qch",
+				"qchk_rio_feedback"
+			],
+			[
+				"qe",
+				"qedit_frep"
+			],
+			[
+				"out",
+				"output_controls"
+			],
+			[
+				"Spectrum",
+				"SpectrumWidget"
+			],
+			[
+				"try",
+				"try\tTry/Except"
+			],
+			[
+				"for",
+				"format"
+			],
+			[
+				"port",
+				"port_number"
+			],
+			[
+				"pot",
+				"port_number"
+			],
+			[
+				"lo",
+				"lower"
+			],
+			[
+				"setpiont",
+				"setpoint_change"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "FreqErrorWindowWithTempControlV2.py",
+			"settings":
+			{
+				"buffer_size": 48794,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "FreqErrorWindowWithTempControlV3.py",
+			"settings":
+			{
+				"buffer_size": 50302,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/temp/test.py",
+			"settings":
+			{
+				"buffer_size": 1291,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Launcher.py",
+			"settings":
+			{
+				"buffer_size": 16863,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "Searching 1971 files for \"setpoint adjust by\"\n\n0 matches\n\nSearching 2286 files for \"FreqErrorWindowWithTempControlV3\"\n\nC:\\Git\\Frequency-comb-DPLL\\digital_servo_python_gui\\FreqErrorWindowWithTempControlV3.py:\n   31  import PyDAQmx\n   32  \n   33: class FreqErrorWindowWithTempControlV3(QtGui.QWidget):\n   34  \n   35      def __init__(self, sl, strTitle, sp, output_number=0, strNameTemplate='', custom_style_sheet='', port_number=0, xem_gui_mainwindow=0,rio_port=0, settings_window = 0):\n   36:         super(FreqErrorWindowWithTempControlV3, self).__init__()\n   37  \n   38          self.logger = logging.getLogger(__name__)\n   39:         self.logger_name = ':FreqErrorWindowWithTempControlV3'\n   40  \n   41          self.NI_AOchannel = \"cDAQ3Mod1/ao0\" # used to set RIO FM voltage\n   ..\n  164      def killTimers(self):\n  165          \n  166:         # print(\"FreqErrorWindowWithTempControlV3::killTimers(): %s\" % self.strTitle)\n  167          \n  168          #if self.timerID.isActive():\n\n4 matches in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 1010,
+				"line_ending": "Windows",
+				"name": "Find Results",
+				"scratch": true
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui"
+	],
+	"file_history":
+	[
+		"/C/ControlSoftware/temperature control/srs control/tempcont_hawaii_combs.ui",
+		"//cfs2w/67_CTL/675/675A/67502/FiberFrequencyComb/temp/orion_laser/orion_gui.py",
+		"/C/ControlSoftware/orion_laser/orion_gui.py",
+		"/C/ControlSoftware/orion_laser/orion_gui_scrambled.py",
+		"/C/ControlSoftware/orion_laser/orionlasers_01.py",
+		"/C/ControlSoftware/temperature control/srs control/USB_control.py",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/UDPRedPitayaDiscovery.py",
+		"/C/Users/fcomb/Desktop/Optical_Power_Logger.py",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/ThermometerWidget.py",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/SpectrumWidget.py",
+		"/C/Users/Public/Documents/National Instruments/NI-488.2/Examples/CVI/PowerSupplyStepUp/StepUp.prj",
+		"/C/ControlSoftware/comb_control/trunk/FrepSteeringWidget.py",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/ConfigurationRPSettingsUI.py",
+		"/C/Git/Frequency-comb-DPLL/.git/COMMIT_EDITMSG",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/SLLSystemParameters.py",
+		"/C/ControlSoftware/OctoSig/Frequency-comb-DPLL-master/digital_servo_python_gui/system_parameters_RP_1.xml",
+		"/C/ControlSoftware/OctoSig/Frequency-comb-DPLL-master/digital_servo_python_gui/system_parameters_RP_2.xml",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/system_parameters_RP_2.xml",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/system_parameters_RP_1.xml",
+		"/C/ControlSoftware/temperature control/srs control/config_dummy.xml",
+		"//cfs2w/686/68607/FiberFrequencyComb/_users/Cossel/temperature_contol/config_dummy.xml",
+		"/C/Git/Frequency-comb-DPLL/digital_servo_python_gui/SuperLaserLand_JD_RP.py",
+		"/C/ControlSoftware/OctoSig/Frequency-comb-DPLL-master/digital_servo_python_gui/start launcher.bat",
+		"/C/ControlSoftware/OctoSig/Frequency-comb-DPLL-master/digital_servo_python_gui/XEM_GUI_MainWindow.py",
+		"/H/.ssh/id_ed25519.pub",
+		"/C/ControlSoftware/OctoSig/Frequency-comb-DPLL-master/README.md"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 102.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"FreqErrorWindowWithTempControlV3",
+			"amplitude",
+			"self.amplitude",
+			"input_val",
+			"rio_voltage_min",
+			"self.rio_voltage_step",
+			"controlv2",
+			"class",
+			"pydaq",
+			"python",
+			"pydaqmx",
+			"rio",
+			"timer",
+			"runTempControlLoop",
+			"setpoint adjust by"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "FreqErrorWindowWithTempControlV2.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 48794,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								632,
+								632
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "FreqErrorWindowWithTempControlV3.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 50302,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								654,
+								686
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/temp/test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1291,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1242,
+								1257
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Launcher.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16863,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								89,
+								89
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1010,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										251,
+										283
+									],
+									[
+										507,
+										539
+									],
+									[
+										659,
+										691
+									],
+									[
+										860,
+										892
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								780,
+								780
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 36.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "HawaiiDCS.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"launch",
+				"digital_servo_python_gui\\Launcher.py"
+			],
+			[
+				"config",
+				"digital_servo_python_gui\\ConfigurationRPSettingsUI.py"
+			],
+			[
+				"mainwin",
+				"digital_servo_python_gui\\XEM_GUI_MainWindow.py"
+			],
+			[
+				"superla",
+				"digital_servo_python_gui\\SuperLaserLand_JD_RP.py"
+			],
+			[
+				"confi",
+				"digital_servo_python_gui\\ConfigurationRPSettingsUI.py"
+			],
+			[
+				"sysrp1",
+				"digital_servo_python_gui\\system_parameters_RP_1.xml"
+			],
+			[
+				"defaultxml",
+				"digital_servo_python_gui\\system_parameters_RP_Default.xml"
+			],
+			[
+				"xem",
+				"digital_servo_python_gui\\XEM_GUI3.py"
+			],
+			[
+				"init",
+				"digital_servo_python_gui\\initialConfiguration_RP.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 481.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
