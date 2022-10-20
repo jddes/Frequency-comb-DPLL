@@ -230,6 +230,7 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_pts_per_igm            = 0x00055
 	BUS_ADDR_pts_saved_per_igm      = 0x00056
 	BUS_ADDR_pretrigger_pts         = 0x00057
+	BUS_ADDR_igm_or_phase           = 0x00059
 
 	# DDC 0 settings
 	BUS_ADDR_ref_freq0_lsbs                             = 0x8000

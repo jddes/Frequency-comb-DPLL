@@ -231,23 +231,17 @@ class RP_PLL_device():
         self.send(packet_to_send)
         return self.read(int(2*number_of_points))
 
-    def read_phase_streaming(self, num_pts=2**20, fifo_name='IGM'):
-        buf_np = self.read_augmented_phase_streaming(num_pts, fifo_name)
+    def read_phase_streaming(self, num_pts=2**20):
+        buf_np = self.read_augmented_phase_streaming(num_pts)
         num_pts = len(buf_np)
         num_pts_out = int(num_pts - np.floor(num_pts/64))
         return buf_np[:num_pts_out]
 
-    def read_augmented_phase_streaming(self, num_pts=2**20, fifo_name='IGM'):
-        """ fifo_name must be either 'IGM' or 'PHASE' """
-        magic_bytes = {
-            "PHASE": self.MAGIC_BYTES_READ_PHASE_STREAMING,
-            "IGM": self.MAGIC_BYTES_READ_IGM_STREAMING,
-            }
-        assert fifo_name in magic_bytes
+    def read_augmented_phase_streaming(self, num_pts=2**20):
         num_pts = min(num_pts, get_buffer_size())
         packet_to_send = struct.pack('=III',
-                                     magic_bytes[fifo_name],
-                                     num_pts,
+                                     self.MAGIC_BYTES_READ_IGM_STREAMING,
+                                     int(num_pts),
                                      0)
         self.send(packet_to_send)
         num_pts_out = int(num_pts + np.floor(num_pts/64))

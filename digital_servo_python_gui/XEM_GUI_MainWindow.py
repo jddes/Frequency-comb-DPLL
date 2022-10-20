@@ -1121,15 +1121,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			name_postfix = self.strTitle.strip()
 
 		self.sl.send_bus_cmd_32bits(self.sl.BUS_ADDR_n_cycles, int(125))
+		self.sl.send_bus_cmd_32bits(self.sl.BUS_ADDR_igm_or_phase, int(0))
 
-		N_points = self.askNumPts(20e6)
+		N_points = self.askNumPts(15e6)
 		if N_points is None:
 			return
 
 		# buf = self.sl.dev.read_phase_streaming()
 		# buf.tofile('phi_int32.bin')
 		common.waitUntilNextTimeQuanta(10)
-		buf = self.sl.dev.read_augmented_phase_streaming(N_points, fifo_name="PHASE")
+		buf = self.sl.dev.read_augmented_phase_streaming(N_points)
 		buf.tofile(f'phi_augmented_int32_{name_postfix}.bin')
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)
