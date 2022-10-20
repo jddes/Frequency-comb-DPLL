@@ -459,7 +459,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			if currentSelector == 'IN9':
 				samples_out = self.sl.read_in9_from_DDR2()
 			else:
-			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
+				(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 			samples_out = samples_out.astype(dtype=np.float)/2**15
 		except:
 			# ADC read failed.
@@ -1117,7 +1117,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# buf = self.sl.dev.read_phase_streaming()
 		# buf.tofile('phi_int32.bin')
 		common.waitUntilNextTimeQuanta(10)
-		buf = self.sl.dev.read_augmented_phase_streaming()
+		buf = self.sl.dev.read_augmented_phase_streaming(fifo_name="PHASE")
 		buf.tofile(f'phi_augmented_int32_{name_postfix}.bin')
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)

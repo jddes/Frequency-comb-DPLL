@@ -216,7 +216,7 @@ def findMostLikelyLANBroadcastIPAddress_inner(ipv4Addresses):
         print('IP candidate: %s' % ip)
 
     addrCandidate = fullList[0]
-        print('Chosen local IP: %s' % addrCandidate)
+    print('Chosen local IP: %s' % addrCandidate)
 
 
     # Take this machine's IP address and transform into broadcast address for the whole subnet (change last byte to 255)
