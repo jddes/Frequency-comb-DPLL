@@ -5,15 +5,17 @@ import socket
 import struct
 import traceback    # for print_stack, for debugging purposes: traceback.print_stack()
 import time
-
 import sys
+import os
+
 
 import numpy as np
 import logging
-#import matplotlib.pyplot as plt
+
 
 class CommsError(Exception):
     pass
+
 
 class CommsLoggeableError(CommsError):
     pass
@@ -22,13 +24,38 @@ class CommsLoggeableError(CommsError):
 class socket_placeholder():
     def __init__(self):
         pass
+
     def sendall(*args):
         print("socket_placeholder::sendall(): No active socket. Was called from {}".format(sys._getframe().f_back.f_code.co_name))
         traceback.print_stack()
         pass
+
     def recv(*args):
         print("socket_placeholder::recv(): No active socket")
         return []
+
+
+def get_buffer_size():
+    """ pretty fragile, but less so than hardcoding the value separately """
+    filename = os.path.join("..", "Zynq software", "monitor-tcp", "monitor-tcp.c")
+    # #define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
+    token = '#define FIFO_LOGGER_BUFFER_SIZE'
+    with open(filename, "r") as f:
+        for line in f:
+            if line.startswith(token):
+                _, rest = line.split(token)
+                assert len(rest) == len(line) - len(token)
+                rest = rest.strip().replace('(', '').replace(')', '')
+                digits = rest.split('U<<')
+                val = int(digits[0]) * 2 ** int(digits[1])
+                return val
+
+
+def get_augmented_phase_buffer_size():
+    """ return the size of the phase streaming buffer
+    and its associated metadata (phi_counter_buffer) """
+    return int(round(get_buffer_size() * (1 + 1/64)))
+
 
 class RP_PLL_device():
 
@@ -39,6 +66,8 @@ class RP_PLL_device():
     MAGIC_BYTES_WRITE_FILE      = 0xABCD1237
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
     MAGIC_BYTES_REBOOT_MONITOR  = 0xABCD1239
+    MAGIC_BYTES_READ_PHASE_STREAMING = 0xABCD123A
+    MAGIC_BYTES_READ_IGM_STREAMING = 0xABCD123B
     
     FPGA_BASE_ADDR              = 0x40000000    # address of the main PS <-> PL memory map (GP 0 AXI master on PS)
     FPGA_BASE_ADDR_XADC         = 0x80000000    # address of the XADC PS <-> PL memory map (GP 1 AXI master on PS)
@@ -72,14 +101,14 @@ class RP_PLL_device():
         self.sock = None # socket_placeholder()
         self.valid_socket = False
 
-    def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True):
+    def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True, timeout=2):
         print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
         self.HOST = HOST
         self.PORT = PORT
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # this avoids a ~33 ms on Windows before our request packets are sent (!!)
         # self.sock.setblocking(1)
-        self.sock.settimeout(2)
+        self.sock.settimeout(timeout)
         try:
             self.sock.connect((self.HOST, self.PORT))
             self.valid_socket = valid_socket_for_general_comms
@@ -201,6 +230,30 @@ class RP_PLL_device():
         packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_BUFFER, self.FPGA_BASE_ADDR, number_of_points)    # last value is reserved
         self.send(packet_to_send)
         return self.read(int(2*number_of_points))
+
+    def read_phase_streaming(self, num_pts=2**20, fifo_name='IGM'):
+        buf_np = self.read_augmented_phase_streaming(num_pts, fifo_name)
+        num_pts = len(buf_np)
+        num_pts_out = int(num_pts - np.floor(num_pts/64))
+        return buf_np[:num_pts_out]
+
+    def read_augmented_phase_streaming(self, num_pts=2**20, fifo_name='IGM'):
+        """ fifo_name must be either 'IGM' or 'PHASE' """
+        magic_bytes = {
+            "PHASE": self.MAGIC_BYTES_READ_PHASE_STREAMING,
+            "IGM": self.MAGIC_BYTES_READ_IGM_STREAMING,
+            }
+        assert fifo_name in magic_bytes
+        num_pts = min(num_pts, get_buffer_size())
+        packet_to_send = struct.pack('=III',
+                                     magic_bytes[fifo_name],
+                                     num_pts,
+                                     0)
+        self.send(packet_to_send)
+        num_pts_out = int(num_pts + np.floor(num_pts/64))
+        buf = self.read(int(4*num_pts_out))
+        buf_np = np.frombuffer(buf, dtype=np.int32).copy()
+        return buf_np
 
     #######################################################
     # Functions used to access Zynq registers, but which do not interact directly with the socket,
