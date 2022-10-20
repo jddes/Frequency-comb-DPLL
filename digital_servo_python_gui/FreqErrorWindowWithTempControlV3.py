@@ -644,19 +644,21 @@ class FreqErrorWindowWithTempControlV3(QtGui.QWidget):
                 print('failed to read lock state')
                 bLock = False
 
-            if bLock == False:
+            if bLock == False and not (self.qchk_clear_rio_control.isChecked()):
                 print('No RIO feedback if lock off')
                 return
             self.rio_voltage_adjust = self.rio_pid(frep_counted)
             self.rio_pid.auto_mode = True
 
-            if self.qchk_clear_rio_control.isChecked() == True:
+            if self.qchk_clear_rio_control.isChecked():
                 self.rio_pid.reset()
+                self.rio_voltage_adjust = 0.0
                 self.qchk_clear_rio_control.setChecked(False)
             try:
-                self.logger.debug('Red_Pitaya_GUI{}: Sending a new RIO FM voltage : {} '.format(self.logger_name, self.rio_voltage_adjust))
-                self.setRioVoltage(self.NI_AOchannel) # set RIO FM voltage to self.rio_voltage_adjust
-                self.qlabel_volt.setText('RIO Voltage: {:+.5f}'.format(self.rio_voltage_adjust))
+                if self.rio_voltage_adjust is not None:
+                    self.logger.debug('Red_Pitaya_GUI{}: Sending a new RIO FM voltage : {} '.format(self.logger_name, self.rio_voltage_adjust))
+                    self.setRioVoltage(self.NI_AOchannel) # set RIO FM voltage to self.rio_voltage_adjust
+                    self.qlabel_volt.setText('RIO Voltage: {:+.5f}'.format(self.rio_voltage_adjust))
 
             except:
                 e = sys.exc_info()[0]
