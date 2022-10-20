@@ -408,7 +408,6 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.vna = DisplayVNAWindow(self.sl)
 		
 
-			
 	def grabAndExportData(self, bSyncReadOnNextTimeQuantization=True):
 		
 		start_time = time.perf_counter()
@@ -420,16 +419,19 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			
 		# Ask which input to use:
 		currentSelector, ok = QtGui.QInputDialog.getItem(self, 'Raw data export', 
-			'Select the data source:', ('ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2'))
+			'Select the data source:',
+			('ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2', 'IN9', 'IN10'),
+			current=5)
 		if not ok:
 			return
 		currentSelector = str(currentSelector)
 			
-		# Ask how many points:
-		N_points_str, ok = QtGui.QInputDialog.getText(self, 'Raw data export', 
-			'Enter the number of points desired [1, 32768]:', Qt.QLineEdit.Normal, '32768')
-		if not ok:
-			return
+		# # Ask how many points:
+		# N_points_str, ok = QtGui.QInputDialog.getText(self, 'Raw data export', 
+		# 	'Enter the number of points desired [1, 32768]:', Qt.QLineEdit.Normal, '32768')
+		# if not ok:
+		# 	return
+		N_points_str = "32768"  # this is so small that there is not much to be gained by saving less...
 			
 		# Block access to the DDR2 Logger to any other function until we are done:
 		self.sl.bDDR2InUse = True
@@ -450,19 +452,13 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			##################################################
 			# Synchronize trigger as best as possible to the next multiple of time_quantum seconds:
 			if bSyncReadOnNextTimeQuantization:
-				time_quantum = 0.01
-				time_now = time.time()
-				time_target = np.ceil(time_now/time_quantum) * time_quantum
-				print('time_now = %f, time_target = %f' % (time_now, time_target))
-				
-				while time_target > time_now:
-					time.sleep(1e-3)
-					time_now = time.time()
+				common.waitUntilNextTimeQuanta(10)
 				
 			self.sl.trigger_write()
-			if bSyncReadOnNextTimeQuantization:
-				print('time_now = %f, time_target = %f' % (time_now, time_target))
 			self.sl.wait_for_write()
+			if currentSelector == 'IN9':
+				samples_out = self.sl.read_in9_from_DDR2()
+			else:
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
 			samples_out = samples_out.astype(dtype=np.float)/2**15
 		except:
@@ -488,8 +484,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			f = open(strCurrentName, 'wb')
 			f.write(samples_out)
 			f.close()
+
 		except:
 			pass
+		# copy filename to clipboard so it can be pasted eg in matlab for quick analysis
+		fullname = os.path.join(os.getcwd(), strCurrentName)
+		# cb = QApplication.clipboard()
+		# cb.clear(mode=cb.Clipboard)
+		# cb.setText(fullname, mode=cb.Clipboard)
+		QtWidgets.QApplication.clipboard().setText(fullname)
+		print(f"name {fullname} copied to clipboard")
 		
 		print('Elapsed time (write to disk) = %f' % (time.perf_counter()-start_time))
 		start_time = time.perf_counter()
@@ -771,8 +775,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qlabel_ref_freq = Qt.QLabel('Reference freq [Hz]:')
 		self.qedit_ref_freq = user_friendly_QLineEdit('5e6')
 		self.qedit_ref_freq.returnPressed.connect(self.setVCOFreq_event)
-		self.qedit_ref_freq.setMaximumWidth(60)
+		self.qedit_ref_freq.setMaximumWidth(200)
 		
+		self.qbtn_streaming_phase = Qt.QPushButton('Save streaming phase')
+		self.qbtn_streaming_phase.clicked.connect(self.save_streaming_phase)
 		
 		# Main button for turning the locks on/off:
 		self.qchk_lock = Qt.QCheckBox('Lock')
@@ -845,6 +851,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		grid.addWidget(self.qchk_lock,                  0, 3, 1, 2)
 		grid.addWidget(self.qlabel_ref_freq,            1, 3)
 		grid.addWidget(self.qedit_ref_freq,             1, 4)
+		grid.addWidget(self.qbtn_streaming_phase,       2, 3, 1, 2)
 		
 		# # both PLLs need to receive a threshold for the residuals.
 		# # See tooltip for info
@@ -1098,6 +1105,20 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 #    def resizeEvent(self, event):
 #        print('resizeEvent')
 #        print(self.geometry())
+
+	def save_streaming_phase(self):
+		if ':' in self.strTitle:
+			name_postfix = self.strTitle.split(':')[0].strip()
+		else:
+			name_postfix = self.strTitle.strip()
+
+		self.sl.send_bus_cmd_32bits(self.sl.BUS_ADDR_n_cycles, int(125))
+
+		# buf = self.sl.dev.read_phase_streaming()
+		# buf.tofile('phi_int32.bin')
+		common.waitUntilNextTimeQuanta(10)
+		buf = self.sl.dev.read_augmented_phase_streaming()
+		buf.tofile(f'phi_augmented_int32_{name_postfix}.bin')
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)
 	def updatePhaseNoiseViews(self):

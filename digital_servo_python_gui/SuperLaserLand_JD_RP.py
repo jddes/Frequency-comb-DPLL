@@ -220,7 +220,17 @@ class SuperLaserLand_JD_RP:
 	BUS_ADDR_integrator2_settings                       = 0x7021
 	
 	BUS_ADDR_dac2_setpoint                              = 0x7024
-	
+
+	# new phase streaming:
+	BUS_ADDR_dphi                   = 0x7036
+	BUS_ADDR_n_cycles               = 0x7037
+	# new igm streaming:
+	# these registers live inside registers_read.vhd
+	BUS_ADDR_trigger_level          = 0x00054
+	BUS_ADDR_pts_per_igm            = 0x00055
+	BUS_ADDR_pts_saved_per_igm      = 0x00056
+	BUS_ADDR_pretrigger_pts         = 0x00057
+
 	# DDC 0 settings
 	BUS_ADDR_ref_freq0_lsbs                             = 0x8000
 	BUS_ADDR_ref_freq0_msbs                             = 0x8001
@@ -303,7 +313,7 @@ class SuperLaserLand_JD_RP:
 		'DAC0':          6,
 		'DAC1':          7,
 		'DAC2':          8,
-		'CRASH_MONITOR': 2**4,
+		'IN9':           2**4,
 		'IN10':          2**4 + 2**3,
 		}
 	############################################################
@@ -855,6 +865,13 @@ class SuperLaserLand_JD_RP:
 			
 		return buffer_all
 			
+	def read_in9_from_DDR2(self):
+		assert self.last_selector == self.LOGGER_MUX['IN9']
+
+		data_buffer = self.read_raw_bytes_from_DDR2()
+		samples_out = np.frombuffer(data_buffer, dtype=np.uint16)
+		samples_out = samples_out[10:]  # crop magic bytes, ref exp and all that crap
+		return samples_out
 			
 	def read_adc_samples_from_DDR2(self):
 		if self.bVerbose == True:
