@@ -122,6 +122,15 @@ typedef struct binary_packet_reboot_monitor_t {
 	uint32_t reserved2;	
 } binary_packet_reboot_monitor_t;
 
+typedef struct binary_packet_read_fifo_t {
+	uint32_t magic_bytes;	// 0xABCD123A or 0xABCD123B
+	uint32_t num_pts;
+	uint32_t reserved1;	
+} binary_packet_read_fifo_t;
+
+uint32_t magic_bytes_read_phase_streaming = 0xABCD123A;
+uint32_t magic_bytes_read_igm_streaming = 0xABCD123B;
+
 
 
 #pragma pack(pop)
@@ -240,13 +249,13 @@ void write_value(unsigned long a_addr, int a_type, unsigned long a_value) {
 int16_t data_buffer[LOGGER_BUFFER_SIZE];
 
 // this can be as long as we want (as long as it fits in the Zynq's RAM)
-// currently sizeof(uint32_t)*(1UL<<20) = 4 MB
-#define NO_FIFO_LOGGER_BUFFER_SIZE (1U<<20)
-uint32_t data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE];
-
-// 16e6 samples (64 MB)
+// 16e6 samples (sizeof(uint32_t)*(1UL<<24) = 64 MB)
 #define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
 uint32_t data_buffer_with_fifo[FIFO_LOGGER_BUFFER_SIZE];
+
+#define PHI_COUNTER_BUFFER_RATIO 64
+#define PHI_COUNTER_BUFFER_SIZE (FIFO_LOGGER_BUFFER_SIZE/PHI_COUNTER_BUFFER_RATIO)
+uint32_t phi_counter_buf[PHI_COUNTER_BUFFER_SIZE];
 
 void acq_LoggerStartWrite()
 {
@@ -589,58 +598,165 @@ void continuous_fifo_read(  )
 	return;
 }
 
-void throughput_test(  )
+void read_phase_streaming(uint32_t num_pts)
 {
-	int32_t current_delta;
-    int32_t min_delta_counter, max_delta_counter, total_delta_counter;
-    uint32_t number_of_counts_above_threshold = 0;
+	// printf("read_phase_streaming()\n");
+    const volatile uint32_t* almost_full = (uint32_t*)((char*)map_base + 4*0x00045U);
+    volatile uint32_t* rst_fifo = (uint32_t*)((char*)map_base + 4*0x00046U);
+    volatile uint32_t* phi_counter = (uint32_t*)((char*)map_base + 4*0x00047U);
+    //uint32_t counter_local;
+    //uint32_t last_counter;
+    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + 4*0x00044U);
 
-    min_delta_counter = 0x7fffffff;	// hex(2^31-1)
-    max_delta_counter = 0;
-    printf("throughput_test\n");
-    printf("min_delta_counter at start = %d, max_delta_counter = %d\n", min_delta_counter, max_delta_counter);
-
-
-    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + 4*0x00037U);
+    if (num_pts > FIFO_LOGGER_BUFFER_SIZE)
+    {
+    	num_pts = FIFO_LOGGER_BUFFER_SIZE;
+    }
 
     // Read a buffer as quickly as we can
-    uint32_t i;
-    for (i = 0; i < NO_FIFO_LOGGER_BUFFER_SIZE; ++i) {
-        data_buffer_no_fifo[i] = (*raw_buffer);
+    uint32_t i=0;
+    uint32_t i2=0;
+    uint32_t iCounter=0;
+    uint32_t phi_counter_local=0;
+    //counter_local = *counter;
+    //last_counter = counter_local;
+    data_buffer_with_fifo[0] = (*raw_buffer);
+
+    uint32_t not_almost_full_count = 0;
+    ////////////////////////////////////////////////////////////
+    // this was meant to clear the fifo so that our samples start clean,
+    // but I can't get it to work for some reason...
+    // oh well.
+    *rst_fifo = 1; // resets the fifo, self-clearing
+    while ((*almost_full) == 0)
+    {
+    	// wait until there is enough data in the fifo
+    	not_almost_full_count++;
     }
-    
-    // count min, max and average counter steps:
-	for (i = 1; i < NO_FIFO_LOGGER_BUFFER_SIZE; ++i)
-	{
-		// compute delta
-		current_delta = (int32_t)data_buffer_no_fifo[i] - (int32_t)data_buffer_no_fifo[i-1];
+    // first read is invalid, due to the way the fifo in registers_read.vhd 
+    // handles the read enable signal
+    data_buffer_with_fifo[0] = *raw_buffer;
+    ////////////////////////////////////////////////////////////
 
-		// show first 50 pts:
-		if (i<250)
-			printf("%d, ", current_delta);
+	phi_counter_buf[i2] = *phi_counter;
 
 
-		// how many above a certain threshold? set at 2* mean
-		if (current_delta > 40)
-			number_of_counts_above_threshold++;
+    while (i < num_pts)
+    {
+    	// printf("*almost_full = %u\n", *almost_full);
+    	if (*almost_full)
+    	{
+    		for (i2=0; i2<64; i2++)
+    		{
+    			data_buffer_with_fifo[i++] = *raw_buffer;
+    			// printf("*raw_buffer = %d\n", *raw_buffer);
+    		}
+    		if (iCounter < PHI_COUNTER_BUFFER_SIZE)
+    		{
+    			phi_counter_local = *phi_counter;
+				phi_counter_buf[iCounter] = phi_counter_local;
+				// if (phi_counter_local != 0)
+				// 	printf("phi_counter_local = %d, iCounter=%d\n", phi_counter_local, iCounter);
+				iCounter++;
+    		}
+    	} else {
+    		// not_almost_full_count++;
+    	}
 
-		// running min
-		if (current_delta < min_delta_counter)
-			min_delta_counter = current_delta;
-		// running max
-		if (current_delta > max_delta_counter)
-			max_delta_counter = current_delta;
-	}
-	total_delta_counter = (int32_t)data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE-1] - (int32_t)data_buffer_no_fifo[0];
+    }
+    // printf("not_almost_full_count = %u\n", not_almost_full_count);
 
-	printf("\n");
-	printf("total delta = %d counts, avg = %d counts\n", total_delta_counter, total_delta_counter / NO_FIFO_LOGGER_BUFFER_SIZE);
-	printf("min_delta_counter = %d counts, max_delta_counter = %d counts\n", min_delta_counter, max_delta_counter);
-	printf("number_of_counts_above_threshold = %d\n", number_of_counts_above_threshold);
 
+	printf("read_phase_streaming() finished.\n");
 	return;
 }
 
+#define IGM_RD_THRESHOLD 64
+
+void read_igm_streaming(uint32_t num_pts)
+{
+	// Interacts with registers_read.vhd to read out a stream of IGMs
+	// from a fifo into the CPU's memory.
+	// relevant lines from registers_read.vhd:
+	// (...) write port:
+    // when x"00052" => igm_fifo_rst      <= '1';
+    // when x"00053" => enable            <= sys_wdata(0);
+	// (...) read port:
+    // when x"00050" => sys_ack <= sys_en; sys_rdata <= std_logic_vector(igm_fifo_rd_data); igm_fifo_rd_ack <= '1';
+    // when x"00051" => sys_ack <= sys_en; sys_rdata <= std_logic_vector(igm_fifo_count);
+	printf("read_igm_streaming()\n");
+
+    volatile uint32_t* igm_fifo_rst           = (uint32_t*)((char*)map_base + 4*0x00052U);
+    volatile uint32_t* igm_enable             = (uint32_t*)((char*)map_base + 4*0x00053U);
+    const volatile uint32_t* igm_fifo_rd_data = (uint32_t*)((char*)map_base + 4*0x00050U);
+    const volatile uint32_t* igm_fifo_count   = (uint32_t*)((char*)map_base + 4*0x00051U);
+    // const volatile uint32_t* igm_wr_count     = (uint32_t*)((char*)map_base + 4*0x00058U);
+
+    uint32_t i=0;
+    uint32_t i2=0;
+    uint32_t not_enough_data_count=0;
+    uint32_t count_local=0;
+    uint32_t iCounter=0;
+
+    if (num_pts > FIFO_LOGGER_BUFFER_SIZE)
+    {
+    	num_pts = FIFO_LOGGER_BUFFER_SIZE;
+    }
+
+    // startup sequence:
+    *igm_enable = 0;
+    *igm_fifo_rst = 1; // self-clearing
+    printf("*igm_fifo_count = %u (expect 0)\n", *igm_fifo_count);
+    *igm_enable = 1;
+
+    // super-crude timeout feature:
+    // if no point get written in 1 sec (1000*1000 microseconds)
+    // then we exit early.
+    // data buffers will still get sent, but at least we won't hang.
+    for (i=0; i<1000; i++)
+    {
+    	if (*igm_fifo_count != 0)
+    	{
+    		break;
+    	}
+    	usleep(1000);
+		// printf("*igm_fifo_count = %u, *wr_count = %u\n", *igm_fifo_count, *igm_wr_count);
+    }
+    if (i == 1000)
+    {
+		printf("read_igm_streaming() early exit.\n");
+    	return;
+    }
+    i = 0;
+
+    while (i < num_pts)
+    {
+    	// printf("*igm_fifo_count = %u, i=%u, num_pts=%u\n", *igm_fifo_count, i, num_pts);
+    	if (*igm_fifo_count >= IGM_RD_THRESHOLD)
+    	{
+    		for (i2=0; i2<IGM_RD_THRESHOLD; i2++)
+    		{
+    			data_buffer_with_fifo[i++] = *igm_fifo_rd_data;
+    			// printf("*raw_buffer = %d\n", *raw_buffer);
+    		}
+    		if (iCounter < PHI_COUNTER_BUFFER_SIZE)
+    		{
+    			count_local = *igm_fifo_count;
+				phi_counter_buf[iCounter] = count_local;
+				// if (count_local != 0)
+				// 	printf("count_local = %d, iCounter=%d\n", count_local, iCounter);
+				iCounter++;
+    		}
+    	} else {
+    		not_enough_data_count++;
+    	}
+
+    }
+    printf("not_enough_data_count = %u\n", not_enough_data_count);
+
+	printf("read_igm_streaming() finished.\n");
+	return;
+}
 
 void *second_thread_function( void *ptr )
 {
@@ -961,6 +1077,44 @@ static int handleConnection(int connfd) {
 		        		if (bVerbose)
 		        			printf("Received a 'start flank servo' packet, but we have not received the full packet yet.\n");
 		        	}
+
+	        	} else if (message_magic_bytes == magic_bytes_read_phase_streaming ||
+	        			   message_magic_bytes == magic_bytes_read_igm_streaming)
+	        	{
+	        		iRequiredBytes = sizeof(binary_packet_read_fifo_t);
+		        	if (msg_end >= iRequiredBytes) {
+
+		        		struct binary_packet_read_fifo_t * pPacketReadFifo;
+		        		pPacketReadFifo = (binary_packet_read_fifo_t*) message_buff;
+		        		uint32_t num_pts = pPacketReadFifo->num_pts;
+		        		if (num_pts > FIFO_LOGGER_BUFFER_SIZE)
+		        			num_pts = FIFO_LOGGER_BUFFER_SIZE;
+
+		        		if (message_magic_bytes == magic_bytes_read_phase_streaming) {
+		        			read_phase_streaming(pPacketReadFifo->num_pts);
+		        		} else {
+		        			read_igm_streaming(pPacketReadFifo->num_pts);
+		        		}
+		        		send(connfd,
+		        			 (void*)data_buffer_with_fifo,
+		        			 (size_t)num_pts*sizeof(data_buffer_with_fifo[0]),
+		        			 0);
+		        		
+		        		send(connfd,
+		        			 (void*)phi_counter_buf,
+		        			 (size_t)(num_pts/PHI_COUNTER_BUFFER_RATIO)
+		        			 	*sizeof(phi_counter_buf[0]),
+		        			 0);
+
+		        		bytes_consumed = sizeof(binary_packet_read_fifo_t);
+		        		bHaveMagicBytes = false;
+
+		        	} else {
+		        		if (bVerbose)
+		        			printf("Received a 'start flank servo' packet, but we have not received the full packet yet.\n");
+		        	}
+		        	
+
 
 	        	////////////////////////////////////////////////////////////
 	        	// Write a file to the filesystem
