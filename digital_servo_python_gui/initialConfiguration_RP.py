@@ -208,7 +208,7 @@ class initialConfiguration(QtWidgets.QDialog):
 	def reset_list_and_send_broadcast(self):
 
 		# clear the list if it exists
-		self.strSerialList
+		self.strSerialList.clear()
 		try:
 			self.qcombo_serial.clear()
 			pass
@@ -289,12 +289,13 @@ class initialConfiguration(QtWidgets.QDialog):
 		if self.qradio_usefromlist.isChecked():
 			# use IP from list
 			try:
+				print(self.strSerialList)
 				(strIP, strMAC) = self.strSerialList[self.qcombo_serial.currentIndex()]
 				self.strSelectedSerial = strMAC.replace(':', '') # this is just for legacy compatibility, when we had actual serial numbers
 				self.strSelectedMAC = strMAC
 				self.strSelectedIP = strIP
-				# print(strMAC)
-				# print(strIP)
+				print(strMAC)
+				print(strIP)
 				
 			except IndexError:
 				# nothing bad happened, we probably simply had an empty list
