@@ -1,12 +1,12 @@
 <SuperLaserLandPLL_settings>
-    <Reference_frequency                DDC0="25e6" DDC1="25e6" />
+    <Reference_frequency                DDC0="2.52e+07" DDC1="2.52e+07" />
     <VCO_gain                           DAC0="4e9" DAC1="3.7e7" DAC2="23" /> <!--VCO Gain -->
     <Output_limits_low                  DAC0="0" DAC1="-1" DAC2="0" />
     <Output_limits_high                 DAC0="1" DAC1="1" DAC2="3.3" />
     <Input_Output_gain                  ADC0="1" ADC1="1" DAC0="1" DAC1="1" />
     <Output_offset_in_volts             DAC0="0.18" DAC1="0" DAC2="0" />
-    <PLL0_settings                      chkKp="True" chkKd="True" chkKpCrossing="True" chkLock="False" fi="4.68e4" fii="4.27e3" kp="19.8" fd="1.62e5" fdf="3.24e6" />
-    <PLL1_settings                      chkKp="True" chkKd="False" chkKpCrossing="True" chkLock="False" fi="141e3" fii="3.24e3" kp="-5.6" fd="60e3" fdf="600e3" />
+    <PLL0_settings                      chkKp="True" chkKd="True" chkKpCrossing="False" chkLock="False" fi="4.68e4" fii="4.27e3" kp="22.4" fd="1.62e5" fdf="3.24e6" />
+    <PLL1_settings                      chkKp="True" chkKd="False" chkKpCrossing="False" chkLock="False" fi="56e3" fii="25e3" kp="-14.7" fd="60e3" fdf="600e3" />
     <!--<PLL2_settings                      chkKp="False" chkKd="False" chkKpCrossing="False" chkLock="False" fi="1e-2" fii="0" kp="-120" fd="60e3" fdf="600e3" />-->
     <PLL2_settings                      LoopFilter="0" flip_acquisition="True" flip_lock="True" AcqGain="-21" LockGain="-23"/> <!--LoopFilter = 0: off | 1: slow piezo only | 2: fast piezo only | 3:both piezo (equivalent to lock) -->
     <PWM0_settings                      standard="3.3" levels="256" default="0.0" minval="0.0" maxval="3.3" />
