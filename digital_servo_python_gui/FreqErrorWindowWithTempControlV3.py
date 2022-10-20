@@ -467,7 +467,7 @@ class FreqErrorWindowWithTempControlV3(QtGui.QWidget):
             
             self.qchk_clear_temp_control = Qt.QCheckBox('Clear Temperature control')
             self.qlabel_frep = Qt.QLabel('Frep setpoint (Hz)')
-            self.qedit_frep  = Qt.QLineEdit('199998000.0')
+            self.qedit_frep  = Qt.QLineEdit('200000000.0')
             self.qlabel_volt = Qt.QLabel('RIO Voltage: {}'.format(0.0))
             self.qlabel_frepcount = Qt.QLabel('Frep counted: {} Hz'.format(0.0))
             self.qchk_rep_rate_nudge = Qt.QCheckBox('Frep nudge')
@@ -637,7 +637,7 @@ class FreqErrorWindowWithTempControlV3(QtGui.QWidget):
         self.rio_pid.Kp          = 0.005 * reverse_pid
         self.rio_pid.Ki          = 0.005 * reverse_pid
         self.rio_pid.Kd          = 0.005 * reverse_pid
-        if self.qchk_rio_feedback.isChecked() == True:
+        if self.qchk_rio_feedback.isChecked() or self.qchk_clear_rio_control.isChecked():
             try:
                 bLock = self.xem_gui_mainwindow.qchk_lock.isChecked()
             except:
