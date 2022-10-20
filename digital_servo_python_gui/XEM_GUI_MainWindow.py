@@ -407,6 +407,21 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def showVNA(self):
 		self.vna = DisplayVNAWindow(self.sl)
 		
+	def askNumPts(self, Nmax=32768):
+		N_points_str, ok = QtGui.QInputDialog.getText(self, 'Raw data export', 
+			f'Enter the number of points desired [1, {Nmax}]:', Qt.QLineEdit.Normal, f'{Nmax}')
+		if not ok:
+			return None
+			
+		try:
+			N_points = int(float(N_points_str))
+		except:
+			N_points = 4e3
+		
+		if N_points < 64:
+			N_points = 64
+
+		return N_points
 
 	def grabAndExportData(self, bSyncReadOnNextTimeQuantization=True):
 		
@@ -426,23 +441,16 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			return
 		currentSelector = str(currentSelector)
 			
-		# # Ask how many points:
-		# N_points_str, ok = QtGui.QInputDialog.getText(self, 'Raw data export', 
-		# 	'Enter the number of points desired [1, 32768]:', Qt.QLineEdit.Normal, '32768')
-		# if not ok:
+		# Ask how many points:
+		# N_points = self.askNumPts()
+		# if N_points is None:
 		# 	return
-		N_points_str = "32768"  # this is so small that there is not much to be gained by saving less...
-			
+		# EDIT: this is so small that there is not much to be gained by saving less...
+		N_points = 32768
+
 		# Block access to the DDR2 Logger to any other function until we are done:
 		self.sl.bDDR2InUse = True
 
-		try:
-			N_points = int(float(N_points_str))
-		except:
-			N_points = 4e3
-		
-		if N_points < 64:
-			N_points = 64
 	
 		try:
 			# Read from selected source
@@ -1114,10 +1122,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 		self.sl.send_bus_cmd_32bits(self.sl.BUS_ADDR_n_cycles, int(125))
 
+		N_points = self.askNumPts(20e6)
+		if N_points is None:
+			return
+
 		# buf = self.sl.dev.read_phase_streaming()
 		# buf.tofile('phi_int32.bin')
 		common.waitUntilNextTimeQuanta(10)
-		buf = self.sl.dev.read_augmented_phase_streaming(fifo_name="PHASE")
+		buf = self.sl.dev.read_augmented_phase_streaming(N_points, fifo_name="PHASE")
 		buf.tofile(f'phi_augmented_int32_{name_postfix}.bin')
 
 	## Handle view resizing for the phase noise plot (since we need to manual link the left and right side axes)

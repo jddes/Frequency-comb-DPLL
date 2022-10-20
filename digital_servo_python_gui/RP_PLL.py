@@ -101,7 +101,7 @@ class RP_PLL_device():
         self.sock = None # socket_placeholder()
         self.valid_socket = False
 
-    def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True, timeout=2):
+    def OpenTCPConnection(self, HOST, PORT=5000, valid_socket_for_general_comms=True, timeout=20):
         print("RP_PLL_device::OpenTCPConnection(): HOST = '%s', PORT = %d" % (HOST, PORT))
         self.HOST = HOST
         self.PORT = PORT
