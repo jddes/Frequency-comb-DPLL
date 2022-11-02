@@ -500,8 +500,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# cb = QApplication.clipboard()
 		# cb.clear(mode=cb.Clipboard)
 		# cb.setText(fullname, mode=cb.Clipboard)
-		QtWidgets.QApplication.clipboard().setText(fullname)
-		print(f"name {fullname} copied to clipboard")
+		# QtWidgets.QApplication.clipboard().setText(fullname)
+		# print(f"name {fullname} copied to clipboard")
 		
 		print('Elapsed time (write to disk) = %f' % (time.perf_counter()-start_time))
 		start_time = time.perf_counter()

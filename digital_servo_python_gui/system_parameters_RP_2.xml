@@ -5,7 +5,7 @@
     <Output_limits_high                 DAC0="1" DAC1="1" DAC2="3.3" />
     <Input_Output_gain                  ADC0="1" ADC1="1" DAC0="1" DAC1="1" />
     <Output_offset_in_volts             DAC0="0.5256" DAC1="0" DAC2="0" />
-    <PLL0_settings                      chkKp="True" chkKd="True" chkKpCrossing="False" chkLock="False" fi="4.68e5" fii="4.27e4" kp="22.4" fd="1.62e5" fdf="3.24e6" />
+    <PLL0_settings                      chkKp="True" chkKd="True" chkKpCrossing="False" chkLock="False" fi="4.68e5" fii="4.27e3" kp="22.4" fd="1.62e4" fdf="3.24e6" />
     <PLL1_settings                      chkKp="True" chkKd="False" chkKpCrossing="False" chkLock="False" fi="56e3" fii="25e3" kp="-14.7" fd="60e3" fdf="600e3" />
     <!--<PLL2_settings                      chkKp="False" chkKd="False" chkKpCrossing="False" chkLock="False" fi="1e-2" fii="0" kp="-120" fd="60e3" fdf="600e3" />-->
     <PLL2_settings                      LoopFilter="0" flip_acquisition="True" flip_lock="True" AcqGain="-21" LockGain="-23"/> <!--LoopFilter = 0: off | 1: slow piezo only | 2: fast piezo only | 3:both piezo (equivalent to lock) -->
@@ -16,7 +16,7 @@
     <Temperature_control                chkControl="False"    threshold_step="0.35"  threshold_disable="0.05"    step_size="0.004"    step_delay="20" bIncrementalOnly="False" />
     <Dither_frequency                   DAC0="3e3" DAC1 ="3.1e3" />
     <Dither_integration_time            DAC0="0.1" DAC1 ="0.1" />
-    <Dither_amplitude                   DAC0="1e-4" DAC1 ="1e-3" />
+    <Dither_amplitude                   DAC0="1e-3" DAC1 ="1e-3" />
     <Dither_mode                        DAC0="2" DAC1 ="2" />  <!--0 : Manual off | 1 : Manual on | 2 : Automatic -->
     <VCO_settings                       VCO_connection="0" VCO_amplitude="0.5" VCO_offset="0.00" /> <!--VCO_connection = 0, A or B -->
     <RP_settings                        PLL2_connection="0" Fan_state="0" Clock_select="0" /> <!--PLL2_connection = 0: DDC2 | 1: DDC1 | 2: channel 1's loop filter. Clk select: 1 = internal, 0 = external -->

@@ -2036,8 +2036,16 @@ class SuperLaserLand_JD_RP:
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC, reg1)
 		self.send_bus_cmd_32bits(self.BUS_ADDR_TEST_OSC_DUTY, reg2)
 
+	def write_clk_mode_reg(self, reset, bExternalClock, external_clk_is_CLK_IN):
+		reg_clk_sel_and_reset = (int(not bExternalClock)
+								 | (int(reset) << 1)
+								 | (int(not external_clk_is_CLK_IN) << 2))
+		print(f"reg_clk_sel_and_reset={reg_clk_sel_and_reset}")
+		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr,
+												reg_clk_sel_and_reset)
+
 	# f_source is the frequency of the selected clock source (200 MHz in internal clock mode, can be whatever is connected to GPIO_P[5] in external clock mode)
-	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE):
+	def setADCclockPLL(self, f_source, bExternalClock, CLKFBOUT_MULT, CLKOUT0_DIVIDE, external_clk_is_CLK_IN=True):
 		DIVCLK_DIVIDE = 1
 		VCO_freq = f_source * CLKFBOUT_MULT/DIVCLK_DIVIDE
 		# print('VCO_freq = %f MHz, valid range is 600-1600 MHz according to the datasheet (DS181)' % (VCO_freq/1e6))
@@ -2067,8 +2075,8 @@ class SuperLaserLand_JD_RP:
 			print("Error: timed out waiting for status_reg to become 0x1 (PLL locked)")
 			return
 
-		reg_clk_sel_and_reset = int(not bExternalClock) | (1<<1)
-		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
+		# assert reset on the incoming ADC clock 
+		self.write_clk_mode_reg(True, bExternalClock, external_clk_is_CLK_IN)
 		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x7)
 		self.dev.write_Zynq_AXI_register_uint32(self.clkw_base_addr + 0x25C, 0x2) # this needs to happen before the locked status goes high according to the datasheet.  Not sure what the impact is if we don't honor this requirement
 
@@ -2077,8 +2085,8 @@ class SuperLaserLand_JD_RP:
 		# print("setADCclockPLL():\nDIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock = ", DIVCLK_DIVIDE, CLKFBOUT_MULT, CLKOUT0_DIVIDE, bExternalClock)
 		# print("setADCclockPLL():\nself.fs = ", self.fs)
 		time.sleep(0.1)
-		reg_clk_sel_and_reset = int(not bExternalClock) | (0<<1) # de-assert reset on the incoming ADC clock
-		self.dev.write_Zynq_AXI_register_uint32(self.clk_sel_base_addr, reg_clk_sel_and_reset) # assert reset on the incoming ADC clock 
+		# assert reset on the incoming ADC clock 
+		self.write_clk_mode_reg(False, bExternalClock, external_clk_is_CLK_IN)
 		
 		self.resetFrontend() # all clocks should now be stable, reset everything else
 
