@@ -237,6 +237,16 @@ class RP_PLL_device():
         num_pts_out = int(num_pts - np.floor(num_pts/64))
         return buf_np[:num_pts_out]
 
+    def build_udp_socket(self, port_number=0, listening=True):
+        """ return a listening udp socket to receive data stream triggered by
+        trigger_data_streaming_to_udp() """
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.setblocking(0)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 2**20)
+        if listening:
+            s.bind(("", port_number))
+        return s
+        
     def read_augmented_phase_streaming(self, num_pts=2**20):
         num_pts = min(num_pts, get_buffer_size())
         packet_to_send = struct.pack('=III',

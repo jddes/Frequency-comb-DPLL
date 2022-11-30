@@ -1,10 +1,11 @@
 from __future__ import print_function
 import time
 from PyQt5 import QtGui, Qt, QtCore, QtWidgets
-#import PyQt5.Qwt5 as Qwt
-import numpy as np
 import math
 import sys
+import pdb
+import struct
+import pprint
 
 import numpy as np
 import weakref
@@ -16,6 +17,8 @@ from ThermometerWidget import ThermometerWidget # to replace Qwt's thermometer w
 from SLLSystemParameters import SLLSystemParameters
 from SuperLaserLand_mock import SuperLaserLand_mock
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
+import RP_PLL
+
 
 def round_to_N_sig_figs(x, Nsigfigs):
     leading_pos = np.floor(np.log10(np.abs(x)))
@@ -38,6 +41,9 @@ class SpectrumWidget(QtGui.QWidget):
 
         self.bDisplayTiming  = False
         self.filtered_baseband_snr = 0.
+        self.current_output_in_hz = 0.
+
+        self.sender = RP_PLL.RP_PLL_device.build_udp_socket(None, listening=False)
 
         self.initUI()
         pass
@@ -99,6 +105,14 @@ class SpectrumWidget(QtGui.QWidget):
         self.N_dacs = 3
         self.qthermo_dac_current = [ThermometerWidget() for k in range(self.N_dacs)]
         self.update_dac_thermo_scales()
+
+        # grab the first activated output control as the "selected DAC",
+        # for purposes of plotting the range over the spectrum
+        for k in range(self.N_dacs):
+            if self.output_controls[k]:
+                self.selected_DAC = k
+                break
+
         for k in range(self.N_dacs):
             if self.output_controls[k] == True:
                 self.qlabel_dac_current[k] = Qt.QLabel('Output\nDAC %d [V]' % k)
@@ -281,7 +295,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.setLayout(vbox)
 
     def update_dac_thermo_scales(self):
-        print("SpectrumWidget:: setting thermometer widget range")
+        # print("SpectrumWidget:: setting thermometer widget range")
         for k in range(self.N_dacs):
             if self.output_controls[k]:
                 self.qthermo_dac_current[k].setRange(self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_low[k]), self.sl.convertDACCountsToVolts(k, self.sl.DACs_limit_high[k]))
@@ -336,10 +350,11 @@ class SpectrumWidget(QtGui.QWidget):
 
 
 
-    def plotADCdata(self, input_select, plot_type, samples_out, ref_exp0):
+    def plotADCdata(self, input_select, plot_type,
+                    samples_out, ref_exp0, beat_sign=True):
 
         if plot_type == 0:    # Display Spectrum
-            self.plotADCorDACspectrum(samples_out, input_select)
+            self.plotADCorDACspectrum(samples_out, input_select, beat_sign)
 
         elif plot_type == 1:
             self.plotADCorDACtimeDomain(samples_out, input_select)
@@ -382,7 +397,7 @@ class SpectrumWidget(QtGui.QWidget):
         start_time = time.perf_counter()
 
 
-    def plotADCorDACspectrum(self, samples_out, input_select):
+    def plotADCorDACspectrum(self, samples_out, input_select, beat_sign):
 
         start_time = time.perf_counter()
 
@@ -415,17 +430,21 @@ class SpectrumWidget(QtGui.QWidget):
         spc_single_sided_psd = spc*2/self.computeNEB(window_function, self.sl.fs) * (2**15*self.sl.convertADCCountsToVolts(self.selected_ADC, 1))**2
         # Measure average PSD level by looking at out-of-band noise and rejecting outliers:
         index_from_freq = lambda freq: round(freq*N_fft/self.sl.fs)# f_axis = index/N_fft*fs
-        ind_min_psd = index_from_freq(10e6)
-        ind_max_psd = index_from_freq(20e6)
+        ind_min_psd = index_from_freq(20e6)
+        ind_max_psd = index_from_freq(30e6)
         spc_single_sided_psd = spc_single_sided_psd[ind_min_psd:ind_max_psd] # slice out an out-of-band section
         # reject the biggest outlier (biases the result, but by a very small amount, and avoids the large error if there is a spur in the chosen bandwidth)
-        worst_outlier_index = np.argmax(spc_single_sided_psd)
-        spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
-        avg_psd = np.mean(spc_single_sided_psd) # compute the mean
+        try:
+            worst_outlier_index = np.argmax(spc_single_sided_psd)
+            spc_single_sided_psd = np.delete(spc_single_sided_psd, worst_outlier_index)
+            avg_psd = np.mean(spc_single_sided_psd) # compute the mean
+        except ValueError:
+            avg_psd = 0
         # 
         spc = spc*4. # scale relative to 0 dBFS sine wave
         spc = 10*np.log10(spc + 1e-12)
         
+        self.tx_spectrum(spc, beat_sign)
         
         if self.bDisplayTiming == True:
             print('Elapsed time (10log10 abs(FFT) = %f' % (time.perf_counter()-start_time))
@@ -438,6 +457,122 @@ class SpectrumWidget(QtGui.QWidget):
 
         if input_select.startswith('ADC'):
             self.updateFilterSpcDisplay(frequency_axis[0:last_index_shown])
+
+    def tx_spectrum(self, spc, beat_sign=True):
+        """ transmit the spectrum via socket to our socket_xy_plot.py
+        spc is currently in dB, -100 to 0 roughly,
+        non-fft-shifted yet """
+        dB_range = 100
+        spc_scaled = np.fft.fftshift(spc)/dB_range*2. + 1.0
+
+        if beat_sign:
+            # blank out negative frequencies:
+            # (don't care about being accurate down to 1 freq bin here
+            spc_scaled[:int(len(spc_scaled)/2)] = -1.1  # this will be out of the display range
+        else:
+            # instead blank out positive freqs:
+            spc_scaled[int(len(spc_scaled)/2):] = -1.1  # this will be out of the display range
+
+        ind_peak = np.argmax(spc_scaled)
+        f_peak = np.fft.fftshift(
+            np.fft.fftfreq(len(spc)))[ind_peak] * self.sl.fs
+        self.tx_dac(f_peak)
+        self.tx_vco_freq()
+
+        self._tx_spectrum(spc_scaled)
+
+    def _tx_spectrum(self, spc_scaled):
+        """ spc_scaled is already scaled to the +/- 1
+        as required by socket_xy_plot.py, so it's all ready to send. """
+        buf = spc_scaled.astype(np.float32).tobytes()
+        PACKET_TYPE_Y_ONLY = 0x1423BCDA
+        self.tx_packet(buf, PACKET_TYPE_Y_ONLY)
+
+    def tx_packet(self, payload_buffer, packet_type):
+        DEFAULT_PORT = 14134
+        header_size = 3*4
+        packet_size = len(payload_buffer) + header_size
+        header = struct.pack(
+            "III", packet_type, len(payload_buffer)+header_size, header_size)
+        assert len(header) == header_size
+        assert len(header)+len(payload_buffer) == packet_size
+        self.sender.sendto(header+payload_buffer, ("127.0.0.1", DEFAULT_PORT))
+
+    def tx_dac(self, f_peak):
+        """ send a representation of the DAC's range relative to the current
+        spectral peak position """
+        VCO_gain_in_Hz_per_Volts = self.parent.getVCOGainFromUI(
+            self.selected_DAC)
+
+        def c(x): return self.sl.convertDACCountsToVolts(self.selected_DAC, x)
+        dac_min_volts = c(self.sl.get_dac_extremum(self.selected_DAC, 'min'))
+        dac_max_volts = c(self.sl.get_dac_extremum(self.selected_DAC, 'max'))
+        dac_min_hz = dac_min_volts*VCO_gain_in_Hz_per_Volts
+        dac_max_hz = dac_max_volts*VCO_gain_in_Hz_per_Volts
+
+        f_min = f_peak-self.current_output_in_hz + dac_min_hz
+        f_max = f_peak-self.current_output_in_hz + dac_max_hz
+        d = locals()
+        d.pop('self')
+        pprint.pprint(d)
+        print(self.current_output_in_hz)
+
+        self._tx_dac(f_min/self.sl.fs, f_max/self.sl.fs)
+
+    def _tx_dac(self, f_min_norm, f_max_norm):
+        # factor of 2 here is because the display is normalized [-1, 1]
+        # while frequencies are conventionally [-0.5 0.5]
+        # a triangle (doesn't look so good)
+        # vertices = np.array([
+        #     2.0*f_max_norm, 0.0,
+        #     2.0*f_min_norm, 0.0,
+        #     2.0*(f_min_norm+f_max_norm)/2.0, 0.5,
+        #     ], dtype=np.float32)
+
+        # # a shaded rectangular region
+        # # also not super great
+        # vertices = np.array([
+        #     2.0*f_max_norm, -1.0,
+        #     2.0*f_min_norm, -1.0,
+        #     2.0*f_max_norm,  1.0/2.0,
+        #     2.0*f_min_norm,  1.0/2.0,
+        #     ], dtype=np.float32)
+
+        # a shaded, thin rectangular region
+        # a bit better than the other options tried out so far?
+        vertices = np.array([
+            2.0*f_max_norm, 0.0,
+            2.0*f_min_norm, 0.0,
+            2.0*f_max_norm, 2.0/20.,
+            2.0*f_min_norm, 2.0/20.,
+            ], dtype=np.float32)
+
+        buf = vertices.tobytes()
+        PACKET_TYPE_TRIANGLE_STRIP = 0x1423BCDD
+        self.tx_packet(buf, PACKET_TYPE_TRIANGLE_STRIP)
+
+    def tx_vco_freq(self):
+        # I regret that choice so much and need to refactor that..
+        if self.selected_ADC == 0:
+            freq = self.sl.get_ddc0_ref_freq()
+        else:
+            freq = self.sl.get_ddc1_ref_freq()
+        if freq > self.sl.fs/2:
+            freq = freq - self.sl.fs
+        # negative sign is because of the distinction between
+        # the vco freq and the lockpoint
+        x = -2*freq/self.sl.fs
+        print(f"freq={freq}, x={x}")
+
+        vertices = np.array([
+            x-1/15., 1.0,
+            x, 1.0-1/15.*2,
+            x+1/15., 1.0,
+            ], dtype=np.float32)
+
+        buf = vertices.tobytes()
+        PACKET_TYPE_TRIANGLE_STRIP = 0x1423BCDD
+        self.tx_packet(buf, PACKET_TYPE_TRIANGLE_STRIP)
 
     def plotADCorDACtimeDomain(self, samples_out, input_select):
         samples_out = self.sl.scaleADCorDACDataToVolts(samples_out, input_select)

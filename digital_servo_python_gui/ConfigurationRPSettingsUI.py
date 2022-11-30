@@ -413,14 +413,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         freq = self.sl.getDin1Freq()
         if freq is not None:
-            # this counter now counts CLK_IN vs fs_adc,
-            # and fs_adc = frep * 5/8
-            # invert this to give frep vs CLK_IN:
-            fs_vs_fr = 5/8
-            f_clkin = 10e6  # Hz, from GPSDO
-            clkin_over_fs = freq/self.sl.fs
-            fs = f_clkin/clkin_over_fs
-            freq = fs / fs_vs_fr
+
             self.frep = freq
             self.lblDinFreq.setText('Din freq     = %.8f MHz' % (freq/1e6))
             if self.client:

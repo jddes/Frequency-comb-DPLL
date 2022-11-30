@@ -1439,6 +1439,8 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				current_output_in_volts = self.sl.convertDACCountsToVolts(k, np.mean(samples_out[128:256]))
 				current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
 				self.spectrum.qthermo_dac_current[k].setValue(current_output_in_volts)
+				if k in (0, 1):
+					self.spectrum.current_output_in_hz = current_output_in_hz
 				self.spectrum.qlabel_dac_current_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 				
 				elapsed_time = time.perf_counter() - start_time
@@ -1727,7 +1729,25 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			return
 		self.raw_adc_samples = samples_out.astype(dtype=np.float)
 
-		self.spectrum.plotADCdata(input_select, plot_type, samples_out, ref_exp0)
+
+		# figure out beat sign:
+		# when open-loop, use dither sign
+		# when closed-loop, use vco sign
+		# TODO: we will also have to have the filter track the beat
+		# when open-loop, in order to get a good dither result,
+		# (it's ok if this is slightly glitchy I think)
+		# and then we'll simply put back the filter center (ddc frequency)
+		# back when the lock is about to be turned on
+
+		if self.qchk_lock.isChecked():
+			beat_sign = self.qsign_positive.isChecked()
+		else:
+			beat_sign = ((not self.qsign_positive.isChecked()) ^
+						(np.sign(self.VCO_detected_gain_in_Hz_per_Volts[self.selected_ADC]) >= 0))
+
+
+		self.spectrum.plotADCdata(input_select, plot_type,
+			samples_out, ref_exp0, beat_sign)
 
 		# Update the scale which indicates the ADC fill ratio in numbers of bits:
 		self.spectrum.updateScaleDisplays(samples_out)

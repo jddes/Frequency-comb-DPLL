@@ -1083,17 +1083,19 @@ class SuperLaserLand_JD_RP:
 
 		return (transfer_function_complex, frequency_axis)
 
-	def set_dac_to_extremum(self, dac_number, min_or_max="min"):
+	def get_dac_extremum(self, dac_number, min_or_max="min"):
 		if min_or_max == "min":
-			value = self.DACs_limit_low[dac_number]
+			return self.DACs_limit_low[dac_number]
 		elif min_or_max == "max":
-			value = self.DACs_limit_high[dac_number]
+			return self.DACs_limit_high[dac_number]
 		elif min_or_max == "mid":
-			value = (self.DACs_limit_high[dac_number] + self.DACs_limit_low[dac_number])/2
+			return (self.DACs_limit_high[dac_number] + self.DACs_limit_low[dac_number])/2
 		else:
-			print("set_dac_to_extremum(): invalid parameter '%s'" % (min_or_max))
-			return
+			print("get_dac_extremum(): invalid parameter '%s'" % (min_or_max))
+			return 0
 
+	def set_dac_to_extremum(self, dac_number, min_or_max="min"):
+		value = self.get_dac_extremum(dac_number, min_or_max)
 		self.set_dac_offset(dac_number, value)
 	
 	def set_dac_offset(self, dac_number, offset):
@@ -2208,6 +2210,16 @@ class SuperLaserLand_JD_RP:
 		# print("freq_Hz = %f Hz" % freq_Hz)
 		# with open("freq_out.bin", "ab") as f:
 		# 	f.write(struct.pack("d", freq_Hz))
+
+		# this counter now counts CLK_IN vs fs_adc,
+		# and fs_adc = frep * 5/8
+		# invert this to give frep vs CLK_IN:
+		fs_vs_fr = 5/8
+		f_clkin = 10e6  # Hz, from GPSDO
+		clkin_over_fs = freq_Hz/self.fs
+		fs = f_clkin/clkin_over_fs
+		freq_Hz = fs / fs_vs_fr
+
 		return freq_Hz
 
 	def setDout(self, Dout0, Dout1):
