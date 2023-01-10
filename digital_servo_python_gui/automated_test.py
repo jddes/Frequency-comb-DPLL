@@ -2,6 +2,7 @@ from PyQt5 import QtGui, Qt, QtCore, QtWidgets
 import sys, os, time
 import collections
 import subprocess
+import pdb
 
 import numpy as np
 
@@ -242,10 +243,15 @@ class TestController():
         print("testDinInput complete!")
 
     def setExtClkMode(self, ext_clk):
-        # For 200 MHz clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
-        f_ref          = 200e6
+        # # For 200 MHz clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+        # f_ref          = 200e6
+        # CLKFBOUT_MULT  = 5
+        # CLKOUT0_DIVIDE = 8
+
+        # For 168 MHz clock input, these settings should yield 120 MHz ADC clock, 840 MHz VCO
+        f_ref          = 168e6
         CLKFBOUT_MULT  = 5
-        CLKOUT0_DIVIDE = 8
+        CLKOUT0_DIVIDE = 7
         self.sl.setADCclockPLL(f_ref, ext_clk, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
     def quantifyPhaseLock(self, expected_phase_lock):
@@ -268,8 +274,8 @@ class TestController():
 
         dac_number = 0
         self.sl.set_dac_to_extremum(dac_number, 'mid')
-        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=dac_number,
-            output_amplitude=0.2, bEnable=True, bSquareWave=False)
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=12e6, output_select=dac_number,
+            output_amplitude=0.75, bEnable=True, bSquareWave=False)
 
         self.setExtClkMode(False)
         self.mux.selectInput("DAC0")
@@ -286,6 +292,8 @@ class TestController():
         self.quantifyPhaseLock(expected_phase_lock=False)
         print("Current state should be now be PHASE-LOCKED.")
         self.setExtClkMode(True)
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=12e6, output_select=dac_number,
+            output_amplitude=0.75, bEnable=True, bSquareWave=False)
         self.quantifyPhaseLock(expected_phase_lock=True)
 
         self.scope.setup_edge_triggering(1)
@@ -300,9 +308,10 @@ class TestController():
         self.setExtClkMode(False)
         self.mux.setOscillator(False)
         self.sl.set_dac_to_extremum(dac_number, 'min')
-        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=10e6, output_select=dac_number,
-            output_amplitude=0.2, bEnable=False, bSquareWave=False)
+        self.sl.setup_VNA_as_synthesizer(frequency_in_hz=12e6, output_select=dac_number,
+            output_amplitude=0.75, bEnable=False, bSquareWave=False)
 
+        # pdb.set_trace()
         self.print_line()
 
 

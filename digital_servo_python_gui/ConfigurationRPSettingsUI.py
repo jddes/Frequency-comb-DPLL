@@ -435,7 +435,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
             # CLKFBOUT_MULT  = 40
             # CLKOUT0_DIVIDE = 8
 
-            self.sl.setADCclockPLL(self.f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+            # For 168 MHz clock input, these settings should yield 120 MHz ADC clock, 840 MHz VCO
+            f_ref          = 168e6
+            CLKFBOUT_MULT  = 5
+            CLKOUT0_DIVIDE = 7
+            self.sl.setADCclockPLL(f_ref, True, CLKFBOUT_MULT, CLKOUT0_DIVIDE)
+
+            # self.sl.setADCclockPLL(self.f_ext, self.qradio_external_clk.isChecked(), CLKFBOUT_MULT, CLKOUT0_DIVIDE)
 
         else:
             # For 200 MHz clock (internal), these settings should yield 125 MHz ADC clock, 1000 MHz VCO
