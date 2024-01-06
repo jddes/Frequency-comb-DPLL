@@ -104,6 +104,7 @@ class ConfigWidget(QtWidgets.QWidget):
     def setHardwareType(self, bHasDDS=False):
         """ Handle various versions of the hardware changing the exact GUI that we should present to the user """
         self.bHasDDS = bHasDDS
+        print(f"self.bHasDDS={self.bHasDDS}")
         widgets_for_counter_only = [self.label_2, self.label_3, self.label_4, self.label_5, self.label_12, self.label_11,
                                     self.editExpectedFreq1, self.editExpectedFreq2, self.editExpectedFreq3, self.editExpectedFreq4]
         for w in widgets_for_counter_only:

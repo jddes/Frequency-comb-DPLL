@@ -52,7 +52,7 @@ class ChannelGUI(QtWidgets.QWidget):
         grayscale = 0.5
         pen = QtGui.QPen(QtGui.QColor(grayscale*255, grayscale*255, grayscale*255))
         pen.setCosmetic(True)
-        theta = np.linspace(0, 2*np.pi, 1e3)
+        theta = np.linspace(0, 2*np.pi, int(1e3))
         self.plot_IQ.getPlotItem().plot(np.cos(theta), np.sin(theta), pen=pen)
         self.plot_IQ.getPlotItem().plot(np.linspace(0, 1.1, 2), np.zeros(2), pen=pen)
         self.curve_IQ = self.plot_IQ.getPlotItem().plot(pen = None,

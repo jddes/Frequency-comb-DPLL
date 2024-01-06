@@ -240,8 +240,8 @@ class MainWidget(QtWidgets.QMainWindow):
                     # self.freq_sweep()
                     # self.sl.setupDither(1, 0.1, 1e3, 100e3/1e9, 1)
 
-
-                    # self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
+                    print("REMOVEME: COMMENT OUT sendHardwareDescription() after debugging phase is done, and DOCUMENT THIS TRICK!")
+                    self.sl.sendHardwareDescription(bHasMixerBoard=True, bHasDDS=True) # use this once when upgrading a given RP with extra hardware
                     self.hw_description = self.sl.getHardwareDescription()
                     # Handle various versions of the hardware changing the exact GUI that we should present to the user:
                     bHasDDS = self.hw_description.get("has_dds", False)
@@ -547,12 +547,12 @@ class MainWidget(QtWidgets.QMainWindow):
         # self.bDisplayTiming = True
         tictoc(self)
         phi = phi - phi[0]
-        phi = phi.astype(np.float) # limits accuracy to ~1e-15
+        phi = phi.astype(float)  # limits accuracy to ~1e-15
         phi = phi/2**self.sl.phaseReadoutDriver.n_bits_phase
         phi = phi/self.sl.phaseReadoutDriver.n_cycles
         # phi is now in cycles
         ts = ts - ts[0]
-        ts = ts.astype(np.float)
+        ts = ts.astype(float)
         freq = 0
         fit = np.polynomial.Polynomial.fit(ts, phi, 1)
         fit_conv = fit.convert()
@@ -670,7 +670,9 @@ class HardwareSelfTest(QtCore.QObject):
         # print([key for key in self.results[0]])
         mac_address = self.main.sl.getHardwareDescription().get("mac", "").replace(":", "")
 
-        with open("selftest_results_%s.txt"% mac_address, "w") as f:
+        fname = "selftest_results_%s.txt" % mac_address
+
+        with open(fname, "w") as f:
             f.write(header_str)
             for index, results in enumerate(self.results):
                 try:
@@ -679,6 +681,8 @@ class HardwareSelfTest(QtCore.QObject):
                     pass
 
         print("Self-test took %.0f sec\n" % (time.perf_counter()-self.start_time))
+        fullpath = os.path.join(os.getcwd(), fname)
+        print("saved to %s" % (fullpath, ))
 
     def nextFreq(self):
         """ Returns False if the test is over """
