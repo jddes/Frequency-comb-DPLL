@@ -245,11 +245,11 @@ class SuperLaserLand_JD_RP:
 
     def load_amplitude_calibration(self):
         with open("amplitude_calibration\\input_freq.bin", "rb") as f:
-            self.amplitude_cal_freq_axis = np.copy(np.frombuffer(f.read(), np.float))
+            self.amplitude_cal_freq_axis = np.copy(np.frombuffer(f.read(), float))
         with open("amplitude_calibration\\input_amplitude.bin", "rb") as f:
-            self.amplitude_cal_input_amplitude = np.copy(np.frombuffer(f.read(), np.float))
+            self.amplitude_cal_input_amplitude = np.copy(np.frombuffer(f.read(), float))
         with open("amplitude_calibration\\output_amplitude.bin", "rb") as f:
-            self.amplitude_cal_output_amplitude = np.copy(np.frombuffer(f.read(), np.float))
+            self.amplitude_cal_output_amplitude = np.copy(np.frombuffer(f.read(), float))
 
         # fix a few glitchy data points:
         self.amplitude_cal_output_amplitude[670-1] = self.amplitude_cal_output_amplitude[670-1+1]
@@ -407,9 +407,9 @@ class SuperLaserLand_JD_RP:
             if np.iscomplexobj(x):
                 x_float = x.astype(np.complex128)
             else:
-                x_float = x.astype(np.float)
+                x_float = x.astype(float)
         else: # Scalar case:
-            x_float = np.float(x)
+            x_float = float(x)
         return x_float
 
     def getADCmaxVoltage(self):
@@ -520,7 +520,7 @@ class SuperLaserLand_JD_RP:
         # See Xilinx document UG480 chapter 2 for conversion factors
         # we use 2**16 instead of 2**12 for the denominator because the codes are "MSB-aligned" in the register (equivalent to a multiplication by 2**4)
         xadc_temperature_code_to_degC    = lambda x: x*503.975/2.**16-273.15
-        time_start = time.clock()
+        time_start = time.perf_counter()
         # average 10 readings because otherwise they are quite noisy:
         # this reading loop takes just 2 ms for 10 readings at the moment so there is no real cost
         N_average = 10.
@@ -530,7 +530,7 @@ class SuperLaserLand_JD_RP:
             reg_avg += float(reg)
             
         reg_avg = float(reg_avg)/N_average
-        # print("elapsed = %f" % (time.clock()-time_start))
+        # print("elapsed = %f" % (time.perf_counter()-time_start))
         ZynqTempInDegC = xadc_temperature_code_to_degC(  reg_avg  )
         return ZynqTempInDegC
         
@@ -1010,7 +1010,7 @@ class phaseReadoutDriver():
         for channel_id in self.sl.channels_list:
             phi = data['phi%d' % channel_id]
             self.last_phi_int64[channel_id] = phi # for phase reset feature
-            phi = phi.astype(np.float)
+            phi = phi.astype(float)
             phi = phi[0]/2**self.n_bits_phase
             phi = phi/self.sl.reg_values["phase_logger_n_cycles"]
             # phi is now in cycles
@@ -1183,26 +1183,26 @@ class phaseReadoutDriver():
 if __name__ == '__main__':
     sl = SuperLaserLand_JD_RP()
     sl.dev.OpenTCPConnection("192.168.2.34")
-    sl.uart_uc_set_enable(1)
+    sl.uart_uc_set_enable(0)
     ref_freq = 25e6 # frequency connected to clk_in
     time.sleep(0.1)
-    sl.set_adf4351_freq(out_freq=40e6+15e6, ref_freq=ref_freq, chip_select=1)
+    sl.set_adf4351_freq(out_freq=40e6+15e6, ref_freq=ref_freq, channel=1)
     time.sleep(0.1)
-    sl.set_adf4351_freq(out_freq=50e6-10e6, ref_freq=ref_freq, chip_select=2)
+    sl.set_adf4351_freq(out_freq=50e6-10e6, ref_freq=ref_freq, channel=2)
     time.sleep(0.1)
     time.sleep(0.1)
-    # sl.turn_off_adf4351_channel(chip_select=1)
-    # sl.turn_off_adf4351_channel(chip_select=2)
-    # sl.turn_off_adf4351_channel(chip_select=4)
-    # sl.turn_off_adf4351_channel(chip_select=8)
+    # sl.turn_off_adf4351_channel(channel=1)
+    # sl.turn_off_adf4351_channel(channel=2)
+    # sl.turn_off_adf4351_channel(channel=4)
+    # sl.turn_off_adf4351_channel(channel=8)
 
     time.sleep(0.1)
-    sl.set_adf4351_freq(out_freq=60e6+15e6, ref_freq=ref_freq, chip_select=4)
+    sl.set_adf4351_freq(out_freq=60e6+15e6, ref_freq=ref_freq, channel=4)
     # time.sleep(0.1)
-    sl.set_adf4351_freq(out_freq=1000e6+40e6, ref_freq=ref_freq, chip_select=8)
+    sl.set_adf4351_freq(out_freq=1000e6+40e6, ref_freq=ref_freq, channel=8)
     time.sleep(0.1)
-    # sl.set_adf4351_freq(out_freq=45e6, chip_select=4)
-    # sl.set_adf4351_freq(out_freq=101e6, chip_select=8)
+    # sl.set_adf4351_freq(out_freq=45e6, channel=4)
+    # sl.set_adf4351_freq(out_freq=101e6, channel=8)
 
     readout = phaseReadoutDriver(sl.dev)
     readout.startLogging()
@@ -1211,5 +1211,5 @@ if __name__ == '__main__':
     print(data)
 
 
-    # sl.set_adf4351_freq(out_freq=130e6, chip_select=1+2+4+8)
-    # sl.set_adf4351_freq(out_freq=170e6+40e6, chip_select=8)
+    # sl.set_adf4351_freq(out_freq=130e6, channel=1+2+4+8)
+    # sl.set_adf4351_freq(out_freq=170e6+40e6, channel=8)

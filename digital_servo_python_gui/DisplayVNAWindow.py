@@ -76,7 +76,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         
         ## Wait until the transfer function measurement is finished, while updating the progress bar:
-        start_time = time.clock()
+        start_time = time.perf_counter()
         if total_wait_time > 0.1:
             # Split the wait time in chunks, updating the progress bar every time
             # TODO.
@@ -86,8 +86,8 @@ class DisplayVNAWindow(QtGui.QWidget):
 #            time.sleep(total_wait_time)
             qapp = QtGui.QApplication.instance()
             
-            while (time.clock()-start_time < total_wait_time) and self.bStop == False:
-                self.qprogress_ident.setValue(  100 * (time.clock()-start_time)/total_wait_time )
+            while (time.perf_counter()-start_time < total_wait_time) and self.bStop == False:
+                self.qprogress_ident.setValue(  100 * (time.perf_counter()-start_time)/total_wait_time )
 #                self.qprogress_ident.update()
                 self.qprogress_ident.repaint()
                 qapp.processEvents()

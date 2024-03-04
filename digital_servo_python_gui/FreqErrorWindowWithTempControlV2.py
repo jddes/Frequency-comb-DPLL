@@ -63,7 +63,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         # if self.client is None:
         #     print('Warning: no connection to temp control: {}'.format(strTitle))
             
-        self.last_update = time.clock()
+        self.last_update = time.perf_counter()
         self.initUI()
         self.openOutputFiles()
         
@@ -158,10 +158,10 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
         
 
     def openTCPConnection(self):
-        start_time = time.clock()
+        start_time = time.perf_counter()
         if self.port_number != 0:
             try:
-                time_before = time.clock()
+                time_before = time.perf_counter()
                 self.client = AsyncSocketComms.AsyncSocketClient(self.port_number)
                 self.last_update = float("-inf")
                 self.setpoint_change = 0.
@@ -169,14 +169,14 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 self.logger.info('Red_Pitaya_GUI{}: Starting temperature control on port {}'.format(self.logger_name, self.port_number))
             except Exception as e:
                 print(e)
-                time_after = time.clock()
+                time_after = time.perf_counter()
                 #print('openTCPConnection(): Time taken by AsyncSocketComms.AsyncSocketClient(): %f sec' % (time_after-time_before))
                 self.client = None
-                self.last_update = time.clock()
+                self.last_update = time.perf_counter()
                 self.setpoint_change = 0.
         else:
             self.client = None
-        end_time = time.clock()
+        end_time = time.perf_counter()
         #print('openTCPConnection(): Time taken: %f sec' % (end_time-start_time))
     
     def closeTCPConnection(self):
@@ -558,7 +558,7 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                             self.setpoint_change = -10.
                             delta_temperature = 0
                         
-                        self.last_update = time.clock()
+                        self.last_update = time.perf_counter()
 
                         try:                        
                             print('Sending a new setpoint: %f degrees' % self.setpoint_change)
@@ -706,12 +706,12 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 # Run auto recovery for DAC0
                     dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC0_output))
                     DAC0_output_voltage = DAC0_output/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
-                    dac_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])   #We want the graph scale between 0 and 1
+                    dac_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])   #We want the graph scale between 0 and 1
                     dac_mean = dac_mean/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
                     dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])*2.
 
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
-                DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(np.float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
+                DAC0_output = (DAC0_output - self.sl.DACs_limit_low[0]).astype(float)/float(self.sl.DACs_limit_high[0] - self.sl.DACs_limit_low[0])
                 # Write data to disk:
                 self.file_output_dac0.write(DAC0_output)
 
@@ -723,11 +723,11 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
                 # Run auto recovery for DAC1
                     dac_mean, dac_thrsh = self.runAutoRecover(self.output_number, np.mean(DAC1_output))
                     DAC1_output_voltage = DAC1_output/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
-                    dac_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])    #We want the graph scale between 0 and 1
+                    dac_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])    #We want the graph scale between 0 and 1
                     dac_mean = dac_mean/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
                     dac_thrsh = dac_thrsh/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
-                DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(np.float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
+                DAC1_output = (DAC1_output - self.sl.DACs_limit_low[1]).astype(float)/float(self.sl.DACs_limit_high[1] - self.sl.DACs_limit_low[1])
                 # self.checkAutoUnlock(self.output_number, DAC1_output)
                 # Write data to disk:
                 self.file_output_dac1.write(DAC1_output)
@@ -735,13 +735,13 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
             if DAC2_output is not None:
                 DAC2_output_voltage = DAC2_output/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])*2.
                 # Scale to minimum and maximum limits: 0 means minimum, 1 means maximum
-                DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(np.float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
+                DAC2_output = (DAC2_output - self.sl.DACs_limit_low[2]).astype(float)/float(self.sl.DACs_limit_high[2] - self.sl.DACs_limit_low[2])
                 # Write data to disk:
                 self.file_output_dac2.write(DAC2_output)
                 
                 if self.output_number == 1:
                     self.checkAutoUnlock(self.output_number, DAC2_output)
-                    self.runTempControlLoop(time.clock(), DAC2_output)
+                    self.runTempControlLoop(time.perf_counter(), DAC2_output)
                 
                 
                 

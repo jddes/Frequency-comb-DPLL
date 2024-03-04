@@ -496,7 +496,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				print('time_now = %f, time_target = %f' % (time_now, time_target))
 			self.sl.wait_for_write()
 			(samples_out, ref_exp0) = self.sl.read_adc_samples_from_DDR2()
-			samples_out = samples_out.astype(dtype=np.float)/2**15
+			samples_out = samples_out.astype(dtype=float)/2**15
 		except:
 			# ADC read failed.
 			print('Unhandled exception in ADC read')
@@ -1290,7 +1290,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 					samples = -samples
 					samples = np.mean(samples)
 					# np.mean() returns a numpy.float, but the conversions functions expect an ndarray
-					samples = np.ndarray((1,), dtype=np.float, buffer=samples)
+					samples = np.ndarray((1,), dtype=float, buffer=samples)
 
 					# TODO: fancier things with the real and imaginary part, to try to detect invalid readings?  Is this necessary?
 					# TODO: Compare many different readings to try to sort out any incorrect ones?
@@ -1428,7 +1428,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				elapsed_time = time.perf_counter() - start_time
 				if self.bDisplayTiming == True:
 					print('Elapsed time (read dac values) = %f ms' % (1000*elapsed_time))
-				samples_out = samples_out.astype(dtype=np.float)
+				samples_out = samples_out.astype(dtype=float)
 
 				VCO_gain_in_Hz_per_Volts = self.getVCOGainFromUI(k)
 					
@@ -1723,7 +1723,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		(samples_out, ref_exp0) = self.getADCdata(input_select, N_samples)
 		if (samples_out is None) or (ref_exp0 is None):
 			return
-		self.raw_adc_samples = samples_out.astype(dtype=np.float)
+		self.raw_adc_samples = samples_out.astype(dtype=float)
 
 		self.spectrum.plotADCdata(input_select, plot_type, samples_out, ref_exp0)
 
@@ -1761,7 +1761,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 
 			max_abs = np.max(np.abs(samples_out))
 
-			samples_out = samples_out.astype(dtype=np.float)
+			samples_out = samples_out.astype(dtype=float)
 			self.raw_adc_samples = samples_out
 				
 
