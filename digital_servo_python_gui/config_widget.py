@@ -115,6 +115,12 @@ class ConfigWidget(QtWidgets.QWidget):
             for channel_id in self.channels_list:
                 self.updateExpectedFreq(channel_id)
 
+        if bHasDDS:
+            hardware_type_string = "Detected Hardware Type: Full Closed-loop Fiber-Noise-Canceller"
+        else:
+            hardware_type_string = "Detected Hardware Type: Phase meter only (no closed-loop features)"
+        self.lblHardwareType.setText(hardware_type_string)
+
     def user_settings_changed(self, *args, **kwargs):
         self.sig_set_status.emit("commit", "Uncommitted", "bad")
         if self.editConfigFile.text() == '':

@@ -3,3 +3,4 @@ digital_servo_python_gui/out.txt
 *.pb
 *.vdb
 xvhdl.log
+digital_servo_python_gui/selftest_results_*.txt
