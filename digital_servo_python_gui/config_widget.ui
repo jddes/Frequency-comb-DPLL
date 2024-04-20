@@ -171,7 +171,7 @@
          <string>10-100 MHz</string>
         </property>
         <property name="text">
-         <string>25</string>
+         <string>10</string>
         </property>
        </widget>
       </item>
