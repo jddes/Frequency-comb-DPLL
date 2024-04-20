@@ -97,6 +97,8 @@ class MainWidget(QtWidgets.QMainWindow):
         self.config_widget.btnCommit.clicked.connect(self.commit)
         self.config_widget.btnRunSelfTest.clicked.connect(self.runSelfTest)
         self.config_widget.btnRunAmplitudeCal.clicked.connect(self.runAmplitudeCal)
+        self.config_widget.btnRunFreqSweep.clicked.connect(self.runFreqSweep)
+
         self.config_widget.sig_set_status.connect(self.setStatus)
         self.summary_tab_gui.sig_reset_phase.connect(self.reset_channel_phase)
 
@@ -303,6 +305,7 @@ class MainWidget(QtWidgets.QMainWindow):
                 self.sl.setAD9912powerState(channel_settings["channel_id"], channel_settings["DDS_output_enable"])
 
             self.setup_controller(system_settings, channel_settings) # needs to happen after setDDSclockPLL()
+
         self.sl.commit_controller_settings()
 
     def setup_controller(self, system_settings, channel_settings):
@@ -321,6 +324,13 @@ class MainWidget(QtWidgets.QMainWindow):
 
         self.emit_lock_settings(channel_settings)
 
+    def runFreqSweep(self):
+        # print(dir(self.config_widget))
+        print(self.config_widget.tabWidget.currentIndex())
+        channel = 1 + self.config_widget.tabWidget.currentIndex()
+        print(channel)
+        runFreqSweep(self, channel)
+
     def runAmplitudeCal(self):
         try:
             (system_settings, channels_settings) = self.config_widget.readConfigFromGUI()
@@ -329,7 +339,6 @@ class MainWidget(QtWidgets.QMainWindow):
         self.setStatus("other", "Running amplitude calibration routine...", 'warning')
         amplitude_calibration(self, system_settings, channels_settings)
         self.setStatus("other", "Amplitude calibration complete!", 'ok')
-
 
     def runSelfTest(self):
         self.self_test = HardwareSelfTest(self)
@@ -684,6 +693,9 @@ class HardwareSelfTest(QtCore.QObject):
         fullpath = os.path.join(os.getcwd(), fname)
         print("saved to %s" % (fullpath, ))
 
+        winsound.Beep(440, 300)
+        winsound.Beep(int(440*2**(5/12)), 1000)
+ 
     def nextFreq(self):
         """ Returns False if the test is over """
         self.freq += self.freq_step
@@ -841,6 +853,34 @@ class MyScrollArea(QtWidgets.QScrollArea):
 
     def viewportSizeHint(self):
         return QtCore.QSize(1500, 600)
+
+
+def runFreqSweep(main_widget, channel=1):
+    """ sweeps the frequency of a DDS output.
+    Useful, for example, with an RF spectrum analyzer
+    measuring the output tone, in Max Hold mode,
+    which traces out the output frequency response """
+
+    f_min = 10e6
+    f_max = 300e6
+    total_time = 100  # [s]
+    N_freqs = 1000  # [unitless]
+    w = main_widget.config_widget.controller_widgets[channel]
+
+    main_widget.self_test = HardwareSelfTest(main_widget)
+    for freq in np.linspace(10e6, 300e6, N_freqs):
+        print(freq)
+        # self.self_test.setupLock(freq)
+
+        w.editModulatorNominalFreq.setText('%.3f' % (freq/1e6))
+        w.editModulatorNominalFreq.editingFinished.emit()
+        w.chkLock.setChecked(False)
+
+        main_widget.config_widget.btnCommit.clicked.emit()
+        time.sleep(total_time / N_freqs)
+
+        # time.sleep(1)
+
 
 def amplitude_calibration(main_widget, system_settings, channels_settings):
     """ Measures received amplitude at various frequencies.
