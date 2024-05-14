@@ -7,7 +7,7 @@ Created on Fri Aug 26 00:26:50 2016
 from __future__ import print_function
 
 import sys
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 #import numpy as np
 import UDPRedPitayaDiscovery
 

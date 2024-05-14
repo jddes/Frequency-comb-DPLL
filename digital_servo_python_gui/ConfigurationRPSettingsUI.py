@@ -6,7 +6,7 @@ Description: Provides a graphical user interface (GUI) to configure the RP
 @author: Alex Tourigny-Plante
 """
 
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 #import PyQt4.Qwt5 as Qwt
 import numpy as np
 import weakref
@@ -278,7 +278,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.qedit_data = user_friendly_QLineEdit('0')
         self.qedit_data.setMaximumWidth(300)
 
-        self.qbtn_1 = QtGui.QPushButton('Read data')
+        self.qbtn_1 = QtWidgets.QPushButton('Read data')
         self.qbtn_1.clicked.connect(self.read_RP)
 
 
@@ -313,7 +313,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
         ###################################################################################
 
-        self.qbtn_reconnect = QtGui.QPushButton('Open communication menu')
+        self.qbtn_reconnect = QtWidgets.QPushButton('Open communication menu')
         self.qbtn_reconnect.clicked.connect(self.communication_menu)
 
 
@@ -408,10 +408,10 @@ class ConfigRPSettingsUI(Qt.QWidget):
 
     def center(self):
         qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         #self.move(qr.topLeft())
-        #self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
+        #self.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
 
     @logCommsErrorsAndBreakoutOfFunction()
     def setFan(self, checked=False):
@@ -423,12 +423,12 @@ class ConfigRPSettingsUI(Qt.QWidget):
         if self.qradio_external_clk.isChecked():
             # Valid VCO range is 600 MHz-1600 MHz according to DS181
 
-            CLKFBOUT_MULT  = 5
-            CLKOUT0_DIVIDE = 8
+            # CLKFBOUT_MULT  = 5
+            # CLKOUT0_DIVIDE = 8
             # # For self.f_ext=200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
 
-            # CLKFBOUT_MULT  = 62
-            # CLKOUT0_DIVIDE = 5
+            CLKFBOUT_MULT  = 62
+            CLKOUT0_DIVIDE = 5
             # For self.f_ext=10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
 
             # # For self.f_ext=25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO

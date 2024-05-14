@@ -4,14 +4,14 @@
 
 
 
-#from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+#from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 ##import PyQt5.Qwt5 as Qwt
 #import numpy as np
 import sys
 
 
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
-#from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
+#from PyQt5 import QtWidgets, QtGui, Qt
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 

@@ -1,6 +1,6 @@
 from __future__ import print_function
 import time
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
@@ -23,7 +23,7 @@ def round_to_N_sig_figs(x, Nsigfigs):
     return np.round(x * factor)/factor
 
 
-class SpectrumWidget(QtGui.QWidget):
+class SpectrumWidget(QtWidgets.QWidget):
     def __init__(self, parent, selected_ADC, output_controls, sl, PalNormal=None):
         super(SpectrumWidget, self).__init__()
 
@@ -128,7 +128,7 @@ class SpectrumWidget(QtGui.QWidget):
                 
                 # Units are millionth of the full range available between the min and max DAC value
                 self.q_dac_offset[k].setMinimum(0)
-                self.q_dac_offset[k].setMaximum(1e6)
+                self.q_dac_offset[k].setMaximum(int(1e6))
 
         
                 self.qlabel_dac_current_value[k] = Qt.QLabel('0 V')
@@ -220,7 +220,7 @@ class SpectrumWidget(QtGui.QWidget):
         self.curve_filter = self.plt_spc.getPlotItem().plot(pen='r')
         
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setSpacing(5)
         grid.addWidget(self.qlabel_adc_fill,        0, 0)
         grid.addWidget(self.qadc0_scale,            1, 0, 3, 1)
@@ -289,7 +289,7 @@ class SpectrumWidget(QtGui.QWidget):
 
     def setDacOffset(self, k, slider_units):
         self.q_dac_offset[k].blockSignals(True)
-        self.q_dac_offset[k].setValue(slider_units)
+        self.q_dac_offset[k].setValue(int(slider_units))
         self.q_dac_offset[k].blockSignals(False)
 
     # Update the scale which indicates the ADC fill ratio in numbers of bits:
@@ -579,7 +579,7 @@ class SpectrumWidget(QtGui.QWidget):
                 q_dac_offset = float(counts_offset-self.sl.DACs_limit_low[k])*1e6/float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])
 
                 self.q_dac_offset[k].blockSignals(True)
-                self.q_dac_offset[k].setValue(q_dac_offset)
+                self.q_dac_offset[k].setValue(int(q_dac_offset))
                 self.q_dac_offset[k].blockSignals(False)
 
                 VCO_gain_in_Hz_per_Volts = self.parent.getVCOGainFromUI(k)
@@ -612,8 +612,8 @@ class SpectrumWidget(QtGui.QWidget):
         if large_step > 1e6:
             large_step = 1e6
 
-        self.q_dac_offset[output_number].setSingleStep(small_step)
-        self.q_dac_offset[output_number].setPageStep(large_step)
+        self.q_dac_offset[output_number].setSingleStep(int(small_step))
+        self.q_dac_offset[output_number].setPageStep(int(large_step))
 
 
 

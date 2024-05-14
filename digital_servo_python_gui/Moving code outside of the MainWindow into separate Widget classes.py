@@ -75,7 +75,7 @@ self.qgroupbox_diagnostics
 
 
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.setSpacing(5)
         grid.addWidget(self.qlabel_adc_fill,        0, 0)
         grid.addWidget(self.qadc0_scale,            1, 0, 3, 1)

@@ -818,7 +818,21 @@ red_pitaya_hk i_hk (
 assign exp_n_dir[8-1:0] = {8'b00111111};  // pins 0-5 set as outputs, the rest as inputs
 assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest as inputs
 
-assign exp_n_out[2] = osc_output;
+
+// update 2024-05-14 to protect against loss of clock
+// potentially leaving the osc_output high:
+wire osc_output_protected;
+
+duty_cycle_protector duty_cycle_protector_inst # (
+    .MAX_CYCLES_ON(1000),
+    .TIMEOUT_CYCLES_LOG2(20),
+) port map (
+    clk            => sys_clk,
+    clk_under_test => osc_output,
+    clk_gated      => osc_output_protected
+);
+
+assign exp_n_out[2] = osc_output_protected;
 assign exp_n_out[5] = gpios_out[0];   // GPIO set as output for the moment, controlled via a PC-accessible register
 //assign exp_n_out[3] = gpios_out[1];   // GPIO set as output for the moment, controlled via a PC-accessible register
 assign exp_p_out[3] = gpios_out[1];   // GPIO set as output for the moment, controlled via a PC-accessible register

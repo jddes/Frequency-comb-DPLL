@@ -6,7 +6,7 @@ by JD Deschenes, August 2019
 """
 from __future__ import print_function
 import sys
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 import numpy as np
 import pytest
 

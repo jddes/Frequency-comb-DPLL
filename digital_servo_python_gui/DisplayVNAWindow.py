@@ -6,7 +6,7 @@ by JD Deschenes, October 2013
 from __future__ import print_function
 
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 
@@ -17,7 +17,7 @@ import weakref
 
 import sys # only used for sys.stdout.flush() because Syper's console sometimes doesn't show all print() outputs before crashing...
 
-class DisplayVNAWindow(QtGui.QWidget):
+class DisplayVNAWindow(QtWidgets.QWidget):
     number_of_windows = 0   # Number of results windows we have opened
     response_windows = {}   # Dictionary which contains references to each results window
     
@@ -66,10 +66,10 @@ class DisplayVNAWindow(QtGui.QWidget):
         
         # If the wait time is to be > 1 minute, then give the chance to the user to cancel the action
         if total_wait_time > 60:
-            reply = QtGui.QMessageBox.question(self, 'Long operation',
-                'Warning! The requested identification will take %.1f minute(s), are you sure you want to continue?' % (total_wait_time/60), QtGui.QMessageBox.Yes | 
-                QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-            if reply == QtGui.QMessageBox.No:
+            reply = QtWidgets.QMessageBox.question(self, 'Long operation',
+                'Warning! The requested identification will take %.1f minute(s), are you sure you want to continue?' % (total_wait_time/60), QtWidgets.QMessageBox.Yes | 
+                QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            if reply == QtWidgets.QMessageBox.No:
                 self.sl.bDDR2InUse = False
                 return
             
@@ -285,16 +285,16 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qcombo_transfer_input = Qt.QComboBox()
         self.qcombo_transfer_input.addItems(['ADC 0', 'ADC 1', 'DDC 0', 'DDC 1'])
         self.qcombo_transfer_input.setCurrentIndex(2)
-#        transfer_input_label.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-#        self.qcombo_transfer_input.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        transfer_input_label.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+#        self.qcombo_transfer_input.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         # Output select
         transfer_output_label = Qt.QLabel('Output:')
         self.qcombo_transfer_output = Qt.QComboBox()
         self.qcombo_transfer_output.addItems(['DAC 0', 'DAC 1', 'DAC 2'])
         self.qcombo_transfer_output.setCurrentIndex(0)
-#        transfer_output_label.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-#        self.qcombo_transfer_output.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        transfer_output_label.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+#        self.qcombo_transfer_output.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         # 
         settling_time_label = Qt.QLabel('System settling time [s]:')
@@ -302,40 +302,40 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qedit_settling_time.setMaximumWidth(60)
         self.qedit_settling_time.editingFinished.connect(self.updateIntegrationTime)
         
-#        settling_time_label.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-#        self.qedit_settling_time.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        settling_time_label.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+#        self.qedit_settling_time.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         freq_start_label = Qt.QLabel('Freq start [Hz]:')
         self.qedit_freq_start = Qt.QLineEdit('10e3')
         self.qedit_freq_start.setMaximumWidth(60)
         self.qedit_freq_start.editingFinished.connect(self.updateIntegrationTime)
-#        freq_start_label.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-#        self.qedit_freq_start.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        freq_start_label.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+#        self.qedit_freq_start.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         freq_end_label = Qt.QLabel('Freq end [Hz]:')
         self.qedit_freq_end = Qt.QLineEdit('2e6')
         self.qedit_freq_end.setMaximumWidth(60)
-#        self.qedit_freq_end.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        self.qedit_freq_end.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         freq_number_label = Qt.QLabel('Number of freq [max 3276]:')
         self.qedit_freq_number = Qt.QLineEdit('160')
         self.qedit_freq_number.setMaximumWidth(60)
-#        self.qedit_freq_number.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        self.qedit_freq_number.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         amplitude_label = Qt.QLabel('Modulation amplitude [0-1]:')
         self.qedit_output_amplitude = Qt.QLineEdit('0.01')
         self.qedit_output_amplitude.setMaximumWidth(60)
-#        self.qedit_output_amplitude.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        self.qedit_output_amplitude.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         self.qlbl_integration_time = Qt.QLabel('Integration time per freq [s]: ')
         self.updateIntegrationTime()
         
         # Button which triggers the system identification
-        self.qbtn_ident = QtGui.QPushButton('Run identification')
+        self.qbtn_ident = QtWidgets.QPushButton('Run identification')
         self.qbtn_ident.clicked.connect(self.runSytemIdentification)
-#        self.qbtn_ident.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        self.qbtn_ident.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
-        self.qbtn_stop_ident = QtGui.QPushButton('Stop identification')
+        self.qbtn_stop_ident = QtWidgets.QPushButton('Stop identification')
         self.qbtn_stop_ident.clicked.connect(self.stopClicked)
         
         
@@ -343,7 +343,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qprogress_ident = Qt.QProgressBar()
         self.qprogress_ident.setTextVisible(False)
         self.qprogress_ident.setValue(0)
-#        self.qprogress_ident.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+#        self.qprogress_ident.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         
         # Controls for the synth mode:        
         # Needs: output select, frequency, amplitude, Square/Sine select, synth on/off
@@ -383,13 +383,13 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qradio_squarewave.clicked.connect(self.synthClicked)
         
         # On/Off button
-        self.qbtn_use_as_synth = QtGui.QPushButton('Activate synth')
+        self.qbtn_use_as_synth = QtWidgets.QPushButton('Activate synth')
         self.qbtn_use_as_synth.clicked.connect(self.synthClicked)
         self.qbtn_use_as_synth.setCheckable(True)
         
         
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         
         grid.addWidget(self.synth_output_label,            0, 0)
         grid.addWidget(self.qcombo_synth_output,           0, 1)
@@ -412,7 +412,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.qedit_osc_freq = Qt.QLineEdit('200e3')
         self.qedit_osc_freq.textChanged.connect(self.oscClicked)
         # On/Off button
-        self.qbtn_osc = QtGui.QPushButton('Activate output')
+        self.qbtn_osc = QtWidgets.QPushButton('Activate output')
         self.qbtn_osc.setCheckable(True)
         self.qbtn_osc.setChecked(True)
         self.qbtn_osc.clicked.connect(self.oscClicked)
@@ -426,12 +426,12 @@ class DisplayVNAWindow(QtGui.QWidget):
         self.q_osc_duty_cyle.setOrientation(Qt.Qt.Horizontal)
         # Units are millionth of the full range available
         self.q_osc_duty_cyle.setMinimum(0)
-        self.q_osc_duty_cyle.setMaximum(1e6)
+        self.q_osc_duty_cyle.setMaximum(int(1e6))
 
-        self.q_osc_duty_cyle.setSingleStep(1e6/100./3.)
-        self.q_osc_duty_cyle.setPageStep(1e6/10.)
+        self.q_osc_duty_cyle.setSingleStep(int(1e6/100./3.))
+        self.q_osc_duty_cyle.setPageStep(int(1e6/10.))
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         grid.addWidget(self.qlbl_osc_freq, 0, 0)
         grid.addWidget(self.qedit_osc_freq, 0, 1)
         grid.addWidget(self.qbtn_osc, 1, 0, 1, 2)
@@ -443,7 +443,7 @@ class DisplayVNAWindow(QtGui.QWidget):
 
         
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         
         grid.addWidget(transfer_input_label, 0, 0)
         grid.addWidget(self.qcombo_transfer_input, 0, 1)
@@ -474,7 +474,7 @@ class DisplayVNAWindow(QtGui.QWidget):
         # vbox.addWidget(self.qgroupbox_test_osc)
 
         # Spacer which takes up the rest of the space:
-        spacerItem = QtGui.QSpacerItem(1, 1, QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(1, 1, QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Expanding)
         vbox.addItem(spacerItem)
 
         self.setLayout(vbox)
@@ -491,10 +491,10 @@ class DisplayVNAWindow(QtGui.QWidget):
     def center(self):
         
         qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
 #        self.move(qr.topLeft())
-        self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
+        self.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
         
 
     def oscClicked(self):

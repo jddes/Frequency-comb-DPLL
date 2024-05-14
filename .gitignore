@@ -13,3 +13,5 @@ Firmware Vivado Project/redpitaya.xpr
 digital_servo_python_gui/freq_out.bin
 *.vdb
 *.pb
+*.bin
+xvhdl.log

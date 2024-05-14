@@ -6,7 +6,7 @@ by JD Deschenes, October 2013
 from __future__ import print_function
 
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 import numpy as np
 
 import weakref
@@ -14,7 +14,7 @@ import weakref
 #from DisplayTransferFunctionWindow import DisplayTransferFunctionWindow
 
 
-class DisplayDitherSettingsWindow(QtGui.QWidget):
+class DisplayDitherSettingsWindow(QtWidgets.QWidget):
 		
 	def __init__(self, sl, sp, output_number, modulation_frequency_in_hz=1e3, output_amplitude=1e-4, integration_time_in_seconds=0.1, bEnableDither=0, custom_style_sheet=''):
 		super(DisplayDitherSettingsWindow, self).__init__()
@@ -198,15 +198,15 @@ class DisplayDitherSettingsWindow(QtGui.QWidget):
 		
 		
 #        # On/Off button
-#        self.qbtn_dither = QtGui.QPushButton('Activate dither')
+#        self.qbtn_dither = QtWidgets.QPushButton('Activate dither')
 #        self.qbtn_dither.clicked.connect(self.ditherClicked)
 #        self.qbtn_dither.setCheckable(True)
 #        self.qbtn_dither.setChecked(bool(bEnableDither))
 		
 		# Mode select button (Automatic, Manual Off, Manual On)
-		self.qchk_mode_auto = QtGui.QRadioButton('Automatic')
-		self.qchk_mode_manual_off = QtGui.QRadioButton('Manual Off')
-		self.qchk_mode_manual_on = QtGui.QRadioButton('Manual On')
+		self.qchk_mode_auto = QtWidgets.QRadioButton('Automatic')
+		self.qchk_mode_manual_off = QtWidgets.QRadioButton('Manual Off')
+		self.qchk_mode_manual_on = QtWidgets.QRadioButton('Manual On')
 		qbtn_group = Qt.QButtonGroup()
 		qbtn_group.addButton(self.qchk_mode_auto)
 		qbtn_group.addButton(self.qchk_mode_manual_off)
@@ -217,7 +217,7 @@ class DisplayDitherSettingsWindow(QtGui.QWidget):
 		self.qchk_mode_manual_on.clicked.connect(self.ditherClicked)
 		
 		# Put all the widgets into a grid layout
-		grid = QtGui.QGridLayout()
+		grid = QtWidgets.QGridLayout()
 		
 		grid.addWidget(self.qedit_freq_label,               0, 0)
 		grid.addWidget(self.qedit_dither_freq,              0, 1)
@@ -248,10 +248,10 @@ class DisplayDitherSettingsWindow(QtGui.QWidget):
 	def center(self):
 		
 		qr = self.frameGeometry()
-		cp = QtGui.QDesktopWidget().availableGeometry().center()
+		cp = QtWidgets.QDesktopWidget().availableGeometry().center()
 		qr.moveCenter(cp)
 #        self.move(qr.topLeft())
-#        self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
+#        self.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
 		
 
 		

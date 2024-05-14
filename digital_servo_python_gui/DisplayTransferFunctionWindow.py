@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import sys
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
@@ -20,7 +20,7 @@ import pyqtgraph as pg
 
 import common # For make_sure_path_exists()
 
-class DisplayTransferFunctionWindow(QtGui.QWidget):
+class DisplayTransferFunctionWindow(QtWidgets.QWidget):
 
         
     def __init__(self, window_number):
@@ -369,11 +369,11 @@ class DisplayTransferFunctionWindow(QtGui.QWidget):
     def center(self):
         
         qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
 #        print()
 #        5435sdfsf
         qr.moveCenter(cp)
-        self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800+100, 50))
+        self.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800+100, 50))
         
     def timerEvent(self, e):
         

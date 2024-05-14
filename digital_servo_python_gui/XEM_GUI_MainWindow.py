@@ -5,7 +5,7 @@ by JD Deschenes, October 2013
 """
 from __future__ import print_function
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
@@ -108,7 +108,7 @@ def smooth(x,window_len=11,window='hanning'):
 
 
 
-class XEM_GUI_MainWindow(QtGui.QWidget):
+class XEM_GUI_MainWindow(QtWidgets.QWidget):
 
 	display_phase = 0 # used to refresh the phase noise plot only once every N refresh cycles
 	VCO_detected_gain_in_Hz_per_Volts = [1, 1, 1]
@@ -419,14 +419,14 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 			return
 			
 		# Ask which input to use:
-		currentSelector, ok = QtGui.QInputDialog.getItem(self, 'Raw data export', 
+		currentSelector, ok = QtWidgets.QInputDialog.getItem(self, 'Raw data export', 
 			'Select the data source:', ('ADC0', 'ADC1', 'DAC0', 'DAC1', 'DAC2'))
 		if not ok:
 			return
 		currentSelector = str(currentSelector)
 			
 		# Ask how many points:
-		N_points_str, ok = QtGui.QInputDialog.getText(self, 'Raw data export', 
+		N_points_str, ok = QtWidgets.QInputDialog.getText(self, 'Raw data export', 
 			'Enter the number of points desired [1, 32768]:', Qt.QLineEdit.Normal, '32768')
 		if not ok:
 			return
@@ -519,11 +519,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# First check if sign is right:
 				if np.sign(self.VCO_detected_gain_in_Hz_per_Volts[self.selected_ADC]) != np.sign(VCO_gain_in_Hz_per_Volts):
 					# Display warning message.
-					reply = QtGui.QMessageBox.question(self, 'Warning',
+					reply = QtWidgets.QMessageBox.question(self, 'Warning',
 								"The detected VCO gain is negative.  This will most likely make the loop unstable.  This is either caused by trying to lock to an incorrect sideband, or an incorrect setting of the VCO sign in the UI.  Do you want to turn on the lock anyway?",
-								QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+								QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
 					
-					if reply == QtGui.QMessageBox.No:
+					if reply == QtWidgets.QMessageBox.No:
 						# Exit early
 						self.qchk_lock.setChecked(False)
 						return 
@@ -533,11 +533,11 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 				# Now we check if the magnitude of the entered VCO gain and the detected gain agree within some tolerance:
 				if self.VCO_detected_gain_in_Hz_per_Volts[self.selected_ADC]/VCO_gain_in_Hz_per_Volts > 1.5 or self.VCO_detected_gain_in_Hz_per_Volts[self.selected_ADC]/VCO_gain_in_Hz_per_Volts < 1/1.5:
 					# Display warning message.
-					reply = QtGui.QMessageBox.question(self, 'Warning',
+					reply = QtWidgets.QMessageBox.question(self, 'Warning',
 								"The detected VCO gain (%.2e Hz/V) has a significantly different magnitude than the entered value used for designing the controller (%.2e Hz/V).  This may make the loop unstable.  Do you want to turn on the lock anyway?" % (self.VCO_detected_gain_in_Hz_per_Volts[self.selected_ADC], VCO_gain_in_Hz_per_Volts),
-								QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+								QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
 					
-					if reply == QtGui.QMessageBox.No:
+					if reply == QtWidgets.QMessageBox.No:
 						# Exit early
 						self.qchk_lock.setChecked(False)
 						return
@@ -703,7 +703,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Darken the background of the dialog slightly
 		darker_factor = 0.5
 		PalDarkerBackground = Qt.QPalette()
-		PalDarkerBackground.setColor(Qt.QPalette.Background, Qt.QColor(normalBackgroundRGB[0]*darker_factor, normalBackgroundRGB[1]*darker_factor, normalBackgroundRGB[2]*darker_factor))
+		PalDarkerBackground.setColor(Qt.QPalette.Background, Qt.QColor(int(normalBackgroundRGB[0]*darker_factor), int(normalBackgroundRGB[1]*darker_factor), int(normalBackgroundRGB[2]*darker_factor)))
 #        PalDarkerBackground.setColor(Qt.QPalette.Background, Qt.QColor(255, 255, 255))
 		self.setPalette(PalDarkerBackground)
 		self.setAutoFillBackground(True)
@@ -718,15 +718,15 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		self.qgroupbox_settings = Qt.QGroupBox('Settings', self)
 		
 		# Button which exports the data to the disk
-		self.qbtn = QtGui.QPushButton('Export PSD data')
+		self.qbtn = QtWidgets.QPushButton('Export PSD data')
 		self.qbtn.clicked.connect(self.exportData)
 		
 		# Button which grabs a single acquisition from the DDR memory and exports the data to the disk
-		self.qbtn_grab = QtGui.QPushButton('Export ADC data')
+		self.qbtn_grab = QtWidgets.QPushButton('Export ADC data')
 		self.qbtn_grab.clicked.connect(self.grabAndExportData)
 		
 		# Button which opens the VNA window:
-		self.qbtn_VNA = QtGui.QPushButton('Transfer function')
+		self.qbtn_VNA = QtWidgets.QPushButton('Transfer function')
 		self.qbtn_VNA.clicked.connect(self.showVNA)
 		
 		# VCO modulation gain:
@@ -822,7 +822,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		
 		
 		# Put all the widgets into a grid layout
-		grid = QtGui.QGridLayout()
+		grid = QtWidgets.QGridLayout()
 		grid.setHorizontalSpacing(10)
 		grid.setVerticalSpacing(1)
 		
@@ -1165,10 +1165,10 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def center(self):
 		
 		qr = self.frameGeometry()
-		cp = QtGui.QDesktopWidget().availableGeometry().center()
+		cp = QtWidgets.QDesktopWidget().availableGeometry().center()
 		qr.moveCenter(cp)
 #        self.move(qr.topLeft())
-		self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(10, 10))
+		self.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(10, 10))
 		
 
 		
@@ -1217,12 +1217,12 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 	def closeEvent(self, event):
 		# from http://stackoverflow.com/questions/1414781/prompt-on-exit-in-pyqt-application
 #        quit_msg = "Are you sure you want to exit the program?"
-#        reply = QtGui.QMessageBox.question(self, 'Message', 
-#                         quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+#        reply = QtWidgets.QMessageBox.question(self, 'Message', 
+#                         quit_msg, QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
 #        
 #        print(event)
 #        
-#        if reply == QtGui.QMessageBox.Yes:
+#        if reply == QtWidgets.QMessageBox.Yes:
 #            event.accept()
 #            app = Qt.QApplication.instance()
 #            app.closeAllWindows()

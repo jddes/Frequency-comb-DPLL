@@ -7,12 +7,12 @@ Created on Mon Dec 16 09:51:07 2013
 from __future__ import print_function
 
 import sys
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 #import numpy as np
 import visa
 import time
 
-class PythonSoup(QtGui.QDialog):
+class PythonSoup(QtWidgets.QDialog):
     
     def __init__(self, counter0_visa_address='GPIB0::9::INSTR', counter1_visa_address='GPIB0::3::INSTR'):
         super(PythonSoup, self).__init__()

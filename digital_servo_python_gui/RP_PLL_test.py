@@ -1,4 +1,4 @@
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 import sys
 import os
 import time

@@ -6,7 +6,7 @@ Description: Provides a graphical user interface (GUI) for setting the loop filt
 @author: JD Deschenes
 """
 from __future__ import print_function
-from PyQt5 import QtGui, Qt, QtCore
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 import numpy as np
 import weakref
 

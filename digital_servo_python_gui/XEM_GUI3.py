@@ -8,7 +8,7 @@ by JD Deschenes, October 2013
 """
 from __future__ import print_function
 import sys
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 import numpy as np
 
 import time
@@ -186,18 +186,18 @@ class controller(object):
 		self.main_windows.setStyleSheet(custom_style_sheet)
 		
 		
-		tabs = QtGui.QTabWidget()
+		tabs = QtWidgets.QTabWidget()
 
 		tabs.addTab(self.xem_gui_mainwindow, "CEO Lock")
 		tabs.addTab(self.xem_gui_mainwindow2, "Optical Lock")
 		tabs.addTab(self.counters_window, "Counters")
 		tabs.addTab(self.settings_window, "Settings")
-		box = QtGui.QHBoxLayout()
+		box = QtWidgets.QHBoxLayout()
 		box.addWidget(tabs)
 		self.main_windows.setLayout(box)
 		self.main_windows.setWindowTitle(custom_shorthand)
-		#self.main_windows.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(945-300, 0))
-		self.main_windows.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800-300, 0))
+		#self.main_windows.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(945-300, 0))
+		self.main_windows.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(800-300, 0))
 		
 		
 		APPID = u'TITLE'

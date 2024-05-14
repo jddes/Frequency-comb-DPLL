@@ -6,7 +6,7 @@ by JD Deschenes, October 2013
 from __future__ import print_function
 
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 import numpy as np
 
 import weakref
@@ -15,7 +15,7 @@ from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 #from DisplayTransferFunctionWindow import DisplayTransferFunctionWindow
 
 
-class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
+class DisplayDividerAndResidualsStreamingSettingsWindow(QtWidgets.QWidget):
 		
 	def __init__(self, sl, sp, clk_divider_modulus=67e3, bDividerOn=0, bPulses=0, custom_style_sheet='', custom_shorthand=''):
 		super(DisplayDividerAndResidualsStreamingSettingsWindow, self).__init__()
@@ -266,7 +266,7 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 		
 		
 		# Put all the widgets into a grid layout
-		grid = QtGui.QGridLayout()
+		grid = QtWidgets.QGridLayout()
 		
 		
 		grid.addWidget(self.qlbl_ddc0,                0, 0)
@@ -313,10 +313,10 @@ class DisplayDividerAndResidualsStreamingSettingsWindow(QtGui.QWidget):
 			
 	def center(self):
 		qr = self.frameGeometry()
-		cp = QtGui.QDesktopWidget().availableGeometry().center()
+		cp = QtWidgets.QDesktopWidget().availableGeometry().center()
 		qr.moveCenter(cp)
 #        self.move(qr.topLeft())
-#        self.move(QtGui.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
+#        self.move(QtWidgets.QDesktopWidget().availableGeometry().topLeft() + Qt.QPoint(50, 50))
 		
 
 		

@@ -3,7 +3,7 @@
 """
 
 import sys
-from PyQt5 import QtGui, Qt, QtCore
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 
 class user_friendly_QLineEdit(Qt.QLineEdit):
 

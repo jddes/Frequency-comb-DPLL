@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, Qt, QtGui, uic
+from PyQt5 import QtWidgets, QtCore, Qt, QtGui, uic
 import sys
 import time
 
@@ -8,7 +8,7 @@ import pyqtgraph as pg
 import math
 
 
-class DataLoggingDisplayWidget(QtGui.QWidget):
+class DataLoggingDisplayWidget(QtWidgets.QWidget):
     def __init__(self, parent=None, numPlots=1, numCurvesPerPlot=1):
         super(DataLoggingDisplayWidget, self).__init__(parent)
 
@@ -89,7 +89,7 @@ class DataLoggingDisplayWidget(QtGui.QWidget):
                 self.curvesList.append(list())
                 # create our pen: (TODO)
                 (penR, penG, penB) = colors_list[k2 % numColors]
-                pen = QtGui.QPen(QtGui.QColor(penR*255, penG*255, penB*255))
+                pen = QtGui.QPen(QtGui.QColor(int(penR*255), int(penG*255), int(penB*255)))
                 pen.setCosmetic(True)
                 self.curvesList[k2].append(self.pltItemsList[-1].plot(pen=pen))
 

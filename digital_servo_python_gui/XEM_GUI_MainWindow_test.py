@@ -1,6 +1,6 @@
 import pytest
 import sys
-from PyQt5 import QtGui, Qt, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 import numpy as np
 
 from SuperLaserLand_JD_RP import SuperLaserLand_JD_RP
@@ -435,8 +435,8 @@ def test_getVCOFreq_with_exception():
 # @pytest.mark.skiptest
 def test_grabAndExportData():
     # override some GUI stuff:
-    QtGui.QInputDialog.getItem = lambda *args, **kwargs : ('ADC0', True)
-    QtGui.QInputDialog.getText = lambda *args, **kwargs : ('1e3', True)
+    QtWidgets.QInputDialog.getItem = lambda *args, **kwargs : ('ADC0', True)
+    QtWidgets.QInputDialog.getText = lambda *args, **kwargs : ('1e3', True)
 
     class SuperLaserLand_JD_RP_mock(SuperLaserLand_JD_RP):
         def __init__(self):
@@ -463,8 +463,8 @@ def test_grabAndExportData():
 # @pytest.mark.skiptest
 def test_grabAndExportData_with_exception():
     # override some GUI stuff:
-    QtGui.QInputDialog.getItem = lambda *args, **kwargs : ('ADC0', True)
-    QtGui.QInputDialog.getText = lambda *args, **kwargs : ('1e3', True)
+    QtWidgets.QInputDialog.getItem = lambda *args, **kwargs : ('ADC0', True)
+    QtWidgets.QInputDialog.getText = lambda *args, **kwargs : ('1e3', True)
 
     class SuperLaserLand_JD_RP_mock(SuperLaserLand_JD_RP):
         def __init__(self):

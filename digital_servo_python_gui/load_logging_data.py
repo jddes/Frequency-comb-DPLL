@@ -7,7 +7,7 @@ Created on Mon Apr 14 11:46:04 2014
 from __future__ import print_function
 
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtWidgets, QtGui, Qt
 import numpy as np
 import sys
 
@@ -30,7 +30,7 @@ app = QtGui.QApplication(sys.argv)
 # Show a dialog to select which log to look at:
 
 print(strFolder)
-strFileName = QtGui.QFileDialog.getOpenFileName(None, 'Open file', strFolder)
+strFileName = QtWidgets.QFileDialog.getOpenFileName(None, 'Open file', strFolder)
 strFileName = str(strFileName)
 print(strFileName)
 if strFileName == '':

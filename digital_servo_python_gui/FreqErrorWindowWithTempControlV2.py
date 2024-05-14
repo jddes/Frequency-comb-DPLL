@@ -8,7 +8,7 @@ from __future__ import print_function
 import os
 import sys
 import time
-from PyQt5 import QtGui, Qt, QtCore
+from PyQt5 import QtWidgets, QtGui, Qt, QtCore
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
@@ -29,7 +29,7 @@ import logging
 from SocketErrorLogger import logCommsErrorsAndBreakoutOfFunction
 import common
 
-class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
+class FreqErrorWindowWithTempControlV2(QtWidgets.QWidget):
 
     def __init__(self, sl, strTitle, sp, output_number=0, strNameTemplate='', custom_style_sheet='', port_number=0, xem_gui_mainwindow=0):
         super(FreqErrorWindowWithTempControlV2, self).__init__()
@@ -314,12 +314,12 @@ class FreqErrorWindowWithTempControlV2(QtGui.QWidget):
 
         
         # Put the two graphs into a vertical box layout, so that they share all the vertical space equally:
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         vbox.addWidget(self.qplt_freq)
         vbox.addWidget(self.qplt_dac)
         
         # Put all the widgets into a grid layout
-        grid = QtGui.QGridLayout()        
+        grid = QtWidgets.QGridLayout()        
         grid.addLayout(vbox,                                0, 2, 16, 1)
         
         grid.addWidget(self.qbtn_reset,                     0, 0, 1, 2)
