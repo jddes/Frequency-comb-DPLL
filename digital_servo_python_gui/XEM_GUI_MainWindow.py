@@ -703,7 +703,7 @@ class XEM_GUI_MainWindow(QtGui.QWidget):
 		# Darken the background of the dialog slightly
 		darker_factor = 0.5
 		PalDarkerBackground = Qt.QPalette()
-		PalDarkerBackground.setColor(Qt.QPalette.Background, Qt.QColor(normalBackgroundRGB[0]*darker_factor, normalBackgroundRGB[1]*darker_factor, normalBackgroundRGB[2]*darker_factor))
+		PalDarkerBackground.setColor(Qt.QPalette.Background, Qt.QColor(int(normalBackgroundRGB[0]*darker_factor), int(normalBackgroundRGB[1]*darker_factor), int(normalBackgroundRGB[2]*darker_factor)))
 #        PalDarkerBackground.setColor(Qt.QPalette.Background, Qt.QColor(255, 255, 255))
 		self.setPalette(PalDarkerBackground)
 		self.setAutoFillBackground(True)
