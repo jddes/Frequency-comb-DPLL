@@ -7,7 +7,7 @@ from __future__ import print_function
 
 import sys
 import time
-from PyQt5 import QtGui, Qt
+from PyQt5 import QtGui, Qt, QtWidgets
 #import PyQt5.Qwt5 as Qwt
 import numpy as np
 import math
@@ -21,6 +21,11 @@ import errno
 
 # stuff for Python 3 port
 import pyqtgraph as pg
+
+import common # For make_sure_path_exists()
+import fix_pyqt5_compatibility
+
+QtGui = fix_pyqt5_compatibility.fix_pyqt5_compatibility(QtGui, QtWidgets)
 
 class DisplayTransferFunctionWindow(QtGui.QWidget):
 
