@@ -57,7 +57,7 @@ class SpectrumWidget(QtGui.QWidget):
         #self.qadc0_scale.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
         self.qadc0_scale.setRange(0, 16)
         #self.qadc0_scale.setScale(0, 16)
-        self.qadc0_scale.setValue(0)
+        self.qadc0_scale.setValue(int(0))
         self.qadc0_scale.setFillColor(Qt.Qt.blue)
         ticksListMajor = [0, 5, 10, 15]
         ticksListMinor = [2.5, 7.5, 12.5]
@@ -75,7 +75,7 @@ class SpectrumWidget(QtGui.QWidget):
         #self.qthermo_baseband_snr.setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
         self.qthermo_baseband_snr.setRange(0, 50)
         self.qthermo_baseband_snr.setScale(0, 50)
-        self.qthermo_baseband_snr.setValue(0)
+        self.qthermo_baseband_snr.setValue(int(0))
         self.qthermo_baseband_snr.setFillColor(Qt.Qt.blue)
         ticksListMajor = [0, 10, 20, 30, 40, 50]
         ticksListMinor = [5, 15, 25, 35, 45]
@@ -105,7 +105,7 @@ class SpectrumWidget(QtGui.QWidget):
                 self.qlabel_dac_current[k].setAlignment(Qt.Qt.AlignHCenter)
                 
                 #self.qthermo_dac_current[k].setOrientation(Qt.Qt.Vertical, Qwt.QwtThermo.LeftScale)
-                self.qthermo_dac_current[k].setValue(0)
+                self.qthermo_dac_current[k].setValue(int(0))
                 #self.qthermo_dac_current[k].setFillBrush(Qt.QBrush(Qt.QColor(0, 186, 52)))
                 self.qthermo_dac_current[k].setFillColor(Qt.QColor(0, 186, 52))
                 if k == 2:
@@ -127,8 +127,8 @@ class SpectrumWidget(QtGui.QWidget):
                 self.q_dac_offset[k].setOrientation(Qt.Qt.Vertical)
                 
                 # Units are millionth of the full range available between the min and max DAC value
-                self.q_dac_offset[k].setMinimum(0)
-                self.q_dac_offset[k].setMaximum(1e6)
+                self.q_dac_offset[k].setMinimum(int(0))
+                self.q_dac_offset[k].setMaximum(int(1e6))
 
         
                 self.qlabel_dac_current_value[k] = Qt.QLabel('0 V')
@@ -289,7 +289,7 @@ class SpectrumWidget(QtGui.QWidget):
 
     def setDacOffset(self, k, slider_units):
         self.q_dac_offset[k].blockSignals(True)
-        self.q_dac_offset[k].setValue(slider_units)
+        self.q_dac_offset[k].setValue(int(slider_units))
         self.q_dac_offset[k].blockSignals(False)
 
     # Update the scale which indicates the ADC fill ratio in numbers of bits:
@@ -301,7 +301,7 @@ class SpectrumWidget(QtGui.QWidget):
             max_abs = 1 # to prevent passing a 0 value to the log function, which throws an exception
         max_abs_in_bits = np.log2(max_abs)
         
-        self.qadc0_scale.setValue(max_abs_in_bits)
+        self.qadc0_scale.setValue(int(max_abs_in_bits))
         self.qlabel_adc_fill_value.setText('{:.1f} bits'.format(max_abs_in_bits))
 
 
@@ -347,7 +347,7 @@ class SpectrumWidget(QtGui.QWidget):
 
         if not input_select.startswith('ADC'):
             # Not sure what to put in the baseband IQ plot.  For now we simply don't update it
-            self.qthermo_baseband_snr.setValue(0)
+            self.qthermo_baseband_snr.setValue(int(0))
             return
         
         # If we are handling ADC0 or ADC1 data (as opposed to DAC data), we can compute stuff based on the complex baseband signal
@@ -510,7 +510,7 @@ class SpectrumWidget(QtGui.QWidget):
         else:
             print("Error 'nan' in filtered_baseband_snr")
 
-        self.qthermo_baseband_snr.setValue(baseband_snr)
+        self.qthermo_baseband_snr.setValue(int(baseband_snr))
         self.qlabel_baseband_snr_value.setText('{:.2f} dB'.format(self.filtered_baseband_snr))
 
     def plotPhaseData(self, complex_baseband):
@@ -579,7 +579,7 @@ class SpectrumWidget(QtGui.QWidget):
                 q_dac_offset = float(counts_offset-self.sl.DACs_limit_low[k])*1e6/float(self.sl.DACs_limit_high[k] - self.sl.DACs_limit_low[k])
 
                 self.q_dac_offset[k].blockSignals(True)
-                self.q_dac_offset[k].setValue(q_dac_offset)
+                self.q_dac_offset[k].setValue(int(q_dac_offset))
                 self.q_dac_offset[k].blockSignals(False)
 
                 VCO_gain_in_Hz_per_Volts = self.parent.getVCOGainFromUI(k)
@@ -612,8 +612,8 @@ class SpectrumWidget(QtGui.QWidget):
         if large_step > 1e6:
             large_step = 1e6
 
-        self.q_dac_offset[output_number].setSingleStep(small_step)
-        self.q_dac_offset[output_number].setPageStep(large_step)
+        self.q_dac_offset[output_number].setSingleStep(int(small_step))
+        self.q_dac_offset[output_number].setPageStep(int(large_step))
 
 
 
