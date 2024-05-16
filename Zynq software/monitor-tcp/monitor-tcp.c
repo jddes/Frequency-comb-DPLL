@@ -43,12 +43,17 @@
 // for waitpid()
 #include <sys/wait.h>
 
+#include <math.h>
+
+#include "socket_utils.h"
 
 //#include "scpi-commands.h"
 //#include "common.h"
 
 //#include "scpi/parser.h"
 //#include "redpitaya/rp.h"
+
+#define printfv(args...) if (bVerbose) printf(args)
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
@@ -102,6 +107,7 @@ typedef struct binary_packet_flank_servo_t {
 } binary_packet_flank_servo_t;
 
 uint32_t magic_bytes_write_file = 0xABCD1237;
+uint32_t MAGIC_BYTES_READ_FILE  = 0xABCD1240;
 typedef struct binary_packet_write_file_t {
 	uint32_t magic_bytes;	// 0xABCD1237
 	uint32_t filename_length;
@@ -122,10 +128,80 @@ typedef struct binary_packet_reboot_monitor_t {
 	uint32_t reserved2;	
 } binary_packet_reboot_monitor_t;
 
+typedef struct binary_packet_read_fifo_t {
+	uint32_t magic_bytes;	// 0xABCD123A or 0xABCD123B
+	uint32_t num_pts;
+	uint32_t reserved1;	
+} binary_packet_read_fifo_t;
+
+uint32_t magic_bytes_read_phase_streaming = 0xABCD123A;
+uint32_t magic_bytes_read_igm_streaming = 0xABCD123B;
+
+typedef struct binary_packet_stream_fifo_t {
+	uint32_t magic_bytes;	// 0xABCD123C
+	uint32_t num_pts_per_packet;
+	uint32_t num_packets;
+	uint16_t reply_port;	
+} binary_packet_stream_fifo_t;
+uint32_t magic_bytes_stream_fifo = 0xABCD123C;
+
+
+uint32_t magic_bytes_avg_spc = 0xABCD2230;
+typedef struct binary_packet_avg_spc_t {
+    uint32_t magic_bytes;   // 0xABCD2230
+    uint32_t number_of_averages;
+    uint32_t number_of_points;  
+} binary_packet_avg_spc_t;
+
+uint32_t magic_bytes_read_repeat_64 = 0xABCD2231;
+typedef struct binary_packet_read_repeat_64_t {
+    uint32_t magic_bytes;   // 0xABCD2231
+    uint32_t addr;
+    uint32_t num_repeats;
+    uint32_t do_64_bits_not_32_bits;
+} binary_packet_read_repeat_64_t;
+
+typedef struct binary_packet_stream_beamshot_t {
+	uint32_t magic_bytes;	// 0xABCD2232
+	uint32_t igm_fifo_threshold;
+	uint32_t pf_fifo_threshold;
+	uint32_t igm_words_per_packet;
+	uint32_t pf_words_per_packet;
+	uint16_t reply_port;
+} binary_packet_stream_beamshot_t;
+uint32_t magic_bytes_stream_beamshot = 0xABCD2232;
+
+typedef struct binary_packet_continuous_pll_updates_t {
+	uint32_t magic_bytes;	// 0xABCD2234
+	// uint32_t igm_fifo_threshold;
+	// uint32_t pf_fifo_threshold;
+	// uint32_t igm_words_per_packet;
+	// uint32_t pf_words_per_packet;
+	uint16_t reply_port;
+} binary_packet_continuous_pll_updates_t;
+uint32_t magic_bytes_continuous_pll_updates = 0xABCD2234;
+
 
 
 #pragma pack(pop)
 
+
+void trigger_acq();
+	// Constants for the input multiplex going to the DDR2Logger
+typedef enum {
+	SELECT_ADC0          = 0,
+	SELECT_ADC1          = 1,
+	SELECT_DDC0          = 2,
+	SELECT_DDC1          = 3,
+	SELECT_VNA           = 4,
+	SELECT_COUNTER       = 5,
+	SELECT_DAC0          = 6,
+	SELECT_DAC1          = 7,
+	SELECT_DAC2          = 8
+} input_mux;
+void set_logger_input(unsigned long selector);
+void send_dac_updates(int connfd);
+void send_dac_update(int connfd, unsigned long selector);
 
 /////////////////////////////////////////////////////
 // stuff for writing to the fpga memory
@@ -164,14 +240,6 @@ void initMemoryMap()
 	map_base_xadc = mmap(0, MAP_SIZE_XADC, PROT_READ | PROT_WRITE, MAP_SHARED, fd_dev_mem, FPGA_MEMORY_START_XADC & ~MAP_MASK_XADC);
 	if(map_base_xadc == (void *) -1) FATAL;
 		
-	// if (addr != 0) {
-	// 	if (val_count == 0) {
-	// 		read_value(addr);
-	// 	}
-	// 	else {
-	// 		write_values(addr, access_type, val, val_count);
-	// 	}
-	// }
 }
 
 void closeMemoryMap()
@@ -240,13 +308,13 @@ void write_value(unsigned long a_addr, int a_type, unsigned long a_value) {
 int16_t data_buffer[LOGGER_BUFFER_SIZE];
 
 // this can be as long as we want (as long as it fits in the Zynq's RAM)
-// currently sizeof(uint32_t)*(1UL<<20) = 4 MB
-#define NO_FIFO_LOGGER_BUFFER_SIZE (1U<<20)
-uint32_t data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE];
-
-// 16e6 samples (64 MB)
+// 16e6 samples (sizeof(uint32_t)*(1UL<<24) = 64 MB)
 #define FIFO_LOGGER_BUFFER_SIZE (1U<<24)
 uint32_t data_buffer_with_fifo[FIFO_LOGGER_BUFFER_SIZE];
+
+#define PHI_COUNTER_BUFFER_RATIO 64
+#define PHI_COUNTER_BUFFER_SIZE (FIFO_LOGGER_BUFFER_SIZE/PHI_COUNTER_BUFFER_RATIO)
+uint32_t phi_counter_buf[PHI_COUNTER_BUFFER_SIZE];
 
 void acq_LoggerStartWrite()
 {
@@ -277,6 +345,54 @@ void acq_GetDataFromLogger(uint32_t* size, int16_t* buffer_in)
 #define ADC_BUFFER_SIZE             (16*1024)
 
 //int16_t data_buffer2[ADC_BUFFER_SIZE];
+
+
+// read and send file contents to socket
+void send_file_to_socket(const char * const strFilename, int connfd)
+{
+    // file read: send file size first
+    // Format is: file_valid, file_size, <file bytes>
+    uint32_t file_valid;
+    uint32_t file_size;
+
+    // send it back:
+    FILE * file_pointer = fopen(strFilename, "rb");
+    if (!file_pointer)
+    {
+        file_valid = 0; // -1 means that the file does not exist
+        send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
+        file_size = 0;
+        send(connfd, &file_size, sizeof(file_size), 0); // file size
+        printfv("Error opening file %s. No contents read.\n", strFilename);
+        return;
+    }
+
+    file_valid = 1;
+    send(connfd, &file_valid, sizeof(file_valid), 0); // file valid?
+    fseek(file_pointer, 0, SEEK_END);
+    file_size = ftell(file_pointer);
+    rewind(file_pointer);
+
+    uint8_t *file_contents = malloc(file_size);
+    if (!file_contents)
+    {
+        // allocation error, send back an empty file:
+        printfv("Error allocating memory for file %s. Will send back an empty file instead.\n", strFilename);
+        file_size = 0;
+        send(connfd, &file_size, sizeof(file_size), 0); // file size, clamped to 0
+    } else {
+        size_t retval = fread(file_contents, 1, file_size, file_pointer);
+        if (retval != file_size)
+            printfv("fread returned %u instead of %u\n", retval, file_size);
+        printfv("Sending file %s, %u bytes.\n", strFilename, file_size);
+        send(connfd, &file_size, sizeof(file_size), 0); // file size
+        send(connfd, file_contents, file_size, 0);
+    }
+    fclose(file_pointer);
+}
+
+
+
 
 void acq_GetDataRawV2_CHA(uint32_t pos, uint32_t* size, int16_t* buffer_in)
 {
@@ -589,58 +705,345 @@ void continuous_fifo_read(  )
 	return;
 }
 
-void throughput_test(  )
+void read_phase_streaming(uint32_t num_pts)
 {
-	int32_t current_delta;
-    int32_t min_delta_counter, max_delta_counter, total_delta_counter;
-    uint32_t number_of_counts_above_threshold = 0;
+	// printf("read_phase_streaming()\n");
+    const volatile uint32_t* almost_full = (uint32_t*)((char*)map_base + 4*0x00045U);
+    volatile uint32_t* rst_fifo = (uint32_t*)((char*)map_base + 4*0x00046U);
+    volatile uint32_t* phi_counter = (uint32_t*)((char*)map_base + 4*0x00047U);
+    //uint32_t counter_local;
+    //uint32_t last_counter;
+    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + 4*0x00044U);
 
-    min_delta_counter = 0x7fffffff;	// hex(2^31-1)
-    max_delta_counter = 0;
-    printf("throughput_test\n");
-    printf("min_delta_counter at start = %d, max_delta_counter = %d\n", min_delta_counter, max_delta_counter);
-
-
-    const volatile uint32_t* raw_buffer = (uint32_t*)((char*)map_base + 4*0x00037U);
+    if (num_pts > FIFO_LOGGER_BUFFER_SIZE)
+    {
+    	num_pts = FIFO_LOGGER_BUFFER_SIZE;
+    }
 
     // Read a buffer as quickly as we can
-    uint32_t i;
-    for (i = 0; i < NO_FIFO_LOGGER_BUFFER_SIZE; ++i) {
-        data_buffer_no_fifo[i] = (*raw_buffer);
+    uint32_t i=0;
+    uint32_t i2=0;
+    uint32_t iCounter=0;
+    uint32_t phi_counter_local=0;
+    //counter_local = *counter;
+    //last_counter = counter_local;
+    data_buffer_with_fifo[0] = (*raw_buffer);
+
+    uint32_t not_almost_full_count = 0;
+    ////////////////////////////////////////////////////////////
+    // this was meant to clear the fifo so that our samples start clean,
+    // but I can't get it to work for some reason...
+    // oh well.
+    *rst_fifo = 1; // resets the fifo, self-clearing
+    while ((*almost_full) == 0)
+    {
+    	// wait until there is enough data in the fifo
+    	not_almost_full_count++;
     }
-    
-    // count min, max and average counter steps:
-	for (i = 1; i < NO_FIFO_LOGGER_BUFFER_SIZE; ++i)
-	{
-		// compute delta
-		current_delta = (int32_t)data_buffer_no_fifo[i] - (int32_t)data_buffer_no_fifo[i-1];
+    // first read is invalid, due to the way the fifo in registers_read.vhd 
+    // handles the read enable signal
+    data_buffer_with_fifo[0] = *raw_buffer;
+    ////////////////////////////////////////////////////////////
 
-		// show first 50 pts:
-		if (i<250)
-			printf("%d, ", current_delta);
+	phi_counter_buf[i2] = *phi_counter;
 
 
-		// how many above a certain threshold? set at 2* mean
-		if (current_delta > 40)
-			number_of_counts_above_threshold++;
+    while (i < num_pts)
+    {
+    	// printf("*almost_full = %u\n", *almost_full);
+    	if (*almost_full)
+    	{
+    		for (i2=0; i2<64; i2++)
+    		{
+    			data_buffer_with_fifo[i++] = *raw_buffer;
+    			// printf("*raw_buffer = %d\n", *raw_buffer);
+    		}
+    		if (iCounter < PHI_COUNTER_BUFFER_SIZE)
+    		{
+    			phi_counter_local = *phi_counter;
+				phi_counter_buf[iCounter] = phi_counter_local;
+				// if (phi_counter_local != 0)
+				// 	printf("phi_counter_local = %d, iCounter=%d\n", phi_counter_local, iCounter);
+				iCounter++;
+    		}
+    	} else {
+    		// not_almost_full_count++;
+    	}
 
-		// running min
-		if (current_delta < min_delta_counter)
-			min_delta_counter = current_delta;
-		// running max
-		if (current_delta > max_delta_counter)
-			max_delta_counter = current_delta;
-	}
-	total_delta_counter = (int32_t)data_buffer_no_fifo[NO_FIFO_LOGGER_BUFFER_SIZE-1] - (int32_t)data_buffer_no_fifo[0];
+    }
+    // printf("not_almost_full_count = %u\n", not_almost_full_count);
 
-	printf("\n");
-	printf("total delta = %d counts, avg = %d counts\n", total_delta_counter, total_delta_counter / NO_FIFO_LOGGER_BUFFER_SIZE);
-	printf("min_delta_counter = %d counts, max_delta_counter = %d counts\n", min_delta_counter, max_delta_counter);
-	printf("number_of_counts_above_threshold = %d\n", number_of_counts_above_threshold);
 
+	printf("read_phase_streaming() finished.\n");
 	return;
 }
 
+void read_repeat_32(uint32_t addr, uint32_t *num_repeats)
+{
+	// reads 32 bits from from base_addr, repeating num_repeats times
+	// all data gets placed in data_buffer_with_fifo,
+	// then is transmitted back via our tcp socket.
+	// if num_repeats was larger than the available buffer,
+	// it will get clamped.
+	if (bVerbose)
+		printf("read_repeat_32(0x%x, 0x%x)\n", addr, *num_repeats);
+    const volatile uint32_t* buffer = (uint32_t*)((char*)map_base + addr);
+
+    if (*num_repeats > FIFO_LOGGER_BUFFER_SIZE)
+    {
+    	*num_repeats = FIFO_LOGGER_BUFFER_SIZE;
+    }
+
+	for (uint32_t i=0; i<(*num_repeats); i++)
+	{
+		data_buffer_with_fifo[i]   = *buffer;
+	}
+	// printf("done.\n");
+}
+
+void read_repeat_64(uint32_t addr, uint32_t *num_repeats)
+{
+	// reads 32 bits from from base_addr, then 32 bits from base_addr+1,
+	// repeating this pair of reads for num_repeats.
+	// all data gets placed in data_buffer_with_fifo,
+	// then is transmitted back via our tcp socket.
+	// if num_repeats was larger than the available buffer,
+	// it will get clamped.
+	if (bVerbose)
+		printf("read_repeat_64()\n");
+    const volatile uint32_t* buffer_lsb = (uint32_t*)((char*)map_base + addr);
+    const volatile uint32_t* buffer_msb = (uint32_t*)((char*)map_base + addr + sizeof(uint32_t));
+
+	// divide by 2 here is because num_repeats is the number of 64-bits reads,
+	// while FIFO_LOGGER_BUFFER_SIZE is uint32
+    if (*num_repeats > FIFO_LOGGER_BUFFER_SIZE/2)
+    {
+    	*num_repeats = FIFO_LOGGER_BUFFER_SIZE/2;
+    }
+
+	for (uint32_t i=0; i<2*(*num_repeats); i+=2)
+	{
+		data_buffer_with_fifo[i]   = *buffer_lsb;
+		data_buffer_with_fifo[i+1] = *buffer_msb;
+	}
+	// printf("done.\n");
+}
+
+#define IGM_RD_THRESHOLD 64
+
+void read_igm_streaming(uint32_t num_pts)
+{
+	// Interacts with registers_read.vhd to read out a stream of IGMs
+	// from a fifo into the CPU's memory.
+	// relevant lines from registers_read.vhd:
+	// (...) write port:
+    // when x"00052" => igm_fifo_rst      <= '1';
+    // when x"00053" => enable            <= sys_wdata(0);
+	// (...) read port:
+    // when x"00050" => sys_ack <= sys_en; sys_rdata <= std_logic_vector(igm_fifo_rd_data); igm_fifo_rd_ack <= '1';
+    // when x"00051" => sys_ack <= sys_en; sys_rdata <= std_logic_vector(igm_fifo_count);
+	printf("read_igm_streaming()\n");
+
+    volatile uint32_t* igm_fifo_rst           = (uint32_t*)((char*)map_base + 4*0x00052U);
+    volatile uint32_t* igm_enable             = (uint32_t*)((char*)map_base + 4*0x00053U);
+    const volatile uint32_t* igm_fifo_rd_data = (uint32_t*)((char*)map_base + 4*0x00050U);
+    const volatile uint32_t* igm_fifo_count   = (uint32_t*)((char*)map_base + 4*0x00051U);
+    // const volatile uint32_t* igm_wr_count     = (uint32_t*)((char*)map_base + 4*0x00058U);
+
+    uint32_t i=0;
+    uint32_t i2=0;
+    uint32_t not_enough_data_count=0;
+    uint32_t count_local=0;
+    uint32_t iCounter=0;
+
+    if (num_pts > FIFO_LOGGER_BUFFER_SIZE)
+    {
+    	num_pts = FIFO_LOGGER_BUFFER_SIZE;
+    }
+
+    // startup sequence:
+    *igm_enable = 0;
+    usleep(1);
+    *igm_fifo_rst = 1; // self-clearing
+    usleep(1);
+    printf("*igm_fifo_count = %u (expect 0)\n", *igm_fifo_count);
+    *igm_enable = 1;
+
+    // super-crude timeout feature:
+    // if no point get written in 1 sec (1000*1000 microseconds)
+    // then we exit early.
+    // data buffers will still get sent, but at least we won't hang.
+    for (i=0; i<1000; i++)
+    {
+    	if (*igm_fifo_count != 0)
+    	{
+    		break;
+    	}
+    	usleep(1000);
+		// printf("*igm_fifo_count = %u, *wr_count = %u\n", *igm_fifo_count, *igm_wr_count);
+    }
+    if (i == 1000)
+    {
+		printf("read_igm_streaming() early exit.\n");
+    	return;
+    }
+    i = 0;
+
+    while (i < num_pts)
+    {
+    	// printf("*igm_fifo_count = %u, i=%u, num_pts=%u\n", *igm_fifo_count, i, num_pts);
+    	if (*igm_fifo_count >= IGM_RD_THRESHOLD)
+    	{
+    		for (i2=0; i2<IGM_RD_THRESHOLD; i2++)
+    		{
+    			data_buffer_with_fifo[i++] = *igm_fifo_rd_data;
+    			// printf("*raw_buffer = %d\n", *raw_buffer);
+    		}
+    		if (iCounter < PHI_COUNTER_BUFFER_SIZE)
+    		{
+    			count_local = *igm_fifo_count;
+				phi_counter_buf[iCounter] = count_local;
+				// if (count_local != 0)
+				// 	printf("count_local = %d, iCounter=%d\n", count_local, iCounter);
+				iCounter++;
+    		}
+    	} else {
+    		not_enough_data_count++;
+    	}
+
+    }
+    printf("not_enough_data_count = %u\n", not_enough_data_count);
+
+	printf("read_igm_streaming() finished.\n");
+	return;
+}
+
+void read_data_streaming_to_udp(
+	struct sockaddr_in cliaddr,
+	int connfd,
+	uint32_t num_pts_per_packet,
+	uint32_t num_packets,
+	uint16_t reply_port)
+{
+	// Interacts with registers_read.vhd to read out a data stream
+	// from a fifo directly to UDP packets
+	// relevant lines from registers_read.vhd:
+	// (...) write port:
+    // when x"00052" => igm_fifo_rst      <= '1';
+    // when x"00053" => enable            <= sys_wdata(0);
+	// (...) read port:
+    // when x"00050" => sys_ack <= sys_en; sys_rdata <= std_logic_vector(igm_fifo_rd_data); igm_fifo_rd_ack <= '1';
+    // when x"00051" => sys_ack <= sys_en; sys_rdata <= std_logic_vector(igm_fifo_count);
+	if (bVerbose)
+		printf("read_data_streaming_to_udp(): %d, %d, %d\n",
+			num_pts_per_packet, num_packets, reply_port);
+
+    volatile uint32_t* igm_fifo_rst           = (uint32_t*)((char*)map_base + 4*0x00052U);
+    volatile uint32_t* igm_enable             = (uint32_t*)((char*)map_base + 4*0x00053U);
+    const volatile uint32_t* igm_fifo_rd_data = (uint32_t*)((char*)map_base + 4*0x00050U);
+    const volatile uint32_t* igm_fifo_count   = (uint32_t*)((char*)map_base + 4*0x00051U);
+    // const volatile uint32_t* igm_wr_count     = (uint32_t*)((char*)map_base + 4*0x00058U);
+
+    // create a UDP socket for streaming data back to our client:
+    int txSocket = socket(AF_INET, SOCK_DGRAM, 0);
+    cliaddr.sin_port = htons(reply_port);
+    connect(txSocket, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+
+    uint32_t i=0;
+    uint32_t i2=0;
+
+    if (num_pts_per_packet > FIFO_LOGGER_BUFFER_SIZE)
+    {
+    	num_pts_per_packet = FIFO_LOGGER_BUFFER_SIZE;
+    }
+
+    // startup sequence:
+    *igm_enable = 0;
+    usleep(1);
+    *igm_fifo_rst = 1;
+    usleep(1);
+    if (bVerbose)
+    	printf("*igm_fifo_count = %u (expect 0)\n", *igm_fifo_count);
+    *igm_fifo_rst = 0;
+    *igm_enable = 1;
+
+    // EDIT: This is no longer needed, since we use select()
+    // to check if there is any pending data on the TCP socket to exit
+    // // super-crude timeout feature:
+    // // if no point get written in 1 sec (1000*1000 microseconds)
+    // // then we exit early.
+    // for (i=0; i<1000; i++)
+    // {
+    // 	if (*igm_fifo_count != 0)
+    // 	{
+    // 		break;
+    // 	}
+    // 	usleep(1000);
+	// 	printf("*igm_fifo_count = %u\n", *igm_fifo_count);
+    // }
+    // if (i == 1000)
+    // {
+	// 	printf("read_igm_streaming() early exit.\n");
+    // 	return;
+    // }
+
+
+    i = 0;
+
+    while ((i < num_packets) | (num_packets == 0))
+    {
+    	// printf("*igm_fifo_count = %u, i=%u, num_pts_per_packet=%u\n", *igm_fifo_count, i, num_pts_per_packet);
+    	if (*igm_fifo_count < num_pts_per_packet)
+    	{
+    		// socket which triggered this function can always
+    		// make us exit early by sending any cmd on the TCP socket
+    		if (is_data_available(connfd))
+    		{
+    			if (bVerbose)
+    				printf("read_data_streaming_to_udp(): early exit via data on tcp socket.\n");
+    			return;
+    		}
+			continue;
+    	}
+    	
+
+		for (i2=0; i2<num_pts_per_packet; i2++)
+		{
+			data_buffer_with_fifo[i2] = *igm_fifo_rd_data;
+			// printf("*raw_buffer = %d\n", *raw_buffer);
+		}
+		data_buffer_with_fifo[i2] = *igm_fifo_count;
+		i++;
+
+		// // use this instead to debug fifo count only:
+		// for (i2=0; i2<num_pts_per_packet; i2++)
+		// {
+		// 	data_buffer_with_fifo[i2] = *igm_fifo_count;
+		// 	usleep(1);
+		// 	// printf("*raw_buffer = %d\n", *raw_buffer);
+		// }
+		// i++;
+		// usleep(1);
+
+		send(txSocket,
+			 (void*)data_buffer_with_fifo,
+			 (size_t)(num_pts_per_packet+1)*sizeof(data_buffer_with_fifo[0]),
+			 0);
+
+		// socket which triggered this function can always
+		// make us exit early by sending any cmd on the TCP socket
+		if (is_data_available(connfd))
+		{
+			if (bVerbose)
+				printf("read_data_streaming_to_udp(): early exit via data on tcp socket.\n");
+			return;
+		}
+    }
+    close(txSocket);
+	if (bVerbose)
+		printf("read_data_streaming_to_udp() finished.\n");
+	return;
+}
 
 void *second_thread_function( void *ptr )
 {
@@ -694,7 +1097,7 @@ void *second_thread_function( void *ptr )
  * @param connfd The communication port
  * @return
  */
-static int handleConnection(int connfd) {
+static int handleConnection(int connfd, struct sockaddr_in cliaddr) {
     int read_size;
 
     size_t message_len = MAX_BUFF_SIZE;
@@ -962,32 +1365,133 @@ static int handleConnection(int connfd) {
 		        			printf("Received a 'start flank servo' packet, but we have not received the full packet yet.\n");
 		        	}
 
+	        	} else if (message_magic_bytes == magic_bytes_read_phase_streaming ||
+	        			   message_magic_bytes == magic_bytes_read_igm_streaming)
+	        	{
+	        		iRequiredBytes = sizeof(binary_packet_read_fifo_t);
+		        	if (msg_end >= iRequiredBytes) {
+
+		        		struct binary_packet_read_fifo_t * pPacketReadFifo;
+		        		pPacketReadFifo = (binary_packet_read_fifo_t*) message_buff;
+		        		uint32_t num_pts = pPacketReadFifo->num_pts;
+		        		if (num_pts > FIFO_LOGGER_BUFFER_SIZE)
+		        			num_pts = FIFO_LOGGER_BUFFER_SIZE;
+
+		        		if (message_magic_bytes == magic_bytes_read_phase_streaming) {
+		        			read_phase_streaming(pPacketReadFifo->num_pts);
+		        		} else {
+		        			read_igm_streaming(pPacketReadFifo->num_pts);
+		        		}
+		        		send(connfd,
+		        			 (void*)data_buffer_with_fifo,
+		        			 (size_t)num_pts*sizeof(data_buffer_with_fifo[0]),
+		        			 0);
+		        		
+		        		send(connfd,
+		        			 (void*)phi_counter_buf,
+		        			 (size_t)(num_pts/PHI_COUNTER_BUFFER_RATIO)
+		        			 	*sizeof(phi_counter_buf[0]),
+		        			 0);
+
+		        		bytes_consumed = sizeof(binary_packet_read_fifo_t);
+		        		bHaveMagicBytes = false;
+		        		iRequiredBytes = sizeof(message_magic_bytes);
+					}
+
+	        	} else if (message_magic_bytes == magic_bytes_read_repeat_64)
+	        	{
+	        		iRequiredBytes = sizeof(binary_packet_read_repeat_64_t);
+		        	if (msg_end >= iRequiredBytes) {
+
+		        		struct binary_packet_read_repeat_64_t * pPacketReadRepeat64;
+		        		pPacketReadRepeat64 = (binary_packet_read_repeat_64_t*) message_buff;
+
+		        		if (pPacketReadRepeat64->do_64_bits_not_32_bits)
+		        		{
+			        		read_repeat_64(pPacketReadRepeat64->addr, &(pPacketReadRepeat64->num_repeats));
+			        		send(connfd,
+			        			 (void*)data_buffer_with_fifo,
+			        			 (size_t)pPacketReadRepeat64->num_repeats*sizeof(uint64_t),
+			        			 0);
+			        	} else {
+			        		// 32 bits reads:
+			        		read_repeat_32(pPacketReadRepeat64->addr, &(pPacketReadRepeat64->num_repeats));
+			        		send(connfd,
+			        			 (void*)data_buffer_with_fifo,
+			        			 (size_t)pPacketReadRepeat64->num_repeats*sizeof(uint32_t),
+			        			 0);
+			        	}
+
+		        		bytes_consumed = sizeof(binary_packet_read_repeat_64_t);
+		        		bHaveMagicBytes = false;
+		        		iRequiredBytes = sizeof(message_magic_bytes);
+					}
+
+	        	} else if (message_magic_bytes == magic_bytes_stream_fifo)
+	        	{
+	        		iRequiredBytes = sizeof(binary_packet_stream_fifo_t);
+		        	if (msg_end >= iRequiredBytes) {
+
+		        		struct binary_packet_stream_fifo_t * pPacketStreamFifo;
+		        		pPacketStreamFifo = (binary_packet_stream_fifo_t*) message_buff;
+
+						read_data_streaming_to_udp(
+							cliaddr,
+							connfd,
+							pPacketStreamFifo->num_pts_per_packet,
+							pPacketStreamFifo->num_packets,
+							pPacketStreamFifo->reply_port);
+
+						// send a packet to indicate that we are done
+						// the reason we don't just send a single byte is because of Nagle's algorithm
+						// the alternative could have been to disable it, send, then re-enable it,
+						// but this seemed simpler
+		        		send(connfd,
+		        			 (void*)data_buffer_with_fifo,
+		        			 (size_t)1500, 
+		        			 0);
+		        		if (bVerbose)
+		        			printf("sent ack code\n");
+
+		        		bytes_consumed = sizeof(binary_packet_stream_fifo_t);
+		        		bHaveMagicBytes = false;
+		        		iRequiredBytes = sizeof(message_magic_bytes);
+
+		        	} else {
+		        		if (bVerbose)
+		        			printf("Received a 'start flank servo' packet, but we have not received the full packet yet.\n");
+		        	}
+		        	
 	        	////////////////////////////////////////////////////////////
 	        	// Write a file to the filesystem
-	        	} else if (message_magic_bytes == magic_bytes_write_file)
+	        	} else if ((message_magic_bytes == magic_bytes_write_file) || (message_magic_bytes == MAGIC_BYTES_READ_FILE))
 	        	{
 	        		// we need at least the first two 32 bits value before we can figure out the size of this message.
 	        		
+	        		bool command_is_read_not_write;
+	        		if (message_magic_bytes == MAGIC_BYTES_READ_FILE)
+	        		{
+	        			command_is_read_not_write = true;
+	        		} else {
+	        			command_is_read_not_write = false;
+	        		}
+
+	        		printf("bHaveFileWriteHeader = %u, msg_end = %u, iRequiredBytes = %u\n", bHaveFileWriteHeader, msg_end, iRequiredBytes);
 
 	        		if (!bHaveFileWriteHeader)
 	        		{
 	        			iRequiredBytes = sizeof(binary_packet_write_file_t);
 	        			if (msg_end >= iRequiredBytes) {
 	        				bHaveFileWriteHeader = true;
-	        				if (bVerbose)
-	        					printf("Received complete file write header.\n");
+	        				printfv("Received complete file write header.\n");
 			        		
 			        		pPacketWriteFile = (binary_packet_write_file_t*) message_buff;
-			        		if (bVerbose)
-			        			printf("address of message_buff = 0x%x, address of pPacketWriteFile = 0x%x\n", (uint) message_buff, (uint) pPacketWriteFile);
+			        		printfv("address of message_buff = 0x%x, address of pPacketWriteFile = 0x%x\n", (uint) message_buff, (uint) pPacketWriteFile);
 
-			        		if (bVerbose)
-			        			printf("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
-			        		if (bVerbose)
-			        			printf("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
+			        		printfv("pPacketWriteFile->filename_length = %u\n", pPacketWriteFile->filename_length);
+			        		printfv("pPacketWriteFile->file_size       = %u\n", pPacketWriteFile->file_size);
 			        		iRequiredBytes = sizeof(binary_packet_write_file_t) + pPacketWriteFile->filename_length + pPacketWriteFile->file_size;
-			        		if (bVerbose)
-			        			printf("iRequiredBytes                    = %u\n", iRequiredBytes);
+			        		printfv("iRequiredBytes                    = %u\n", iRequiredBytes);
 
 
 	        			}
@@ -1031,16 +1535,23 @@ static int handleConnection(int connfd) {
 
 
 								// then we should call fopen with the filename, then fwrite with the right pointer.
-								file_pointer = fopen(strNewFileName, "wb");
-								if (!file_pointer)
+								if (command_is_read_not_write)
 								{
-									if (bVerbose)
-										printf("Error opening file %s. No contents written.", strNewFileName);
+									printfv("command_is_read_not_write\n");
+									send_file_to_socket(strNewFileName, connfd);
 								} else {
-									// write file contents
-									fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
-									fclose(file_pointer);
-									file_pointer = NULL;
+									printfv("command_is_write\n");
+									file_pointer = fopen(strNewFileName, "wb");
+									if (!file_pointer)
+									{
+										if (bVerbose)
+											printf("Error opening file %s. No contents written.", strNewFileName);
+									} else {
+										// write file contents
+										fwrite((void*)(message_buff+sizeof(binary_packet_write_file_t)+pPacketWriteFile->filename_length) , 1, pPacketWriteFile->file_size, file_pointer);
+										fclose(file_pointer);
+										file_pointer = NULL;
+									}
 								}
 
 
@@ -1240,18 +1751,60 @@ static int handleConnection(int connfd) {
 }
 
 
+void send_dac_updates(int connfd)
+{
+    // these are very quick so we just do them all in one go
+    send_dac_update(connfd, SELECT_DAC0);
+    send_dac_update(connfd, SELECT_DAC1);
+    send_dac_update(connfd, SELECT_DAC2);
+}
+
+void send_dac_update(int connfd, unsigned long selector)
+{
+    uint32_t acq_size = 256;
+    set_logger_input(selector);
+    trigger_acq();
+    usleep(10); // really doesn't need to be long, since the writes are at 125 MS/s, while the readout is much slower
+    acq_GetDataFromLogger(&acq_size, data_buffer);
+    send(connfd, data_buffer, (size_t)acq_size*sizeof(int16_t), 0);
+}
+
+void trigger_acq()
+{
+    // writing anything to this address triggers the write mode in ram_data_logger.vhd
+    // BUS_ADDR_TRIG_WRITE = (1<<20) + 0x1004
+    unsigned long trigger_write_address = 0x40000000 | (1<<20) | 0x1004;
+    // printf("trigger_write_address = 0x%lx\n", trigger_write_address);
+    write_value(trigger_write_address, 'w', 0);
+}
+
+// must match the order of connections
+// to "multiplexer_NbitsxMsignals_to_Nbits_inst" in dpll_wrapper.v
+void set_logger_input(unsigned long selector)
+{
+    // writing anything to this address triggers the write mode in ram_data_logger.vhd
+    // BUS_ADDR_MUX_SELECTORS                              = 0x3
+    unsigned long logger_select_address = 0x40000000 | 0x3*4;
+    // printf("trigger_write_address = 0x%lx\n", trigger_write_address);
+    write_value(logger_select_address, 'w', selector);
+}
 
 
 /**
  * Main daemon entrance point. Opens a socket and listens for any incoming connection.
  * When client connects, if forks the conversation into a new socket and the daemon (parent process)
  * waits for another connection. It can handle multiple connections simultaneously.
- * @param argc  not used
- * @param argv  not used
+ * @param argc  any extra input arg sets the program to verbose mode
+ * @param argv  any extra input arg sets the program to verbose mode
  * @return
  */
 int main(int argc, char *argv[])
 {
+    if (argc > 1)
+    {
+        bVerbose = true;
+        printf("verbose mode on\n");
+    }
 
 	printf("monitor-tcp server started, V1.0, built at " __TIME__ " on " __DATE__ "\n");
 
@@ -1360,7 +1913,7 @@ int main(int argc, char *argv[])
 
 
 
-            result = handleConnection(connfd);
+            result = handleConnection(connfd, cliaddr);
 
             printf("calling close(connfd)...\n");
             close(connfd);
