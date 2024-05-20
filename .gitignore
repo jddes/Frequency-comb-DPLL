@@ -6,3 +6,4 @@ xvhdl.log
 digital_servo_python_gui/selftest_results_*.txt
 *.cywrk
 *.cywrk.*
+*.cf

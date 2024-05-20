@@ -133,6 +133,18 @@ architecture Behavioral of multichannel_freq_counter_top is
     signal limit_low_dds3        : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(-2**15, 16));
     signal limit_low_dds4        : std_logic_vector(16-1 downto 0)            := std_logic_vector(to_signed(-2**15, 16));
 
+    signal ramp_resets : std_logic_vector(4-1 downto 0) := (others => '1');
+    signal ramp_slope1 : std_logic_vector(64-1 downto 0) := (others => '0');
+    signal ramp_slope2 : std_logic_vector(64-1 downto 0) := (others => '0');
+    signal ramp_slope3 : std_logic_vector(64-1 downto 0) := (others => '0');
+    signal ramp_slope4 : std_logic_vector(64-1 downto 0) := (others => '0');
+
+    signal ramp_slope1_lsbs : std_logic_vector(32-1 downto 0) := (others => '0');
+    signal ramp_slope2_lsbs : std_logic_vector(32-1 downto 0) := (others => '0');
+    signal ramp_slope3_lsbs : std_logic_vector(32-1 downto 0) := (others => '0');
+    signal ramp_slope4_lsbs : std_logic_vector(32-1 downto 0) := (others => '0');
+
+
     signal dither_results1 : std_logic_vector(64-1 downto 0);
     signal dither_results2 : std_logic_vector(64-1 downto 0);
     signal dither_results3 : std_logic_vector(64-1 downto 0);
@@ -340,6 +352,13 @@ begin
         limit_low2        => limit_low_dds2,
         limit_low3        => limit_low_dds3,
         limit_low4        => limit_low_dds4,
+
+        ramp_resets       => ramp_resets,
+        ramp_slope1       => ramp_slope1,
+        ramp_slope2       => ramp_slope2,
+        ramp_slope3       => ramp_slope3,
+        ramp_slope4       => ramp_slope4,
+
         cmd_trig          => sys_wen,
         cmd_addr          => (x"0000" & sys_addr(16-1+2 downto 2)),
         cmd_data          => sys_wdata,
@@ -359,6 +378,7 @@ begin
     DDSout3 <= DDSout3_int;
     DDSout4 <= DDSout4_int;
     DDS_SPI_enables <= DDS_SPI_enables_int;
+
 
     -------------------------------------------------
     -- config registers
@@ -464,6 +484,25 @@ begin
 
                     when x"24" =>
                         DDS_SPI_enables_int <= sys_wdata(DDS_SPI_enables_int'range);
+
+
+                    when x"25" => ramp_resets <= sys_wdata(ramp_resets'range);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"26" => ramp_slope1_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"27" => ramp_slope1 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope1_lsbs);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"28" => ramp_slope2_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"29" => ramp_slope2 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope2_lsbs);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"30" => ramp_slope3_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"31" => ramp_slope3 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope3_lsbs);
+
+                    -- written as two 32-bits registers that update when the MSBs are written
+                    when x"32" => ramp_slope4_lsbs <= sys_wdata(32-1 downto 0);
+                    when x"33" => ramp_slope4 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope4_lsbs);
 
                     when others => 
                 end case;
