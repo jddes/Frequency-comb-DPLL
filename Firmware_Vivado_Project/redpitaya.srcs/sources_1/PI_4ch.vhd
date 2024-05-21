@@ -59,12 +59,6 @@ port (
     limit_low3  : in  std_logic_vector(16-1 downto 0); -- these get multiplied by 48-16 internally to save a few registers
     limit_low4  : in  std_logic_vector(16-1 downto 0); -- these get multiplied by 48-16 internally to save a few registers
 
-    ramp_resets : in  std_logic_vector(N_CHANNELS-1 downto 0);
-    ramp_slope1 : in  std_logic_vector(64-1 downto 0);
-    ramp_slope2 : in  std_logic_vector(64-1 downto 0);
-    ramp_slope3 : in  std_logic_vector(64-1 downto 0);
-    ramp_slope4 : in  std_logic_vector(64-1 downto 0);
-
     -- register interface, for setting up the dithers
     cmd_trig    : in  std_logic;
     cmd_addr    : in  std_logic_vector(32-1 downto 0);
@@ -96,7 +90,6 @@ architecture Behavioral of PI_4ch is
     type fine_gain_type        is array (0 to N_CHANNELS-1) of std_logic_vector(4-1 downto 0);
     type coarse_gain_type      is array (0 to N_CHANNELS-1) of std_logic_vector(6-1 downto 0);
     type dither_results_type   is array (0 to N_CHANNELS-1) of std_logic_vector(64-1 downto 0);
-    type ramp_slope_type       is array (0 to N_CHANNELS-1) of std_logic_vector(64-1 downto 0);
 
     signal gain_fines     : fine_gain_type;
     signal P_gain_coarses : coarse_gain_type;
@@ -117,9 +110,7 @@ architecture Behavioral of PI_4ch is
     signal limits_low            : freq_output_type;
     signal manual_offset         : freq_output_type;
     signal dither_out            : freq_output_type;
-    signal ramp_out              : freq_output_type;
 
-    signal ramp_slope            : ramp_slope_type;
     signal dither_results        : dither_results_type;
 
     signal reset_offset1 : std_logic := '0';
@@ -204,18 +195,6 @@ begin
             output_clk_enable => open
         );
 
-        -- add a linear ramp, controllable from the PC, to provide drift cancellation features
-        linear_ramp_gen_inst : entity work.linear_ramp_gen
-        generic map (
-            OUTPUT_DATA_WIDTH => OUTPUT_WIDTH
-        ) port map (
-            clk           => clk,
-            reset_ramp    => ramp_resets(I),
-            clk_enable_in => PI_output_clk_enable(I),
-            ramp_slope    => ramp_slope(I),
-            data_out      => ramp_out(I)
-        );
-
         -- add offset and dither, apply limits
         output_summing_inst : entity work.output_summing
         generic map (
@@ -228,7 +207,7 @@ begin
             in0               =>           PI_data_out(I),
             in1               =>         manual_offset(I),
             in2               =>            dither_out(I),
-            in3               =>              ramp_out(I),
+            in3               =>          (others => '0'),
             output_clk_enable => sum_output_clk_enable(I),
             data_output       =>      summing_data_out(I),
             positive_limit    =>           limits_high(I),
@@ -310,8 +289,4 @@ begin
     dither_results3 <= dither_results(2);
     dither_results4 <= dither_results(3);
 
-    ramp_slope(0) <= ramp_slope1;
-    ramp_slope(1) <= ramp_slope2;
-    ramp_slope(2) <= ramp_slope3;
-    ramp_slope(3) <= ramp_slope4;
 end;

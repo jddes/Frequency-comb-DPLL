@@ -10,20 +10,21 @@ use ieee.numeric_std.all;
 -- and the ramp_slope values low enough for wrapping to never occur in proper operation.
 --
 -- this yields the following physical scaling:
--- ramp_rate_in_Hz = ramp_slope/2^(DDS_CTRL_WORD_WIDTH+RIGHT_SHIFT) * sampling_rate^2
--- where OUTPUT_DATA_WIDTH is meant to be set to DDS_CTRL_WORD_WIDTH.
--- sampling_rate is the clk_enable_in sampling rate (designed for ~300 kHz)
+-- ramp_rate_in_Hz_per_second = ramp_slope/2^(FREQ_WIDTH+RIGHT_SHIFT) * clk_enable_in_rate * fs
+-- where OUTPUT_DATA_WIDTH is meant to be set to FREQ_WIDTH.
+-- clk_enable_in_rate is designed for ~300 kHz
+-- fs is designed for 125 MHz
 -- in which case, we also have the following:
 -- minimum ramp step size:
--- ramp_rate_step_size_in_Hz = 1/2^(DDS_CTRL_WORD_WIDTH+RIGHT_SHIFT) * sampling_rate^2
--- ramp_rate_step_size_in_Hz = 1/2^(DDS_CTRL_WORD_WIDTH+RIGHT_SHIFT) * sampling_rate^2
+-- ramp_rate_step_size_in_Hz_per_second = 1/2^(FREQ_WIDTH+RIGHT_SHIFT) * clk_enable_in_rate * fs
+-- ramp_rate_step_size_in_Hz_per_second = 16.4613e-009 Hz^2
 -- 
--- ramp_rate_in_code = @(rate_in_Hz, sampling_rate) 2^64*rate_in_Hz/sampling_rate^2
+-- ramp_rate_in_code = @(rate_in_Hz, clk_enable_in_rate, fs) 2^(FREQ_WIDTH+RIGHT_SHIFT)*rate_in_Hz/clk_enable_in_rate^fs
 entity linear_ramp_gen is
 Generic (
     INPUT_DATA_WIDTH  : integer := 64;
     OUTPUT_DATA_WIDTH : integer := 48;
-    RIGHTSHIFT        : integer := 16
+    RIGHTSHIFT        : integer := 23
 );
 port (
     clk           : in  std_logic;

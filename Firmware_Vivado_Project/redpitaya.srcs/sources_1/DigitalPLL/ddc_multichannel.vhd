@@ -25,6 +25,12 @@ port (
     freq3_in : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
     freq4_in : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
 
+    freq1_in_offset : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
+    freq2_in_offset : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
+    freq3_in_offset : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
+    freq4_in_offset : in  std_logic_vector(FREQ_WIDTH-1 downto 0);
+    
+
     -- IQ outputs, for diagnositcs purposes
     -- each of these contain in sequence: DATA_I, DATA_Q, DONT_CARE, DONT_CARE, DONT_CARE, DONT_CARE, where DONT_CARE are to be ignored
     -- clk_enable_IQ_out strobes this pattern periodically: 1, 1, 0, 0, 0, 0, for an average rate of clk/2.
@@ -52,6 +58,12 @@ port (
 end entity;
 
 architecture Behavioral of ddc_multichannel is
+
+    signal freq1_in_summed : std_logic_vector(FREQ_WIDTH-1 downto 0);
+    signal freq2_in_summed : std_logic_vector(FREQ_WIDTH-1 downto 0);
+    signal freq3_in_summed : std_logic_vector(FREQ_WIDTH-1 downto 0);
+    signal freq4_in_summed : std_logic_vector(FREQ_WIDTH-1 downto 0);
+
     signal data_mixer1_real, data_mixer1_imag : std_logic_vector(DATA_WIDTH-1 downto 0);
     signal data_mixer2_real, data_mixer2_imag : std_logic_vector(DATA_WIDTH-1 downto 0);
     signal data_mixer3_real, data_mixer3_imag : std_logic_vector(DATA_WIDTH-1 downto 0);
@@ -124,7 +136,7 @@ begin
     ) port map (
         clk           => clk,
         data_in       => data1_in,
-        freq_in       => freq1_in,
+        freq_in       => freq1_in_summed,
         DDS_cosine    => DDS_cosine1,
         DDS_sine      => DDS_sine1,
         data_out_real => data_mixer1_real,
@@ -137,7 +149,7 @@ begin
     ) port map (
         clk           => clk,
         data_in       => data2_in,
-        freq_in       => freq2_in,
+        freq_in       => freq2_in_summed,
         data_out_real => data_mixer2_real,
         data_out_imag => data_mixer2_imag
     );
@@ -148,7 +160,7 @@ begin
     ) port map (
         clk           => clk,
         data_in       => data3_in,
-        freq_in       => freq3_in,
+        freq_in       => freq3_in_summed,
         data_out_real => data_mixer3_real,
         data_out_imag => data_mixer3_imag
     );
@@ -159,10 +171,20 @@ begin
     ) port map (
         clk           => clk,
         data_in       => data4_in,
-        freq_in       => freq4_in,
+        freq_in       => freq4_in_summed,
         data_out_real => data_mixer4_real,
         data_out_imag => data_mixer4_imag
     );
+
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            freq1_in_summed <= std_logic_vector(signed(freq1_in) + signed(freq1_in_offset));
+            freq2_in_summed <= std_logic_vector(signed(freq2_in) + signed(freq2_in_offset));
+            freq3_in_summed <= std_logic_vector(signed(freq3_in) + signed(freq3_in_offset));
+            freq4_in_summed <= std_logic_vector(signed(freq4_in) + signed(freq4_in_offset));
+        end if;
+    end process;
 
     -- filters and decimates by 6
     N_times_clk_FIR_wrapper_inst: entity work.N_times_clk_FIR_multichannel

@@ -90,6 +90,12 @@ architecture Behavioral of multichannel_freq_counter_top is
     signal freq3_in_lsbs : std_logic_vector(32-1 downto 0) := (others => '0');
     signal freq4_in_lsbs : std_logic_vector(32-1 downto 0) := (others => '0');
 
+
+    signal freq1_in_offset : std_logic_vector(FREQ_WIDTH-1 downto 0) := (others => '0');
+    signal freq2_in_offset : std_logic_vector(FREQ_WIDTH-1 downto 0) := (others => '0');
+    signal freq3_in_offset : std_logic_vector(FREQ_WIDTH-1 downto 0) := (others => '0');
+    signal freq4_in_offset : std_logic_vector(FREQ_WIDTH-1 downto 0) := (others => '0');
+
     signal n_cycles : std_logic_vector(COUNTER_WIDTH-1 downto 0) := std_logic_vector(to_unsigned(208333, 32)); -- ~100 Hz nominal update rate at 125/6 MS/s input clk
 
     signal logger_mux_selector : std_logic_vector(5-1 downto 0) := (others => '0');
@@ -161,7 +167,13 @@ architecture Behavioral of multichannel_freq_counter_top is
     signal DDSout4_int             : std_logic_vector(DDS_WIDTH-1 downto 0);
 
     signal DDS_SPI_enables_int     :  std_logic_vector(16-1 downto 0) := (others => '1');
-    --attribute mark_debug : string;
+
+    attribute mark_debug : string;
+    attribute mark_debug of DDS_clk_enable_int: signal is "True";
+    attribute mark_debug of ramp_resets:        signal is "True";
+    attribute mark_debug of ramp_slope1:        signal is "True";
+    attribute mark_debug of freq1_in_offset:    signal is "True";
+
     --attribute mark_debug of P_enable:           signal is "True";
     --attribute mark_debug of I_enable:           signal is "True";
     --attribute mark_debug of gain_fine1:         signal is "True";
@@ -187,6 +199,12 @@ begin
         freq2_in          => freq2_in,
         freq3_in          => freq3_in,
         freq4_in          => freq4_in,
+
+        freq1_in_offset   => freq1_in_offset,
+        freq2_in_offset   => freq2_in_offset,
+        freq3_in_offset   => freq3_in_offset,
+        freq4_in_offset   => freq4_in_offset,
+
         clk_enable_IQ_out => iq_clk_enable,
         sync_IQ_out       => iq_sync,
         IQ1_out           => IQ1,
@@ -353,12 +371,6 @@ begin
         limit_low3        => limit_low_dds3,
         limit_low4        => limit_low_dds4,
 
-        ramp_resets       => ramp_resets,
-        ramp_slope1       => ramp_slope1,
-        ramp_slope2       => ramp_slope2,
-        ramp_slope3       => ramp_slope3,
-        ramp_slope4       => ramp_slope4,
-
         cmd_trig          => sys_wen,
         cmd_addr          => (x"0000" & sys_addr(16-1+2 downto 2)),
         cmd_data          => sys_wdata,
@@ -378,6 +390,49 @@ begin
     DDSout3 <= DDSout3_int;
     DDSout4 <= DDSout4_int;
     DDS_SPI_enables <= DDS_SPI_enables_int;
+
+
+    -- add a linear ramp, controllable from the PC, to provide drift cancellation features
+    linear_ramp_gen_inst1 : entity work.linear_ramp_gen
+    generic map (
+        OUTPUT_DATA_WIDTH => FREQ_WIDTH
+    ) port map (
+        clk           => clk,
+        reset_ramp    => ramp_resets(0),
+        clk_enable_in => DDS_clk_enable_int,
+        ramp_slope    => ramp_slope1,
+        data_out      => freq1_in_offset
+    );
+    linear_ramp_gen_inst2 : entity work.linear_ramp_gen
+    generic map (
+        OUTPUT_DATA_WIDTH => FREQ_WIDTH
+    ) port map (
+        clk           => clk,
+        reset_ramp    => ramp_resets(1),
+        clk_enable_in => DDS_clk_enable_int,
+        ramp_slope    => ramp_slope2,
+        data_out      => freq2_in_offset
+    );
+    linear_ramp_gen_inst3 : entity work.linear_ramp_gen
+    generic map (
+        OUTPUT_DATA_WIDTH => FREQ_WIDTH
+    ) port map (
+        clk           => clk,
+        reset_ramp    => ramp_resets(2),
+        clk_enable_in => DDS_clk_enable_int,
+        ramp_slope    => ramp_slope3,
+        data_out      => freq3_in_offset
+    );
+    linear_ramp_gen_inst4 : entity work.linear_ramp_gen
+    generic map (
+        OUTPUT_DATA_WIDTH => FREQ_WIDTH
+    ) port map (
+        clk           => clk,
+        reset_ramp    => ramp_resets(3),
+        clk_enable_in => DDS_clk_enable_int,
+        ramp_slope    => ramp_slope4,
+        data_out      => freq4_in_offset
+    );
 
 
     -------------------------------------------------
@@ -490,19 +545,19 @@ begin
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"26" => ramp_slope1_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"27" => ramp_slope1 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope1_lsbs);
+                    when x"27" => ramp_slope1 <= (sys_wdata(32-1 downto 0) & ramp_slope1_lsbs);
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"28" => ramp_slope2_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"29" => ramp_slope2 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope2_lsbs);
+                    when x"29" => ramp_slope2 <= (sys_wdata(32-1 downto 0) & ramp_slope2_lsbs);
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"30" => ramp_slope3_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"31" => ramp_slope3 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope3_lsbs);
+                    when x"31" => ramp_slope3 <= (sys_wdata(32-1 downto 0) & ramp_slope3_lsbs);
 
                     -- written as two 32-bits registers that update when the MSBs are written
                     when x"32" => ramp_slope4_lsbs <= sys_wdata(32-1 downto 0);
-                    when x"33" => ramp_slope4 <= (sys_wdata(FREQ_WIDTH-32-1 downto 0) & ramp_slope4_lsbs);
+                    when x"33" => ramp_slope4 <= (sys_wdata(32-1 downto 0) & ramp_slope4_lsbs);
 
                     when others => 
                 end case;

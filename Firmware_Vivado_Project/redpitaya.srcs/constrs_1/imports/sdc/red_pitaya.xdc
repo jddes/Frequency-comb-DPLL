@@ -249,3 +249,4 @@ set_false_path -from [get_clocks ext_clk] -to [get_clocks clk_fpga_3]
 set_clock_groups -asynchronous -group [get_clocks clk_fpga_3] -group [get_clocks clk_fpga_0]
 set_clock_groups -asynchronous -group [get_clocks ext_clk] -group [get_clocks clk_fpga_0]
 set_clock_groups -asynchronous -group [get_clocks clk_fpga_3] -group [get_clocks pll_adc_clk]
+
