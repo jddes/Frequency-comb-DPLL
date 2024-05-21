@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="10" Path="D:/Repo/dpll_fnc100/Firmware_Vivado_Project/redpitaya.xpr">
+<Project Version="7" Minor="10" Path="D:/repo/dpll-fnc100/Firmware_Vivado_Project/redpitaya.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="55fbcb833fab42aea5d71afd7d8d1644"/>
@@ -130,6 +130,22 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xadc_0/system_xadc_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_protocol_converter_0_0/system_axi_protocol_converter_0_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpio_freq1_0/system_axi_gpio_freq1_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpio_0_0/system_axi_gpio_0_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xlconstant_0/system_xlconstant_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_proc_sys_reset_0/system_proc_sys_reset_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_register_slice_0_0/system_axi_register_slice_0_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_crossbar_0_0/system_axi_crossbar_0_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_clk_wiz_0_0/system_clk_wiz_0_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_processing_system7_0/system_processing_system7_0.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpio_0_2/system_axi_gpio_0_2.xci"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system_bd.tcl"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.hwdef"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system.hwh"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.v"/>
+        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="system_ooc.xdc"/>
       </File>
       <File Path="$PSRCDIR/sources_1/simple_dualport_ram_with_init.vhd">
         <FileInfo>
@@ -414,6 +430,12 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/clk_manager.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/linear_ramp_gen.vhd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -1552,49 +1574,56 @@
     </Simulator>
   </Simulators>
   <Runs Version="1" Minor="10">
-    <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7z010clg400-1" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" State="current" IncludeInArchive="true">
+    <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7z010clg400-1" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" State="current" Dir="$PRUNDIR/synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="angle_CORDIC_synth_1" Type="Ft3:Synth" SrcSet="angle_CORDIC" Part="xc7z010clg400-1" ConstrsSet="angle_CORDIC" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+    <Run Id="angle_CORDIC_synth_1" Type="Ft3:Synth" SrcSet="angle_CORDIC" Part="xc7z010clg400-1" ConstrsSet="angle_CORDIC" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/angle_CORDIC_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="input_multiplier_synth_1" Type="Ft3:Synth" SrcSet="input_multiplier" Part="xc7z010clg400-1" ConstrsSet="input_multiplier" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+    <Run Id="input_multiplier_synth_1" Type="Ft3:Synth" SrcSet="input_multiplier" Part="xc7z010clg400-1" ConstrsSet="input_multiplier" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/input_multiplier_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="system_identification_outputgain_mult_synth_1" Type="Ft3:Synth" SrcSet="system_identification_outputgain_mult" Part="xc7z010clg400-1" ConstrsSet="system_identification_outputgain_mult" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+    <Run Id="system_identification_outputgain_mult_synth_1" Type="Ft3:Synth" SrcSet="system_identification_outputgain_mult" Part="xc7z010clg400-1" ConstrsSet="system_identification_outputgain_mult" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/system_identification_outputgain_mult_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="FIFO_addr_packed_synth_1" Type="Ft3:Synth" SrcSet="FIFO_addr_packed" Part="xc7z010clg400-1" ConstrsSet="FIFO_addr_packed" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+    <Run Id="FIFO_addr_packed_synth_1" Type="Ft3:Synth" SrcSet="FIFO_addr_packed" Part="xc7z010clg400-1" ConstrsSet="FIFO_addr_packed" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/FIFO_addr_packed_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="LO_DDS_synth_1" Type="Ft3:Synth" SrcSet="LO_DDS" Part="xc7z010clg400-1" ConstrsSet="LO_DDS" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+    <Run Id="LO_DDS_synth_1" Type="Ft3:Synth" SrcSet="LO_DDS" Part="xc7z010clg400-1" ConstrsSet="LO_DDS" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/LO_DDS_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="fir_lpf_decim_by_6_synth_1" Type="Ft3:Synth" SrcSet="fir_lpf_decim_by_6" Part="xc7z010clg400-1" ConstrsSet="fir_lpf_decim_by_6" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+    <Run Id="fir_lpf_decim_by_6_synth_1" Type="Ft3:Synth" SrcSet="fir_lpf_decim_by_6" Part="xc7z010clg400-1" ConstrsSet="fir_lpf_decim_by_6" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/fir_lpf_decim_by_6_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015"/>
         <Step Id="synth_design"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="constrs_1" Description="Vivado Implementation Defaults" State="current" SynthRun="synth_1" IncludeInArchive="true">
+    <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="constrs_1" Description="Vivado Implementation Defaults" State="current" Dir="$PRUNDIR/impl_1" SynthRun="synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
         <Step Id="init_design"/>
@@ -1607,6 +1636,7 @@
         <Step Id="post_route_phys_opt_design"/>
         <Step Id="write_bitstream"/>
       </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
     <Run Id="angle_CORDIC_impl_1" Type="Ft2:EntireDesign" Part="xc7z010clg400-1" ConstrsSet="angle_CORDIC" Description="Vivado Implementation Defaults" SynthRun="angle_CORDIC_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">

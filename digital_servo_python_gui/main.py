@@ -291,6 +291,17 @@ class MainWidget(QtWidgets.QMainWindow):
         self.config_done = True
         self.enableOrDisableWidgetsRequiringConnection(self.validDeviceAndConfigKnown())
 
+        # hack:
+        reset_ramps_list = [True, True, False, True]
+        reset_ramps_list = [True, True, False, True]
+        ramp_rates_in_Hz_per_second = [0, 0, 0.1, 0]
+
+        reset_ramps_list = [False, False, False, False]
+        ramp_rates_in_Hz_per_second = [0.01, 0.01, 0.01, 0.01]
+
+        self.sl.setupRamps([True]*4, [0]*4)  # clear everything
+        self.sl.setupRamps(reset_ramps_list, ramp_rates_in_Hz_per_second)
+
     def pushSettingsToDevice(self, system_settings, channels_settings):
         """ Push settings to an already-connected device """
         if self.have_printed_once.get("changing settings", False):

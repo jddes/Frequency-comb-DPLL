@@ -88,6 +88,13 @@ class SuperLaserLand_JD_RP:
 
         "DDS_SPI_enables":    counter2absolute(0x0024),
 
+        # frequency ramp settings:
+        "ramp_resets": counter2absolute(0x0025),
+        "ramp_slope1": counter2absolute(0x0026),
+        "ramp_slope2": counter2absolute(0x0028),
+        "ramp_slope3": counter2absolute(0x0030),
+        "ramp_slope4": counter2absolute(0x0032),
+
         # Dither modules
         # from PI_4ch.vhd: "constant DITHER_BASE_ADDRESS : addresses_type := (16#100#, 16#110#, 16#120#, 16#130#);"
         "Dither1_enable":    counter2absolute(0x100 + 0),
@@ -191,6 +198,7 @@ class SuperLaserLand_JD_RP:
         # must satisfy constraint: self.fs/(self.LPF_DECIM*self.PI_n_cycles) < self.fs/(self.dds_spi_bits_per_transaction*self.dds_spi_clk_div)
         # reduces to: self.LPF_DECIM*self.PI_n_cycles > self.dds_spi_bits_per_transaction*self.dds_spi_clk_div
         self.PI_n_cycles = int(np.ceil(self.dds_spi_bits_per_transaction*self.dds_spi_clk_div/self.LPF_DECIM))
+        # print(f"self.PI_n_cycles={self.PI_n_cycles}")
 
         self.R_LO3 = dict()
         for channel_id in self.channels_list:
@@ -207,8 +215,10 @@ class SuperLaserLand_JD_RP:
         self.populateEmptyRegValues()
 
     def fs_PI(self):
-        """ Returns the PI's sampling rate, which is also the DDS's sampling rate (not to be confused by the DDS clock rate) """
-        return self.fs/self.PI_n_cycles
+        """ Returns the PI's sampling rate,
+        which is also the DDS's frequency word sampling rate
+        (not to be confused by the DDS output clock rate) """
+        return self.fs/self.PI_n_cycles/self.LPF_DECIM
 
     def populateEmptyRegValues(self):
         for reg_name in self.addr:
@@ -715,7 +725,7 @@ class SuperLaserLand_JD_RP:
             self.write_AD9912_SPI(channel_id, ad9912_addr_pll_parameters, reg_pll_parameters)
 
         self.fs_dds = ref_clk_Hz * chosen_ratio
-        # print("setDDSclockPLL(): chosen_ratio = %d, fs_ddc = %f MHz, doubler=%d" % (chosen_ratio, self.fs_dds/1e6, doubler_enable))
+        print("setDDSclockPLL(): chosen_ratio = %d, fs_ddc = %f MHz, doubler=%d" % (chosen_ratio, self.fs_dds/1e6, doubler_enable))
 
     def setAD9912powerState(self, channel_id, bPowerOn):
         """ Powers down or up the AD9912 chips using the "power down" register """
@@ -925,6 +935,37 @@ class SuperLaserLand_JD_RP:
         self.write("Dither%d_N_periods"%channel_id, N_periods_integration_minus_one)
         self.write("Dither%d_amplitude"%channel_id, amplitude)
         self.write("Dither%d_enable"%channel_id, bEnableDither)
+
+    def setupRamps(self, reset_ramps_list, ramp_rates_in_Hz_per_second):
+        """ reset_ramps_list must be an iterable with four boolean elements,
+        where True means to disable the ramp for that channel,
+        ramp_rates_in_Hz_per_second must by a four-element iterable of desired ramp rates. """
+        # frequency ramp settings:
+        reset_ramps = 0
+        for ind, rst in enumerate(reset_ramps_list):
+            reset_ramps += int(bool(rst)) * 2**ind
+        print(f"reset_ramps_list={reset_ramps_list}, reset_ramps={reset_ramps}")
+        self.write("ramp_resets", reset_ramps)
+        
+        for index, rate in enumerate(ramp_rates_in_Hz_per_second):
+            self.setupRampSingle(index+1, rate)
+
+    def setupRampSingle(self, index, rate_in_Hz_per_second):
+        print(f"ramp_slope{index}: {rate_in_Hz_per_second} Hz/sec, {self.ramp_rate_to_code(rate_in_Hz_per_second)} in fpga units")
+        self.write_64bits(f"ramp_slope{index}", self.ramp_rate_to_code(rate_in_Hz_per_second))
+
+    def ramp_rate_to_code(self, rate_in_Hz_per_second):
+        """ convert a freq ramp rate in Hz/sec to
+        the DDC increment integer per clk-enabled cycle. """
+        # constant from ddc_mixer.vhd:
+        FREQ_WIDTH = 48
+        # constant from linear_ramp_gen.vhd:
+        RIGHT_SHIFT = 23
+        print(self.fs_PI())
+        print(self.fs)
+        return int(np.round(2**(FREQ_WIDTH+RIGHT_SHIFT)
+                            *rate_in_Hz_per_second/self.fs_PI()/self.fs))
+
 
 class phaseReadoutDriver():
     def __init__(self, sl):
