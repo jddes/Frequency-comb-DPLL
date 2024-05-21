@@ -404,7 +404,6 @@ class MainWidget(QtWidgets.QMainWindow):
         ramp_resets = list()
         ramp_rates = list()
         for channel_id, channel_settings in channels_settings.items():
-            print(channel_settings)
             ramp_resets.append(not channel_settings["ramp_enable"])
             ramp_rates.append(channel_settings["ramp_rate_Hz_per_s"])
 
