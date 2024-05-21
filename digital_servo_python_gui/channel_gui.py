@@ -50,7 +50,7 @@ class ChannelGUI(QtWidgets.QWidget):
         self.plot_IQ.hideAxis('left')
         self.plot_IQ.hideAxis('bottom')
         grayscale = 0.5
-        pen = QtGui.QPen(QtGui.QColor(grayscale*255, grayscale*255, grayscale*255))
+        pen = QtGui.QPen(QtGui.QColor(int(grayscale*255), int(grayscale*255), int(grayscale*255)))
         pen.setCosmetic(True)
         theta = np.linspace(0, 2*np.pi, int(1e3))
         self.plot_IQ.getPlotItem().plot(np.cos(theta), np.sin(theta), pen=pen)

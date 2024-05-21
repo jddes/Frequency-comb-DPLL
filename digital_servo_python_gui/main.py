@@ -25,6 +25,9 @@ import checkboxes_collection_widget
 
 from common import tictoc, colorCoding, readFloatFromTextbox, getExtClkColorName
 import bin_conv
+import fix_pyqt5_compatibility
+
+QtGui = fix_pyqt5_compatibility.fix_pyqt5_compatibility(QtGui, QtWidgets)
 
 # Set a few global PyQtGraph settings before creating plots:
 pg.setConfigOption('leftButtonPan', False)

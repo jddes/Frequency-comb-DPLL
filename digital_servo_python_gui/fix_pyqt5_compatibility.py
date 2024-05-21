@@ -5,6 +5,8 @@ def fix_pyqt5_compatibility(QtGui, QtWidgets):
     in WPy3.7 and WPy3.9. """
 
     for n in dir(QtWidgets):
+        if n.startswith('__'):
+            continue
         if n in dir(QtGui):
             print(f"Warning, {n} already exists in QtGui. Skipping")
             continue
