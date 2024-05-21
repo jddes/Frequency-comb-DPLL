@@ -291,7 +291,10 @@ class MainWidget(QtWidgets.QMainWindow):
         self.config_done = True
         self.enableOrDisableWidgetsRequiringConnection(self.validDeviceAndConfigKnown())
 
-        # hack:
+        # self.removeMe_testing_Ramps_only()
+
+    def removeMe_testing_Ramps_only(self):
+        # temporary code for testing frequency ramp features:
         reset_ramps_list = [True, True, False, True]
         reset_ramps_list = [True, True, False, True]
         ramp_rates_in_Hz_per_second = [0, 0, 0.1, 0]
@@ -299,6 +302,7 @@ class MainWidget(QtWidgets.QMainWindow):
         reset_ramps_list = [False, False, False, False]
         ramp_rates_in_Hz_per_second = [0.01, 0.01, 0.01, 0.01]
 
+        print("what")
         self.sl.setupRamps([True]*4, [0]*4)  # clear everything
         self.sl.setupRamps(reset_ramps_list, ramp_rates_in_Hz_per_second)
 
@@ -320,6 +324,7 @@ class MainWidget(QtWidgets.QMainWindow):
 
             self.setup_controller(system_settings, channel_settings) # needs to happen after setDDSclockPLL()
 
+        self.setup_ddc_ramps(channels_settings)
         self.sl.commit_controller_settings()
 
     def setup_controller(self, system_settings, channel_settings):
@@ -393,6 +398,17 @@ class MainWidget(QtWidgets.QMainWindow):
         """ Qt slot, called when the user presses a channel's "reset phase" button.
         Merely passes the command to the phase readout code """
         self.sl.phaseReadoutDriver.resetChannelPhase(channel_id)
+
+    def setup_ddc_ramps(self, channels_settings):
+        """ frequency ramp feature """
+        ramp_resets = list()
+        ramp_rates = list()
+        for channel_id, channel_settings in channels_settings.items():
+            print(channel_settings)
+            ramp_resets.append(not channel_settings["ramp_enable"])
+            ramp_rates.append(channel_settings["ramp_rate_Hz_per_s"])
+
+        self.sl.setupRamps(ramp_resets, ramp_rates)
 
     def setup_LO(self, system_settings, channel_settings):
         """ Called when the GUI wants to change the LO settings

@@ -35,6 +35,8 @@ def freq_text_eng_format(freq, Nsigfigs=2):
         text = show_N_sig_figs(freq/1e6, Nsigfigs) + " MHz"
     elif freq >= 1e3:
         text = show_N_sig_figs(freq/1e3, Nsigfigs) + " kHz"
+    elif freq <= 0.1:
+        text = show_N_sig_figs(freq*1e3, Nsigfigs) + " mHz"
     else:
         text = show_N_sig_figs(freq/1e0, Nsigfigs) + " Hz"
     return text

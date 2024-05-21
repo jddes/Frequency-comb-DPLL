@@ -944,14 +944,14 @@ class SuperLaserLand_JD_RP:
         reset_ramps = 0
         for ind, rst in enumerate(reset_ramps_list):
             reset_ramps += int(bool(rst)) * 2**ind
-        print(f"reset_ramps_list={reset_ramps_list}, reset_ramps={reset_ramps}")
+        # print(f"reset_ramps_list={reset_ramps_list}, reset_ramps={reset_ramps}")
         self.write("ramp_resets", reset_ramps)
         
         for index, rate in enumerate(ramp_rates_in_Hz_per_second):
             self.setupRampSingle(index+1, rate)
 
     def setupRampSingle(self, index, rate_in_Hz_per_second):
-        print(f"ramp_slope{index}: {rate_in_Hz_per_second} Hz/sec, {self.ramp_rate_to_code(rate_in_Hz_per_second)} in fpga units")
+        # print(f"ramp_slope{index}: {rate_in_Hz_per_second} Hz/sec, {self.ramp_rate_to_code(rate_in_Hz_per_second)} in fpga units")
         self.write_64bits(f"ramp_slope{index}", self.ramp_rate_to_code(rate_in_Hz_per_second))
 
     def ramp_rate_to_code(self, rate_in_Hz_per_second):
@@ -961,8 +961,8 @@ class SuperLaserLand_JD_RP:
         FREQ_WIDTH = 48
         # constant from linear_ramp_gen.vhd:
         RIGHT_SHIFT = 23
-        print(self.fs_PI())
-        print(self.fs)
+        # print(self.fs_PI())
+        # print(self.fs)
         return int(np.round(2**(FREQ_WIDTH+RIGHT_SHIFT)
                             *rate_in_Hz_per_second/self.fs_PI()/self.fs))
 

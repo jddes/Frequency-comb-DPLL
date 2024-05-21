@@ -54,6 +54,8 @@ class ConfigWidget(QtWidgets.QWidget):
                       adv_per_channel.comboLOpower,
                       adv_per_channel.spinDDSpower,
                       adv_per_channel.chkEnableDDS,
+                      adv_per_channel.chkRamp,
+                      adv_per_channel.editRamp,
                       self.editRefFreq,
                       self.editExpectedFreq_dict[channel_id]] + cw.openloop_widgets + cw.closedloop_widgets:
                 if isinstance(w, QtWidgets.QAbstractButton):
@@ -156,6 +158,8 @@ class ConfigWidget(QtWidgets.QWidget):
                 c["upper_sideband"]    = adv_settings.radioUpper.isChecked()
                 c["LO_pwr"]            = adv_settings.comboLOpower.currentText()
                 c["LO_enable"]         = adv_settings.chkEnableLO.isChecked()
+                c["ramp_enable"]       = adv_settings.chkRamp.isChecked()
+                c["ramp_rate_Hz_per_s"] = readFloatFromTextbox(adv_settings.editRamp)
 
                 c["mode"] = "counter" # this might get changed later on
                 if self.bHasDDS:
