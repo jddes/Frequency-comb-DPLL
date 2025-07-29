@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 entity PI_4ch is
 Generic (
     INPUT_WIDTH     : integer := 14;
-    UNWRAPPED_WIDTH : integer := 25;
+    UNWRAPPED_WIDTH : integer := 25+10;
     COUNTER_WIDTH   : integer := 32;
     OUTPUT_WIDTH    : integer := 48;
     N_CHANNELS : integer := 4 -- can't change this without rewriting the module partially
@@ -85,7 +85,13 @@ architecture Behavioral of PI_4ch is
     type addresses_type is array (0 to N_CHANNELS-1) of integer;
     constant DITHER_BASE_ADDRESS : addresses_type := (16#100#, 16#110#, 16#120#, 16#130#);
 
+
+    signal PI_error_preconditionning_clk_enable : std_logic_vector(N_CHANNELS-1 downto 0) := (others => '0');
+    constant PI_INPUT_WIDTH : integer := 25;
+    constant LOG2_DIVIDE : integer := 4;
+
     type unwrapped_phases_type is array (0 to N_CHANNELS-1) of std_logic_vector(UNWRAPPED_WIDTH-1 downto 0);
+    type conditionned_phases_type is array (0 to N_CHANNELS-1) of std_logic_vector(PI_INPUT_WIDTH-1 downto 0);
     type freq_output_type      is array (0 to N_CHANNELS-1) of std_logic_vector(OUTPUT_WIDTH-1 downto 0);
     type fine_gain_type        is array (0 to N_CHANNELS-1) of std_logic_vector(4-1 downto 0);
     type coarse_gain_type      is array (0 to N_CHANNELS-1) of std_logic_vector(6-1 downto 0);
@@ -98,6 +104,7 @@ architecture Behavioral of PI_4ch is
     signal phi_integrated_clk_enable : std_logic := '0';
     signal phi_unwrapped  : unwrapped_phases_type := (others => (others => '0'));
     signal phi_integrated : unwrapped_phases_type := (others => (others => '0'));
+    signal phi_to_PI      : conditionned_phases_type := (others => (others => '0'));
 
     signal railed_high           : std_logic_vector(N_CHANNELS-1 downto 0) := (others => '0');
     signal railed_low            : std_logic_vector(N_CHANNELS-1 downto 0) := (others => '0');
@@ -118,6 +125,7 @@ architecture Behavioral of PI_4ch is
     signal reset_offset3 : std_logic := '0';
     signal reset_offset4 : std_logic := '0';
     signal P_enable_d1 : std_logic_vector(N_CHANNELS-1 downto 0) := (others => '0');
+
 
     --attribute mark_debug : string;
     --attribute mark_debug of wrapped_phase_in1: signal is "True";
@@ -157,15 +165,33 @@ begin
 
 
     gen_backend : for I in 0 to 3 generate
-        -- filter each phase with PI loop filter
-        PI_loop_filter_inst : entity work.PI_loop_filter
+        -- to handle a larger range on the phase error signals:
+        -- we changed UNWRAPPED_WIDTH above to be larger by N bits (chose N=10),
+        -- added saturation to remove the M MSBs (chose M=6)
+        -- then divided down by 2^P (chose P=4) to trim off the LSBs, quantized with no accumulated error
+        -- with N = M + P, to keep the PI the same input size
+        PI_error_preconditionning_inst : entity work.PI_error_preconditionning
         generic map (
             INPUT_WIDTH  => UNWRAPPED_WIDTH,
-            OUTPUT_WIDTH => OUTPUT_WIDTH
+            OUTPUT_WIDTH => PI_INPUT_WIDTH,
+            LOG2_DIVIDE  => LOG2_DIVIDE
         ) port map (
             clk                => clk,
             input_clk_enable   => phi_integrated_clk_enable,
-            unwrapped_phase_in =>       phi_integrated(I),
+            unwrapped_phase_in => phi_integrated(I),
+            output_clk_enable  => PI_error_preconditionning_clk_enable(I),
+            data_out           => phi_to_PI(I)
+        );
+        
+        -- filter each phase with PI loop filter
+        PI_loop_filter_inst : entity work.PI_loop_filter
+        generic map (
+            INPUT_WIDTH  => PI_INPUT_WIDTH,
+            OUTPUT_WIDTH => OUTPUT_WIDTH
+        ) port map (
+            clk                => clk,
+            input_clk_enable   => PI_error_preconditionning_clk_enable(I),
+            unwrapped_phase_in =>            phi_to_PI(I),
             gain_fine          =>           gain_fines(I),
             P_gain_coarse      =>       P_gain_coarses(I),
             I_gain_coarse      =>       I_gain_coarses(I),

@@ -188,7 +188,8 @@ class SuperLaserLand_JD_RP:
         self.adf4351 = dict()
         self.adc_volts_per_counts = 1./2**14 * 21.9e-3/13.4e-3 # calibrated on one unit on 2020-07-18 using a known-amplitude tone, turned off 7V supply to put RF amps in high-Z
         self.adc_bits = 14
-        self.phase_bits = 14
+        LOG2_PI_ERROR_DIVIDE = 4  # generic value from PI_error_preconditionning.vhd
+        self.phase_bits = 14 - LOG2_PI_ERROR_DIVIDE
         self.dds_bits = 48
 
         self.LPF_DECIM = 6 # decimation ratio done by fir_lpf_decim_by_6
