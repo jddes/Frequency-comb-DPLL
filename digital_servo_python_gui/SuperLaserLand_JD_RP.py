@@ -1035,7 +1035,7 @@ class phaseReadoutDriver():
     def _chunksAvailable(self):
         """ Returns the number of new data chunks available since last read """
         current_chunk_id = self._getInProgressChunkIndex()
-        return (current_chunk_id-1 - self.last_chunk_id) % self.number_of_chunks
+        return (int(current_chunk_id)-1 - int(self.last_chunk_id)) % int(self.number_of_chunks)
 
     def _peakLatestChunk(self):
         """ Read the most recent available chunk, but don't update the read pointer for subsequent read. """
