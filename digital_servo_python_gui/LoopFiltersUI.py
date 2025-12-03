@@ -212,11 +212,11 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qslider_fdf.setMaximum(int(100*np.log10(fmax)))
 		self.qslider_kp.setMinimum(int(10*gain_min))
 		self.qslider_kp.setMaximum(int(10*gain_max))
-		self.qslider_fi.setValue(int(100*np.log10(fi)))
-		self.qslider_fii.setValue(int(100*np.log10(fii)))
-		self.qslider_fd.setValue(int(100*np.log10(fd)))
-		self.qslider_fdf.setValue(int(100*np.log10(fdf)))
-		self.qslider_kp.setValue(int(10*kp))
+		self.qslider_fi.setValue(int((100*np.log10(fi))))
+		self.qslider_fii.setValue(int((100*np.log10(fii))))
+		self.qslider_fd.setValue(int((100*np.log10(fd))))
+		self.qslider_fdf.setValue(int((100*np.log10(fdf))))
+		self.qslider_kp.setValue(int((10*kp)))
 #        print('10*gain_min = %f, 10*gain_min = %f, 10*kp = %f' % (10*gain_min, 10*gain_min, 10*kp))
 		
 		self.qslider_kp.valueChanged.connect(self.kpSliderEvent)
@@ -447,7 +447,7 @@ class LoopFiltersUI(Qt.QWidget):
 
 		if self.slider_locked == True and self.slider_inhibit == False:
 			self.slider_inhibit = True
-			self.qslider_fdf.setValue(int(float(sliderValue)+100*np.log10(self.slider_ratio)))
+			self.qslider_fdf.setValue(int(int(float(sliderValue)+100*np.log10(self.slider_ratio))))
 		self.slider_inhibit = False
 		
 	def fdfSliderEvent(self):
@@ -467,7 +467,7 @@ class LoopFiltersUI(Qt.QWidget):
 		
 		if self.slider_locked == True and self.slider_inhibit == False:
 			self.slider_inhibit = True
-			self.qslider_fd.setValue(int(float(sliderValue)-100*np.log10(self.slider_ratio)))
+			self.qslider_fd.setValue(int(int(float(sliderValue)-100*np.log10(self.slider_ratio))))
 		self.slider_inhibit = False
 		
 	def textboxChanged(self):
@@ -478,18 +478,18 @@ class LoopFiltersUI(Qt.QWidget):
 		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
 		# Update the sliders to match:
 		# We block the signals from the sliders so we don't cause infinite recursion
-#        self.qslider_fi.setValue((100*np.log10(fi)))
+#        self.qslider_fi.setValue(int((100*np.log10(fi))))
 		self.qslider_fi.blockSignals(True)
-		self.qslider_fi.setValue(int(100*np.log10(np.max((fi, fmin)))))
+		self.qslider_fi.setValue(int((100*np.log10(np.max((fi, fmin))))))
 		self.qslider_fi.blockSignals(False)
 		self.qslider_fii.blockSignals(True)
-		self.qslider_fii.setValue(int(100*np.log10(np.max((fii, fmin)))))
+		self.qslider_fii.setValue(int((100*np.log10(np.max((fii, fmin))))))
 		self.qslider_fii.blockSignals(False)
 		self.qslider_fd.blockSignals(True)
-		self.qslider_fd.setValue(int(100*np.log10(np.max((fd, fmin)))))
+		self.qslider_fd.setValue(int((100*np.log10(np.max((fd, fmin))))))
 		self.qslider_fd.blockSignals(False)
 		self.qslider_fdf.blockSignals(True)
-		self.qslider_fdf.setValue(int(100*np.log10(np.max((fdf, fmin)))))
+		self.qslider_fdf.setValue(int((100*np.log10(np.max((fdf, fmin))))))
 		self.qslider_fdf.blockSignals(False)
 		self.qslider_kp.blockSignals(True)
 		self.qslider_kp.setValue(int(np.max((10*kp, 10*gain_min))))
@@ -508,18 +508,18 @@ class LoopFiltersUI(Qt.QWidget):
 		(kp, fi, fii, fd, fdf, fmin, fmax, gain_min, gain_max, bLock) = self.getSettings()
 		# Update the sliders to match:
 		# We block the signals from the sliders so we don't cause infinite recursion
-#        self.qslider_fi.setValue((100*np.log10(fi)))
+#        self.qslider_fi.setValue(int((100*np.log10(fi))))
 		self.qslider_fi.blockSignals(True)
-		self.qslider_fi.setValue(int(100*np.log10(np.max((fi, fmin)))))
+		self.qslider_fi.setValue(int((100*np.log10(np.max((fi, fmin))))))
 		self.qslider_fi.blockSignals(False)
 		self.qslider_fii.blockSignals(True)
-		self.qslider_fii.setValue(int(100*np.log10(np.max((fii, fmin)))))
+		self.qslider_fii.setValue(int((100*np.log10(np.max((fii, fmin))))))
 		self.qslider_fii.blockSignals(False)
 		self.qslider_fd.blockSignals(True)
-		self.qslider_fd.setValue(int(100*np.log10(np.max((fd, fmin)))))
+		self.qslider_fd.setValue(int((100*np.log10(np.max((fd, fmin))))))
 		self.qslider_fd.blockSignals(False)
 		self.qslider_fdf.blockSignals(True)
-		self.qslider_fdf.setValue(int(100*np.log10(np.max((fdf, fmin)))))
+		self.qslider_fdf.setValue(int((100*np.log10(np.max((fdf, fmin))))))
 		self.qslider_fdf.blockSignals(False)
 		self.qslider_kp.blockSignals(True)
 		self.qslider_kp.setValue(int(np.max((10*kp, 10*gain_min))))
@@ -787,16 +787,16 @@ class LoopFiltersUI(Qt.QWidget):
 		gain_max = 100
 
 		self.qslider_fi.blockSignals(True)
-		self.qslider_fi.setValue(int(100*np.log10(np.max((fi, fmin)))))
+		self.qslider_fi.setValue(int((100*np.log10(np.max((fi, fmin))))))
 		self.qslider_fi.blockSignals(False)
 		self.qslider_fii.blockSignals(True)
-		self.qslider_fii.setValue(int(100*np.log10(np.max((fii, fmin)))))
+		self.qslider_fii.setValue(int((100*np.log10(np.max((fii, fmin))))))
 		self.qslider_fii.blockSignals(False)
 		self.qslider_fd.blockSignals(True)
-		self.qslider_fd.setValue(int(100*np.log10(np.max((fd, fmin)))))
+		self.qslider_fd.setValue(int((100*np.log10(np.max((fd, fmin))))))
 		self.qslider_fd.blockSignals(False)
 		self.qslider_fdf.blockSignals(True)
-		self.qslider_fdf.setValue(int(100*np.log10(np.max((fdf, fmin)))))
+		self.qslider_fdf.setValue(int((100*np.log10(np.max((fdf, fmin))))))
 		self.qslider_fdf.blockSignals(False)
 		self.qslider_kp.blockSignals(True)
 		self.qslider_kp.setValue(int(np.max((10*kp, 10*gain_min))))
@@ -819,7 +819,7 @@ class LoopFiltersUI(Qt.QWidget):
 		self.qedit_fi.setText('{:.3e}'.format(fi))
 		self.qedit_fi.blockSignals(False)
 		self.qslider_fi.blockSignals(True)
-		self.qslider_fi.setValue((100*np.log10(np.max((fi, fmin)))))
+		self.qslider_fi.setValue(int((100*np.log10(np.max((fi, fmin))))))
 		self.qslider_fi.blockSignals(False)
 		self.textboxChanged_withoutUpdatingFPGA() # To update the sliders
 		self.textboxChanged()

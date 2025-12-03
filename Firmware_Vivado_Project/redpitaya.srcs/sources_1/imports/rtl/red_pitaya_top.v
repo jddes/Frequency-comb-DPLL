@@ -492,7 +492,7 @@ wire LoggerIsWriting;
 
 reg dpll_output_selector;
 
-wire osc_output;  // for testing a switching regulator
+(* mark_debug = "true" *) wire osc_output;  // for testing a switching regulator
 
 wire [ 32-1:0] dpll_output;
 wire dpll_ack;
@@ -821,15 +821,15 @@ assign exp_p_dir[8-1:0] = {8'b00001001};  // pin 0 and 3 set as output, the rest
 
 // update 2024-05-14 to protect against loss of clock
 // potentially leaving the osc_output high:
-wire osc_output_protected;
+(* mark_debug = "true" *) wire osc_output_protected;
 
-duty_cycle_protector duty_cycle_protector_inst # (
-    .MAX_CYCLES_ON(1000),
-    .TIMEOUT_CYCLES_LOG2(20),
-) port map (
-    clk            => sys_clk,
-    clk_under_test => osc_output,
-    clk_gated      => osc_output_protected
+duty_cycle_protector # (
+    .MAX_CYCLES_ON(2000),
+    .TIMEOUT_CYCLES_LOG2(21)
+) duty_cycle_protector_inst (
+    .clk            (fclk[0]), // 125 MHz internal clock
+    .clk_under_test (osc_output),
+    .clk_gated      (osc_output_protected)
 );
 
 assign exp_n_out[2] = osc_output_protected;

@@ -54,7 +54,7 @@ class DisplayVNAWindow(QtWidgets.QWidget):
         self.qbtn_use_as_synth.setChecked(False)
         
         # Reset the progress bar
-        self.qprogress_ident.setValue(0)
+        self.qprogress_ident.setValue(int(0))
         
         (input_select, output_select, first_modulation_frequency_in_hz, last_modulation_frequency_in_hz,
             number_of_frequencies, System_settling_time, output_amplitude) = self.readSystemIdentificationSettings()
@@ -89,7 +89,7 @@ class DisplayVNAWindow(QtWidgets.QWidget):
             qapp = QtGui.QApplication.instance()
             
             while (time.perf_counter()-start_time < total_wait_time) and self.bStop == False:
-                self.qprogress_ident.setValue(  100 * (time.perf_counter()-start_time)/total_wait_time )
+                self.qprogress_ident.setValue(int(  100 * (time.perf_counter()-start_time)/total_wait_time ))
 #                self.qprogress_ident.update()
                 self.qprogress_ident.repaint()
                 qapp.processEvents()
@@ -103,7 +103,7 @@ class DisplayVNAWindow(QtWidgets.QWidget):
             # Operation was cancelled by user
             self.sl.bDDR2InUse = False
             self.bStop = False
-            self.qprogress_ident.setValue(0)
+            self.qprogress_ident.setValue(int(0))
             self.sl.setVNA_mode_register(0, 1, 0)
             return
             
@@ -161,7 +161,7 @@ class DisplayVNAWindow(QtWidgets.QWidget):
             physical_units_name = 'Hz/V'
         
         print('physical_units_name = %s' % physical_units_name)
-        self.qprogress_ident.setValue(0)
+        self.qprogress_ident.setValue(int(0))
         # Scale the actual measured transfer function:
         transfer_function_complex = transfer_function_complex * physical_input_units_per_input_counts / output_volts_per_counts        
 
@@ -342,8 +342,8 @@ class DisplayVNAWindow(QtWidgets.QWidget):
         # Progress bar which indicates the progression of the identification
         self.qprogress_ident = Qt.QProgressBar()
         self.qprogress_ident.setTextVisible(False)
-        self.qprogress_ident.setValue(0)
-#        self.qprogress_ident.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        self.qprogress_ident.setValue(int(0))
+#        self.qprogress_ident.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
         
         # Controls for the synth mode:        
         # Needs: output select, frequency, amplitude, Square/Sine select, synth on/off
@@ -425,7 +425,7 @@ class DisplayVNAWindow(QtWidgets.QWidget):
         self.q_osc_duty_cyle.setSliderPosition(0)
         self.q_osc_duty_cyle.setOrientation(Qt.Qt.Horizontal)
         # Units are millionth of the full range available
-        self.q_osc_duty_cyle.setMinimum(0)
+        self.q_osc_duty_cyle.setMinimum(int(0))
         self.q_osc_duty_cyle.setMaximum(int(1e6))
 
         self.q_osc_duty_cyle.setSingleStep(int(1e6/100./3.))

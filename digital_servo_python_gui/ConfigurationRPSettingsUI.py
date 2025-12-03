@@ -32,7 +32,7 @@ class ConfigRPSettingsUI(Qt.QWidget):
         self.setObjectName('MainWindow')
         self.setStyleSheet(custom_style_sheet)
         self.custom_shorthand = custom_shorthand
-        self.f_ext = 10e6 # TODO: make this configurable from the gui and xml file
+        self.f_ext = 200e6 # TODO: make this configurable from the gui and xml file
 
         self.controller = weakref.proxy(controller) #link to the top class
 
@@ -423,13 +423,13 @@ class ConfigRPSettingsUI(Qt.QWidget):
         if self.qradio_external_clk.isChecked():
             # Valid VCO range is 600 MHz-1600 MHz according to DS181
 
-            # CLKFBOUT_MULT  = 5
-            # CLKOUT0_DIVIDE = 8
-            # # For self.f_ext=200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+            # For self.f_ext=200 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
+            CLKFBOUT_MULT  = 5
+            CLKOUT0_DIVIDE = 8
 
-            CLKFBOUT_MULT  = 62
-            CLKOUT0_DIVIDE = 5
-            # For self.f_ext=10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
+            # # For self.f_ext=10 MHz external clock input, these settings should yield 124 MHz ADC clock, 620 MHz VCO
+            # CLKFBOUT_MULT  = 62
+            # CLKOUT0_DIVIDE = 5
 
             # # For self.f_ext=25 MHz external clock input, these settings should yield 125 MHz ADC clock, 1000 MHz VCO
             # CLKFBOUT_MULT  = 40

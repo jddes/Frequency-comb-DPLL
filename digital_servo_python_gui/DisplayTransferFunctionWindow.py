@@ -19,6 +19,9 @@ import copy
 import pyqtgraph as pg
 
 import common # For make_sure_path_exists()
+import fix_pyqt5_compatibility
+
+QtGui = fix_pyqt5_compatibility.fix_pyqt5_compatibility(QtGui, QtWidgets)
 
 class DisplayTransferFunctionWindow(QtWidgets.QWidget):
 

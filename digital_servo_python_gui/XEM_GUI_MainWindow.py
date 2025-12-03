@@ -636,7 +636,7 @@ class XEM_GUI_MainWindow(QtWidgets.QWidget):
 					Total_ramp_time = 0.1
 					for k2 in range(len(desired_ramp)):
 	#                    print('set slider to %d' % desired_ramp[k2])
-						self.spectrum.q_dac_offset[kDAC].setValue(desired_ramp[k2])
+						self.spectrum.q_dac_offset[kDAC].setValue(int(desired_ramp[k2]))
 						self.spectrum.setDACOffset_event()
 						time.sleep(float(Total_ramp_time)/len(desired_ramp))
 				
@@ -1147,7 +1147,7 @@ class XEM_GUI_MainWindow(QtWidgets.QWidget):
 				slider_units = (output_offset_in_volts - min_output_in_volts)/(max_output_in_volts-min_output_in_volts) * 1e6
 				# print('calling dac offset slider setValue()')
 				# self.q_dac_offset[k].blockSignals(True)
-				# self.q_dac_offset[k].setValue(slider_units)
+				# self.q_dac_offset[k].setValue(int(slider_units))
 				# self.q_dac_offset[k].blockSignals(False)
 				self.spectrum.setDacOffset(k, slider_units)
 				# print('done calling dac offset slider setValue()')
@@ -1404,7 +1404,7 @@ class XEM_GUI_MainWindow(QtWidgets.QWidget):
 				# For the USB bug, compute the mean from the last points     
 				current_output_in_volts = self.sl.convertDACCountsToVolts(k, np.mean(samples_out[128:256]))
 				current_output_in_hz = current_output_in_volts * VCO_gain_in_Hz_per_Volts
-				self.spectrum.qthermo_dac_current[k].setValue(current_output_in_volts)
+				self.spectrum.qthermo_dac_current[k].setValue(int(current_output_in_volts))
 				self.spectrum.qlabel_dac_current_value[k].setText('{:.4f} V\n{:.0f} MHz'.format(current_output_in_volts, current_output_in_hz/1e6))
 				
 				elapsed_time = time.perf_counter() - start_time

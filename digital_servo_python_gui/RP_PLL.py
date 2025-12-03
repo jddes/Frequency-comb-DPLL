@@ -7,6 +7,9 @@ import traceback    # for print_stack, for debugging purposes: traceback.print_s
 import time
 
 import sys
+import os
+import hashlib
+
 
 import numpy as np
 import logging
@@ -37,6 +40,7 @@ class RP_PLL_device():
     MAGIC_BYTES_READ_BUFFER     = 0xABCD1235
     
     MAGIC_BYTES_WRITE_FILE      = 0xABCD1237
+    MAGIC_BYTES_READ_FILE       = 0xABCD1240
     MAGIC_BYTES_SHELL_COMMAND   = 0xABCD1238
     MAGIC_BYTES_REBOOT_MONITOR  = 0xABCD1239
     
@@ -115,6 +119,59 @@ class RP_PLL_device():
             print("RP_PLL.py: write_file_on_remote(): exception while sending file!")
             self.logger.warning('Red_Pitaya_GUI{}: write_file_on_remote(): exception while sending file!'.format(self.logger_name))
             self.socketErrorEvent(e)
+
+
+    def read_file_from_remote(self, strFilenameRemote):
+        """ Returns the contents of a file located on the RP """
+        try:
+            # send header
+            packet_to_send = struct.pack('=III', self.MAGIC_BYTES_READ_FILE, len(strFilenameRemote), 0)
+            self.sock.sendall(packet_to_send)
+            # send filename
+            self.sock.sendall(strFilenameRemote.encode('ascii'))
+            # read results: format is file_valid, file_size, <file bytes>,
+            # where both file_valid and file_size are uint32:
+            file_valid, file_size = struct.unpack('II', self.read(8))
+            if not file_valid:
+                print("Could not read file '%s' from remote (file_valid=0)." % strFilenameRemote)
+                return b''
+            if file_size == 0:
+                print("Received empty file '%s' from remote (file_size=0)" % strFilenameRemote)
+                return b''
+            else:
+                # print("About to read file of size %d from remote" % file_size)
+                file_data = self.read(file_size)
+                if len(file_data) != file_size:
+                    print("Error: expected %d bytes, but received %d instead" % file_size, len(file_data))
+                # else:
+                #     print("Successfully received file of size %d from remote" % len(file_data))
+                return file_data
+        except OSError as e:
+            print("RP_PLL.py: read_file_from_remote(): exception while reading file '%s'!" % strFilenameRemote)
+            self.logger.warning('Red_Pitaya_GUI{}: read_file_from_remote(): exception while reading file!'.format(self.logger_name))
+            self.socketErrorEvent(e)
+            return b''
+
+    def readout_files_hash(self, filenameLocal, filenameRemote):
+
+        local_hash = self.read_local_hashes(filenameLocal)
+        remote_hash = self.read_remote_hashes(filenameRemote)
+
+        return local_hash, remote_hash
+
+    def read_local_hashes(self, filenameLocal):
+        m = hashlib.sha256()
+        m.update(open(filenameLocal, "rb").read())
+        local_hash = m.hexdigest()
+        return local_hash
+
+    def read_remote_hashes(self, filenameRemote):
+        """ read sha256 for the given file on the RP """
+        hash_filename = f"{filenameRemote}.sha256"
+        self.send_shell_command(f"sha256sum -b {filenameRemote} > {hash_filename}")
+        remote_hash_augmented = self.read_file_from_remote(hash_filename).decode('utf-8')
+        remote_hash = remote_hash_augmented.split(' ')[0]
+        return remote_hash
 
     # Function used to send a shell command to the Red Pitaya:
     def send_shell_command(self, strCommand):

@@ -107,6 +107,8 @@ class initialConfiguration(QtWidgets.QDialog):
 		self.qbtn_yes.clicked.connect(self.okClicked)
 		self.qbtn_no.clicked.connect(self.cancelClicked)
 		
+		self.qbtn_compare_versions = Qt.QPushButton('Compare versions')
+		self.qbtn_compare_versions.clicked.connect(self.qbtn_compare_versions_clicked)
 		
 		self.qgroupbox_IP_addr = Qt.QGroupBox('IP Address')
 		gridIP = Qt.QGridLayout()
@@ -192,6 +194,7 @@ class initialConfiguration(QtWidgets.QDialog):
 #        grid.addWidget(self.qbtn_no, 4, 1)
 		hbox = Qt.QHBoxLayout()
 		hbox.addStretch(1)
+		hbox.addWidget(self.qbtn_compare_versions)
 		hbox.addWidget(self.qbtn_yes)
 		hbox.addWidget(self.qbtn_no)
 		grid.addLayout(hbox, 5, 0, 1, 3)
@@ -203,10 +206,40 @@ class initialConfiguration(QtWidgets.QDialog):
 		self.show()
 
 		
+	def qbtn_compare_versions_clicked(self):
+		""" read and compare the sha526 for both the firmware and CPU software,
+		between the local PC copy, and the one currently on the RP device. """
+		self.readSelectedFPGA()
+		if not self.strSelectedIP:
+			print("Error: no selected RedPitaya.")
+			return
+
+		# connect to the selected RedPitaya, read sha256's
+		self.dev.OpenTCPConnection(self.strSelectedIP, self.strSelectedPort)
+		local_hash_firmware, remote_hash_firmware = self.dev.readout_files_hash(
+			filenameLocal=str(self.qedit_firmware.text()), filenameRemote='/opt/red_pitaya_top.bit'
+			)
+		local_hash_software, remote_hash_software = self.dev.readout_files_hash(
+			filenameLocal=str(self.qedit_software.text()), filenameRemote='/opt/monitor-tcp'
+			)
+		# time.sleep(2) # to handle slow SD cards
+		print("Firmware SHA256 Hashes:")
+		print(f"{local_hash_firmware} (local)")
+		print(f"{remote_hash_firmware} (remote)")
+
+		print("CPU software SHA256 Hashes:")
+		print(f"{local_hash_software} (local)")
+		print(f"{remote_hash_software} (remote)")
+
+		# disconnect:
+		self.dev.sock.shutdown(socket.SHUT_RDWR)
+		self.dev.sock.close()
+		print("Disconnected from remote host.")
+
 	def reset_list_and_send_broadcast(self):
 
 		# clear the list if it exists
-		self.strSerialList
+		self.strSerialList.clear()
 		try:
 			self.qcombo_serial.clear()
 			pass
