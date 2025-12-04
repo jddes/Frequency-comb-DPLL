@@ -1,3 +1,18 @@
+# Legacy repository/branch for Comb Lock Boxes (CLBs) shipped before 2026
+
+__WARNING__: This is a legacy repository/branch for CLBs shipped before 2026. The code provided here is no longer supported. Waxwing Instruments Inc. now directly provides all necessary software and firmware for CLBs sold after this date. This codebase (including other branches) is supplied as-is, for convenience and historical reasons. 
+
+__WARNING__: In the past, this repository included a release (1.0.0), which was recently deleted to avoid any confusion. Contact us if you need these files. 
+
+__WARNING__: Older versions of this codebase included instructions to flash the MicroSD card of the CLB. __CLBs sold by Waxwing Instruments Inc., including those before 2026, are already flashed with the right firmware__. Please ignore these instructions, unless directed otherwise.
+
+__Newer versions of the firmware and control software are available upon request. Furthermore, CLBs shipped from 2026 onwards include all necessary software and firmware__. 
+
+Please contact us here:
+
+https://www.waxwinginstruments.com/
+
+
 Digital Phase-locked-loop for Locking a Frequency Comb using a Red Pitaya
 ---------------------------
 
@@ -7,14 +22,25 @@ The firmware/software allows the use of this hardware to phaselock a frequency c
 
 Getting started
 ---------------------------
-1. Download the required files from the "Releases section" (https://github.com/jddes/Frequency-comb-DPLL/releases/latest):
+
+
+The control software was tested using __WinPython-64bit-3.6.1.0Qt5__ and __WPy64-312100__. To launch the GUI:
+1. Download the source code here
+2. Install WinPython
+3. Start a "WinPython Command Prompt"
+4. Navigate to the ```digital_servo_python_gui``` subfolder
+5. Run ```python XEM_GUI3.py```
+
+
+~~1. Download the required files from the "Releases section" (https://github.com/jddes/Frequency-comb-DPLL/releases/latest):
 	a. The full source code repository to have access to the Python GUI, and b. The SD card image for the Red Pitaya (red_pitaya_dpll_2017-05-31.zip)
-2. Read and follow the "Instructions and operation manual for RedPitaya DPLL.pdf" file.
+2. Read and follow the "Instructions and operation manual for RedPitaya DPLL.pdf" file.~~
+
 
 Software versions
 ---------------------------
-Required Python distribution is WinPython-64bit-3.7.2 (https://sourceforge.net/projects/winpython/files/WinPython_3.7/3.7.2.0/).
-The FPGA Vivado project was compiled in Vivado 2015.4, but simply using the software doesn't require installing Vivado.
+~~Required Python distribution is WinPython-64bit-3.7.2 (https://sourceforge.net/projects/winpython/files/WinPython_3.7/3.7.2.0/).
+The FPGA Vivado project was compiled in Vivado 2015.4, but simply using the software doesn't require installing Vivado.~~
 
 
 Additional information

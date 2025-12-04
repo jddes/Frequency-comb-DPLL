@@ -24,6 +24,8 @@ import RP_PLL
 import logging
 import common
 
+np.float = float
+
 class SuperLaserLand_JD_RP:
 	# Data members:
 	############################################################
